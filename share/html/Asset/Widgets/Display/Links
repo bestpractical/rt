@@ -48,32 +48,27 @@
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
 <&| /Widgets/TitleBox, title => loc('Links'),
-    class => (join " ", 'asset-links', ($modify_behavior eq 'always' ? 'editing' : ())),
+    class => (join " ", 'asset-links', 'links-widget', ($modify_behavior eq 'always' ? 'editing' : ())),
     data => { 'inline-edit-behavior' => $modify_behavior },
-    (($can_modify || $can_modify_cf) && $modify_behavior =~ /^(link|click)$/ ? (titleright_raw => $m->scomp('/Elements/InlineEditLink')) : ()),
+    titleright_raw => $titleright,
 &>
-% unless ($modify_behavior eq 'always') {
-  <div class="inline-edit-display" hx-trigger="assetLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowLinks?ObjectType=RT::Asset&ObjectId=<% $AssetObj->id %>">
+% if ($modify_behavior eq 'hide') {
+  <div class="inline-edit-display">
+    <div class="links-display-target" id="links-display-target-<% $AssetObj->id %>" hx-trigger="assetLinksChanged from:body, assetCustomFieldsChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowLinks?ObjectType=RT::Asset&ObjectId=<% $AssetObj->id %>" hx-swap="innerHTML">
       <& /Elements/ShowLinks, Object => $AssetObj &>
+    </div>
   </div>
-% }
-% if ($modify_behavior ne 'hide') {
+% } else {
   <form class="inline-edit" hx-post="<% RT->Config->Get('WebPath') %>/Helpers/AssetUpdate" hx-swap="none" enctype="multipart/form-data">
     <input type="hidden" class="hidden" name="id" value="<% $AssetObj->id %>" />
-    <div hx-trigger="assetLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditLinks?ObjectType=RT::Asset&ObjectId=<% $AssetObj->id %>&TwoColumn=0" hx-swap="innerHTML">
-      <& /Elements/EditLinks, Object => $AssetObj, TwoColumn => 0 &>
-      <& /Elements/EditCustomFields, Object => $AssetObj, Grouping => 'Links', InTable => 1 &>
-    </div>
-
-    <div class="row mt-2">
-      <div class="col-12 text-end">
-        <input type="submit" class="btn btn-primary" value="<&|/l&>Save</&>" />
-      </div>
+    <div class="links-edit-container" hx-trigger="assetLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditLinks?ObjectType=RT::Asset&ObjectId=<% $AssetObj->id %>&DualMode=1<% $edit_default_qs |n %>" hx-swap="innerHTML">
+      <& /Elements/EditLinks, Object => $AssetObj, DualMode => 1, @filter_args &>
     </div>
     <& /Widgets/Spinner &>
   </form>
 % }
 </&>
+<& /Elements/LinksInfoModal, Object => $AssetObj &>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
@@ -86,8 +81,49 @@ my $modify_behavior
     = RT->Config->Get( 'InlineEdit', $session{CurrentUser} ) ? ( $inline_edit_behavior{Links} || $inline_edit_behavior{_default} || 'link' ) : 'hide';
 my $can_modify = $AssetObj->CurrentUserHasRight('ModifyAsset');
 my $can_modify_cf = $AssetObj->CurrentUserHasRight('ModifyCustomField');
+
+my $has_links = $AssetObj->Links('Base')->Count || $AssetObj->Links('Target')->Count;
+
+my @all_rels = qw(DependsOn DependedOnBy MemberOf Members RefersTo ReferredToBy);
+my @all_objs = qw(Ticket Transaction Asset Article User Group URL);
+my @rel_default = ( @ShowRelationship && @ShowRelationship < @all_rels ) ? @ShowRelationship : ();
+my @obj_default = ( @ShowObjectType  && @ShowObjectType  < @all_objs ) ? @ShowObjectType  : ();
+my $default_active = ( $HideInactive || @rel_default || @obj_default ) ? 1 : 0;
+
+my @filter_args = (
+    ShowRelationship => \@rel_default,
+    ShowObjectType   => \@obj_default,
+    HideInactive     => $HideInactive,
+);
+my $edit_default_qs = '';
+if ($default_active) {
+    my @parts;
+    push @parts, 'HideInactive=1' if $HideInactive;
+    push @parts, "ShowRelationship=$_" for @rel_default;
+    push @parts, "ShowObjectType=$_"   for @obj_default;
+    $edit_default_qs = '&' . join '&', @parts;
+}
+
+# Search + filter live in the title bar (like History) to save vertical space. It targets whichever
+# body the current mode renders: the edit body in editable modes, else the read-only display body.
+my $links_filter = $m->scomp(
+    '/Elements/LinksFilter',
+    Object => $AssetObj,
+    Target => ( $modify_behavior eq 'hide' ? '#links-display-target-' : '#links-edit-target-' ) . $AssetObj->id,
+    Mode   => ( $modify_behavior eq 'hide' ? 'display' : 'edit' ),
+    Class  => ( $has_links ? '' : 'd-none' ),
+    @filter_args,
+);
+
+my $titleright = join ' ',
+    $links_filter,
+    $m->scomp('/Elements/LinksInfoIcon'),
+    ( ( $can_modify || $can_modify_cf ) && $modify_behavior =~ /^(link|click)$/ ? $m->scomp('/Elements/InlineEditLink') : () );
 </%INIT>
 
 <%ARGS>
 $AssetObj
+@ShowRelationship => ()
+@ShowObjectType   => ()
+$HideInactive     => 0
 </%ARGS>

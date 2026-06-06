@@ -47,13 +47,16 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
-<&| /Widgets/TitleBox, title => loc('Links'), class => 'ticket-info-links' &>
+<&| /Widgets/TitleBox, title => loc('Links'), class => 'ticket-info-links',
+    titleright_raw => $m->scomp('/Elements/LinksInfoIcon'),
+&>
   <& /Elements/AddLinks,
     Object          => RT::Ticket->new($session{CurrentUser}),
     CustomFields    => $QueueObj->TicketCustomFields,
     ARGSRef         => \%ARGS,
   &>
 </&>
+<& /Elements/LinksInfoModal, Object => RT::Ticket->new( $session{CurrentUser} ) &>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 

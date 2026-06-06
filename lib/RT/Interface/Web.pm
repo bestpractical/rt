@@ -4714,10 +4714,17 @@ sub ProcessLinksForCreate {
     foreach my $type ( keys %RT::Link::DIRMAP ) {
         for ([Base => "new-$type"], [Target => "$type-new"]) {
             my ($direction, $key) = @$_;
-            next unless $args{ARGSRef}->{$key};
-            $links{ $RT::Link::DIRMAP{$type}->{$direction} } = [
-                grep $_, split ' ', $args{ARGSRef}->{$key}
-            ];
+            my $val = $args{ARGSRef}->{$key};
+            next unless defined $val && ( ref $val ? @$val : length $val );
+
+            # The row-based Add-links UI posts one field per row, so repeated link
+            # types arrive as an arrayref; the legacy inputs post a space-separated
+            # scalar. Normalize both to a flat list of non-empty targets.
+            my @values = grep { defined && length } ( ref $val ? @$val : ($val) );
+            my @targets = grep { length } map { split ' ', $_ } @values;
+            next unless @targets;
+
+            $links{ $RT::Link::DIRMAP{$type}->{$direction} } = \@targets;
         }
     }
     return wantarray ? %links : \%links;

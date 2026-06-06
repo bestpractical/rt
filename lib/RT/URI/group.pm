@@ -150,6 +150,21 @@ sub ParseURI {
             return;
         }
     }
+    # canonicalize a "group:NAME" shorthand (Names are unique) -> group://example.com/42
+    elsif ($uri =~ m{^\Q$scheme\E:(?!//)(.+)$}) {
+        my $name = $1;
+        my $group_obj = RT::Group->new( $self->CurrentUser );
+        $group_obj->LoadUserDefinedGroup($name);
+
+        if ( $group_obj->id ) {
+            $self->{'uri'} = $group_obj->URI;
+            $self->{'object'} = $group_obj;
+        }
+        else {
+            RT->Logger->error("Unable to load group by name: $name");
+            return;
+        }
+    }
     else {
         $self->{'uri'} = $uri;
     }

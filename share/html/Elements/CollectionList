@@ -132,6 +132,7 @@ $m->out(' class="table ' . RT->Config->Get('TableAccent') . ' ' . ($Collection->
 $m->out(' data-display-format="' . $m->interp->apply_escapes($DisplayFormat, 'h') . '"');
 $m->out(' data-max-items="' . $maxitems . '"');
 $m->out(' data-class="' . $Collection->RecordClass . '"');
+$m->out(' data-mark-inactive="1"') if $MarkInactive;
 $m->out('>');
 
 if ( $ShowCols ) {
@@ -176,6 +177,12 @@ while ( my $record = $ProgressiveRows ? ( $Collection->Next || ( $Collection->Ne
         Classes      => \$Classes,
         Format       => \@Format,
     );
+
+    if ( $MarkInactive && $record->can('LifecycleObj') ) {
+        my $lifecycle = $record->LifecycleObj;
+        $Classes = join ' ', grep { length } $Classes, 'record-inactive'
+            if $lifecycle && $lifecycle->IsInactive( $record->Status );
+    }
 
     $m->comp('/Elements/CollectionAsTable/Row',
         i          => $i,
@@ -257,4 +264,5 @@ $UseHtmx        => 0
 $HtmxTarget     => undef
 $HtmxSwap       => undef
 $HtmxSelect     => undef
+$MarkInactive   => 0  # add a 'record-inactive' class to rows whose record is in an inactive status
 </%ARGS>

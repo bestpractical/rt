@@ -1,0 +1,175 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+% if ( $total && ( length $content || @show_urls ) ) {
+<div class="links-section" id="links-section-<% $Type %>">
+  <div class="label"><% $Label %></div>
+<% $content |n %>
+%   if (@show_urls) {
+%# URLs are external, not RT records, so they can't go through CollectionList; render a matching
+%# collection-as-table by hand so the shared table CSS and client-side filter still apply.
+  <div class="links-type-table" data-links-object-type="URL"<% $emit_delete ? qq{ data-link-delete-type="$canonical_type" data-link-delete-mode="$mode"} : '' |n %>>
+  <div class="table-responsive">
+  <table cellspacing="0" class="table <% RT->Config->Get('TableAccent') %> collection collection-as-table">
+    <thead>
+      <tr class="collection-as-table">
+%     if ( $emit_delete && !$dual ) {
+        <th class="collection-as-table"><span class="title">&nbsp;</span></th>
+%     }
+        <th class="collection-as-table"><span class="title"><&|/l&>Web Link</&></span></th>
+%     if ( $emit_delete && $dual ) {
+        <th class="collection-as-table"><span class="title">&nbsp;</span></th>
+%     }
+      </tr>
+    </thead>
+    <tbody>
+%     for my $link (@show_urls) {
+%       my $url_val  = $link->$mode;
+%       my $del_name = ( $mode eq 'Target' )
+%           ? "DeleteLink--${canonical_type}-${url_val}"
+%           : "DeleteLink-${url_val}-${canonical_type}-";
+%       # Build the delete cell once; the widget's trash trails the row, the embedded checkbox leads.
+%       my $del_td = '';
+%       if ($emit_delete) {
+%           if ($dual) {
+%               my $path  = $m->notes('LinkUpdatePath') || RT->Config->Get('WebPath') . '/Helpers/TicketUpdate';
+%               my $vals  = $m->interp->apply_escapes( JSON( { id => $m->notes('LinkParentId'), $del_name => 1 } ), 'h' );
+%               my $label = $m->interp->apply_escapes( loc('Remove link'), 'h' );
+%               my $trash = GetSVGImage( Name => 'trash', Title => loc('Remove link') );
+%               $del_td = qq{<td class="collection-as-table"><div class="collection-as-table"><a href="#" class="delete-link" hx-post="$path" hx-vals="$vals" hx-swap="none" aria-label="$label">$trash</a></div></td>};
+%           }
+%           else {
+%               my $esc = $m->interp->apply_escapes( $del_name, 'h' );
+%               $del_td = qq{<td class="collection-as-table"><div class="collection-as-table"><div class="form-check"><input type="checkbox" name="$esc" id="$esc" value="1" class="checkbox form-check-input delete-link" /><label class="form-check-label" for="$esc"></label></div></div></td>};
+%           }
+%       }
+      <tr class="list-item">
+%       if ( $del_td && !$dual ) {
+        <% $del_td |n %>
+%       }
+        <td class="collection-as-table"><div class="collection-as-table"><span class="external-link-icon"><% GetSVGImage(Name => 'link') |n %></span> <& /Elements/ShowLink, URI => $link->$ModeURI &></div></td>
+%       if ( $del_td && $dual ) {
+        <% $del_td |n %>
+%       }
+      </tr>
+%     }
+    </tbody>
+  </table>
+  </div>
+  </div>
+%   }
+</div>
+% }
+<%init>
+my $links = $Object->$Type;
+my $total = $links->Count;
+return unless $total;
+
+my $mode           = $RT::Link::TYPEMAP{$Type}{Mode};                                           # 'Target' or 'Base'
+my $ModeURI        = "${mode}URI";
+my $canonical_type = $RT::Link::TYPEMAP{$Type}{Type};
+my @type_order     = qw(RT::Ticket RT::Transaction RT::Asset RT::Article RT::User RT::Group);
+
+my %ids;     # class => [ local ids in encounter order ]
+my @urls;    # link objects whose target is an external URL
+
+$links->GotoFirstItem;
+while ( my $link = $links->Next ) {
+    my ( $class, $id ) = RT::URI->ParseObjectURI( $link->$mode );
+    if ($class) {
+        push @{ $ids{$class} ||= [] }, $id;
+    }
+    else {
+        push @urls, $link;
+    }
+}
+
+my %show_ids  = %ids;
+my @show_urls = @urls;
+
+# The ticket Children section renders as a recursive tree only when every member is a local
+# ticket; mixed/url members fall back to the flat per-type tables.
+my $emit_delete = $Edit || $DualMode;
+my $dual        = $DualMode;
+
+my $use_tree
+    = $Type eq 'Members'
+    && ( $DualMode || !$Edit )
+    && $Object->isa('RT::Ticket')
+    && !@urls
+    && ( keys(%ids) == 1 && exists $ids{'RT::Ticket'} ) ? 1 : 0;
+
+# Render the children tree (or the per-type tables) up front so the whole section -- label
+# included -- can be skipped when it has no content.
+my $content = '';
+if ($use_tree) {
+    $content = $m->scomp( '/Elements/ShowLinksTree', Object => $Object, Edit => $emit_delete ) // '';
+}
+else {
+    for my $class (@type_order) {
+        next unless $show_ids{$class} && @{ $show_ids{$class} };
+        $content .= $m->scomp(
+            '/Elements/ShowLinksTableOfType',
+            Class            => $class,
+            Ids              => $show_ids{$class},
+            RelationshipType => $Type,
+            Format           => $Formats->{$class},
+            Edit             => $emit_delete,
+            Embedded         => $Embedded,
+        ) // '';
+    }
+}
+</%init>
+<%args>
+$Object
+$Type
+$Label
+$Formats
+$Edit     => 0
+$DualMode => 0
+$Embedded => 0
+</%args>

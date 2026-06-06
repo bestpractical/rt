@@ -45,20 +45,20 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
-
-<&| /Widgets/TitleBox, title => loc("Links"), class => "asset-links",
-    titleright_raw => $m->scomp('/Elements/LinksInfoIcon'),
-&>
-  <& /Elements/AddLinks,
-    Object          => RT::Asset->new( $session{CurrentUser} ),
-    CustomFields    => $CatalogObj->AssetCustomFields,
-  &>
-</&>
-<& /Elements/LinksInfoModal, Object => RT::Asset->new( $session{CurrentUser} ) &>
-
-% $m->callback( %ARGS, CallbackName => 'AfterWidget' );
-
-<%ARGS>
-$CatalogObj
-</%ARGS>
+<span class="links-tree-guide"><% $html |n %></span>\
+<%init>
+# Each code char is one indent level of fixed width (see .links-tree-indent in boxes.css) so the
+# tree cascade lines up. Ancestor levels (I/B) are blank; the child's own level (M/L) shows the
+# arrow-return-right icon pointing at its row. Direct children have an empty code (no indent/icon).
+my $arrow = GetSVGImage( Name => 'arrow-return-right', Size => 14 );
+my %glyph = (
+    I => '<span class="links-tree-indent"></span>',
+    B => '<span class="links-tree-indent"></span>',
+    M => qq{<span class="links-tree-indent">$arrow</span>},
+    L => qq{<span class="links-tree-indent">$arrow</span>},
+);
+my $html = join '', map { $glyph{$_} // '' } split //, ( $Code // '' );
+</%init>
+<%args>
+$Code => ''
+</%args>

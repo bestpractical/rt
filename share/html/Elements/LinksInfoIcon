@@ -45,20 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
-
-<&| /Widgets/TitleBox, title => loc("Links"), class => "asset-links",
-    titleright_raw => $m->scomp('/Elements/LinksInfoIcon'),
-&>
-  <& /Elements/AddLinks,
-    Object          => RT::Asset->new( $session{CurrentUser} ),
-    CustomFields    => $CatalogObj->AssetCustomFields,
-  &>
-</&>
-<& /Elements/LinksInfoModal, Object => RT::Asset->new( $session{CurrentUser} ) &>
-
-% $m->callback( %ARGS, CallbackName => 'AfterWidget' );
-
-<%ARGS>
-$CatalogObj
-</%ARGS>
+<span class="rt-inline-icon border rounded" data-bs-toggle="modal" data-bs-target="#links-info-modal">
+  <a class="menu-item" href="javascript:void(0)" aria-label="<% loc('About links') | h %>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% loc('About links') | h %>"><% GetSVGImage(Name => 'info') |n %></a>
+</span>

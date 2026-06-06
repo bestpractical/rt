@@ -56,6 +56,9 @@ $ColumnMap => {}
 $Class     => 'RT::Tickets'
 $Classes => ''
 $InlineEdit => 0
+$RowAttributes => ''
+$FirstColumnPrefix => ''
+$FirstColumnPrefixIndex => 0
 </%ARGS>
 <%init>
 
@@ -71,6 +74,7 @@ $m->out(  '<tr class="list-item ' . $m->interp->apply_escapes($Classes, 'h') . '
         . ( $Warning ? 'warnline' : '' ) . '" '
         . 'data-index="'.$m->interp->apply_escapes($i, 'h').'" ' . ( $record->can('id') ? ' data-record-id="'.$record->id.'"' : '' )
         . ( $Warning ? ' data-warning=1' : '')
+        . ( $RowAttributes ? ' ' . $RowAttributes : '' )
         . ' >' . "\n" );
 my $item = 0;
 my $inner_row = 0;
@@ -213,6 +217,14 @@ foreach my $column (@Format) {
 
     $row_content[$item][$inner_row] .= '</div>';
     $item += ($attrs{'colspan'} || 1);
+}
+
+# A caller (the links tree) can prefix a column with tree guides. Inject it just inside the
+# column's content <div> so the guide sits inline with the value, not on its own line above the
+# block-level cell div. FirstColumnPrefixIndex selects which column (the tree uses the id column,
+# which a leading checkbox column shifts to index 1 in edit mode).
+if ( length $FirstColumnPrefix && $row_content[$FirstColumnPrefixIndex] && defined $row_content[$FirstColumnPrefixIndex][0] ) {
+    $row_content[$FirstColumnPrefixIndex][0] =~ s{(<div\b[^>]*>)}{$1 . $FirstColumnPrefix}e;
 }
 
 # Fill up the last row, like how NEWLINE is handled above

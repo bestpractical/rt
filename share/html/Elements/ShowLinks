@@ -45,61 +45,41 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div>
-% for my $type (@display) {
-  <div class="row mt-2 <%$type%><% $clone{$type} || $Object->$type->Count ? q{} : q{ unset-field}%>">
-    <div class="label col-4 col-md-3">
-      <& ShowRelationLabel, Object => $Object, Label => $labels{$type}.':', Relation => $type &>
-%     if ($clone{$type}) {
-        <span class="create">(<a href="<% $clone{$type} %>"><% loc('Create') %></a>)</span>
-%     }
-    </div>
-    <div class="value col-8 col-md-9"><span class="current-value">
-      <& ShowLinksOfType, Object => $Object, Type => $type, Recurse => ($type eq 'Members') &>
-    </span></div>
-  </div>
+<div class="ticket-links">
+% for my $type (@render) {
+  <& /Elements/ShowLinksSection,
+      Object   => $Object,
+      Type     => $type,
+      Label    => $labels{$type},
+      Formats  => \%formats,
+      Edit     => $Edit,
+      DualMode => $DualMode,
+      Embedded => $Embedded,
+  &>
 % }
+  <span class="links-total d-none" data-links-total="<% $links_total %>"></span>
 </div>
-% # Allow people to add more rows to the table
 % $m->callback( %ARGS );
+% if ($DualMode) {
+  <div class="links-cf-display"><& /Elements/ShowCustomFields, Object => $Object, Grouping => 'Links', Table => 0 &></div>
+  <div class="links-cf-edit"><& /Elements/EditCustomFields, Object => $Object, Grouping => 'Links', InTable => 0 &></div>
+% } elsif ($Edit) {
+  <& /Elements/EditCustomFields, Object => $Object, Grouping => 'Links', InTable => 0 &>
+% } else {
   <& /Elements/ShowCustomFields, Object => $Object, Grouping => 'Links', Table => 0 &>
-
-% if ($Object->isa('RT::Ticket')) {
-<div id="create-linked-ticket">
-  <form class="justify-content-center" action="<% RT->Config->Get('WebPath') ."/Helpers/SpawnLinkedTicket" %>" name="SpawnLinkedTicket">
-  <div class="row mt-2">
-    <input type="hidden" name="CloneTicket" value="<% $Object->id %>">
-    <div class="col-auto label">
-      <label for="link-type">
-        <&|/l&>Create new</&>
-      </label>
-    </div>
-    <div class="col-auto">
-      <select id="link-type" name="LinkType" class="form-select selectpicker">
-        <option value="DependsOn-new"><% loc('Depends on') %></option>
-        <option value="new-DependsOn"><% loc('Depended on by') %></option>
-        <option value="MemberOf-new"><% loc('Parents') %></option>
-        <option value="new-MemberOf"><% loc('Children') %></option>
-        <option value="RefersTo-new"><% loc('Refers to') %></option>
-        <option value="new-RefersTo"><% loc('Referred to by') %></option>
-      </select>
-    </div>
-    <div class="col-auto label">
-      <label for="SelectRT::Queue">
-        <&|/l&>Ticket in</&>
-      </label>
-    </div>
-    <div class="col-auto">
-      <& /Elements/SelectNewTicketQueue, Name => 'CloneQueue' &>
-    </div>
-    <div class="col-auto">
-      <input type="submit" value="<&|/l&>Create</&>" name="SpawnLinkedTicket" class="btn btn-primary">
-    </div>
-  </div>
-  </form>
-</div>
 % }
+%#  In DualMode the Links widget renders this outside its inline-edit <form> (a nested <form> is
+%#  invalid HTML and gets dropped); render it inline only for the standalone/display path.
+%   if ( $Object->isa('RT::Ticket') && !$Embedded && !$DualMode ) {
+<& /Elements/CreateLinkedTicket, Object => $Object &>
+%   }
+
 <%INIT>
+$m->notes( LinkDeleteDualMode => $DualMode ? 1 : 0 );
+$m->notes( LinkParentId       => $Object->id );
+$m->notes( LinkUpdatePath     => $Object->isa('RT::Asset') ? RT->Config->Get('WebPath') . '/Helpers/AssetUpdate'
+                                                           : RT->Config->Get('WebPath') . '/Helpers/TicketUpdate' );
+
 my @display = qw(DependsOn DependedOnBy MemberOf Members RefersTo ReferredToBy);
 $m->callback( %ARGS, CallbackName => 'ChangeDisplay', display => \@display );
 my %labels  = (
@@ -110,37 +90,19 @@ my %labels  = (
     RefersTo        => loc('Refers to'),
     ReferredToBy    => loc('Referred to by'),
 );
-my %clone;
 
-if (    $Object->isa("RT::Ticket")
-    and $Object->QueueObj->CurrentUserHasRight('CreateTicket'))
-{
-    my $id = $Object->id;
-    my $path
-        = RT->Config->Get('WebPath')
-        . '/Ticket/Create.html?Queue='
-        . $Object->Queue
-        . '&CloneTicket='
-        . $id;
+my %formats = %{ RT->Config->Get('LinksFormat') || {} };
 
-    for my $relation (@display) {
-        my $mode  = $RT::Link::TYPEMAP{$relation}->{Mode};
-        my $type  = $RT::Link::TYPEMAP{$relation}->{Type};
-        my $field = $mode eq 'Base' ? 'new-' . $type : $type . '-new';
-        my @copy  = ($id);
+my @render = @display;
 
-        # Canonicalized type captures both directions
-        if ($type eq "RefersTo") {
-            my $other = "Local" . $mode;
-            push @copy, map { $_->$other() } @{ $Object->$relation->ItemsArrayRef };
-        }
-
-        $clone{$relation} = "$path&$field=" . join('%20', grep { $_ } @copy);
-    }
-}
+my $links_total = $Object->Links('Base')->Count + $Object->Links('Target')->Count;
 </%INIT>
+
 <%ARGS>
 $Object
+$Edit     => 0
+$DualMode => 0
+$Embedded => 0
 </%ARGS>
 
 <%attr>

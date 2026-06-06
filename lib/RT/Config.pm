@@ -691,7 +691,9 @@ our %META;
             Hints       => 'Rows for the Description edit box on tickets', # loc
         }
     },
-
+    LinksFormat => {
+        Type => 'HASH',
+    },
     # User overridable locale options
     DateTimeFormat => {
         Section         => 'Locale',                       #loc
