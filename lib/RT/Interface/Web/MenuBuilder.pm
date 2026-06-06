@@ -462,6 +462,17 @@ sub BuildPageNav {
                     $actions->child( forward => title => loc('Forward'), path => "/Ticket/Forward.html?id=" . $id );
                 }
 
+                if ( $can->('ModifyTicket') ) {
+                    $actions->child(
+                        merge      => title => loc('Merge'),
+                        path       => "/Helpers/MergeTicket?id=$id",
+                        class      => 'merge-ticket-modal-link',
+                        attributes => {
+                            'hx-boost' => 'false',
+                        },
+                    );
+                }
+
                 my $hide_resolve_with_deps = RT->Config->Get('HideResolveActionsWithDependencies')
                     && $obj->HasUnresolvedDependencies;
 
