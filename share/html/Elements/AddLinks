@@ -51,107 +51,114 @@ $CustomFields   => undef
 $ARGSRef        => $DECODED_ARGS
 </%args>
 <%init>
-my $id = ($Object and $Object->id)
-    ? $Object->id
-    : "new";
+my $id = ( $Object and $Object->id ) ? $Object->id : "new";
 
-my $autocomplete = qq|data-autocomplete="LinkTargets" data-autocomplete-multiple="1"|;
-my @excludes;
-push @excludes, ( $Object->isa('RT::Asset') ? 'asset:' : '' ) . $id
-    if $id ne 'new';
-
-my %exclude_links = (
-    Depend => [ qw( DependsOn DependedOnBy ) ],
-    Member => [ qw( MemberOf Members ) ],
-    Refer  => [ qw( RefersTo ReferredToBy ) ],
+# Pre-fill rows from link GET/POST params (e.g. CloneTicket, "Create linked ticket"
+# shortcuts). A local-object URI is split into the object type (selects the row's
+# dropdown) and a bare display value (id, or the unique Name for users/groups); the
+# shorthand prefix is recomposed at submit time so the value box stays clean.
+# External URLs and remote URIs pass through unchanged.
+my %class_object_type = (
+    'RT::Ticket'      => 'ticket',
+    'RT::Transaction' => 'transaction',
+    'RT::Asset'       => 'asset',
+    'RT::Article'     => 'article',
+    'RT::User'        => 'user',
+    'RT::Group'       => 'group',
 );
-foreach my $exclude_type ( keys %exclude_links ) {
-    my @ids;
-    if ( $id ne 'new' ) {
-        foreach my $link_type ( @{ $exclude_links{$exclude_type} } ) {
-            my $links = $Object->$link_type;
-            while ( my $link = $links->Next ) {
-                my $LinkedObj = $link->TargetObj;
-                # if $LinkedObj is same as $Object we want the BaseObj
-                $LinkedObj = $link->BaseObj
-                    if (
-                        ( ref($Object) eq ref($LinkedObj) )
-                        &&
-                        ( $id == $LinkedObj->id )
-                    );
-                if ( $LinkedObj ) {
-                    my $prefix = '';
-                    if ( $LinkedObj->isa('RT::Asset') ) {
-                        $prefix = 'asset:';
-                    }
-                    elsif ( $LinkedObj->isa('RT::Article') ) {
-                        $prefix = 'a:';
-                    }
-                    elsif ( $LinkedObj->isa('RT::Group') ) {
-                        $prefix = 'group:';
-                    }
-                    elsif ( $LinkedObj->isa('RT::User') ) {
-                        $prefix = 'user:';
-                    }
-                    push @ids, $prefix . $LinkedObj->id;
-                }
+my @prefill;
+my %_link_fields = map { $_ => 1 }
+    ( "$id-DependsOn", "DependsOn-$id", "$id-MemberOf", "MemberOf-$id", "$id-RefersTo", "RefersTo-$id", );
+for my $field ( sort keys %_link_fields ) {
+    my $val = $ARGSRef->{$field};
+    next unless defined $val && ( ref $val ? @$val : length $val );
+    for my $v ( split ' ', ( ref $val ? join( ' ', @$val ) : $val ) ) {
+        my ( $class, $local_id ) = RT::URI->ParseObjectURI($v);
+        my ( $value, $object_type, $init_id ) = ( $v, '', '' );
+        if ( $class && $class_object_type{$class} ) {
+            $object_type = $class_object_type{$class};
+            if ( $class eq 'RT::User' || $class eq 'RT::Group' ) {
+
+                # Submit the space-free id, not the Name: a Name like "Help Desk" would be
+                # split apart by the server's space-delimited link parsing. The box shows the Name.
+                my $obj = $class->new( $session{CurrentUser} );
+                $obj->Load($local_id);
+                $value   = $obj->id ? $obj->Name : $local_id;
+                $init_id = $obj->id ? $obj->id   : $local_id;
+            }
+            else {
+                $value = $local_id;
             }
         }
+        push @prefill, { field => $field, value => $value, object_type => $object_type, init_id => $init_id };
     }
-
-    $exclude_links{$exclude_type}
-        = ( @excludes || @ids )
-        ? 'data-autocomplete-exclude="' . join( ' ', @excludes, @ids ) . '"'
-        : '';
 }
+
+# Autocomplete excludes objects already linked in the same relationship family (both
+# directions), plus the object itself. Key by RT's canonical link Type (DependsOn/MemberOf/
+# RefersTo), the same value each row exposes as data-type, so the client looks it up untranslated.
+my %link_excludes;
+if ( $id ne 'new' ) {
+    my %family = (
+        DependsOn => [qw/DependsOn DependedOnBy/],
+        MemberOf  => [qw/MemberOf Members/],
+        RefersTo  => [qw/RefersTo ReferredToBy/],
+    );
+
+    # The per-type autocomplete endpoints disagree on the exclude separator: Tickets splits on
+    # whitespace, the rest on commas. Pre-join with the right one so values drop straight in.
+    my %exclude_delim = ( ticket => ' ' );    # everything else uses ','
+
+    my $self_type = $class_object_type{ ref $Object };
+
+    for my $canonical ( keys %family ) {
+        my %by_type;    # object_type => { id => 1 }
+        for my $relation ( @{ $family{$canonical} } ) {
+            my $mode  = $RT::Link::TYPEMAP{$relation}{Mode};    # 'Target' or 'Base': the far end
+            my $links = $Object->$relation;
+            $links->GotoFirstItem;
+            while ( my $link = $links->Next ) {
+                my ( $class, $linked_id ) = RT::URI->ParseObjectURI( $link->$mode );
+                next unless $class;                             # skip external/remote links
+                my $ot = $class_object_type{$class} or next;
+                $by_type{$ot}{$linked_id} = 1;
+            }
+        }
+
+        # Can't link the object to itself: exclude its own id from its own object type.
+        $by_type{$self_type}{$id} = 1 if $self_type;
+
+        for my $ot ( keys %by_type ) {
+            my $sep = $exclude_delim{$ot} // ',';
+            $link_excludes{$canonical}{$ot} = join $sep, sort { $a <=> $b } keys %{ $by_type{$ot} };
+        }
+    }
+}
+
+# Always valid JSON (empty object when there are no links) so the client can JSON.parse unconditionally.
+my $link_excludes_json = JSON( \%link_excludes );
 </%init>
-% if (ref($Object) eq 'RT::Ticket') {
-<i><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&>
-<br /><&|/l&>You may enter links to Articles as "a:###", where ### represents the number of the Article.</&>
-<br /><&|/l&>Enter links to assets as "asset:###", where ### represents the asset ID.</&>
-<br /><&|/l&>Enter links to groups as "group:###", where ### represents the group ID.</&>
-<br /><&|/l&>Enter links to users as "user:###", where ### represents the user ID.</&>
-% $m->callback( CallbackName => 'ExtraLinkInstructions' );
-</i><br />
-% } elsif (ref($Object) eq 'RT::Queue') {
-<i><&|/l&>Enter queues or URIs to link queues to. Separate multiple entries with spaces.</&>
-</i><br />
-% } else {
-<i><&|/l&>Enter objects or URIs to link objects to. Separate multiple entries with spaces.</&></i><br />
+<div class="add-links-section mb-3" data-link-excludes="<% $link_excludes_json %>">
+  <div class="label mb-1"><&|/l&>Add links</&></div>
+  <div class="add-links-rows">
+% for my $pf (@prefill) {
+    <& /Elements/AddLinksRow, id => $id, First => 0, InitField => $pf->{field}, InitValue => $pf->{value}, InitObjectType => $pf->{object_type}, InitId => $pf->{init_id} &>
 % }
-<div>
+    <& /Elements/AddLinksRow, id => $id, First => 1 &>
+    <& /Elements/AddLinksRow, id => $id, First => 0 &>
+  </div>
 
-
-<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Depends on'), LabelFor => $id."-dependson", Relation => 'DependsOn'), ReadOnly => 0 &>
-  <input id="<%$id%>-dependson" type="text" class="form-control" name="<%$id%>-DependsOn" value="<% $ARGSRef->{"$id-DependsOn"} || '' %>" <% $autocomplete |n %>  <% $exclude_links{Depend} |n%>/>
-</&>
-<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Depended on by'), LabelFor => "dependson-".$id, Relation => 'DependedOnBy'), ReadOnly => 0 &>
-  <input id="dependson-<%$id%>" type="text" class="form-control" name="DependsOn-<%$id%>" value="<% $ARGSRef->{"DependsOn-$id"} || '' %>" <% $autocomplete |n %>  <% $exclude_links{Depend} |n%>/>
-</&>
-
-<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Parents'), LabelFor => $id."-memberof", Relation => 'Parents'), ReadOnly => 0 &>
-  <input id="<%$id%>-memberof" type="text" class="form-control" name="<%$id%>-MemberOf" value="<% $ARGSRef->{"$id-MemberOf"} || '' %>" <% $autocomplete |n %>  <% $exclude_links{Member} |n%>/>
-</&>
-<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Children'), LabelFor => "memberof-".$id, Relation => 'Children'), ReadOnly => 0 &>
-  <input id="memberof-<%$id%>" type="text" class="form-control" name="MemberOf-<%$id%>" value="<% $ARGSRef->{"MemberOf-$id"} || '' %>" <% $autocomplete |n %>  <% $exclude_links{Member} |n%>/>
-</&>
-
-<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Refers to'), LabelFor => $id."-refersto", Relation => 'RefersTo'), ReadOnly => 0 &>
-  <input id="<%$id%>-refersto" type="text" class="form-control" name="<%$id%>-RefersTo" value="<% $ARGSRef->{"$id-RefersTo"} || '' %>" <% $autocomplete |n %> <% $exclude_links{Refer} |n%>/>
-</&>
-<&| /Elements/LabeledValue, RawLabel => $m->scomp('ShowRelationLabel', Object => $Object, Label => loc('Referred to by'), LabelFor => "refersto-".$id, Relation => 'ReferredToBy'), ReadOnly => 0 &>
-  <input id="refersto-<%$id%>" type="text" class="form-control" name="RefersTo-<%$id%>" value="<% $ARGSRef->{"RefersTo-$id"} || '' %>" <% $autocomplete |n %> <% $exclude_links{Refer} |n%>/>
-</&>
-
-<div class="edit-custom-fields-container" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditCustomFields?ObjectType=<% ref $Object %>&ObjectId=<% $Object->Id %>&Grouping=Links&InTable=1" hx-swap="innerHTML">
-  <& /Elements/EditCustomFields,
-        Object          => $Object,
-        Grouping        => 'Links',
-        InTable         => 1,
-        ($CustomFields
-            ? (CustomFields => $CustomFields)
-            : ()),
-        &>
-</div>
+%# Link custom fields: only on the create page, where there is no ShowLinks listing. For an
+%# existing object the editor's ShowLinks(Edit=1) renders them in place, so skip to avoid a duplicate.
+% if ( $id eq 'new' ) {
+  <div class="edit-custom-fields-container" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditCustomFields?ObjectType=<% ref $Object %>&ObjectId=<% $Object->Id %>&Grouping=Links&InTable=1" hx-swap="innerHTML">
+    <& /Elements/EditCustomFields,
+          Object   => $Object,
+          Grouping => 'Links',
+          InTable  => 1,
+          ( $CustomFields ? ( CustomFields => $CustomFields ) : () ),
+    &>
+  </div>
+% }
 % $m->callback( CallbackName => 'NewLink' );
 </div>
