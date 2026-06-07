@@ -10,6 +10,7 @@ use RT::Test tests => undef, playwright => 1, config => q{
             'Dates' => 'always',
             'People' => 'click',
             'Foo' => 'hide',
+            'Links' => 'click',
         },
     );
 
@@ -265,92 +266,81 @@ diag "Testing dates inline edit";
     $p->close_jgrowl;
 }
 
-diag "Testing links inline edit";
+diag "Testing links inline edit (new add-form + removal UI)";
 {
-    my $depends_on1    = RT::Test->create_ticket( Queue => 'General', Subject => 'DependsOn 1' );
-    my $depends_on2    = RT::Test->create_ticket( Queue => 'General', Subject => 'DependsOn 2' );
-    my $depended_on_by = RT::Test->create_ticket( Queue => 'General', Subject => 'DependedOnby' );
-    my $refers_to      = RT::Test->create_ticket( Queue => 'General', Subject => 'RefersTo' );
-    my $referred_to_by = RT::Test->create_ticket( Queue => 'General', Subject => 'ReferredToBy' );
-    my $parent         = RT::Test->create_ticket( Queue => 'General', Subject => 'Parent' );
-    my $child          = RT::Test->create_ticket( Queue => 'General', Subject => 'Child' );
+    # The body is rendered eagerly inside one inline-edit form; the add rows and delete
+    # checkboxes are present at all times and become visible only when the titlebox carries
+    # .editing. Exercise add + remove end-to-end; the field-name matrix for all six relationship
+    # types is covered at the web/unit level by ticket_links{,_edit}.t.
 
-    $p->{page}->click('div.ticket-info-links a.inline-edit-toggle');
-    $p->submit_form_ok(
-        {
-            form   => 'div.ticket-info-links form.inline-edit',
-            fields => {
-                "$ticket_id-DependsOn" => join( ' ', map { $_->Id } $depends_on1, $depends_on2 ),
-                "DependsOn-$ticket_id" => $depended_on_by->Id,
-                "$ticket_id-RefersTo"  => $refers_to->Id,
-                "RefersTo-$ticket_id"  => $referred_to_by->Id,
-                "$ticket_id-MemberOf"  => $parent->Id,
-                "MemberOf-$ticket_id"  => $child->Id,
-            },
-        },
-        'Submit links inline edit'
+    my $refers_to = RT::Test->create_ticket( Queue => 'General', Subject => 'RefersTo target' );
+
+    # --- Add a link via the add-form -------------------------------------------
+    # Clicking the pencil only flips the .editing class (a pure CSS toggle, no fetch).
+    $p->{page}->click('div.ticket-info-links a.inline-edit-toggle.edit');
+    $p->wait_for_element('div.ticket-info-links.editing');
+    $p->wait_for_element('div.ticket-info-links .edit-ticket-links .add-link-row');
+
+    # The first add row defaults to link-type "Refers to" + object-type "Ticket", so its value
+    # field submits as "<id>-RefersTo". The Ticket object-type binds a tom-select autocomplete;
+    # drive its visible control input.
+    my $value_input = $p->{page}->locator(
+        'div.ticket-info-links .add-link-row:first-child .link-value + .ts-wrapper .ts-control input'
+    );
+    $value_input->click;
+    $value_input->fill( '' . $refers_to->Id );
+
+    $p->{page}->locator(q{div.ticket-info-links form.inline-edit input.links-edit-save})->click;
+    $p->wait_for_htmx;
+    $p->wait_for_notifications(1);
+
+    # After save, ticketLinksChanged refreshes the unified list (.links-edit-target). The
+    # display is a CollectionList table whose linked rows carry data-record-id="<linked id>".
+    $p->wait_for_element(
+        qq{div.ticket-info-links .links-edit-target tr[data-record-id="@{[$refers_to->Id]}"]}
     );
 
-    $p->wait_for_notifications(7);
-    $p->wait_for_element('div.ticket-info-links .inline-edit-display div.DependsOn:has-text("DependsOn 1")');
+    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+    my $reloaded = RT::Ticket->new( RT->SystemUser );
+    $reloaded->Load($ticket_id);
+    my @refers_ids = map { $_->TargetObj->Id } @{ $reloaded->RefersTo->ItemsArrayRef };
+    ok( ( grep { $_ == $refers_to->Id } @refers_ids ),
+        'RefersTo link added from the new add-form on Save' );
 
     my $dom = $p->dom;
-    is_deeply(
-        $dom->find('div.DependsOn div.value .current-value a')->map( attr => 'href' ),
-        [ "/Ticket/Display.html?id=@{[$depends_on1->Id]}", "/Ticket/Display.html?id=@{[$depends_on2->Id]}" ],
-        'DependsOn ticket links'
+    ok(
+        $dom->at(qq{div.ticket-info-links .links-edit-target tr[data-record-id="@{[$refers_to->Id]}"]}),
+        'new display table has a row for the linked ticket (data-record-id)'
+    );
+    like(
+        $dom->at('div.ticket-info-links .links-edit-target')->all_text,
+        qr/RefersTo target/,
+        "linked ticket's subject shown in the display"
+    );
+    $p->close_jgrowl;
+
+    # --- Remove a link via the per-row trash link (immediate delete) -----------
+    $p->{page}->click('div.ticket-info-links a.inline-edit-toggle.edit');
+    $p->wait_for_element('div.ticket-info-links.editing');
+    $p->wait_for_element('div.ticket-info-links .edit-ticket-links a.delete-link');
+
+    my $del_link = $p->{page}->locator(
+        qq{div.ticket-info-links .edit-ticket-links tr[data-record-id="@{[$refers_to->Id]}"] a.delete-link}
+    );
+    $del_link->first->click;
+    $p->wait_for_htmx;
+
+    $p->wait_for_element(
+        qq{div.ticket-info-links .links-edit-target tr[data-record-id="@{[$refers_to->Id]}"]},
+        { state => 'detached' }
     );
 
-    is(
-        $dom->at('div.DependedOnBy div.value .current-value a')->attr('href'),
-        "/Ticket/Display.html?id=@{[$depended_on_by->Id]}",
-        'DependedOnBy ticket link'
-    );
-
-    is(
-        $dom->at('div.RefersTo div.value .current-value a')->attr('href'),
-        "/Ticket/Display.html?id=@{[$refers_to->Id]}",
-        'RefersTo ticket link'
-    );
-
-    is(
-        $dom->at('div.ReferredToBy div.value .current-value a')->attr('href'),
-        "/Ticket/Display.html?id=@{[$referred_to_by->Id]}",
-        'ReferredToBy ticket link'
-    );
-
-    is(
-        $dom->at('div.MemberOf div.value .current-value a')->attr('href'),
-        "/Ticket/Display.html?id=@{[$parent->Id]}",
-        'MemberOf ticket link'
-    );
-
-    is(
-        $dom->at('div.Members div.value .current-value a')->attr('href'),
-        "/Ticket/Display.html?id=@{[$child->Id]}",
-        'Members ticket link'
-    );
-
-    is( $dom->at('div.dependency-status .summary')->all_text(), 'Pending 2 tickets.', 'Dependency status summary' );
-    is(
-        $dom->at('div.dependency-status .summary a')->attr('href'),
-        q{/Search/Results.html?Query=Status%3D'__Active__'+AND+DependedOnBy+%3D+1},
-        'Dependency status summary link'
-    );
-
-    cmp_deeply(
-        $dom->find('.jGrowl-message')->map('text')->to_array,
-        bag(
-            "Ticket $ticket_id depends on Ticket @{[$depends_on1->Id]}.",
-            "Ticket $ticket_id depends on Ticket @{[$depends_on2->Id]}.",
-            "Ticket @{[$depended_on_by->Id]} depends on Ticket $ticket_id.",
-            "Ticket $ticket_id member of Ticket @{[$parent->Id]}.",
-            "Ticket @{[$child->Id]} member of Ticket $ticket_id.",
-            "Ticket $ticket_id refers to Ticket @{[$refers_to->Id]}.",
-            "Ticket @{[$referred_to_by->Id]} refers to Ticket $ticket_id.",
-        ),
-        'Got notification of changes'
-    );
+    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+    my $after = RT::Ticket->new( RT->SystemUser );
+    $after->Load($ticket_id);
+    my @after_ids = map { $_->TargetObj->Id } @{ $after->RefersTo->ItemsArrayRef };
+    ok( !( grep { $_ == $refers_to->Id } @after_ids ),
+        'RefersTo link removed immediately via the per-row trash link' );
     $p->close_jgrowl;
 }
 
@@ -362,19 +352,29 @@ diag "Testing tom-select createOnBlur: paste a value and click Save without pres
 
     my $blur_target = RT::Test->create_ticket( Queue => 'General', Subject => 'createOnBlur target' );
 
-    diag "Multi-select Links field: paste ticket id and click Save";
+    diag "Add-form Links value field (tom-select): type ticket id and click Save";
     {
+        # The add-form value field is a tom-select autocomplete when the object-type is "Ticket".
+        # Set the first add row's link-type to "Depends on", type the target id, and Save without
+        # pressing Enter or picking from the dropdown: the typed value must still be committed.
+        # Reload first: the previous block's immediate trash delete leaves the widget in edit mode.
+        $p->goto_ticket($ticket_id);
         $p->{page}->click('div.ticket-info-links a.inline-edit-toggle.edit');
+        $p->wait_for_element('div.ticket-info-links .edit-ticket-links .add-link-row');
+
+        my $first_row = 'div.ticket-info-links .add-link-row:first-child';
+        $p->wait_for_element("$first_row .link-type-select.tomselected");
+        $p->{page}->evaluate(qq{document.querySelector("$first_row .link-type-select").tomselect.setValue("$ticket_id-DependsOn")});
 
         # The original <input> gets the ts-hidden-accessible class; the user-visible
         # input is inside the sibling .ts-wrapper .ts-control.
         my $depends_input = $p->{page}->locator(
-            qq{input[id="$ticket_id-dependson"] + .ts-wrapper .ts-control input}
+            "$first_row .link-value + .ts-wrapper .ts-control input"
         );
         $depends_input->click;
         $depends_input->fill( '' . $blur_target->Id );
 
-        $p->{page}->locator('div.ticket-info-links form.inline-edit input[type=submit]')->click;
+        $p->{page}->locator(q{div.ticket-info-links form.inline-edit input.links-edit-save})->click;
         $p->wait_for_htmx;
 
         DBIx::SearchBuilder::Record::Cachable->FlushCache;
@@ -676,6 +676,313 @@ diag "Testing CF widget ColumnWidth configuration";
     ok((grep { $_->{value} eq '__empty_value__' } @options), 'Has default (medium) option');
     ok((grep { $_->{value} eq 'lg' } @options), 'Has wide option');
     ok((grep { $_->{value} eq 'xl' } @options), 'Has extra wide option');
+}
+
+
+diag "merged from ticket_links_click_edit.t";
+{
+    my $target = RT::Test->create_ticket( Queue => 'General', Subject => 'click-edit refers target' );
+    my $ticket = RT::Test->create_ticket(
+        Queue    => 'General',
+        Subject  => 'click-edit links main',
+        RefersTo => $target->id
+    );
+    is( $ticket->RefersTo->Count, 1, 'main ticket refers to the target' );
+
+    $p->goto_ticket( $ticket->id );
+
+    # Inline-editing a linked ticket's field in display mode must open that cell's own editor,
+    # NOT hijack the click into the portlet's links-edit mode (init.js's click-to-edit handler
+    # must skip clicks inside an inline-editable cell).
+    my $cell = $p->{page}->locator('div.ticket-info-links .links-edit-target div.editable')->first();
+    $cell->hover();
+    $p->{page}->locator('div.ticket-info-links .links-edit-target div.editable .edit-icon')->first()->click();
+    $p->wait_for_element('div.ticket-info-links .links-edit-target div.editable.editing form.editor');
+    is( $p->{page}->locator('div.ticket-info-links.editing')->count(),
+        0, 'editing a linked ticket cell does not toggle the portlet into links-edit mode' );
+
+    # Verify the filter funnel's labels toggle their checkboxes, and that clicking inside the
+    # filter does not trigger the portlet's click-to-edit.
+    $p->goto_ticket( $ticket->id );
+    $p->{page}->click('div.ticket-info-links a.links-filter');
+    # One bar serves both display and edit; EditLinks renders it with Mode => 'edit', so the
+    # filter-checkbox ids carry the '-edit' suffix (see Elements/LinksFilter).
+    my $refers_cb = 'lf-rel-RefersTo-' . $ticket->id . '-edit';
+    $p->wait_for_element(qq{div.ticket-info-links .links-filter-dropdown label[for="$refers_cb"]});
+    is( $p->{page}->locator(qq{div.ticket-info-links #$refers_cb:checked})->count(),
+        1, 'link-type checkbox starts checked' );
+    $p->{page}->click(qq{div.ticket-info-links .links-filter-dropdown label[for="$refers_cb"]});
+    is( $p->{page}->locator(qq{div.ticket-info-links #$refers_cb:checked})->count(),
+        0, 'clicking the link-type label toggles its checkbox off' );
+    is( $p->{page}->locator('div.ticket-info-links.editing')->count(),
+        0, 'clicking a filter label does not enter links-edit mode' );
+
+    # Reload to reset, then verify clicking a non-editable area still enters links-edit mode.
+    $p->goto_ticket( $ticket->id );
+
+    # Click a non-link, non-editable area of the portlet body (the relationship section label).
+    $p->{page}->click('div.ticket-info-links .links-edit-target .links-section .label');
+
+    # Clicking the body enters edit mode (the portlet is in 'click' behavior) via a pure .editing
+    # CSS flip; the add-link form is already in the DOM (no fetch) and becomes visible.
+    $p->wait_for_element('div.ticket-info-links.editing');
+    $p->wait_for_element('div.ticket-info-links .edit-ticket-links .add-link-row');
+    ok( 1, 'click-to-edit entered edit mode and revealed the eager add-link form' );
+
+    # The single funnel lives in the title bar and still toggles its own checkbox while editing (the
+    # bar is not re-rendered across the display<->edit flip, so its Mode-scoped ids are stable).
+    $p->{page}->click('div.ticket-info-links a.links-filter');
+    $p->wait_for_element(qq{div.ticket-info-links .links-filter-dropdown label[for="$refers_cb"]});
+    is( $p->{page}->locator(qq{div.ticket-info-links #$refers_cb:checked})->count(),
+        1, 'funnel link-type checkbox starts checked in edit mode' );
+    $p->{page}->click(qq{div.ticket-info-links .links-filter-dropdown label[for="$refers_cb"]});
+    is( $p->{page}->locator(qq{div.ticket-info-links #$refers_cb:checked})->count(),
+        0, 'clicking the funnel label toggles its checkbox in edit mode' );
+
+}
+
+diag "merged from ticket_links_edit_js.t";
+{
+    my $ticket    = RT::Test->create_ticket( Queue => 'General', Subject => 'links edit js' );
+    my $ticket_id = $ticket->Id;
+
+    my $dep_target = RT::Test->create_ticket( Queue => 'General', Subject => 'exclude dep target' );
+    my $dep_base   = RT::Test->create_ticket( Queue => 'General', Subject => 'exclude dep base' );
+    $ticket->AddLink( Type => 'DependsOn', Target => $dep_target->id );    # DependsOn direction
+    $ticket->AddLink( Type => 'DependsOn', Base   => $dep_base->id );      # DependedOnBy direction
+    my ( $dt_id, $db_id ) = ( $dep_target->id, $dep_base->id );
+
+    # EditLinks is a bare HTML fragment served by /Views/Component; in production the Links portlet
+    # swaps it in via htmx, which fires htmx.onLoad and runs the links-editor init in util.js.
+    # Reproduce that: load a real RT page (full JS bundle present), then htmx-swap the fragment in.
+    $p->goto_ticket($ticket_id);
+
+    my $component_url = "/Views/Component/EditLinks?ObjectType=RT::Ticket&ObjectId=$ticket_id";
+    $p->{page}->evaluate(<<JS);
+return (function() {
+    const box = document.createElement('div');
+    box.id = 'tle-test-host';
+    document.querySelector('div.main-container').appendChild(box);
+    htmx.ajax('GET', '$component_url', { target: '#tle-test-host', swap: 'innerHTML' });
+})();
+JS
+
+    # Wait until htmx has swapped the fragment in and htmx.onLoad ran the add-links init in util.js
+    # (initAddLinkRows sets the data-alr-init flag to "1" once it has bound its handlers).
+    $p->wait_for_element('#tle-test-host .add-link-row');
+    $p->{handle}->await( $p->{page}
+            ->waitForFunction('document.querySelector("#tle-test-host .add-links-section")?.dataset.alrInit === "1"')
+    );
+
+    # The editor renders its Save right after the add-links rows.
+    ok( $p->{page}->locator('#tle-test-host .links-edit-save')->count(),
+        'editor renders the inline Save after the add-links rows' );
+
+    diag "Testing autocomplete exclusion: a DependsOn/Ticket row excludes both-direction family members";
+    {
+        # Switch the first row to "Depends on" (canonical DependsOn, Target mode), then read its
+        # data-autocomplete-exclude.
+        $p->{page}->evaluate(<<'JS');
+return (function() {
+    const row = document.querySelector('#tle-test-host .add-link-row');
+    const typeSel = row.querySelector('.link-type-select');
+    const opt = Array.from(typeSel.options).find(function(o){ return o.dataset.type === 'DependsOn' && o.dataset.mode === 'Target'; });
+    typeSel.value = opt.value;
+    if (typeSel.tomselect) typeSel.tomselect.setValue(opt.value);
+    else typeSel.dispatchEvent(new Event('change', { bubbles: true }));
+})();
+JS
+        $p->{handle}->await( $p->{page}->waitForFunction(
+            "(document.querySelector('#tle-test-host .add-link-row .link-value').getAttribute('data-autocomplete-exclude') || '').split(' ').indexOf('$dt_id') >= 0"
+        ) );
+        my $exclude = $p->{page}->evaluate(
+            'return document.querySelector("#tle-test-host .add-link-row .link-value").getAttribute("data-autocomplete-exclude") || ""'
+        );
+        my %ids = map { $_ => 1 } split /\s+/, $exclude;
+        ok( $ids{$dt_id}, "DependsOn row excludes the DependsOn target ($dt_id)" );
+        ok( $ids{$db_id}, "DependsOn row excludes the DependedOnBy base ($db_id) -- both directions" );
+    }
+
+    diag "Testing dynamic update: switching the row to an unrelated family drops the exclusions";
+    {
+        # Switch to "Child of"/"Parent of" (canonical MemberOf) -- there are no member links, so
+        # the DependsOn-family ids must no longer be excluded.
+        $p->{page}->evaluate(<<'JS');
+return (function() {
+    const row = document.querySelector('#tle-test-host .add-link-row');
+    const typeSel = row.querySelector('.link-type-select');
+    const opt = Array.from(typeSel.options).find(function(o){ return o.dataset.type === 'MemberOf'; });
+    typeSel.value = opt.value;
+    if (typeSel.tomselect) typeSel.tomselect.setValue(opt.value);
+    else typeSel.dispatchEvent(new Event('change', { bubbles: true }));
+})();
+JS
+        $p->{handle}->await( $p->{page}->waitForFunction(
+            "(document.querySelector('#tle-test-host .add-link-row .link-value').getAttribute('data-autocomplete-exclude') || '').split(' ').indexOf('$dt_id') < 0"
+        ) );
+        my $exclude = $p->{page}->evaluate(
+            'return document.querySelector("#tle-test-host .add-link-row .link-value").getAttribute("data-autocomplete-exclude") || ""'
+        );
+        my %ids = map { $_ => 1 } split /\s+/, $exclude;
+        ok( !$ids{$dt_id}, "MemberOf row no longer excludes the DependsOn target ($dt_id)" );
+        ok( !$ids{$db_id}, "MemberOf row no longer excludes the DependedOnBy base ($db_id)" );
+    }
+
+    diag "Testing auto-append: typing in the last row appends a new blank row";
+    {
+        my $before = $p->{page}->evaluate('return document.querySelectorAll("#tle-test-host .add-link-row").length');
+        ok( $before >= 2, "starts with at least two add rows (got $before)" );
+
+        # Fill the last row's value field and fire an 'input' event so the JS runs.
+        $p->{page}->evaluate(<<'JS');
+return (function() {
+    const rows = document.querySelectorAll('#tle-test-host .add-link-row');
+    const input = rows[rows.length - 1].querySelector('.link-value');
+    input.value = '1';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+})();
+JS
+
+        $p->{handle}->await( $p->{page}
+                ->waitForFunction("document.querySelectorAll('#tle-test-host .add-link-row').length > $before") );
+        my $after = $p->{page}->evaluate('return document.querySelectorAll("#tle-test-host .add-link-row").length');
+        ok( $after > $before, "a new add row was appended ($before -> $after)" );
+    }
+
+    diag "Testing shorthand sync: typing 'a:7' switches the object-type dropdown to article";
+    {
+        # Use the first row so it's unaffected by the auto-append above.
+        $p->{page}->evaluate(<<'JS');
+return (function() {
+    const row = document.querySelector('#tle-test-host .add-link-row');
+    const input = row.querySelector('.link-value');
+    input.value = 'a:7';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+})();
+JS
+
+        $p->{handle}->await(
+            $p->{page}->waitForFunction(
+                'document.querySelector("#tle-test-host .add-link-row .link-object-type-select").value === "article"')
+        );
+        my $object_type = $p->{page}
+            ->evaluate('return document.querySelector("#tle-test-host .add-link-row .link-object-type-select").value');
+        is( $object_type, 'article', "shorthand 'a:' switched the object-type dropdown to article" );
+    }
+}
+
+diag "merged from links_children_tree_edit.t";
+{
+    my $q = RT::Test->load_or_create_queue( Name => 'General' );
+
+    my $root  = RT::Test->create_ticket( Queue => 'General', Subject => 'tree root' );
+    my $child = RT::Test->create_ticket( Queue => 'General', Subject => 'tree child' );
+    my $grand = RT::Test->create_ticket( Queue => 'General', Subject => 'tree grandchild' );
+    {
+        my $t = RT::Ticket->new( RT->SystemUser );
+        $t->Load( $root->id );
+        $t->AddLink( Type => 'MemberOf', Base => $child->id );
+        $t->Load( $child->id );
+        $t->AddLink( Type => 'MemberOf', Base => $grand->id );
+    }
+    my $grand_id = $grand->id;
+
+    $p->goto_ticket( $root->id );
+    $p->wait_for_element( 'div.ticket-info-links .links-tree tr[data-record-id="' . $grand_id . '"][data-depth="2"]' );
+
+    # Inline-edit the grandchild's Status field in the tree row. The tree table renders with
+    # InlineEdit=1, so each editable cell is a div.editable.
+    my $grand_row = 'div.ticket-info-links .links-tree tr[data-record-id="' . $grand_id . '"]';
+
+    # Find the Status cell: the editable div that contains a form with select[name=Status].
+    # (The Subject cell also has a form.editor but with a text input, not a select.)
+    my $status_cell = $p->{page}->locator("$grand_row div.editable:has(form.editor select[name=Status])");
+    $status_cell->hover();
+    $status_cell->locator('.edit-icon')->click();
+    $p->wait_for_element("$grand_row div.editable.editing form.editor");
+
+    # Status uses TomSelect, which renders its dropdown outside the form (appended to body), so
+    # locate the option there. Clicking it fires a change event that marks the editor changed and
+    # auto-submits.
+    $p->wait_for_element('.ts-dropdown .option[data-value=resolved]');
+    $p->{page}->locator('.ts-dropdown .option[data-value=resolved]')->first()->click();
+    $p->wait_for_htmx;
+
+    $p->wait_for_element( 'div.ticket-info-links .links-tree tr[data-record-id="' . $grand_id . '"][data-depth="2"]' );
+    is( $p->{page}
+            ->locator( 'div.ticket-info-links .links-tree tr[data-record-id="' . $grand_id . '"] .links-tree-guide' )
+            ->count(),
+        1,
+        'edited grandchild row keeps its tree guide'
+      );
+    is( $p->{page}
+            ->locator( 'div.ticket-info-links .links-tree tr[data-record-id="' . $grand_id . '"].record-inactive' )
+            ->count(),
+        1,
+        'edited grandchild row is marked inactive after resolving'
+      );
+
+    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+    my $reload = RT::Ticket->new( RT->SystemUser );
+    $reload->Load($grand_id);
+    is( $reload->Status, 'resolved', 'grandchild status persisted via inline edit in the tree' );
+
+    # Regression: the delete control is a trash link (a.delete-link) in a separate trailing column
+    # (each tree row's LAST <td>). The whole column is hidden in display mode; only depth-1 rows show
+    # it in edit mode.
+    my $child_id  = $child->id;
+    my $child_uri = $child->URI;
+    my $child_row = 'div.ticket-info-links .links-tree tr[data-record-id="' . $child_id . '"]';
+    my $child_cb  = "$child_row td:last-child a.delete-link";
+
+    my $is_visible = sub {
+        my $sel = shift;
+        return $p->{page}->evaluate(
+            qq{return (function(){ const el = document.querySelector('$sel'); return el ? (el.offsetParent !== null) : null; })()} );
+    };
+
+    # Display mode (default): the trash-link column exists in the DOM but is hidden.
+    $p->wait_for_element( qq{${child_row}[data-depth="1"]} );
+    ok( !$is_visible->($child_cb), 'depth-1 child trash link is hidden in display mode' );
+
+    my $grand_cb = 'div.ticket-info-links .links-tree tr[data-record-id="' . $grand_id . '"] td:last-child a.delete-link';
+    ok( !$is_visible->($grand_cb), 'depth-2 grandchild trash link is hidden in display mode' );
+
+    $p->{page}->click('div.ticket-info-links a.inline-edit-toggle.edit');
+    $p->wait_for_element('div.ticket-info-links.editing');
+    $p->wait_for_element($child_cb);
+    ok( $is_visible->($child_cb), 'depth-1 child trash link is visible in edit mode' );
+
+    # The trash link sits in the row's LAST <td>, a separate column from the id cell (.links-tree-id
+    # lives on the column's content <div>, so locate its enclosing <td>).
+    my $col_layout = $p->{page}->evaluate(<<JS);
+return (function(){
+    const row = document.querySelector('$child_row');
+    if (!row) return null;
+    const cells = Array.from(row.querySelectorAll(':scope > td'));
+    const cb = row.querySelector('a.delete-link');
+    const cbTd = cb ? cb.closest('td') : null;
+    const idDiv = row.querySelector('.links-tree-id');
+    const idTd = idDiv ? idDiv.closest('td') : null;
+    return { cbTdIndex: cbTd ? cells.indexOf(cbTd) : -1, idTdIndex: idTd ? cells.indexOf(idTd) : -1 };
+})();
+JS
+    is( $col_layout->{idTdIndex}, 0, 'depth-1 id cell is the leading column (td index 0)' );
+    ok( $col_layout->{cbTdIndex} > $col_layout->{idTdIndex},
+        'depth-1 trash link is a separate, trailing column after the id' );
+
+    # In edit mode the depth-2 grandchild row is hidden entirely (only depth-1 children edit), so its
+    # trash link is not visible even though the column exists.
+    ok( !$is_visible->( 'div.ticket-info-links .links-tree tr[data-record-id="' . $grand_id . '"]' ),
+        'depth-2 grandchild row is hidden in edit mode' );
+    ok( !$is_visible->($grand_cb), 'depth-2 grandchild trash link is not visible in edit mode' );
+
+    # The depth-1 trash link posts the child's DeleteLink param (the delete rides TicketUpdate).
+    # hx-vals is JSON, which escapes '/' as '\/'; drop backslashes before matching the URI.
+    ( my $hx_vals = $p->{page}->evaluate(
+        qq{return (function(){ const el = document.querySelector('$child_cb'); return el ? el.getAttribute('hx-vals') : ''; })()} ) ) =~ s{\\}{}g;
+    like( $hx_vals, qr/DeleteLink-\Q$child_uri\E-MemberOf-/,
+        'depth-1 trash link hx-vals carries DeleteLink-<childURI>-MemberOf-' );
 }
 
 $p->logout;

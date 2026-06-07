@@ -69,4 +69,16 @@ my $asset = RT::Test::Assets->last_asset;
 ok( $asset->id, 'asset is created' );
 is( $asset->CatalogObj->id, $catalog_2->id, 'asset created with correct catalog' );
 
+diag 'Asset Links widget renders one unified body';
+{
+    my $a = create_asset( Name => 'unify asset',     Catalog => $catalog_1->id );
+    my $b = create_asset( Name => 'unify asset dep', Catalog => $catalog_1->id );
+    $a->AddLink( Type => 'DependsOn', Target => $b->URI );
+
+    $m->get_ok( $baseurl . '/Asset/Display.html?id=' . $a->id, 'loaded asset display' );
+    $m->content_like( qr/links-edit-container/, 'asset editable container rendered' );
+    $m->content_unlike( qr/links-display-target/, 'no separate asset display-only list' );
+    $m->content_like( qr/class="[^"]*\blinks-widget\b/, 'asset titlebox carries links-widget class' );
+}
+
 done_testing();
