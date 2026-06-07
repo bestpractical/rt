@@ -280,6 +280,127 @@ diag "Basics inline edit refresh";
     is( $name_input->attr('value'), 'Updated name', 'Edit form shows updated name (not stale value)' );
 }
 
+
+diag "merged from asset_links_edit.t";
+{
+    my $catalog = create_catalog( Name => 'Kit' );
+    my $main    = create_asset( Name => 'pw main asset',  Catalog => $catalog->id );
+    my $other   = create_asset( Name => 'pw other asset', Catalog => $catalog->id );
+
+    $p->get_ok( '/Asset/Display.html?id=' . $main->id, 'asset display page' );
+
+    # Enter edit mode via the pencil: a pure .editing CSS flip (no fetch). The unified body --
+    # the add-link rows included -- is already in the DOM and becomes visible.
+    $p->{page}->locator('div.asset-links .inline-edit-toggle.edit')->first()->click();
+    $p->wait_for_element('div.asset-links.editing');
+    $p->wait_for_element('div.asset-links .edit-ticket-links .add-link-row');
+
+    # Wait for initAddLinkRows to bind the first row's TomSelect (default object type "ticket").
+    $p->{handle}->await(
+        $p->{page}->waitForFunction(
+            'document.querySelector("div.asset-links .add-link-row .link-value.tomselected") !== null')
+    );
+
+    # Switch the object type to "asset": applyObjectType() destroys the current TomSelect and
+    # binds a fresh one for the Assets autocomplete.
+    $p->wait_for_element('div.asset-links .add-link-row:first-child .link-object-type-select.tomselected');
+    $p->{page}->evaluate(
+        'document.querySelector("div.asset-links .add-link-row:first-child .link-object-type-select").tomselect.setValue("asset")'
+    );
+
+    $p->{handle}->await(
+        $p->{page}->waitForFunction(
+            'document.querySelector("div.asset-links .add-link-row .link-value.tomselected") !== null')
+    );
+
+    # Drive the TomSelect control input via click+fill+blur; createOnBlur commits the value and
+    # the change/blur handler prepends the "asset:" prefix.
+    my $other_id = '' . $other->id;
+    my $row1_ts  = 'div.asset-links .add-link-row:first-child .link-value + .ts-wrapper .ts-control input';
+    $p->{page}->locator($row1_ts)->click();
+    $p->{page}->locator($row1_ts)->fill($other_id);
+    $p->{page}->evaluate(
+        'document.querySelector("div.asset-links .add-link-row:first-child .link-value + .ts-wrapper .ts-control input").blur()'
+    );
+
+    my $row1_val = $p->{page}
+        ->evaluate('return document.querySelector("div.asset-links .add-link-row:first-child .link-value").value');
+    like( $row1_val, qr/\Q$other_id\E/, "row 1 link-value contains asset id $other_id" );
+
+    $p->{page}->locator('div.asset-links form.inline-edit input[type=submit][value=Save]')->click();
+    $p->wait_for_htmx;
+    $p->wait_for_notifications(1);
+
+    # After save the unified list refreshes via assetLinksChanged.
+    $p->wait_for_element(qq{div.asset-links .links-edit-target tr[data-record-id="$other_id"]});
+
+    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+    my $reload = RT::Asset->new( RT->SystemUser );
+    $reload->Load( $main->id );
+    ok( $reload->RefersTo->Count >= 1, 'asset now refers to the other asset after row-UI add' );
+    my %target_ids = map { $_->TargetObj->id => 1 } @{ $reload->RefersTo->ItemsArrayRef };
+    ok( $target_ids{ $other->id }, 'the referred asset is the expected one' );
+}
+
+diag 'Asset Links: filter/search state set in display mode persists into edit mode';
+{
+    my $catalog = create_catalog( Name => 'Persist Kit' );
+    my $host    = create_asset( Name => 'persist host asset',   Catalog => $catalog->id );
+    my $dep     = create_asset( Name => 'persist target asset', Catalog => $catalog->id );
+    ok( $host->AddLink( Type => 'RefersTo', Target => $dep->URI ), 'linked the two assets' );
+
+    $p->get_ok( '/Asset/Display.html?id=' . $host->id, 'asset display page' );
+
+    # For an editable asset the widget renders ONE unified body: a single div.asset-links
+    # .links-filter-form plus a single .links-edit-target list.
+    $p->wait_for_element('div.asset-links .links-filter-form input[name="Search"]');
+
+    # Set a search term while still in display (read-only) mode.
+    $p->{page}->fill( 'div.asset-links .links-filter-form input[name="Search"]', 'persist target' );
+    $p->{page}->dispatchEvent( 'div.asset-links .links-filter-form input[name="Search"]', 'input' );
+
+    # Flip into edit mode via the pencil (CSS-only, no fetch).
+    $p->{page}->locator('div.asset-links a.inline-edit-toggle.edit')->first()->click();
+
+    # Same single bar, same value, filter still applied to the one list.
+    $p->{handle}->await(
+        $p->{page}->waitForFunction(
+            <<'JS'
+(function() {
+    const forms = document.querySelectorAll('div.asset-links .links-filter-form');
+    if (forms.length !== 1) return false;
+    const box = forms[0].querySelector('input[name="Search"]');
+    if (!box || box.value !== 'persist target') return false;
+    const t = document.querySelector('div.asset-links .links-edit-target');
+    if (!t) return false;
+    const rows = t.querySelectorAll('tbody tr');
+    const visible = [];
+    rows.forEach(function(r){ if (!r.classList.contains('d-none')) visible.push(r.textContent); });
+    return visible.length === 1 && /persist target asset/.test(visible[0]);
+})()
+JS
+            , {}, { timeout => 10000 }
+        )
+    );
+    pass('search term and filtering carried from display into edit mode on an asset');
+
+    # Edit affordances are now visible: a trash link is shown under .editing. Check the
+    # delete-link in a *visible* row (the search above leaves only the matching row visible).
+    $p->{handle}->await(
+        $p->{page}->waitForFunction(
+            <<'JS'
+(function() {
+    const boxes = document.querySelectorAll('div.asset-links .links-edit-target .delete-link');
+    if (!boxes.length) return false;
+    return Array.prototype.some.call(boxes, function(box) { return box.offsetParent !== null; });
+})()
+JS
+            , {}, { timeout => 10000 }
+        )
+    );
+    pass('delete trash links are visible in edit mode on an asset');
+}
+
 $p->logout;
 
 done_testing;

@@ -569,6 +569,108 @@ diag "Test article SubjectOverride feature";
     }
 }
 
+diag "merged from ticket_merge.t";
+{
+    my $queue = RT::Test->load_or_create_queue( Name => 'General' );
+
+    diag "Merge via the Actions-menu modal lands on the surviving ticket";
+    {
+        my ($src)  = RT::Test->create_tickets( { Queue => $queue->id }, { Subject => 'merge src' } );
+        my ($dst)  = RT::Test->create_tickets( { Queue => $queue->id }, { Subject => 'merge dst' } );
+        my $src_id = $src->id;
+        my $dst_id = $dst->id;
+
+        $p->goto_ticket($src_id);
+
+        # The Actions submenu opens on hover (keyboard-shortcuts.js wires the page-menu
+        # dropdowns to mouseenter). Hover the Actions toggle so its dropdown -- holding
+        # the ModifyTicket-gated Merge link -- becomes visible, then click Merge. The link
+        # lazy-loads the modal body from /Helpers/MergeTicket into the shared #dynamic-modal.
+        $p->{page}->hover('#page-actions');
+        $p->wait_for_element( 'a.merge-ticket-modal-link', { state => 'visible' } );
+        $p->{page}->click('a.merge-ticket-modal-link');
+
+        # Wait for the dynamic modal to be visible (Bootstrap adds .show once it opens).
+        $p->wait_for_element( '#dynamic-modal.show', { state => 'visible' } );
+
+        # The MergeInto field (named "<src>-MergeInto") becomes a tom-select. Drive its visible
+        # control_input directly (same pattern as the Owner field in ticket_inline_edit.t).
+        $p->{handle}->await(
+            $p->{page}->waitForFunction(
+                qq{(function() {
+    const el = document.querySelector('#dynamic-modal input[name="$src_id-MergeInto"]');
+    return el && el.tomselect;
+})()}
+            )
+        );
+        $p->{page}->evaluate(
+            qq{return document.querySelector('#dynamic-modal input[name="$src_id-MergeInto"]').tomselect.control_input.focus()}
+        );
+        $p->{page}->keyboard->type("$dst_id");
+
+        # The Merge submit has NO data-bs-dismiss: on error the modal stays open; on success
+        # TicketUpdate sets HX-Redirect, navigating the browser to the survivor's Display page.
+        $p->{page}->click('#dynamic-modal form.ticket-merge-form button[type="submit"]');
+
+        $p->{handle}->await( $p->{page}
+                ->waitForFunction( qq{/[?&]id=$dst_id\\b/.test(window.location.href)}, {}, { timeout => 10000 } ) );
+
+        $p->wait_for_htmx;
+
+        $p->current_url_like( qr/[?&]id=\Q$dst_id\E\b/, 'browser landed on the surviving ticket' );
+        $p->content_contains( 'merge dst', "surviving ticket's subject is visible" );
+
+        DBIx::SearchBuilder::Record::Cachable->FlushCache;
+        my $reloaded = RT::Ticket->new( RT->SystemUser );
+        $reloaded->Load($src_id);
+        is( $reloaded->EffectiveId, $dst_id, 'source ticket merged into the target' );
+    }
+
+    diag "Cancel closes the modal without merging";
+    {
+        my ($lone) = RT::Test->create_tickets( { Queue => $queue->id }, { Subject => 'merge lone' } );
+        my $lone_id = $lone->id;
+
+        $p->goto_ticket($lone_id);
+
+        $p->{page}->hover('#page-actions');
+        $p->wait_for_element( 'a.merge-ticket-modal-link', { state => 'visible' } );
+        $p->{page}->click('a.merge-ticket-modal-link');
+        $p->wait_for_element( '#dynamic-modal.show', { state => 'visible' } );
+
+        $p->{page}->click('#dynamic-modal form.ticket-merge-form a.btn-secondary[data-bs-dismiss="modal"]');
+        $p->wait_for_element( '#dynamic-modal', { state => 'hidden' } );
+
+        $p->current_url_like( qr/[?&]id=\Q$lone_id\E\b/, 'Cancel leaves us on the source ticket' );
+
+        DBIx::SearchBuilder::Record::Cachable->FlushCache;
+        my $reloaded = RT::Ticket->new( RT->SystemUser );
+        $reloaded->Load($lone_id);
+        is( $reloaded->EffectiveId, $lone_id, 'Cancel did not merge the ticket' );
+    }
+
+    diag "Removing Merge from the Links portlet did not hide the Links inline-edit pencil";
+    {
+        # Moving Merge out of the Links inline-edit form dropped the only always-present
+        # input (the MergeInto field), leaving just the hidden id + Save submit. init.js
+        # downgrades a "link"/"click" panel to "hide" when its form has <= 2 inputs, which
+        # would permanently hide the Links edit pencil even though the link fields just
+        # lazy-load via htmx. Guard that the pencil stays visible/clickable.
+        my ($t) = RT::Test->create_tickets( { Queue => $queue->id }, { Subject => 'links pencil' } );
+        $p->goto_ticket( $t->id );
+
+        my $pencil_hidden
+            = $p->{page}->evaluate(
+            'return document.querySelector("div.ticket-info-links a.inline-edit-toggle.edit").classList.contains("hide")'
+            );
+        ok( !$pencil_hidden, 'Links inline-edit pencil is not hidden after removing the Merge block' );
+
+        $p->{page}->click('div.ticket-info-links a.inline-edit-toggle.edit');
+        $p->wait_for_element('div.ticket-info-links .edit-ticket-links .add-link-row');
+        ok( 1, 'clicking the Links pencil opens the lazy-loaded edit form' );
+    }
+}
+
 $p->logout;
 
 done_testing;

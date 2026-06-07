@@ -24,25 +24,16 @@ diag "add ticket links for timeworked tests"; {
     );
     my $id = $parent_id = $ticket->id;
 
-    $m->goto_ticket($id);
-    $m->follow_link_ok( { id => 'page-jumbo' }, "Followed link to Modify All" );
-
-    ok( $m->form_with_fields("MemberOf-$id"), "found the form" );
-    $m->field( "MemberOf-$id", "$child1_id $child2_id" );
-
-    $m->submit;
-
-    $m->content_like(
-        qr{"DeleteLink-.*?ticket/$child1_id-MemberOf-"},
-        "base for MemberOf: has child1 ticket",
-    );
-    $m->content_like(
-        qr{"DeleteLink-.*?ticket/$child2_id-MemberOf-"},
-        "base for MemberOf: has child2 ticket",
-    );
+    # Make child1 and child2 children of the parent. The row-based Links editor is JS-driven,
+    # so link via the API.
+    for my $child_id ( $child1_id, $child2_id ) {
+        my ( $ok, $msg ) = $ticket->AddLink( Type => 'MemberOf', Base => $child_id );
+        ok $ok, "linked child #$child_id under the parent: $msg";
+    }
 
     $m->goto_ticket($id);
-    $m->content_like( qr{$child1_id:.*?\[new\]}, "has active ticket", );
+    $m->content_like( qr{Display\.html\?id=$child1_id\b}, "parent links to child1" );
+    $m->content_like( qr{Display\.html\?id=$child2_id\b}, "parent links to child2" );
 }
 
 diag "adding timeworked values for child tickets"; {
