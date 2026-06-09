@@ -347,8 +347,8 @@ sub RoleLimit {
         $users_obj->RowsPerPage(2);
         my @users = @{ $users_obj->ItemsArrayRef };
 
-        $group_members ||= $self->_GroupMembersJoin( GroupsAlias => $groups );
         if ( @users <= 1 ) {
+            $group_members ||= $self->_GroupMembersJoin( GroupsAlias => $groups );
             my $uid = 0;
             $uid = $users[0]->id if @users;
 
@@ -378,34 +378,37 @@ sub RoleLimit {
                 VALUE           => 'NULL',
             );
         } else {
-            $self->Limit(
-                LEFTJOIN   => $group_members,
-                FIELD      => 'GroupId',
-                OPERATOR   => '!=',
-                VALUE      => "$group_members.MemberId",
-                QUOTEVALUE => 0,
+            # The value matches more than one user, so there is no single
+            # principal to exclude. The previous approach left-joined the role
+            # members to Users on the reversed (positive) condition and kept
+            # rows where that join found nothing. For a multi-valued role that
+            # yields one joined row per member, so a non-matching member's
+            # "no match" row satisfied the IS NULL test and let the record
+            # through even when another member of the same role *did* match
+            # (e.g. excluding an Organization still returned tickets that had
+            # an Asset Owner in that organization alongside one outside it).
+            #
+            # Instead exclude every record that positively matches: build the
+            # equivalent "= VALUE" search as a subquery and require the record
+            # id to be NOT IN its results. This matches the single-user branch
+            # semantics -- exclude the record when *any* role member matches --
+            # and is correct for any number of members.
+            my $subgroup = ( ref $self )->new( $self->CurrentUser );
+            $subgroup->RoleLimit(
+                TYPE     => $type,
+                CLASS    => $class,
+                FIELD    => $args{FIELD},
+                OPERATOR => ( $is_shallow ? 'SHALLOW ' : '' ) . $args{OPERATOR},
+                VALUE    => $args{VALUE},
             );
-            $users ||= $self->Join(
-                TYPE            => 'LEFT',
-                ALIAS1          => $group_members,
-                FIELD1          => 'MemberId',
-                TABLE2          => 'Users',
-                FIELD2          => 'id',
-            );
-            $self->Limit(
-                LEFTJOIN      => $users,
-                ALIAS         => $users,
-                FIELD         => $args{FIELD},
-                OPERATOR      => $args{OPERATOR},
-                VALUE         => $args{VALUE},
-                CASESENSITIVE => 0,
-            );
+            $subgroup->Columns('id');
             $self->Limit(
                 %args,
-                ALIAS         => $users,
-                FIELD         => 'id',
-                OPERATOR      => 'IS',
-                VALUE         => 'NULL',
+                ALIAS      => 'main',
+                FIELD      => 'id',
+                OPERATOR   => 'NOT IN',
+                VALUE      => '(' . $subgroup->BuildSelectQuery( PreferBind => 0 ) . ')',
+                QUOTEVALUE => 0,
             );
         }
     } else {
