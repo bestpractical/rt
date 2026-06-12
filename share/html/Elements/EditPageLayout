@@ -91,7 +91,7 @@
               <% GetSVGImage( Name => 'info', Title => ' ' ) |n %>
               <a href="#" class="edit" data-bs-toggle="modal" data-bs-target="#pagelayout-widget-<% $item %>-modal">
                 <% GetSVGImage( Name => 'pencil', Title => loc('Edit') ) |n %></a>
-%           } elsif ( ( $item eq 'History' && $Page !~ /^SelfService / ) || ( $Class eq 'RT::Ticket' && ( $item =~ /^(?:People|Basics)$/ || ( $Page eq 'Create' && $item eq 'Message' ) ) ) ) {
+%           } elsif ( ( $item eq 'History' && $Page !~ /^SelfService / ) || ( $item eq 'Links' && $Class =~ /^RT::(?:Ticket|Asset)$/ && $Page eq 'Display' ) || ( $Class eq 'RT::Ticket' && ( $item =~ /^(?:People|Basics)$/ || ( $Page eq 'Create' && $item eq 'Message' ) ) ) ) {
               <a href="#" class="edit" data-bs-toggle="modal" data-bs-target="#pagelayout-widget-<% $item %>-modal">
                 <% GetSVGImage( Name => 'pencil', Title => loc('Edit') ) |n %></a>
 %           }
@@ -111,6 +111,8 @@
         <& SELF:EditWidgetBasics, Widget => $item, Class => $Class, Page => $Page &>
 %       } elsif ( $item eq 'History' && $Page !~ /^SelfService / ) {
         <& SELF:EditWidgetHistory, Widget => $item, Class => $Class &>
+%       } elsif ( $item eq 'Links' && $Class =~ /^RT::(?:Ticket|Asset)$/ && $Page eq 'Display' ) {
+        <& SELF:EditWidgetLinks, Widget => $item, Class => $Class &>
 %       }
 % }
       </div>
@@ -386,7 +388,7 @@ $Content => []
       <% GetSVGImage( Name => 'info', $grouping_text ? ( Title => $grouping_text ) : ( Title => ' ', ExtraClasses => 'hidden' ) ) |n %>
       <a href="#" class="edit" data-bs-toggle="modal" data-bs-target="#pagelayout-widget-<% $Index %>-modal">
         <% GetSVGImage( Name => 'pencil', Title => loc('Edit') ) |n %></a>
-%   } elsif ( ( $widget_name eq 'History' && $Page !~ /^SelfService / ) || ( $Class eq 'RT::Ticket' && ( $widget_name =~ /^(?:People|Basics)$/ || ( $Page eq 'Create' && $widget_name eq 'Message' ) ) ) ) {
+%   } elsif ( ( $widget_name eq 'History' && $Page !~ /^SelfService / ) || ( $widget_name eq 'Links' && $Class =~ /^RT::(?:Ticket|Asset)$/ && $Page eq 'Display' ) || ( $Class eq 'RT::Ticket' && ( $widget_name =~ /^(?:People|Basics)$/ || ( $Page eq 'Create' && $widget_name eq 'Message' ) ) ) ) {
       <a href="#" class="edit" data-bs-toggle="modal" data-bs-target="#pagelayout-widget-<% $Index %>-modal">
         <% GetSVGImage( Name => 'pencil', Title => loc('Edit') ) |n %></a>
 %   }
@@ -399,6 +401,8 @@ $Content => []
   <& SELF:EditWidgetCustomFieldCustomGroupings, %ARGS &>
 % } elsif ( $widget_name eq 'History' && $Page !~ /^SelfService / ) {
   <& SELF:EditWidgetHistory, %ARGS, Class => $Class &>
+% } elsif ( $widget_name eq 'Links' && $Class =~ /^RT::(?:Ticket|Asset)$/ && $Page eq 'Display' ) {
+  <& SELF:EditWidgetLinks, %ARGS, Class => $Class &>
 % } elsif ( $Class eq 'RT::Ticket' && $Page eq 'Create' && $widget_name eq 'Message' ) {
   <& SELF:EditWidgetMessage, %ARGS, Class => $Class, Page => $Page &>
 % } elsif ( $Class eq 'RT::Ticket' && $widget_name eq 'People' ) {
@@ -603,6 +607,81 @@ if ( $Class && $Class eq 'RT::Asset' ) {
 $Widget => undef
 $Index => undef
 $Class => undef
+</%ARGS>
+</%METHOD>
+
+
+<%METHOD EditWidgetLinks>
+<div class="modal fade pagelayout-widget-modal" id="pagelayout-widget-<% $Index // $Widget %>-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form hx-boost="false" class="pagelayout-widget-form">
+        <div class="modal-header">
+          <h5 class="modal-title"><% loc('Modify Element') %></h5>
+          <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </a>
+        </div>
+        <div class="modal-body">
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" name="HideInactive" id="pagelayout-links-hide-inactive-<% $for %>" value="1"<% ( ref $Widget && $Widget->{HideInactive} ) ? ' checked' : '' |n %>>
+            <label class="form-check-label" for="pagelayout-links-hide-inactive-<% $for %>"><&|/l&>Hide inactive tickets/assets</&></label>
+          </div>
+%# Two side-by-side checklists, matching the Links filter funnel on the display page.
+          <div class="links-filter-sections d-flex gap-4 align-items-start">
+            <div class="links-filter-section">
+              <div class="m-2 links-filter-header"><&|/l&>Link types</&></div>
+% for my $rel (@link_types) {
+              <div class="form-check ms-3">
+                <input class="form-check-input" type="checkbox" name="ShowRelationship" value="<% $rel->{type} %>" id="pagelayout-links-rel-<% $rel->{type} %>-<% $for %>"<% ( !%rel_default || $rel_default{ $rel->{type} } ) ? ' checked' : '' |n %>>
+                <label class="form-check-label" for="pagelayout-links-rel-<% $rel->{type} %>-<% $for %>"><% $rel->{label} %></label>
+              </div>
+% }
+            </div>
+            <div class="links-filter-section">
+              <div class="m-2 links-filter-header"><&|/l&>Object types</&></div>
+% for my $ot (@object_types) {
+              <div class="form-check ms-3">
+                <input class="form-check-input" type="checkbox" name="ShowObjectType" value="<% $ot->{value} %>" id="pagelayout-links-ot-<% $ot->{value} %>-<% $for %>"<% ( !%obj_default || $obj_default{ $ot->{value} } ) ? ' checked' : '' |n %>>
+                <label class="form-check-label" for="pagelayout-links-ot-<% $ot->{value} %>-<% $for %>"><% $ot->{label} %></label>
+              </div>
+% }
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <& /Elements/Submit, Label => loc('Update') &>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<%INIT>
+my @link_types = (
+    { type => 'DependsOn',    label => loc('Depends on') },
+    { type => 'DependedOnBy', label => loc('Depended on by') },
+    { type => 'MemberOf',     label => loc('Parents') },
+    { type => 'Members',      label => loc('Children') },
+    { type => 'RefersTo',     label => loc('Refers to') },
+    { type => 'ReferredToBy', label => loc('Referred to by') },
+);
+my @object_types = (
+    { value => 'Ticket',      label => loc('Ticket') },
+    { value => 'Transaction', label => loc('Transaction') },
+    { value => 'Asset',       label => loc('Asset') },
+    { value => 'Article',     label => loc('Article') },
+    { value => 'User',        label => loc('User') },
+    { value => 'Group',       label => loc('Group') },
+    { value => 'URL',         label => loc('Web Link') },
+);
+my %rel_default = ( ref $Widget && $Widget->{ShowRelationship} ) ? map { $_ => 1 } @{ $Widget->{ShowRelationship} } : ();
+my %obj_default = ( ref $Widget && $Widget->{ShowObjectType} )   ? map { $_ => 1 } @{ $Widget->{ShowObjectType} }   : ();
+my $for = $Index // $Widget;    # per-widget id suffix, matching the modal id
+</%INIT>
+<%ARGS>
+$Widget => undef
+$Index  => undef
+$Class  => undef
 </%ARGS>
 </%METHOD>
 
