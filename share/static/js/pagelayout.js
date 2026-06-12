@@ -141,6 +141,18 @@ pageLayout = {
                 const modal_copy = document.querySelector('#' + old_id + '-modal')?.cloneNode(true);
                 if (modal_copy) {
                     modal_copy.setAttribute('id', modal_id);
+                    // The clone shares the source (palette) modal's inner element ids; re-uniquify
+                    // them and the matching <label for> so clicking a label toggles this widget's
+                    // own checkbox rather than the palette modal's hidden copy.
+                    const idMap = {};
+                    modal_copy.querySelectorAll('[id]').forEach(el => {
+                        const fresh = el.id + '-' + new_id;
+                        idMap[el.id] = fresh;
+                        el.id = fresh;
+                    });
+                    modal_copy.querySelectorAll('label[for]').forEach(el => {
+                        if (idMap[el.htmlFor]) el.htmlFor = idMap[el.htmlFor];
+                    });
                     area.closest('.row-container').appendChild(modal_copy);
                     document.querySelector('#' + modal_id + ' form.pagelayout-widget-form').addEventListener('submit', pageLayout.widgetSubmit);
 
@@ -227,6 +239,24 @@ pageLayout = {
             if ( perPage ) {
                 value.PerPage = perPage;
             }
+
+            widget.setAttribute('data-value', JSON.stringify(value));
+        }
+        else if ( (widgetValue.Name || widgetValue) === 'Links') {
+            const value = { Name: 'Links' };
+            if ( form.querySelector('input[name="HideInactive"]:checked') ) {
+                value.HideInactive = 1;
+            }
+            // Store only a proper, non-empty subset; all-checked or none-checked means "no filter".
+            const collect = (group) => {
+                const all    = form.querySelectorAll('input[name="' + group + '"]');
+                const picked = Array.from(all).filter(i => i.checked).map(i => i.value);
+                return ( picked.length > 0 && picked.length < all.length ) ? picked : null;
+            };
+            const rels = collect('ShowRelationship');
+            const objs = collect('ShowObjectType');
+            if ( rels ) value.ShowRelationship = rels;
+            if ( objs ) value.ShowObjectType = objs;
 
             widget.setAttribute('data-value', JSON.stringify(value));
         }
