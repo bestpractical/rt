@@ -578,11 +578,14 @@ Returns true if this user is privileged. Returns undef otherwise.
 
 sub Privileged {
     my $self = shift;
-    if ( RT->PrivilegedUsers->HasMember( $self->id ) ) {
-        return(1);
-    } else {
-        return(undef);
+
+    # Cache the result in SB's record cache to reduce HasMember calls.
+    my $values = $self->{values} ||= {};
+    unless ( exists $values->{_privileged} ) {
+        $values->{_privileged} = RT->PrivilegedUsers->HasMember( $self->id ) ? 1 : undef;
+        $self->_store if $self->isa('DBIx::SearchBuilder::Record::Cachable');
     }
+    return $values->{_privileged};
 }
 
 #create a user without validating _any_ data.
