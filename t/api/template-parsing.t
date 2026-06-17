@@ -232,6 +232,25 @@ note "test arguments passing";
     is($template->MIMEObj->stringify_body, "test 70", "Perl output");
 }
 
+# Regression: a Perl template that dies while parsing must still let Text::Template
+# scrub its gensym package. Otherwise the installed TicketObj/TransactionObj stay in
+# package globals and leak until global destruction.
+{
+    my $leak_ticket = RT::Ticket->new(RT->SystemUser);
+    $leak_ticket->Create( Subject => 'leak check', Queue => 'General' );
+    my $leak_txn = $leak_ticket->Transactions->First;
+    {
+        my $broken = RT::Template->new(RT->SystemUser);
+        $broken->Create( Name => 'leak check', Type => 'Perl', Content => "\n{ \$Ticket->Nonexistent }" );
+        warning_like { $broken->Parse( TicketObj => $leak_ticket, TransactionObj => $leak_txn ) }
+            qr/RT::Ticket::Nonexistent Unimplemented/, 'Broken Perl template logs the error';
+    }
+    Scalar::Util::weaken( my $weak = $leak_ticket );
+    undef $leak_ticket;
+    undef $leak_txn;
+    ok( !defined $weak, 'Ticket is freed after a broken Perl template parse' );
+}
+
 undef $ticket;
 done_testing;
 
