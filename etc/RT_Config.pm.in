@@ -1049,7 +1049,7 @@ See also C<$ChromePath> and C<@ChromeLaunchArguments>.
 
 =cut
 
-Set($EmailDashboardIncludeCharts, 0);
+Set($EmailDashboardIncludeCharts, @RT_DASHBOARD_CHART_EMAILS@);
 
 =item C<$ChromePath>
 
