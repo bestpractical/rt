@@ -125,6 +125,7 @@ sub run {
 
     foreach my $user ( keys %$all_digest ) {
         my ( $contents_list, $contents_body ) = build_digest_for_user( $user, $all_digest->{$user} );
+        next unless $contents_list;
         # Now we have a content head and a content body.  We can send a message.
         if ( send_digest( $user, $contents_list, $contents_body ) ) {
             print "Sent message to $user\n" if $verbose;
@@ -288,7 +289,7 @@ sub build_digest_for_user {
     $user_obj->LoadByEmail($user);
     if ( $user_obj->PrincipalObj->Disabled ) {
         print STDERR loc("Skipping disabled user") . " $user\n";
-        next;
+        return;
     }
 
     print loc("Message for user") . " $user:\n\n" if $print;
