@@ -666,7 +666,14 @@ sub _ParseContentPerl {
             $RT::Logger->error("Template parsing error: $args{error}")
                 unless $args{error} =~ /^Died at /; # ignore intentional die()
             $is_broken++;
-            return undef;
+
+            # Return an (empty) defined value, not undef: an undef BROKEN
+            # return makes Text::Template->fill_in abort early, skipping
+            # the cleanup that scrubs the template's gensym package, which
+            # would otherwise leak the installed variables (TicketObj,
+            # TransactionObj, ...) until global destruction. We discard the
+            # output anyway since $is_broken is set.
+            return '';
         },
     );
     return ( undef, $self->loc('Template parsing error') ) if $is_broken;
