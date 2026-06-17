@@ -252,6 +252,7 @@ note "test arguments passing";
 }
 
 undef $ticket;
+undef $txn;
 done_testing;
 
 

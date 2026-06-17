@@ -439,5 +439,8 @@ diag 'change queue from General to Specs' if $ENV{'TEST_VERBOSE'};
     engineer_has_rights_for_specs_individual($john => 0);
 }
 
+undef $inbox_individual;
+undef $inbox_group;
+undef $specs_individual;
 done_testing;
 
