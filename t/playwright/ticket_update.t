@@ -450,6 +450,45 @@ diag "Test include article feature";
     $p->text_contains('This is article summary');
 }
 
+diag "Test quote selection sends the selected text in the POST body, not the URL";
+{
+    my $ticket = RT::Test->create_ticket(
+        Queue   => 'General',
+        Subject => 'quote partial selection',
+        Content => 'QUOTEME_MARKER and SKIPME_REMAINDER',
+    );
+    $p->goto_ticket( $ticket->id );
+    $p->wait_for_element('.messagebody');
+
+    # Select only "QUOTEME_MARKER" in the create transaction's message body.
+    my $selected = $p->{page}->evaluate(<<'JS');
+const walker = document.createTreeWalker(document.querySelector('.messagebody'), NodeFilter.SHOW_TEXT);
+let node;
+while ( (node = walker.nextNode()) && !node.nodeValue.includes('QUOTEME_MARKER') ) {}
+const start = node.nodeValue.indexOf('QUOTEME_MARKER');
+const range = document.createRange();
+range.setStart(node, start);
+range.setEnd(node, start + 'QUOTEME_MARKER'.length);
+const sel = window.getSelection();
+sel.removeAllRanges();
+sel.addRange(range);
+return sel.toString();
+JS
+
+    is( $selected, 'QUOTEME_MARKER', 'selected only the marker text in the message body' );
+
+    $p->{page}->locator('a.reply-link')->first->click();
+    $p->wait_for_htmx;
+
+    my $url = $p->{page}->url();
+    like( $url, qr/Action=Respond/, 'reply navigated to the update form' );
+    unlike( $url, qr/QuoteContent/i, 'selected text is not in the URL (sent in the POST body)' );
+
+    my $value = $p->{page}->locator('textarea[name="UpdateContent"]')->first->inputValue();
+    like( $value, qr/QUOTEME_MARKER/, 'message box quotes the selected text' );
+    unlike( $value, qr/SKIPME_REMAINDER/, 'message box excludes the unselected remainder' );
+}
+
 $p->logout;
 
 done_testing;
