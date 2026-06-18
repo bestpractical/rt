@@ -81,6 +81,10 @@ if (RT.Config.QuoteSelectedText) {
                     return;
                 }
                 evt.detail.parameters['QuoteContent'] = selection;
+                // POST the selection in the request body so it never appears in the URL
+                evt.detail.verb = 'post';
+                evt.detail.useUrlParams = false;
+                evt.detail.headers['Content-Type'] = 'application/x-www-form-urlencoded';
             }
         });
     });
