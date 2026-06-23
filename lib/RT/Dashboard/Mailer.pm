@@ -577,6 +577,7 @@ sub EmailDashboard {
 }
 
 my $chrome;
+my $chrome_home;
 
 sub BuildEmail {
     my $self = shift;
@@ -669,6 +670,7 @@ sub BuildEmail {
         $width  ||= 2560;
         $height ||= 1440;
 
+        local $ENV{HOME} = $chrome_home ||= tempdir( CLEANUP => 1 );
         $chrome ||= WWW::Mechanize::Chrome->new(
             autodie          => 0,
             headless         => 1,
