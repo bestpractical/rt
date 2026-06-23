@@ -531,6 +531,15 @@ sub SetClass {
         return ( 0, $self->loc("Permission Denied") );
     }
 
+    # An article must always belong to a valid class. Reject empty/undef/0
+    # or any value that doesn't load a class, mirroring Create.
+    my $class = RT::Class->new( $self->CurrentUser );
+    $class->Load($value) if defined $value && length $value;
+    unless ( $class->Id ) {
+        return ( 0, $self->loc('Invalid Class') );
+    }
+    $value = $class->Id;    # normalize a class name to its id
+
     # Confirm the name isn't already used in the destination class
     if ( $self->ValidateName( $self->Name, $value ) ) {
         return ( $self->_Set( Field => 'Class', Value => $value ) );
