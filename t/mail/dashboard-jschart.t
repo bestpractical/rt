@@ -8,9 +8,10 @@ Set(\@ChromeLaunchArguments, '--no-sandbox');
 Set(\$ChromePath, '@{[$ENV{RT_TEST_CHROME_PATH} // '']}');
 };
 
-plan skip_all => 'Need WWW::Mechanize::Chrome and a chrome-based browser'
-    unless RT::StaticUtil::RequireModule("WWW::Mechanize::Chrome")
-    && ( $ENV{RT_TEST_CHROME_PATH} || WWW::Mechanize::Chrome->find_executable('chromium') );
+# $EmailDashboardIncludeCharts is disabled by a PostLoadCheck when File::Which
+# or a Chrome-based browser isn't available, so this skips in those cases.
+plan skip_all => 'Need File::Which and a Chrome-based browser'
+    unless RT->Config->Get('EmailDashboardIncludeCharts');
 
 my $root = RT::Test->load_or_create_user( Name => 'root' );
 
@@ -91,7 +92,7 @@ like( $mail->head->get('Subject'), qr/Daily Dashboard: dashboard foo/, 'Mail sub
 
 my ($mail_image) = grep { $_->mime_type eq 'image/png' } $mail->parts;
 ok( $mail_image, 'Mail contains image attachment' );
-require Imager;                                    # Imager is a dependency of WWW::Mechanize::Chrome
+require Imager;
 my $imager = Imager->new();
 $imager->open( data => $mail_image->bodyhandle->as_string, type => 'png' );
 is( $imager->bits, 8, 'Image bit depth is 8' );
