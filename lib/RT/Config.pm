@@ -2075,15 +2075,22 @@ our %META;
             my $self = shift;
             return unless $self->Get('EmailDashboardIncludeCharts');
 
-            if ( RT::StaticUtil::RequireModule('WWW::Mechanize::Chrome') ) {
-                my $chrome = RT->Config->Get('ChromePath') || 'chromium';
-                if ( !WWW::Mechanize::Chrome->find_executable( $chrome ) ) {
-                    RT->Logger->warning("Can't find chrome executable from \$ChromePath value '$chrome', disabling \$EmailDashboardIncludeCharts");
-                    $self->Set( 'EmailDashboardIncludeCharts', 0 );
-                }
+            my $chrome = $self->Get('ChromePath') || 'chromium';
+            unless ( RT::StaticUtil::RequireModule('File::Which') ) {
+                RT->Logger->warning('File::Which is not installed, disabling $EmailDashboardIncludeCharts');
+                $self->Set( 'EmailDashboardIncludeCharts', 0 );
+                return;
+            }
+
+            if ( my $path = File::Which::which($chrome) ) {
+
+                # Cache the resolved path for the mailer.
+                $self->Set( 'ChromePath', $path );
             }
             else {
-                RT->Logger->warning('WWW::Mechanize::Chrome is not installed, disabling $EmailDashboardIncludeCharts');
+                RT->Logger->warning(
+                    "Can't find a Chrome-based browser from \$ChromePath value '$chrome', disabling \$EmailDashboardIncludeCharts"
+                );
                 $self->Set( 'EmailDashboardIncludeCharts', 0 );
             }
         },

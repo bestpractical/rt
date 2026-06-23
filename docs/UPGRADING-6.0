@@ -187,9 +187,8 @@ While it has been possible to use JSChart to generate chart images in the RT UI,
 because these images are generated client-side it hasn't been possible to include
 them in dashboard emails.
 
-It is now possible to use the optional Perl module L<WWW::Mechanize::Chrome> and
-a compatible server-side web browser to create images of the JSChart graphs for
-inclusion in emails.
+It is now possible to use a compatible server-side Chrome-based browser to
+create images of the JSChart graphs for inclusion in emails.
 
 This is accomplished by setting C<$EmailDashboardIncludeCharts> to '1' and
 maybe also setting C<$ChromePath> to the path of the executable for your
