@@ -90,6 +90,13 @@ my $parser = RT::EmailParser->new;
 my $mail   = $parser->ParseMIMEEntityFromScalar( $mails[0] );
 like( $mail->head->get('Subject'), qr/Daily Dashboard: dashboard foo/, 'Mail subject' );
 
+# The chart is embedded as an inline image referenced from the HTML by
+# Content-Id. Such cid-referenced images must live in a multipart/related
+# container, or clients like Thunderbird show them as detached attachments
+# instead of rendering them inline.
+is( $mail->mime_type, 'multipart/related',
+    'Mail with an inline chart image is multipart/related' );
+
 my ($mail_image) = grep { $_->mime_type eq 'image/png' } $mail->parts;
 ok( $mail_image, 'Mail contains image attachment' );
 require Imager;

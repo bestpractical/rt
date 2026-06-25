@@ -137,6 +137,12 @@ sub produces_dashboard_mail_ok { # {{{
     is($mail->head->get('X-RT-Dashboard-Id'), "$dashboard_id\n");
     is($mail->head->get('X-RT-Dashboard-Subscription-Id'), "$subscription_id\n");
 
+    # With no inline images to relate, the mail stays a plain text/html
+    # message rather than a multipart/related (the multipart/related wrapper
+    # is used only when there are cid-referenced resources to carry).
+    is($mail->mime_type, 'text/html',
+        'dashboard mail with no inline images is plain text/html');
+
     my $body = $mail->bodyhandle->as_string;
     like($body, qr{My dashboards}) if !$body_like && !$body_unlike;
     like($body, qr{<a href="http://[^/]+/Dashboards/\d+/Testing!\d+">Testing!\d+</a>});
