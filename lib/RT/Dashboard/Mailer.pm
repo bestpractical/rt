@@ -750,11 +750,14 @@ sub BuildEmail {
 
     $content = ScrubContent($content);
 
+    # Set message body to multipart/related. The HTML is the root and the
+    # parts (images) are the resources it pulls in.
+    # With no parts, make_singlepart below collapses back to plain text/html.
     my $entity = MIME::Entity->build(
         From    => Encode::encode("UTF-8", $args{From}),
         To      => Encode::encode("UTF-8", $args{To}),
         Subject => RT::Interface::Email::EncodeToMIME( String => $args{Subject} ),
-        Type    => "multipart/mixed",
+        Type    => "multipart/related",
     );
 
     $entity->attach(
@@ -770,6 +773,11 @@ sub BuildEmail {
     }
 
     $entity->make_singlepart;
+
+    # multipart/related names its root part's type; the root is the HTML we
+    # attached first. (Skip it if make_singlepart collapsed us to text/html.)
+    $entity->head->mime_attr( 'content-type.type' => 'text/html' )
+        if $entity->is_multipart;
 
     return $entity;
 }
