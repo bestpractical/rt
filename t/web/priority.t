@@ -49,7 +49,7 @@ $m->goto_create_ticket( $queue->Id );
 $form = $m->form_name('TicketCreate');
 for my $field (qw/InitialPriority FinalPriority/) {
     my $priority_input = $form->find_input($field);
-    is( $priority_input->type, 'text', "$field input is a text" );
+    is( $priority_input->type, 'number', "$field input is a number" );
     is( $form->value($field),  '',     "$field default value" );
 }
 
@@ -90,7 +90,7 @@ $m->goto_create_ticket( $queue->Id );
 $form = $m->form_name('TicketCreate');
 for my $field (qw/InitialPriority FinalPriority/) {
     my $priority_input = $form->find_input($field);
-    is( $priority_input->type, 'text', "$field input is a text" );
+    is( $priority_input->type, 'number', "$field input is a number" );
     is( $form->value($field),  '',     "$field default value" );
 }
 
@@ -247,7 +247,7 @@ ok( $ret, 'Set PriorityAsString to numeric mode' );
 
 $m->goto_create_ticket( $queue->Id );
 $form = $m->form_name('TicketCreate');
-is( $form->find_input('InitialPriority')->type, 'text', 'InitialPriority is a text input in numeric mode' );
+is( $form->find_input('InitialPriority')->type, 'number', 'InitialPriority is a number input in numeric mode' );
 
 $m->submit_form_ok(
     {   form_name => 'TicketCreate',
