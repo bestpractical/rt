@@ -186,8 +186,6 @@ if ( $StartDate && $EndDate ) {
     }
 
     # Get a new transactions object to hold transaction search results for this ticket
-    my $trans = RT::Transactions->new( $session{'CurrentUser'} );
-
     my $txns = RT::Transactions->new($session{CurrentUser});
     $txns->Limit( FIELD => 'ObjectType', VALUE => 'RT::Ticket' );
     if ( $User ) {
