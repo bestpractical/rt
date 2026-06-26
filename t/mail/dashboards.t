@@ -147,6 +147,9 @@ sub produces_dashboard_mail_ok { # {{{
     like($body, qr{My dashboards}) if !$body_like && !$body_unlike;
     like($body, qr{<a href="http://[^/]+/Dashboards/\d+/Testing!\d+">Testing!\d+</a>});
 
+    like($body, qr{<style[\s>]}, 'CSS retained in a <style> block');
+    unlike($body, qr{<script[\s>]}, '<script> scrubbed from dashboard email');
+
     if ($body_like) {
         for my $re (ref($body_like) eq 'ARRAY' ? @$body_like : $body_like) {
             ok($body =~ $re, "body should match $re");
