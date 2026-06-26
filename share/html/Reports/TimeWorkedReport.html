@@ -186,8 +186,6 @@ if ( $StartDate && $EndDate ) {
     }
 
     # Get a new transactions object to hold transaction search results for this ticket
-    my $trans = RT::Transactions->new( $session{'CurrentUser'} );
-
     my $txns = RT::Transactions->new($session{CurrentUser});
     $txns->Limit( FIELD => 'ObjectType', VALUE => 'RT::Ticket' );
     if ( $User ) {
@@ -204,6 +202,15 @@ if ( $StartDate && $EndDate ) {
     $txns->Limit( FIELD => 'TimeWorkedDate', VALUE => $start_date->ISO(Timezone => 'user', Time => 0), OPERATOR => '>=' );
     $txns->Limit( FIELD => 'TimeWorkedDate', VALUE => $end_date->ISO(Timezone => 'user', Time => 0), OPERATOR => '<=', ENTRYAGGREGATOR => 'AND');
 
+    my $queue_obj;
+    if ( $Queue ) {
+        $queue_obj = RT::Queue->new( $session{'CurrentUser'} );
+        # Load can accept both id (dropdown) and name (autocomplete)
+        $queue_obj->Load( $Queue );
+        push @results, loc("Could not load queue, report is not limited to queue: [_1]", $Queue)
+            unless $queue_obj->Id;
+    }
+
     my $total_time_worked = 0;
 
     while ( my $txn = $txns->Next ) {
@@ -213,8 +220,8 @@ if ( $StartDate && $EndDate ) {
         my ($ret, $msg) = $worker->Load( $txn->TimeWorker );
         push @results, $msg unless $ret;
 
-        if ( $Queue && $ticket->QueueObj ) {
-            next unless $Queue eq $ticket->QueueObj->Id;
+        if ( $queue_obj && $queue_obj->Id && $ticket->QueueObj ) {
+            next unless $ticket->QueueObj->Id == $queue_obj->Id;
         }
 
         $total_time_worked = $total_time_worked + $txn->TimeTaken;
