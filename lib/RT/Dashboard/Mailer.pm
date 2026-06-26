@@ -1015,6 +1015,8 @@ sub _RunHeadlessBrowser {
                 },
             );
 
+            # Allow style as it's off by default
+            $scrubber->style(1);
         }
         return $scrubber;
     }
