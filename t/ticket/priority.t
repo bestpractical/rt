@@ -2,6 +2,7 @@ use strict;
 use warnings;
 
 use RT::Test tests => undef;
+use Test::Warn;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'General' );
 
@@ -111,5 +112,49 @@ is( $txns->Count, 3, 'Found 3 txn' );
 my $txn = $txns->First;
 is( $txn->OldValue, 0,  'OldValue is correct' );
 is( $txn->NewValue, 50, 'NewValue is correct' );
+
+diag "Priority column validators";
+
+my $vticket = RT::Ticket->new( RT->SystemUser );
+ok( $vticket->ValidatePriority(5),            'ValidatePriority accepts a whole number' );
+ok( $vticket->ValidatePriority(-5),           'ValidatePriority accepts a negative number' );
+ok( $vticket->ValidatePriority(500),          'ValidatePriority accepts a large number' );
+ok( $vticket->ValidatePriority(''),           'ValidatePriority accepts an empty value' );
+ok( !$vticket->ValidatePriority('Emergency'), 'ValidatePriority rejects a non-numeric value' );
+ok( $vticket->ValidateInitialPriority(5),     'ValidateInitialPriority accepts a whole number' );
+ok( !$vticket->ValidateInitialPriority('x'),  'ValidateInitialPriority rejects a non-numeric value' );
+ok( $vticket->ValidateFinalPriority(5),       'ValidateFinalPriority accepts a whole number' );
+ok( !$vticket->ValidateFinalPriority('x'),    'ValidateFinalPriority rejects a non-numeric value' );
+
+for my $value ( 0, 100, 500 ) {
+    my $ok_ticket = RT::Ticket->new( RT->SystemUser );
+    my ($id) = $ok_ticket->Create(
+        Queue    => 'General',
+        Subject  => "Numeric priority $value",
+        Priority => $value,
+    );
+    ok( $id, "Ticket created with priority $value" );
+    is( $ok_ticket->Priority, $value, "Priority is $value" );
+}
+
+diag "A non-numeric priority is rejected on create by the column validators";
+
+for my $field (qw/Priority InitialPriority FinalPriority/) {
+    # Keep the other two fields valid so only $field is bad.
+    my %priorities = ( Priority => 50, InitialPriority => 50, FinalPriority => 50, $field => 'Emergency' );
+
+    my $bad = RT::Ticket->new( RT->SystemUser );
+    my $id;
+    warning_like {
+        ($id) = $bad->Create( Queue => 'General', Subject => "Non-numeric $field", %priorities );
+    } qr/Invalid value for $field\b/, "create logs the $field failure reason";
+    ok( !$id, "Ticket not created with a non-numeric $field" );
+}
+
+diag "The column validators also guard updates to Initial/FinalPriority";
+
+my $upd = RT::Test->create_ticket( Queue => 'General', Subject => 'Update priority', Priority => 5 );
+ok( !( $upd->SetInitialPriority('Emergency') )[0], 'SetInitialPriority rejects a non-numeric value' );
+ok( !( $upd->SetFinalPriority('Emergency') )[0],   'SetFinalPriority rejects a non-numeric value' );
 
 done_testing;
