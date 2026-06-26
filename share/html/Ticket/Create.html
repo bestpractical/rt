@@ -247,6 +247,21 @@ my $checks_failure = 0;
         push @results, @msg;
         $checks_failure = 1;
     }
+
+    # Validate priorities before we attempt the create, so a bad value gives
+    # inline feedback on the form instead of failing at the database layer.
+    for my $field (qw/InitialPriority FinalPriority Priority/) {
+        next unless defined $ARGS{$field} && length $ARGS{$field};
+        my ( $ok, $msg ) = $ticket->CheckPriorityValue(
+            Value => $ARGS{$field},
+            Queue => $QueueObj,
+        );
+        unless ( $ok ) {
+            push @results, $msg;
+            $checks_failure = 1;
+            last;
+        }
+    }
 }
 
 my $gnupg_widget = $m->comp('/Elements/Crypt/SignEncryptWidget:new', Arguments => \%ARGS );

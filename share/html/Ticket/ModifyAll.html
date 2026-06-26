@@ -176,6 +176,24 @@ $m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS, skip_update => \$skip_upd
         push @results, @msg;
         $skip_update = 1;
     }
+
+    # Validate priorities; otherwise the update would silently coerce a bad
+    # value to 0.  Reject it with inline feedback instead.  Range against the
+    # ticket's existing initial/final priorities.
+    for my $field (qw/Priority InitialPriority FinalPriority/) {
+        next unless defined $ARGS{$field} && length $ARGS{$field};
+        my ( $ok, $msg ) = $Ticket->CheckPriorityValue(
+            Value   => $ARGS{$field},
+            Queue   => $Ticket->QueueObj,
+            Initial => $Ticket->InitialPriority,
+            Final   => $Ticket->FinalPriority,
+        );
+        unless ( $ok ) {
+            push @results, $msg;
+            $skip_update = 1;
+            last;
+        }
+    }
 }
 
 # There might be two owners.

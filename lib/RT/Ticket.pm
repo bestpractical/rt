@@ -371,6 +371,16 @@ sub Create {
     $args{'Priority'} = $args{'InitialPriority'}
         unless defined $args{'Priority'};
 
+    for my $field (qw/InitialPriority FinalPriority Priority/) {
+        next unless defined $args{$field} && length $args{$field};
+
+        my ( $ok, $msg ) = $self->CheckPriorityValue(
+            Value => $args{$field},
+            Queue => $QueueObj,
+        );
+        return ( 0, 0, $msg ) unless $ok;
+    }
+
     # Dates
 
     my $Now = RT::Date->new( $self->CurrentUser );
@@ -3773,6 +3783,73 @@ sub _PriorityAsNumber {
 
     return $map_ref->{$priority} if exists $map_ref->{$priority};
     return undef;
+}
+
+# Named C<CheckPriorityValue> rather than C<ValidatePriority> because
+# C<Validate>I<Column> is reserved by L<DBIx::SearchBuilder> for boolean column
+# validators.
+
+=head2 CheckPriorityValue Value => VALUE, Queue => QUEUEOBJ, Initial => INT, Final => INT
+
+Validates a priority VALUE submitted for a ticket on the queue QUEUEOBJ.
+Returns a list of C<($ok, $message)>.
+
+(Named C<CheckPriorityValue> rather than C<ValidatePriority> because
+C<Validate>I<Column> is reserved by L<DBIx::SearchBuilder> for boolean column
+validators.)
+
+When priority labels are enabled for the queue (see L</PriorityAsString>) the
+UI submits one of the configured numbers via a dropdown, so ranges are not checked.
+In legacy priority number mode, a text field is shown, so VALUE must be a whole number
+within the priority range. The range is taken from C<Initial> and C<Final> (in
+either order); pass these to range against an existing ticket's priorities.
+When they are omitted (eg on create) the queue's default initial and final
+priorities are used, falling back to 0..100.
+
+=cut
+
+sub CheckPriorityValue {
+    my $self = shift;
+    my %args = (
+        Value   => undef,
+        Queue   => undef,
+        Initial => undef,
+        Final   => undef,
+        @_,
+    );
+
+    my $value = $args{Value};
+    return ( 1, undef ) unless defined $value && length $value;
+
+    my $queue = $args{Queue};
+
+    # In string mode the UI submits one of the configured numbers via a
+    # dropdown, so we only guard against a (crafted) non-numeric value.
+    my $map_ref;
+    $map_ref = $self->GetPriorityAsStringMapping( $queue->__Value('Name') )
+        if RT->Config->Get('EnablePriorityAsString');
+    if ( $map_ref && keys %$map_ref ) {
+        return ( 1, undef ) if $value =~ /^-?\d+$/;
+        return ( 0, $self->loc("Priority must be a whole number.") );
+    }
+
+    # Number mode shows a free-text field, so require a whole number within the
+    # priority range (the supplied ticket bounds, or the queue's defaults).
+    my $initial = defined $args{Initial} ? $args{Initial} : $queue->DefaultValue('InitialPriority');
+    my $final   = defined $args{Final}   ? $args{Final}   : $queue->DefaultValue('FinalPriority');
+    my ( $low, $high ) = $self->_PriorityRange( $initial, $final );
+    return ( 1, undef )
+        if $value =~ /^-?\d+$/ && $value >= $low && $value <= $high;
+    return ( 0, $self->loc( "Priority must be a whole number between [_1] and [_2]", $low, $high ) );
+}
+
+sub _PriorityRange {
+    my $self = shift;
+    my ( $initial, $final ) = @_;
+    $initial = 0   unless defined $initial && $initial =~ /^-?\d+$/;
+    $final   = 100 unless defined $final   && $final   =~ /^-?\d+$/;
+    my ( $low, $high ) = sort { $a <=> $b } ( $initial, $final );
+    return $low == $high ? ( 0, 100 ) : ( $low, $high );
 }
 
 sub GetPriorityAsStringMapping {
