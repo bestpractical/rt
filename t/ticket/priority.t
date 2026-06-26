@@ -112,4 +112,63 @@ my $txn = $txns->First;
 is( $txn->OldValue, 0,  'OldValue is correct' );
 is( $txn->NewValue, 50, 'NewValue is correct' );
 
+diag "Priority validation in number mode";
+
+RT->Config->Set( 'EnablePriorityAsString', 1 );
+RT->Config->Set( 'PriorityAsString', Default => 0 );
+
+my $num_queue = RT::Test->load_or_create_queue( Name => 'NumberMode' );
+
+for my $field (qw/Priority InitialPriority FinalPriority/) {
+    # Keep the other two fields valid so only $field is bad.
+    my %priorities = ( Priority => 50, InitialPriority => 50, FinalPriority => 50 );
+    $priorities{$field} = 'Emergency';
+
+    my $bad = RT::Ticket->new( RT->SystemUser );
+    my ( $id, undef, $msg ) = $bad->Create(
+        Queue   => $num_queue->Id,
+        Subject => "Non-numeric $field",
+        %priorities,
+    );
+    ok( !$id, "Ticket not created with a non-numeric $field" );
+    is( $msg, 'Priority must be a whole number between 0 and 100', "Number-mode message for $field" );
+}
+
+diag "Priority out of range is rejected; boundaries are accepted";
+
+{
+    my $bad = RT::Ticket->new( RT->SystemUser );
+    my ( $id, undef, $msg ) = $bad->Create(
+        Queue => $num_queue->Id, Subject => 'Out of range', Priority => 500,
+    );
+    ok( !$id, 'Ticket not created with an out-of-range priority' );
+    is( $msg, 'Priority must be a whole number between 0 and 100', 'Out-of-range message' );
+}
+
+for my $boundary ( 0, 100 ) {
+    my $ok_ticket = RT::Ticket->new( RT->SystemUser );
+    my ($id) = $ok_ticket->Create(
+        Queue    => $num_queue->Id,
+        Subject  => "Boundary $boundary",
+        Priority => $boundary,
+        FinalPriority => $boundary,
+    );
+    ok( $id, "Ticket created with boundary priority $boundary" );
+    is( $ok_ticket->Priority, $boundary, "Priority is $boundary" );
+}
+
+diag "String mode rejects a crafted non-numeric value";
+
+# In string mode the UI submits a configured number, but a crafted non-numeric
+# value must still be rejected rather than passed to the integer column.
+RT->Config->Set( 'PriorityAsString', Default => { Low => 0, Medium => 50, High => 100 } );
+{
+    my $bad = RT::Ticket->new( RT->SystemUser );
+    my ( $id, undef, $msg ) = $bad->Create(
+        Queue => $num_queue->Id, Subject => 'Crafted string-mode value', Priority => 'Bogus',
+    );
+    ok( !$id, 'Ticket not created with a non-numeric value in string mode' );
+    is( $msg, 'Priority must be a whole number.', 'String-mode non-numeric is rejected' );
+}
+
 done_testing;

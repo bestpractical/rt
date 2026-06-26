@@ -240,4 +240,45 @@ for my $field (qw/InitialPriority Priority FinalPriority/) {
     is( $ticket->$field, 5, "$field is set correctly" );
 }
 
+diag "Non-numeric priority is rejected on the create form, before create";
+
+( $ret, $msg ) = $config->SetContent( { Default => 0 } );
+ok( $ret, 'Set PriorityAsString to numeric mode' );
+
+$m->goto_create_ticket( $queue->Id );
+$form = $m->form_name('TicketCreate');
+is( $form->find_input('InitialPriority')->type, 'text', 'InitialPriority is a text input in numeric mode' );
+
+$m->submit_form_ok(
+    {   form_name => 'TicketCreate',
+        fields    => { Subject => 'Non-numeric priority via web', InitialPriority => 'Emergency' },
+        button    => 'SubmitTicket',
+    },
+    'Submit create with a non-numeric priority'
+);
+$m->content_contains( 'Priority must be a whole number between 0 and 100', 'Inline validation message is shown' );
+$m->content_contains( 'name="TicketCreate"', 'Create form is redisplayed for correction, not an error page' );
+
+my $unsaved = RT::Tickets->new( RT->SystemUser );
+$unsaved->Limit( FIELD => 'Subject', OPERATOR => '=', VALUE => 'Non-numeric priority via web' );
+is( $unsaved->Count, 0, 'No ticket was created' );
+
+diag "Non-numeric priority is rejected on the update (Jumbo) form";
+
+my $upd = RT::Test->create_ticket( Queue => 'General', Subject => 'Update priority', Priority => 50 );
+
+$m->goto_ticket( $upd->id );
+$m->follow_link_ok( { text => 'Jumbo' }, 'Jumbo' );
+$m->submit_form_ok(
+    {   form_name => 'TicketModifyAll',
+        fields    => { Priority => 'Emergency' },
+    },
+    'Submit update with a non-numeric priority'
+);
+$m->content_contains( 'Priority must be a whole number between 0 and 100', 'Inline validation message is shown on update' );
+
+my $reload = RT::Ticket->new( RT->SystemUser );
+$reload->Load( $upd->id );
+is( $reload->Priority, 50, 'Priority was not silently changed' );
+
 done_testing;
