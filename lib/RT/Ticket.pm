@@ -3775,6 +3775,16 @@ sub _PriorityAsNumber {
     return undef;
 }
 
+sub ValidatePriority {
+    my $self  = shift;
+    my $value = shift;
+    return 1 unless defined $value && length $value;
+    return $value =~ /^-?\d+$/ ? 1 : 0;
+}
+
+sub ValidateInitialPriority { shift->ValidatePriority(@_) }
+sub ValidateFinalPriority   { shift->ValidatePriority(@_) }
+
 sub GetPriorityAsStringMapping {
     my $self = shift;
     my $queue_name = shift || $self->QueueObj->__Value('Name');    # Skip ACL check
