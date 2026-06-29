@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef, playwright => 1;
+use RT::Test tests => undef, playwright => 1, config => 'Set( $ArticleOnTicketCreate, 1 );';
 
 my ( $url, $p ) = RT::Test->started_ok;
 
@@ -448,6 +448,125 @@ diag "Test include article feature";
     $p->text_contains('This is include article reply');
     $p->text_contains('This is article name');
     $p->text_contains('This is article summary');
+}
+
+diag "Test article SubjectOverride feature";
+{
+    # Build a class with a subject custom field and an article that fills it in.
+    my $class = RT::Class->new( RT->SystemUser );
+    ( $ret, $msg ) = $class->Create(
+        Name        => 'SubjectOverrideClass-' . $$,
+        Description => 'Class for the SubjectOverride test',
+    );
+    ok( $ret, "Created class: $msg" );
+    ( $ret, $msg ) = $class->AddToObject( RT::Queue->new( RT->SystemUser ) );
+    ok( $ret, "Applied class globally: $msg" );
+
+    my $subject_cf = RT::CustomField->new( RT->SystemUser );
+    ( $ret, $msg ) = $subject_cf->Create(
+        Name       => 'Subject-' . $$,
+        Type       => 'Text',
+        MaxValues  => 1,
+        LookupType => 'RT::Class-RT::Article',
+    );
+    ok( $ret, "Created subject custom field: $msg" );
+    ( $ret, $msg ) = $subject_cf->AddToObject($class);
+    ok( $ret, "Added subject custom field to class: $msg" );
+
+    my $override_article = RT::Article->new( RT->SystemUser );
+    ( $ret, $msg ) = $override_article->Create(
+        Name                             => 'Subject override article ' . $$,
+        Summary                          => 'Article that overrides the subject',
+        Class                            => $class->Id,
+        'CustomField-' . $subject_cf->Id => 'This clobbers your subject',
+    );
+    ok( $ret, "Created override article: $msg" );
+
+    my $ticket = RT::Ticket->new( RT->SystemUser );
+    $ticket->Load(1);
+
+    # Without SubjectOverride configured on the class, applying the article must
+    # not touch the subject.
+    {
+        my $reply = $p->{page}->locator('a:has-text("Reply")')->first();
+        my $href  = $reply->getAttribute('href');
+        $p->get_ok($href);
+
+        my $subject_input = $p->{page}->locator('input[name="UpdateSubject"]')->first();
+        is( $subject_input->inputValue(), $ticket->Subject, 'Subject starts as the ticket subject' );
+
+        is(
+            $p->{page}->locator('[name=IncludeArticleId]')->first->selectOption( $override_article->Id . '' )->[0],
+            $override_article->Id,
+            'Selected article with no SubjectOverride configured'
+        );
+        $p->wait_for_htmx;
+
+        $subject_input = $p->{page}->locator('input[name="UpdateSubject"]')->first();
+        is( $subject_input->inputValue(), $ticket->Subject,
+            'Subject not updated when class has no SubjectOverride' );
+    }
+
+    # Point the class at the subject custom field, then apply the article again.
+    ( $ret, $msg ) = $class->SetSubjectOverride( $subject_cf->Id );
+    ok( $ret, "Set SubjectOverride: $msg" );
+
+    {
+        my $reply = $p->{page}->locator('a:has-text("Reply")')->first();
+        my $href  = $reply->getAttribute('href');
+        $p->get_ok($href);
+
+        my $subject_input = $p->{page}->locator('input[name="UpdateSubject"]')->first();
+        is( $subject_input->inputValue(), $ticket->Subject, 'Subject starts as the ticket subject' );
+
+        is(
+            $p->{page}->locator('[name=IncludeArticleId]')->first->selectOption( $override_article->Id . '' )->[0],
+            $override_article->Id,
+            'Selected article with SubjectOverride configured'
+        );
+        $p->wait_for_htmx;
+
+        $subject_input = $p->{page}->locator('input[name="UpdateSubject"]')->first();
+        is( $subject_input->inputValue(), 'This clobbers your subject',
+            'Subject updated with the article SubjectOverride custom field value' );
+    }
+
+    # The same override must apply on the create screen, which renders its own
+    # message widget (Ticket/Widgets/Create/Message) rather than MessageDetails.
+    {
+        $p->goto_create_ticket(1);
+
+        my $subject_input = $p->{page}->locator('input[name="Subject"]')->first();
+        is( $subject_input->inputValue(), '', 'Subject starts empty on create' );
+
+        is(
+            $p->{page}->locator('[name=IncludeArticleId]')->first->selectOption( $override_article->Id . '' )->[0],
+            $override_article->Id,
+            'Selected article on create with SubjectOverride configured'
+        );
+        $p->wait_for_htmx;
+
+        $subject_input = $p->{page}->locator('input[name="Subject"]')->first();
+        is( $subject_input->inputValue(), 'This clobbers your subject',
+            'Subject updated on create with the article SubjectOverride custom field value' );
+
+        # Submitting must persist the overridden subject on the new ticket; the
+        # create page returns Display.html without re-rendering the widget, so
+        # this proves the override survives the round trip on its own.
+        $p->submit_form_ok(
+            {
+                form_name => 'TicketCreate',
+                fields    => { Content => 'create with subject override' },
+                button    => 'SubmitTicket',
+            },
+            'Create ticket with subject override'
+        );
+        $p->text_like(qr/Ticket \d+ created in queue/);
+
+        my $new_ticket = RT::Test->last_ticket;
+        is( $new_ticket->Subject, 'This clobbers your subject',
+            'New ticket persisted the overridden subject' );
+    }
 }
 
 $p->logout;
