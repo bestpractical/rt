@@ -1,6 +1,6 @@
 
 #color-inputs .form-control {
-    background-color: #e9ecef;
+    background-color: var(--bs-secondary-bg);
 }
 
 /* Read-only lifecycle viewer portlet. The graph tracks the column width and
