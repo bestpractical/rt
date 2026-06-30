@@ -1603,23 +1603,47 @@ function registerLoadListener(func) {
 }
 
 function clipContent(elt) {
-    jQuery(elt).find('td.collection-as-table').each( function() {
-        if ( jQuery(this).children() ) {
-            var max_height = jQuery(this).css('line-height').replace('px', '') * 5;
-            var height     = '' + max_height + 'px';
-            jQuery(this).children().each(function () {
-                if ( jQuery(this).height() > max_height ) {
-                    jQuery(this).wrapAll('<div class="clip">');
-                    jQuery(this).parent().wrapAll('<div class="clip-container">');
-                    jQuery(this).parent().attr('clip-height', height).height(height);
-                    jQuery(this).parent().parent().append(
-                        '<a href="#" class="unclip button btn btn-primary">' + loc_key('unclip') + '</a>',
-                        '<a href="#" class="reclip button btn btn-primary" style="display: none;">' + loc_key('clip') + '</a>'
-                    );
-                }
-            });
+    // Two-phase to avoid layout thrashing: measure everything first (read
+    // phase, no DOM writes => the browser computes layout once), then perform
+    // all the wrapping (write phase). Reading element heights in between DOM
+    // mutations forces a synchronous reflow per element, which is very slow on
+    // wide search results (rows x columns cells). The DOM output and the
+    // a.unclip/a.reclip handlers (in init.js) are unchanged.
+    var toClip = [];
+
+    // READ PHASE -- measure only.
+    jQuery(elt).find('td.collection-as-table').each(function () {
+        if ( !this.children.length ) return;
+        var maxHeight = parseFloat(getComputedStyle(this).lineHeight) * 5;
+        if ( !maxHeight ) return; // line-height 'normal' => NaN, skip (matches prior behavior)
+        for ( var i = 0; i < this.children.length; i++ ) {
+            var child = this.children[i];
+            if ( child.offsetHeight > maxHeight ) {
+                toClip.push({ child: child, height: maxHeight + 'px' });
+            }
         }
     });
+
+    // WRITE PHASE -- mutate the DOM in one batch, no height reads in between.
+    for ( var j = 0; j < toClip.length; j++ ) {
+        var child = toClip[j].child;
+        var height = toClip[j].height;
+
+        var container = document.createElement('div');
+        container.className = 'clip-container';
+        var clip = document.createElement('div');
+        clip.className = 'clip';
+        clip.setAttribute('clip-height', height);
+        clip.style.height = height;
+
+        child.parentNode.replaceChild(container, child);
+        clip.appendChild(child);
+        container.appendChild(clip);
+        container.insertAdjacentHTML('beforeend',
+            '<a href="#" class="unclip button btn btn-primary">' + loc_key('unclip') + '</a>' +
+            '<a href="#" class="reclip button btn btn-primary" style="display: none;">' + loc_key('clip') + '</a>'
+        );
+    }
 }
 
 function alertError(message) {
