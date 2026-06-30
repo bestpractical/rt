@@ -220,8 +220,20 @@ my $render_attachment = sub {
             # it's a toplevel object
             !$ParentObj
 
-            # or its parent isn't a multipart alternative
-            || ( $ParentObj->ContentType !~ m{^multipart/(?:alternative|related)$}i )
+            # or it isn't part of a multipart/alternative grouping.  A
+            # multipart/related is only an alternative representation when it
+            # is itself nested inside a multipart/alternative (e.g. the rich
+            # side of alternative -> [text/plain, related -> text/html]); a
+            # standalone multipart/related is not an alternative container per
+            # RFC 2387, so its root textual part must always be displayed.
+            || (
+                $ParentObj->ContentType !~ m{^multipart/alternative$}i
+                && !(
+                    $ParentObj->ContentType =~ m{^multipart/related$}i
+                    && $ParentObj->ParentObj
+                    && $ParentObj->ParentObj->ContentType =~ m{^multipart/alternative$}i
+                )
+            )
 
             # or it's of our prefered alterative type
             || (
