@@ -227,6 +227,25 @@ a:hover.close {
     z-index: 9999;
 }
 
+/* Draw the spinner checkmark by animating its stroke. */
+@keyframes rt-checkbox-spinner {
+    from { stroke-dashoffset: 40; }
+    to   { stroke-dashoffset: 0; }
+}
+
+/* Paused by default so a hidden spinner does no per-frame work. */
+.checkbox-spinner path {
+    animation: rt-checkbox-spinner 1s linear infinite;
+    animation-play-state: paused;
+}
+
+/* Run the animation only while the spinner is actually shown. */
+.refreshing .spinner .rt-boost .checkbox-spinner path,
+.htmx-request .spinner .rt-placeholder .checkbox-spinner path,
+.htmx-request .htmx-indicator .checkbox-spinner path {
+    animation-play-state: running;
+}
+
 .htmx-request > :not(.spinner),
 .refreshing > :not(#hx-boost-spinner) {
     opacity: 0.3;
