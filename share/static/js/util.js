@@ -1603,46 +1603,41 @@ function registerLoadListener(func) {
 }
 
 function clipContent(elt) {
-    // Two-phase to avoid layout thrashing: measure everything first (read
-    // phase, no DOM writes => the browser computes layout once), then perform
-    // all the wrapping (write phase). Reading element heights in between DOM
-    // mutations forces a synchronous reflow per element, which is very slow on
-    // wide search results (rows x columns cells). The DOM output and the
-    // a.unclip/a.reclip handlers (in init.js) are unchanged.
+    // Clamp tall search-result cells to 5 lines and add a Show all/Show less
+    // toggle. Two-phase (measure, then mutate) so we never read an element's
+    // height after a DOM write -- doing so forces a synchronous reflow per
+    // element, which is slow on wide search results (rows x columns cells).
+    //
+    // The clamp height itself is applied by CSS (.clip { max-height: 5lh }) and
+    // expand/collapse is a class toggle (see the a.clip-toggle handler in
+    // init.js), so each clipped cell only gains a wrapper div and one button --
+    // no inline height bookkeeping and no second hidden anchor.
+    var cells = jQuery(elt).find('td.collection-as-table').toArray();
+    if ( !cells.length ) return;
+
+    // line-height is uniform across the table, so read it once instead of
+    // calling getComputedStyle for every cell.
+    var maxHeight = parseFloat(getComputedStyle(cells[0]).lineHeight) * 5;
+    if ( !maxHeight ) return; // line-height 'normal' => NaN, skip (matches prior behavior)
+
+    // READ PHASE -- measure only, no DOM writes.
     var toClip = [];
-
-    // READ PHASE -- measure only.
-    jQuery(elt).find('td.collection-as-table').each(function () {
-        if ( !this.children.length ) return;
-        var maxHeight = parseFloat(getComputedStyle(this).lineHeight) * 5;
-        if ( !maxHeight ) return; // line-height 'normal' => NaN, skip (matches prior behavior)
-        for ( var i = 0; i < this.children.length; i++ ) {
-            var child = this.children[i];
-            if ( child.offsetHeight > maxHeight ) {
-                toClip.push({ child: child, height: maxHeight + 'px' });
-            }
+    for ( var i = 0; i < cells.length; i++ ) {
+        var children = cells[i].children;
+        for ( var k = 0; k < children.length; k++ ) {
+            if ( children[k].offsetHeight > maxHeight ) toClip.push(children[k]);
         }
-    });
+    }
 
-    // WRITE PHASE -- mutate the DOM in one batch, no height reads in between.
+    // WRITE PHASE -- wrap each clipped child and add one toggle button.
     for ( var j = 0; j < toClip.length; j++ ) {
-        var child = toClip[j].child;
-        var height = toClip[j].height;
-
-        var container = document.createElement('div');
-        container.className = 'clip-container';
+        var child = toClip[j];
         var clip = document.createElement('div');
         clip.className = 'clip';
-        clip.setAttribute('clip-height', height);
-        clip.style.height = height;
-
-        child.parentNode.replaceChild(container, child);
+        child.parentNode.replaceChild(clip, child);
         clip.appendChild(child);
-        container.appendChild(clip);
-        container.insertAdjacentHTML('beforeend',
-            '<a href="#" class="unclip button btn btn-primary">' + loc_key('unclip') + '</a>' +
-            '<a href="#" class="reclip button btn btn-primary" style="display: none;">' + loc_key('clip') + '</a>'
-        );
+        clip.insertAdjacentHTML('afterend',
+            '<a href="#" class="clip-toggle button btn btn-primary">' + loc_key('unclip') + '</a>');
     }
 }
 

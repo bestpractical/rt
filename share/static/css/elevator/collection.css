@@ -20,10 +20,14 @@
 
 .collection-as-table div.clip {
     overflow-y: hidden;
+    max-height: 5lh;
 }
 
-.collection-as-table a.unclip,
-.collection-as-table a.reclip {
+.collection-as-table div.clip.unclipped {
+    max-height: none;
+}
+
+.collection-as-table a.clip-toggle {
     font-size: smaller;
     font-weight: normal;
     margin-top: 0.3rem;

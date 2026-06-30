@@ -1055,19 +1055,12 @@ jQuery(document).on('click', 'a.jump-to-unread', function (evt) {
     }
 });
 
-// Clip content
-jQuery(document).on('click', 'a.unclip', function() {
-    jQuery(this).siblings('div.clip').css('height', 'auto');
-    jQuery(this).hide();
-    jQuery(this).siblings('a.reclip').show();
-    return false;
-});
-
-jQuery(document).on('click', 'a.reclip', function() {
-    var clip_div = jQuery(this).siblings('div.clip');
-    clip_div.height(clip_div.attr('clip-height'));
-    jQuery(this).siblings('a.unclip').show();
-    jQuery(this).hide();
+// Clip content -- toggle a clamped cell open/closed. The clamp is pure CSS
+// (.clip { max-height: 5lh }), so expanding is just adding/removing a class;
+// no height reads, and the same button swaps its label.
+jQuery(document).on('click', 'a.clip-toggle', function() {
+    var unclipped = jQuery(this).prev('div.clip').toggleClass('unclipped').hasClass('unclipped');
+    jQuery(this).text(loc_key(unclipped ? 'clip' : 'unclip'));
     return false;
 });
 
