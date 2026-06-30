@@ -247,4 +247,86 @@ This is the original forwarded email
 </div></blockquote></div><hr class="clear"></div></div>
 EOF
 
+diag "multipart/related with a text/plain root (no text/html) must still display the body";
+{
+    my $path
+        = RT::Test::get_relocatable_file( 'multipart-related-text-plain', ( File::Spec->updir(), 'data', 'emails' ) );
+    my $email = RT::Test->file_content($path);
+
+    my ( $status, $id ) = RT::Test->send_via_mailgate($email);
+    is( $status >> 8, 0, 'mail gateway exited normally' );
+    ok( $id, "created ticket #$id from multipart/related message" );
+
+    my $ticket = RT::Ticket->new( RT->SystemUser );
+    $ticket->Load($id);
+    is( $ticket->Id, $id, "loaded ticket #$id" );
+
+    # Confirm the message really has the structure under test before asserting
+    # on how it is displayed.
+    my $txn = $ticket->Transactions->First;
+    my $top = $txn->Attachments->First;
+    is( lc $top->ContentType, 'multipart/related', 'top-level part is multipart/related' );
+
+    my %child_types = map { lc( $_->ContentType ) => 1 }
+        grep { $_->Parent == $top->Id } @{ $txn->Attachments->ItemsArrayRef };
+    ok( $child_types{'text/plain'}, 'has a text/plain child part' );
+    ok( !$child_types{'text/html'}, 'has no text/html child part' );
+
+    $m->get_ok( "/Ticket/History.html?id=$id", 'fetched ticket history' );
+
+    my @bodies = $m->dom->find('div.messagebody')->map('all_text')->each;
+    ok( ( grep {/UNIQUEPLAINBODY/} @bodies ), 'text/plain body of the multipart/related message is displayed inline' )
+        or diag "Rendered message bodies: " . join( '||', @bodies );
+}
+
+# Returns the concatenated text of every rendered message body for a ticket.
+sub history_bodies {
+    my $tid = shift;
+    $m->get_ok( "/Ticket/History.html?id=$tid", "fetched history for #$tid" );
+    return join '||', $m->dom->find('div.messagebody')->map('all_text')->each;
+}
+
+# Used by both the PreferRichText on/off cases below.
+my $alt_id;
+
+diag "nested multipart/alternative -> multipart/related(html): exactly one textual part renders";
+{
+    # The common MUA structure (Outlook, Apple Mail, Gmail):
+    #   multipart/alternative
+    #     text/plain          # plain downgrade
+    #     multipart/related
+    #       text/html         # composed rich body
+    #       image/png         # inline CID image
+    # The text/html part's direct parent is the multipart/related.  RT must
+    # show exactly one textual part, never both (the "duplicate message"
+    # regression fixed in 4a38585f75) and never neither.  With PreferRichText
+    # on (the default) the rich body wins.
+    my $path = RT::Test::get_relocatable_file( 'multipart-alternative-related-html',
+        ( File::Spec->updir(), 'data', 'emails' ) );
+    my $email = RT::Test->file_content($path);
+
+    my ( $status, $id ) = RT::Test->send_via_mailgate($email);
+    is( $status >> 8, 0, 'mail gateway exited normally' );
+    ok( $id, "created ticket #$id from nested alternative/related message" );
+    $alt_id = $id;
+
+    my $bodies = history_bodies($id);
+    like( $bodies, qr/HTMLBODYMARKER/, 'PreferRichText on: text/html body is displayed' );
+    unlike( $bodies, qr/PLAINDOWNGRADEMARKER/, 'PreferRichText on: text/plain downgrade is suppressed (no duplicate)' );
+}
+
+diag "same message with PreferRichText off: the plain downgrade wins";
+{
+    # PreferRichText is overridable, so flip it via the user preference rather
+    # than restarting the server with a new system config.
+    my $root = RT::User->new( RT->SystemUser );
+    $root->Load('root');
+    my ( $ok, $msg ) = $root->SetPreferences( RT->System, { PreferRichText => 0 } );
+    ok( $ok, "set root's PreferRichText preference to 0" ) or diag $msg;
+
+    my $bodies = history_bodies($alt_id);
+    like( $bodies, qr/PLAINDOWNGRADEMARKER/, 'PreferRichText off: text/plain downgrade is displayed' );
+    unlike( $bodies, qr/HTMLBODYMARKER/, 'PreferRichText off: text/html body is suppressed (no duplicate)' );
+}
+
 done_testing;

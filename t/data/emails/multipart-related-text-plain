@@ -1,0 +1,29 @@
+Subject: multipart/related with a text/plain root
+From: root@localhost
+To: rt@example.com
+Content-Type: multipart/related; boundary="=_related_boundary_42"
+
+This is a multipart message in MIME format.
+
+--=_related_boundary_42
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+UNIQUEPLAINBODY this is the plain text body of a multipart/related message that
+has no text/html alternative part. It must still be displayed.
+
+--=_related_boundary_42
+Content-Type: application/octet-stream; name="data1.bin"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="data1.bin"
+
+aGVsbG8gd29ybGQK
+
+--=_related_boundary_42
+Content-Type: application/octet-stream; name="data2.bin"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="data2.bin"
+
+Z29vZGJ5ZSB3b3JsZAo=
+
+--=_related_boundary_42--

@@ -1,0 +1,35 @@
+Subject: multipart/alternative wrapping a multipart/related html part
+From: root@localhost
+To: rt@example.com
+Content-Type: multipart/alternative; boundary="=_alt_boundary"
+
+This is a multipart message in MIME format.
+
+--=_alt_boundary
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+PLAINDOWNGRADEMARKER this is the plain-text downgrade of the rich message.
+
+--=_alt_boundary
+Content-Type: multipart/related; boundary="=_rel_boundary"
+
+--=_rel_boundary
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+<div>HTMLBODYMARKER this is the composed rich body.<br />
+<img src="cid:inline-image@example.com" /></div>
+
+--=_rel_boundary
+Content-Type: image/png; name="inline.png"
+Content-Transfer-Encoding: base64
+Content-Disposition: inline; filename="inline.png"
+Content-ID: <inline-image@example.com>
+
+iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M8A
+AAMBAQDJ/pLvAAAAAElFTkSuQmCC
+
+--=_rel_boundary--
+
+--=_alt_boundary--
