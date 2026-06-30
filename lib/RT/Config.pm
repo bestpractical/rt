@@ -2034,6 +2034,9 @@ our %META;
     TicketsItemMapSize => {
         Widget => '/Widgets/Form/Integer',
     },
+    ProgressiveSearchResultRows => {
+        Widget => '/Widgets/Form/Integer',
+    },
 
     AssetDefaultSearchResultOrderBy => {
         Widget => '/Widgets/Form/String',

@@ -98,10 +98,9 @@ $feed->add_properties('calscale' => ['gregorian']);
 $feed->add_properties('method'   => ['publish']);
 $feed->add_properties('prodid'   => ["-//" . RT->Config->Get('rtname') ."//"]);
 
-$RowsPerPage = 1000 if !$RowsPerPage || $RowsPerPage > 1000;
-$tickets->RowsPerPage($RowsPerPage);
+$tickets->RowsPerPage($RowsPerPage) if $RowsPerPage;
 
-while ( my $t = ( $tickets->Next || ( $tickets->NextPage && $tickets->Next ) ) ) {
+while ( my $t = $RowsPerPage ? ( $tickets->Next || ( $tickets->NextPage && $tickets->Next ) ) : $tickets->Next ) {
     next unless $t->DueObj->IsSet;
 
     my $starttime = $t->StartsObj->IsSet ? $t->StartsObj : $t->CreatedObj;
@@ -168,5 +167,5 @@ $m->abort;
 </%init>
 
 <%args>
-$RowsPerPage => 100
+$RowsPerPage => RT->Config->Get('ProgressiveSearchResultRows')
 </%args>

@@ -3092,6 +3092,26 @@ Include "0" to provide the "Unlimited" option.
 
 Set(@SearchResultsPerPage, qw(0 10 25 50 100));
 
+=item C<$ProgressiveSearchResultRows>
+
+For unpaginated searches (including TSV, iCal, and RSS exports), RT
+progressively generates results by paging through the collection
+C<$ProgressiveSearchResultRows> rows at a time. This does not change the
+results, but can significantly reduce memory usage on large result sets.
+The system default is 100.
+
+Set this to 0 to disable progressive generation and load the entire
+result set into memory at once.
+
+For large downloads that use complicated queries, progressive generation
+can make the download slower. If you frequently download large exports,
+you can increase this number or set it to 0 to disable it for better
+performance, at the cost of higher memory use on the server.
+
+=cut
+
+Set( $ProgressiveSearchResultRows, 100 );
+
 =item C<$UserTicketDataResultFormat>
 
 This is the format of ticket search result for "Download User Tickets" links. It

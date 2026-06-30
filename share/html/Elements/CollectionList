@@ -76,9 +76,10 @@ $Collection->RowsPerPage( $Rows ) if $Rows;
 $Page = 1 unless $Page && $Page =~ /\A\d+\z/ && $Page > 1;    # workaround problems with $Page = '' or undef
 $Collection->GotoPage( $Page - 1 ); # SB uses page 0 as the first page
 
-# $Collection might not have CombineSearchAndCount method, like dashboards and saved searches.
-# Don't combine search and count for unpaginated searches, as we will progressively generate the result.
-$Collection->CombineSearchAndCount(1) if $Rows && $Collection->can('CombineSearchAndCount');
+# For unpaginated searches we progressively generate the result in chunks of
+# $ProgressiveSearchResultRows rows, and must not combine search and count then.
+my $ProgressiveRows = $Rows ? 0 : RT->Config->Get('ProgressiveSearchResultRows');
+$Collection->CombineSearchAndCount(1) unless $ProgressiveRows;
 $TotalFound = $Collection->CountAll() unless defined $TotalFound;
 return '' if !$TotalFound && !$ShowEmpty;
 
@@ -159,11 +160,9 @@ if ( $ShowHeader ) {
 
 my ($i, $column_map) = (0, {});
 $m->out('<tbody>');
-if ( !$Rows ) {
-    $Collection->RowsPerPage(100);
-}
+$Collection->RowsPerPage($ProgressiveRows) if $ProgressiveRows;
 
-while ( my $record = $Rows ? $Collection->Next : ( $Collection->Next || ( $Collection->NextPage && $Collection->Next ) ) ) {
+while ( my $record = $ProgressiveRows ? ( $Collection->Next || ( $Collection->NextPage && $Collection->Next ) ) : $Collection->Next ) {
     # Every ten rows, flush the buffer and put something on the page.
     $m->flush_buffer unless ++$i % 10;
 
