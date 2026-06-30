@@ -198,8 +198,6 @@ my $title = loc("Create a new ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQ
 
 $m->callback( QueueObj => $QueueObj, title => \$title, results => \@results, ARGSRef => \%ARGS );
 
-$m->scomp( '/Articles/Elements/SubjectOverride', ARGSRef => \%ARGS, QueueObj => $QueueObj, results => \@results );
-
 $QueueObj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."), Code => HTTP::Status::HTTP_NOT_FOUND);
 
 if ( $ARGS{QueueChanged} ) {

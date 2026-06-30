@@ -169,6 +169,8 @@
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%INIT>
+$m->comp( '/Articles/Elements/SubjectOverride', ARGSRef => \%ARGS, QueueObj => $QueueObj );
+
 my $gnupg_widget = $m->comp( '/Elements/Crypt/SignEncryptWidget:new', Arguments => \%ARGS );
 $m->comp(
     '/Elements/Crypt/SignEncryptWidget:Process',
