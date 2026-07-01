@@ -3379,9 +3379,10 @@ sub SetPriority {
     else {
         # Try to load a number from the string
         $number = $self->_PriorityAsNumber($priority);
+        return ( 0, $self->loc( "Invalid value for [_1]", $self->loc("Priority") ) ) unless defined $number;
     }
 
-    return $self->_Set( Field => 'Priority', Value => $number || 0 );
+    return $self->_Set( Field => 'Priority', Value => $number );
 }
 
 =head2 TimeEstimated
