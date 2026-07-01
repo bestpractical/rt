@@ -157,6 +157,9 @@ my $upd = RT::Test->create_ticket( Queue => 'General', Subject => 'Update priori
 ok( !( $upd->SetInitialPriority('Emergency') )[0], 'SetInitialPriority rejects a non-numeric value' );
 ok( !( $upd->SetFinalPriority('Emergency') )[0],   'SetFinalPriority rejects a non-numeric value' );
 
+ok( !( $upd->SetPriority('Emergency') )[0], 'SetPriority rejects an unresolvable non-numeric value' );
+is( $upd->Priority, 5, 'Priority is unchanged after the rejected SetPriority' );
+
 diag "Negative priorities are accepted";
 
 $upd->SetPriority(-10);
