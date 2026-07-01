@@ -157,4 +157,24 @@ my $upd = RT::Test->create_ticket( Queue => 'General', Subject => 'Update priori
 ok( !( $upd->SetInitialPriority('Emergency') )[0], 'SetInitialPriority rejects a non-numeric value' );
 ok( !( $upd->SetFinalPriority('Emergency') )[0],   'SetFinalPriority rejects a non-numeric value' );
 
+diag "Negative priorities are accepted";
+
+$upd->SetPriority(-10);
+is( $upd->Priority, -10, 'SetPriority sets a negative number' );
+
+RT->Config->Set( 'PriorityAsString', Default => { Backlog => -10, Low => 0, High => 100 } );
+my $neg_queue = RT::Test->load_or_create_queue( Name => 'NegPriority' );
+
+my $neg = RT::Ticket->new( RT->SystemUser );
+my ($neg_id) = $neg->Create(
+    Queue           => $neg_queue->Id,
+    Subject         => 'Negative priority',
+    Priority        => -10,
+    InitialPriority => -10,
+    FinalPriority   => -10,
+);
+ok( $neg_id, 'Ticket created with negative priorities' );
+is( $neg->Priority, -10, 'Negative priority stored' );
+is( $neg->PriorityAsString, 'Backlog', 'Negative priority maps to its configured label' );
+
 done_testing;
