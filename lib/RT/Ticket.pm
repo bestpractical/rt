@@ -3372,12 +3372,12 @@ sub SetPriority {
     my $priority = shift;
     my $number;
 
-    if ( $priority =~ /^\d+$/ ) {
-        # Already a digit
+    if ( $priority =~ /^-?\d+$/ ) {
+        # Already a number
         $number = $priority;
     }
     else {
-        # Try to load a digit from the string
+        # Try to load a number from the string
         $number = $self->_PriorityAsNumber($priority);
     }
 
