@@ -131,7 +131,8 @@ else {
 }
 
 for (@columns) {
-    $m->out(join("\t", map { $_->{header} } @$_)."\n");
+    # To prevent injection, add a leading space to make sure excel-ish applications treat it like a literal
+    $m->out(join("\t", map { s/^(?=-|\+|=|\@|")/ /; $_ } map { $_->{header} } @$_)."\n");
 }
 
 my $i = 0;
