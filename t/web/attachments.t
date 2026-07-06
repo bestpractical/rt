@@ -720,4 +720,34 @@ diag 'ProcessTicketAttachments rejects PinAttachments / UnpinAttachments from an
         "cross-ticket Unpin rejected with Invalid attachment message" );
 }
 
+diag 'pinned attachment renders a trailing pin indicator';
+{
+    my ( $ticket, $att ) = _create_ticket_with_attachment( Filename => 'web_pin_indicator.txt' );
+
+    my ( $ok, $msg ) = $ticket->PinAttachment($att);
+    ok( $ok, "pinned attachment: " . ( $msg // '' ) );
+
+    $m->get_ok( $url . "/Ticket/Display.html?id=" . $ticket->Id, 'loaded ticket display' );
+
+    my $row = $m->dom->at('tr.attachment-pinned[data-name="web_pin_indicator.txt"]');
+    ok( $row, 'pinned attachment row has the attachment-pinned class' );
+
+    my $pin = $row->at('td.attachment-pin-indicator svg.bi-pin');
+    ok( $pin, 'pinned row shows the pin icon in a dedicated cell' );
+    is( $pin->attr('aria-label'), 'Pinned', 'pin indicator is labeled "Pinned" for assistive tech' );
+}
+
+diag 'unpinned attachment renders no pin indicator';
+{
+    my ( $ticket, $att ) = _create_ticket_with_attachment( Filename => 'web_nopin_indicator.txt' );
+
+    $m->get_ok( $url . "/Ticket/Display.html?id=" . $ticket->Id, 'loaded ticket display' );
+
+    my $row = $m->dom->at('tr[data-name="web_nopin_indicator.txt"]');
+    ok( $row, 'found the unpinned attachment row' );
+    ok( !( ( $row->attr('class') // '' ) =~ /attachment-pinned/ ),
+        'unpinned row lacks the attachment-pinned class' );
+    ok( !$row->at('svg.bi-pin'), 'unpinned row has no pin indicator' );
+}
+
 done_testing;
