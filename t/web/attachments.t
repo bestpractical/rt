@@ -748,6 +748,11 @@ diag 'unpinned attachment renders no pin indicator';
     ok( !( ( $row->attr('class') // '' ) =~ /attachment-pinned/ ),
         'unpinned row lacks the attachment-pinned class' );
     ok( !$row->at('svg.bi-pin'), 'unpinned row has no pin indicator' );
+
+    my $cb = $row->at('input.attachment-select');
+    ok( $cb, 'found the select checkbox for the attachment' );
+    is( $cb->attr('aria-label'), 'Select web_nopin_indicator.txt',
+        'checkbox is labeled with the filename for assistive tech' );
 }
 
 done_testing;
