@@ -86,7 +86,7 @@
     <tr data-name="<% $filename %>" data-type="<% $type{$filename} %>" data-size="<% $first->ContentLength %>" data-date="<% $first->Created %>" data-id="<% $first->Id %>" class="<% $pinned ? 'attachment-pinned' : '' %>">
       <td class="<% !$ReadOnly && $SelectOnly ? '' : 'bulk-only' %>">
         <div class="form-check">
-          <input type="checkbox" class="attachment-select checkbox form-check-input" name="<% $SelectInputName %>" <% $is_checked{$first->Id} ? 'checked' : '' %> id="SelectAttachments-<% $first->Id %>" value="<% $first->Id %>" />
+          <input type="checkbox" class="attachment-select checkbox form-check-input" name="<% $SelectInputName %>" <% $is_checked{$first->Id} ? 'checked' : '' %> id="SelectAttachments-<% $first->Id %>" value="<% $first->Id %>" aria-label="<% loc('Select [_1]', $filename) %>" />
           <label class="form-check-label" for="SelectAttachments-<% $first->Id %>"></label>
         </div>
       </td>
