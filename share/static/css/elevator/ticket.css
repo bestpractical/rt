@@ -111,8 +111,12 @@ div.requestor-ticket-links {
     word-break: break-word;
 }
 
-.attachment-pinned .attachment-icon svg {
-    fill: var(--bs-primary);
+.attachment-pin-indicator {
+    width: 1.5rem;
+}
+
+.attachment-pin-indicator svg {
+    color: var(--bs-primary);
 }
 
 .ticket-info-attachments .attachment-list {

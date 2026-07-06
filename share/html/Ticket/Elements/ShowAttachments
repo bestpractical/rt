@@ -133,6 +133,11 @@ $first->TransactionId%>/<% $first->Id %>/<% $first->Filename | un %>">
 %       }
         </small>
       </td>
+      <td class="text-center attachment-pin-indicator">
+%     if ( $pinned ) {
+        <% GetSVGImage( Name => 'pin', Title => loc('Pinned') ) |n %>
+%     }
+      </td>
       <td class="text-center">
 %     if ($first->ContentLength) {
 %       if (my $url = RT->System->ExternalStorageURLFor($first)) {
