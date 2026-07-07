@@ -130,6 +130,90 @@ div.requestor-ticket-links {
     max-width: 6.5rem;
 }
 
+/* Compact sort menu is mobile-only (shown in the media query below). It carries
+   .rt-inline-icon.border, which boxes.css sets to inline-block and imports after
+   this file, so the extra .rt-inline-icon class out-specifies it (not !important). */
+.ticket-info-attachments .attachment-sort-menu.rt-inline-icon {
+    display: none;
+}
+
+.ticket-info-attachments .attachment-search-close {
+    display: none;
+}
+
+/* The hidden close (X) is still the input-group's last child, so Bootstrap squares
+   the input's right side; restore its rounding. Out-specify rather than !important
+   (as forms.css does for tom-select); scope to .titlebox where the class toggles. */
+.titlebox.ticket-info-attachments:not(.attachment-search-open) .input-group.attachment-search-input > input.form-control.attachment-search {
+    border-top-right-radius: var(--bs-border-radius);
+    border-bottom-right-radius: var(--bs-border-radius);
+}
+
+/* Mobile: collapse search to the magnifier and sort to an icon so the title fits.
+   Scoped to .titlebox: the picker (HideTitleBox) has no titlebox to expand into,
+   so it keeps search and sort visible at all widths (see the radius rules above). */
+@media (max-width: 575.98px) {
+    .titlebox.ticket-info-attachments .titlebox-title {
+        position: relative;
+    }
+
+    .titlebox.ticket-info-attachments .attachment-search-input {
+        width: auto;
+        flex: 0 0 auto;
+    }
+    .titlebox.ticket-info-attachments .attachment-search-input .attachment-search {
+        display: none;
+    }
+    .titlebox.ticket-info-attachments .attachment-search-toggle {
+        cursor: pointer;
+    }
+
+    .titlebox.ticket-info-attachments select.attachment-sort,
+    .titlebox.ticket-info-attachments .ts-wrapper.attachment-sort {
+        display: none;
+    }
+    .titlebox.ticket-info-attachments .attachment-sort-menu.rt-inline-icon {
+        display: inline-block;
+    }
+    /* Round the collapsed glass fully (out-specify Bootstrap's input-group radius). */
+    .titlebox.ticket-info-attachments:not(.attachment-search-open) .input-group.attachment-search-input > span.input-group-text.attachment-search-toggle {
+        border-radius: var(--bs-border-radius);
+    }
+
+    /* Expanded search: TitleBox's .right is absolutely positioned, so stretch it
+       over the title and let the input grow to fill. */
+    .titlebox.ticket-info-attachments.attachment-search-open .titlebox-title .right {
+        left: 0.75rem;
+        right: 0.75rem;
+        width: auto;
+        z-index: 5;
+        background: var(--bs-body-bg);
+    }
+    .titlebox.ticket-info-attachments.attachment-search-open .titlebox-title .right > span {
+        width: 100%;
+    }
+    .titlebox.ticket-info-attachments.attachment-search-open .attachment-search-input {
+        flex: 1 1 auto;
+        width: auto;
+        max-width: none;
+    }
+    .titlebox.ticket-info-attachments.attachment-search-open .attachment-search-input .attachment-search {
+        display: block;
+        flex: 1 1 auto;
+        width: 1%;
+    }
+    .titlebox.ticket-info-attachments.attachment-search-open .attachment-search-close {
+        display: flex;
+        cursor: pointer;
+    }
+    .titlebox.ticket-info-attachments.attachment-search-open .attachment-filter,
+    .titlebox.ticket-info-attachments.attachment-search-open .attachment-sort-menu,
+    .titlebox.ticket-info-attachments.attachment-search-open .ts-wrapper.attachment-sort,
+    .titlebox.ticket-info-attachments.attachment-search-open .attachment-bulk-toggle {
+        display: none;
+    }
+}
+
 .ticket-info-attachments .ts-wrapper.attachment-sort .ts-control {
     padding: 5px 2em 5px 0.4em;
     line-height: 1;

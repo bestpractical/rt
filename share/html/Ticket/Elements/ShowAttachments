@@ -334,12 +334,28 @@ for my $filename ( keys %documents ) {
 my $controls    = '';
 my $bulk_toggle = '';
 if ( keys %documents ) {
-    my $search_icon = GetSVGImage( Name => 'search' );
+    my $search_icon  = GetSVGImage( Name => 'search' );
+    my $search_label = loc('Search');
+
+    # The collapse-to-a-glass behavior only applies in the titlebox widget; the
+    # picker (HideTitleBox) has no titlebox to expand into, so keep search open
+    # and skip the toggle/close affordances.
+    my ( $toggle_class, $toggle_attrs, $close_span ) = ( '', '', '' );
+    if ( !$HideTitleBox ) {
+        # No tooltip on the close icon: it hides itself on click, which would orphan
+        # a stuck tooltip at 0,0. The span's aria-label keeps it accessible.
+        my $close_icon  = GetSVGImage( Name => 'close' );
+        my $close_label = loc('Close');
+        $toggle_class = ' attachment-search-toggle';
+        $toggle_attrs = qq{ role="button" tabindex="0" aria-label="$search_label"};
+        $close_span
+            = qq{<span class="input-group-text attachment-search-close" role="button" tabindex="0" aria-label="$close_label">$close_icon</span>};
+    }
     $controls
         .= qq{<span class="input-group d-inline-flex align-top attachment-search-input">}
-        . qq{<span class="input-group-text">$search_icon</span>}
-        . qq{<input class="form-control attachment-search" name="attachment-search" type="text" placeholder="}
-        . loc('Search') . qq{"></span> };
+        . qq{<span class="input-group-text$toggle_class"$toggle_attrs>$search_icon</span>}
+        . qq{<input class="form-control attachment-search" name="attachment-search" type="text" placeholder="$search_label">}
+        . qq{$close_span</span> };
 
     my $funnel     = GetSVGImage( Name => 'funnel', Title => loc('Type Filter') );
     my $filter_alt = loc('Type Filter');
@@ -362,7 +378,10 @@ if ( keys %documents ) {
     }
     $controls .= qq{</div></li></ul></span> };
 
-    $controls .= qq{<select class="form-select form-select-sm selectpicker attachment-sort">};
+    my $sort_label = loc('Sort');
+
+    # Render both; ticket.css shows the tom-select on wide screens, the compact icon dropdown on mobile.
+    $controls .= qq{<select class="form-select form-select-sm selectpicker attachment-sort" aria-label="$sort_label">};
     for my $field (qw/Name Type Size Date/) {
         for my $order (qw/asc desc/) {
             my $arrow = $order eq 'asc' ? '&#8593;' : '&#8595;';
@@ -370,6 +389,22 @@ if ( keys %documents ) {
         }
     }
     $controls .= qq{</select> };
+
+    my $sort_icon = GetSVGImage( Name => 'sort-down', Title => $sort_label );
+    $controls
+        .= qq{<span class="rt-inline-icon dropdown border rounded attachment-sort-menu">}
+        . qq{<a class="attachment-sort-toggle menu-item" href="javascript:void(0)" aria-label="$sort_label" data-bs-toggle="dropdown" data-bs-boundary="viewport" aria-haspopup="true" aria-expanded="false">$sort_icon</a>}
+        . qq{<ul class="dropdown-menu dropdown-menu-end">};
+    for my $field (qw/Name Type Size Date/) {
+        for my $order (qw/asc desc/) {
+            my $arrow = $order eq 'asc' ? '&#8593;' : '&#8595;';
+            $controls
+                .= qq{<li><a class="dropdown-item attachment-sort-option" href="javascript:void(0)" data-sort="$field-$order">}
+                . loc($field)
+                . qq{ $arrow</a></li>};
+        }
+    }
+    $controls .= qq{</ul></span> };
 
     if ( !$ReadOnly && !$SelectOnly ) {
         my $bulk_svg   = GetSVGImage( Name => 'collection', Title => loc('Bulk') );

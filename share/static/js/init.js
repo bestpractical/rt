@@ -845,13 +845,15 @@ document.addEventListener('htmx:load', function(evt) {
         });
     });
 
-    elt.querySelector('.attachment-sort')?.addEventListener('change', (evt) => {
-        // sorter is like type-asc
-        const sorter = evt.target.value.toLowerCase().split('-');
+    // Sort rows by a "field-direction" value (e.g. "type-asc"), pinned on top.
+    // Shared by the desktop tom-select and the mobile sort dropdown.
+    const sortAttachmentRows = (widget, value) => {
+        const sorter = (value || '').toLowerCase().split('-');
         if ( sorter.length !== 2 ) return;
 
-        const rows = Array.from(evt.target.closest('.titlebox').querySelectorAll('.attachment-list > table > tbody > tr'));
-        const tbody = evt.target.closest('.titlebox').querySelector('.attachment-list tbody');
+        const tbody = widget?.querySelector('.attachment-list tbody');
+        if ( !tbody ) return;
+        const rows = Array.from(widget.querySelectorAll('.attachment-list > table > tbody > tr'));
         const direction = sorter[1] === 'asc' ? 1 : -1;
         const sorted_rows = rows.sort((a, b) => {
             if (!(a.classList.contains('attachment-pinned') && b.classList.contains('attachment-pinned'))) {
@@ -876,11 +878,72 @@ document.addEventListener('htmx:load', function(evt) {
             }
         });
         tbody.append(...sorted_rows);
+    };
+
+    const attachmentSort = elt.querySelector('select.attachment-sort');
+    const attachmentSortMenu = elt.querySelector('.attachment-sort-menu');
+    const attachmentSortOptions = attachmentSortMenu
+        ? Array.from(attachmentSortMenu.querySelectorAll('.attachment-sort-option'))
+        : [];
+
+    // The desktop <select> and the mobile dropdown share one value; keep both
+    // in sync so switching breakpoints never shows a stale choice. Update the
+    // tom-select silently to avoid re-triggering the sort.
+    const syncAttachmentSort = value => {
+        if ( attachmentSort ) {
+            if ( attachmentSort.tomselect ) {
+                attachmentSort.tomselect.setValue(value, true);
+            }
+            else {
+                attachmentSort.value = value;
+            }
+        }
+        attachmentSortOptions.forEach(o => o.classList.toggle('active', o.getAttribute('data-sort') === value));
+    };
+
+    if ( attachmentSort ) {
+        attachmentSort.addEventListener('change', evt => {
+            sortAttachmentRows(evt.target.closest('.ticket-info-attachments'), evt.target.value);
+            syncAttachmentSort(evt.target.value);
+        });
+    }
+
+    attachmentSortOptions.forEach(option => {
+        option.addEventListener('click', evt => {
+            evt.preventDefault();
+            const value = option.getAttribute('data-sort');
+            sortAttachmentRows(option.closest('.ticket-info-attachments'), value);
+            syncAttachmentSort(value);
+        });
     });
-    elt.querySelector('.attachment-sort')?.dispatchEvent(new Event('change'));
+
+    // Sort once on load and reflect the default choice on both controls.
+    if ( attachmentSort ) {
+        sortAttachmentRows(attachmentSort.closest('.ticket-info-attachments'), attachmentSort.value);
+        syncAttachmentSort(attachmentSort.value);
+    }
 
     elt.querySelector('.attachment-search')?.addEventListener('input', debounce(filterAttachments, 500));
     elt.querySelector('.attachment-filter-dropdown')?.addEventListener('change', debounce(filterAttachments, 100));
+
+    elt.querySelector('.attachment-search-toggle')?.addEventListener('click', evt => {
+        // Only toggle on mobile; on wider screens the search is always shown.
+        if ( !window.matchMedia('(max-width: 575.98px)').matches ) return;
+        const widget = evt.target.closest('.titlebox');
+        if ( !widget ) return;
+        widget.classList.toggle('attachment-search-open');
+        if ( widget.classList.contains('attachment-search-open') ) {
+            widget.querySelector('.attachment-search')?.focus();
+        }
+    });
+    elt.querySelector('.attachment-search-close')?.addEventListener('click', evt => {
+        evt.target.closest('.titlebox')?.classList.remove('attachment-search-open');
+    });
+    elt.querySelector('.attachment-search')?.addEventListener('keydown', evt => {
+        if ( evt.key === 'Escape' ) {
+            evt.target.closest('.titlebox')?.classList.remove('attachment-search-open');
+        }
+    });
 
     elt.querySelector('.attachment-list')?.addEventListener('click', evt => {
         const action = evt.target.closest('.attachment-pin, .attachment-unpin, .attachment-delete, .attachment-rename');
