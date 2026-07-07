@@ -331,15 +331,24 @@ for my $filename ( keys %documents ) {
   $type{$filename} = $filename =~ /\.([^.]+)\z/ ? lc $1 : 'other';
 }
 
+# $MediaSize carries the client's current Bootstrap breakpoint (xs/sm/md/lg/xl)
+# so we can render small or large icons when building the menu.
+my %compact_sizes = ( xs => 1 );
+my $compact = $compact_sizes{ $MediaSize // '' } ? 1 : 0;
+
 my $controls    = '';
 my $bulk_toggle = '';
 if ( keys %documents ) {
-    my $search_icon = GetSVGImage( Name => 'search' );
+    my $search_icon  = GetSVGImage( Name => 'search' );
+    my $close_icon   = GetSVGImage( Name => 'close', Title => loc('Close') );
+    my $search_label = loc('Search');
+    my $close_label  = loc('Close');
     $controls
         .= qq{<span class="input-group d-inline-flex align-top attachment-search-input">}
-        . qq{<span class="input-group-text">$search_icon</span>}
-        . qq{<input class="form-control attachment-search" name="attachment-search" type="text" placeholder="}
-        . loc('Search') . qq{"></span> };
+        . qq{<span class="input-group-text attachment-search-toggle" role="button" tabindex="0" aria-label="$search_label">$search_icon</span>}
+        . qq{<input class="form-control attachment-search" name="attachment-search" type="text" placeholder="$search_label">}
+        . qq{<span class="input-group-text attachment-search-close" role="button" tabindex="0" aria-label="$close_label">$close_icon</span>}
+        . qq{</span> };
 
     my $funnel     = GetSVGImage( Name => 'funnel', Title => loc('Type Filter') );
     my $filter_alt = loc('Type Filter');
@@ -362,14 +371,35 @@ if ( keys %documents ) {
     }
     $controls .= qq{</div></li></ul></span> };
 
-    $controls .= qq{<select class="form-select form-select-sm selectpicker attachment-sort">};
-    for my $field (qw/Name Type Size Date/) {
-        for my $order (qw/asc desc/) {
-            my $arrow = $order eq 'asc' ? '&#8593;' : '&#8595;';
-            $controls .= qq{<option value="$field-$order">} . loc($field) . qq{ $arrow</option>};
+    my $sort_label = loc('Sort');
+    if ($compact) {
+        # On small screens render the sort as a standard icon dropdown (the same
+        # pattern as the type filter) rather than the full tom-select control.
+        my $sort_icon = GetSVGImage( Name => 'sort-down', Title => $sort_label );
+        $controls
+            .= qq{<span class="rt-inline-icon dropdown border rounded attachment-sort-menu">}
+            . qq{<a class="attachment-sort-toggle menu-item" href="javascript:void(0)" aria-label="$sort_label" data-bs-toggle="dropdown" data-bs-boundary="viewport" aria-haspopup="true" aria-expanded="false">$sort_icon</a>}
+            . qq{<ul class="dropdown-menu dropdown-menu-end">};
+        for my $field (qw/Name Type Size Date/) {
+            for my $order (qw/asc desc/) {
+                my $arrow = $order eq 'asc' ? '&#8593;' : '&#8595;';
+                $controls
+                    .= qq{<li><a class="dropdown-item attachment-sort-option" href="javascript:void(0)" data-sort="$field-$order">}
+                    . loc($field) . qq{ $arrow</a></li>};
+            }
         }
+        $controls .= qq{</ul></span> };
     }
-    $controls .= qq{</select> };
+    else {
+        $controls .= qq{<select class="form-select form-select-sm selectpicker attachment-sort" aria-label="$sort_label">};
+        for my $field (qw/Name Type Size Date/) {
+            for my $order (qw/asc desc/) {
+                my $arrow = $order eq 'asc' ? '&#8593;' : '&#8595;';
+                $controls .= qq{<option value="$field-$order">} . loc($field) . qq{ $arrow</option>};
+            }
+        }
+        $controls .= qq{</select> };
+    }
 
     if ( !$ReadOnly && !$SelectOnly ) {
         my $bulk_svg   = GetSVGImage( Name => 'collection', Title => loc('Bulk') );
@@ -395,6 +425,7 @@ $HideTitleBox => 0
 $SelectOnly => 0
 $SelectInputName => 'SelectAttachments'
 $ReadOnly => 0
+$MediaSize => undef
 @Checked => ()
 </%ARGS>
 

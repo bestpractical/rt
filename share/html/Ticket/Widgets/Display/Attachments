@@ -47,12 +47,13 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'BeforeWidget' );
 
-<div class="inline-edit-display" hx-trigger="ticketAttachmentsChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowAttachments?<% QueryString( id => $TicketObj->id, htmx_load => 0 ) %>">
-  <& /Ticket/Elements/ShowAttachments, Ticket => $TicketObj &>
+<div class="inline-edit-display" hx-trigger="ticketAttachmentsChanged from:body, attachmentMediaSizeChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Ticket/ShowAttachments?<% QueryString( id => $TicketObj->id, htmx_load => 0 ) %>">
+  <& /Ticket/Elements/ShowAttachments, Ticket => $TicketObj, MediaSize => $MediaSize &>
 </div>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
 <%ARGS>
 $TicketObj
+$MediaSize => undef
 </%ARGS>

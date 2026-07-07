@@ -6,12 +6,52 @@ document.addEventListener('htmx:afterSwap', function(evt) {
     }
 });
 
+// Current Bootstrap breakpoint token for the viewport width. Lets widgets that
+// are lazily loaded/refreshed over htmx render size-appropriate markup. The
+// breakpoint pixel values are read from Bootstrap's own --bs-breakpoint-*
+// custom properties rather than hardcoded, so they stay in sync with the theme.
+function currentMediaSize() {
+    const styles = getComputedStyle(document.documentElement);
+    const width = window.innerWidth;
+    let size = 'xs';
+    for ( const name of ['sm', 'md', 'lg', 'xl', 'xxl'] ) {
+        const min = parseFloat(styles.getPropertyValue('--bs-breakpoint-' + name));
+        if ( !isNaN(min) && width >= min ) {
+            size = name;
+        }
+    }
+    return size;
+}
+
 document.addEventListener('htmx:configRequest', function(evt) {
     for ( const param in evt.detail.parameters ) {
         if ( evt.detail.parameters[param + 'Type'] === 'text/html' && RT.CKEditor.instances[param] ) {
             evt.detail.parameters[param] = RT.CKEditor.instances[param].getData();
         }
     }
+
+    // Tell the attachments widget which breakpoint the client is at, so it can
+    // render the size-appropriate sort control (compact icon vs. full menu).
+    const path = evt.detail.path || '';
+    if ( path.includes('/ShowAttachments') || path.includes('/Widgets/Display/Attachments') ) {
+        evt.detail.parameters.MediaSize = currentMediaSize();
+    }
+});
+
+// When the viewport crosses a breakpoint, re-fetch the attachments widget(s) so
+// their server-rendered controls match the new size. Debounce inline rather
+// than via the global debounce() from util.js, which may not be defined yet
+// when this module-level code runs.
+let rtLastMediaSize = currentMediaSize();
+let rtMediaSizeTimer;
+window.addEventListener('resize', function() {
+    clearTimeout(rtMediaSizeTimer);
+    rtMediaSizeTimer = setTimeout(function() {
+        const size = currentMediaSize();
+        if ( size === rtLastMediaSize ) return;
+        rtLastMediaSize = size;
+        document.body.dispatchEvent(new CustomEvent('attachmentMediaSizeChanged'));
+    }, 250);
 });
 
 document.addEventListener('htmx:beforeRequest', function(evt) {
@@ -845,13 +885,16 @@ document.addEventListener('htmx:load', function(evt) {
         });
     });
 
-    elt.querySelector('.attachment-sort')?.addEventListener('change', (evt) => {
-        // sorter is like type-asc
-        const sorter = evt.target.value.toLowerCase().split('-');
+    // Sort the attachment rows by a "field-direction" value (e.g. "type-asc"),
+    // always keeping pinned rows on top. Shared by the desktop tom-select and
+    // the compact mobile sort dropdown.
+    const sortAttachmentRows = (widget, value) => {
+        const sorter = (value || '').toLowerCase().split('-');
         if ( sorter.length !== 2 ) return;
 
-        const rows = Array.from(evt.target.closest('.titlebox').querySelectorAll('.attachment-list > table > tbody > tr'));
-        const tbody = evt.target.closest('.titlebox').querySelector('.attachment-list tbody');
+        const tbody = widget?.querySelector('.attachment-list tbody');
+        if ( !tbody ) return;
+        const rows = Array.from(widget.querySelectorAll('.attachment-list > table > tbody > tr'));
         const direction = sorter[1] === 'asc' ? 1 : -1;
         const sorted_rows = rows.sort((a, b) => {
             if (!(a.classList.contains('attachment-pinned') && b.classList.contains('attachment-pinned'))) {
@@ -876,11 +919,62 @@ document.addEventListener('htmx:load', function(evt) {
             }
         });
         tbody.append(...sorted_rows);
-    });
-    elt.querySelector('.attachment-sort')?.dispatchEvent(new Event('change'));
+    };
+
+    // Desktop: the tom-select <select>.
+    const attachmentSort = elt.querySelector('select.attachment-sort');
+    if ( attachmentSort ) {
+        attachmentSort.addEventListener('change', evt => {
+            sortAttachmentRows(evt.target.closest('.titlebox'), evt.target.value);
+        });
+        sortAttachmentRows(attachmentSort.closest('.titlebox'), attachmentSort.value);
+    }
+
+    // Mobile: the compact sort dropdown of options.
+    const attachmentSortMenu = elt.querySelector('.attachment-sort-menu');
+    if ( attachmentSortMenu ) {
+        const options = attachmentSortMenu.querySelectorAll('.attachment-sort-option');
+        options.forEach(option => {
+            option.addEventListener('click', evt => {
+                evt.preventDefault();
+                options.forEach(o => o.classList.remove('active'));
+                option.classList.add('active');
+                sortAttachmentRows(option.closest('.titlebox'), option.getAttribute('data-sort'));
+            });
+        });
+        // Apply the default (first) sort on load, matching the tom-select default.
+        const first = options[0];
+        if ( first ) {
+            first.classList.add('active');
+            sortAttachmentRows(first.closest('.titlebox'), first.getAttribute('data-sort'));
+        }
+    }
 
     elt.querySelector('.attachment-search')?.addEventListener('input', debounce(filterAttachments, 500));
     elt.querySelector('.attachment-filter-dropdown')?.addEventListener('change', debounce(filterAttachments, 100));
+
+    // On mobile the search box collapses to a magnifying glass; tapping it
+    // expands the input over the header row, and the close icon or Escape
+    // collapses it again.
+    elt.querySelector('.attachment-search-toggle')?.addEventListener('click', evt => {
+        // Only collapse/expand on mobile widths; on wider screens the search box
+        // is always shown, so the glass is just its (non-toggling) addon.
+        if ( !window.matchMedia('(max-width: 575.98px)').matches ) return;
+        const widget = evt.target.closest('.titlebox');
+        if ( !widget ) return;
+        widget.classList.toggle('attachment-search-open');
+        if ( widget.classList.contains('attachment-search-open') ) {
+            widget.querySelector('.attachment-search')?.focus();
+        }
+    });
+    elt.querySelector('.attachment-search-close')?.addEventListener('click', evt => {
+        evt.target.closest('.titlebox')?.classList.remove('attachment-search-open');
+    });
+    elt.querySelector('.attachment-search')?.addEventListener('keydown', evt => {
+        if ( evt.key === 'Escape' ) {
+            evt.target.closest('.titlebox')?.classList.remove('attachment-search-open');
+        }
+    });
 
     elt.querySelector('.attachment-list')?.addEventListener('click', evt => {
         const action = evt.target.closest('.attachment-pin, .attachment-unpin, .attachment-delete, .attachment-rename');

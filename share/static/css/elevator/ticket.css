@@ -130,6 +130,81 @@ div.requestor-ticket-links {
     max-width: 6.5rem;
 }
 
+/* The search's close (X) affordance is hidden until the search is expanded. */
+.ticket-info-attachments .attachment-search-close {
+    display: none;
+}
+
+/* The close (X) is the input-group's structural last child, so Bootstrap gives
+   it the right rounding and squares the input. When the close is hidden (search
+   not expanded), restore the input's right rounding. Bootstrap's input-group
+   radius selectors are highly specific, so we out-specify them rather than use
+   !important (see forms.css for the same approach with tom-select). The open
+   class toggles on the .titlebox specifically (there is also an outer
+   .ticket-info-attachments wrapper), so scope the :not() to .titlebox. */
+.titlebox.ticket-info-attachments:not(.attachment-search-open) .input-group.attachment-search-input > input.form-control.attachment-search {
+    border-top-right-radius: var(--bs-border-radius);
+    border-bottom-right-radius: var(--bs-border-radius);
+}
+
+/* On mobile, collapse the search box to just the magnifying glass and the
+   sort dropdown to a sort icon so the "Attachments" title still fits. */
+@media (max-width: 575.98px) {
+    .ticket-info-attachments .titlebox-title {
+        position: relative;
+    }
+
+    .ticket-info-attachments .attachment-search-input {
+        width: auto;
+        flex: 0 0 auto;
+    }
+    .ticket-info-attachments .attachment-search-input .attachment-search {
+        display: none;
+    }
+    .ticket-info-attachments .attachment-search-toggle {
+        cursor: pointer;
+    }
+    /* When collapsed to just the glass, round it fully like the other icons
+       (out-specify Bootstrap's input-group radius rules rather than !important). */
+    .titlebox.ticket-info-attachments:not(.attachment-search-open) .input-group.attachment-search-input > span.input-group-text.attachment-search-toggle {
+        border-radius: var(--bs-border-radius);
+    }
+
+    /* Tapping the glass expands the search across the header row. The header's
+       right-hand control box is absolutely positioned by TitleBox, so we stretch
+       it leftward (over the title) and let the search input grow to fill it. */
+    .ticket-info-attachments.attachment-search-open .titlebox-title .right {
+        left: 0.75rem;
+        right: 0.75rem;
+        width: auto;
+        z-index: 5;
+        background: var(--bs-body-bg);
+    }
+    .ticket-info-attachments.attachment-search-open .titlebox-title .right > span {
+        width: 100%;
+    }
+    .ticket-info-attachments.attachment-search-open .attachment-search-input {
+        flex: 1 1 auto;
+        width: auto;
+        max-width: none;
+    }
+    .ticket-info-attachments.attachment-search-open .attachment-search-input .attachment-search {
+        display: block;
+        flex: 1 1 auto;
+        width: 1%;
+    }
+    .ticket-info-attachments.attachment-search-open .attachment-search-close {
+        display: flex;
+        cursor: pointer;
+    }
+    .ticket-info-attachments.attachment-search-open .attachment-filter,
+    .ticket-info-attachments.attachment-search-open .attachment-sort-menu,
+    .ticket-info-attachments.attachment-search-open .ts-wrapper.attachment-sort,
+    .ticket-info-attachments.attachment-search-open .attachment-bulk-toggle {
+        display: none;
+    }
+}
+
 .ticket-info-attachments .ts-wrapper.attachment-sort .ts-control {
     padding: 5px 2em 5px 0.4em;
     line-height: 1;
