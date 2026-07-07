@@ -124,6 +124,12 @@ div.requestor-ticket-links {
     overflow: auto;
 }
 
+/* Give the bulk action buttons a little vertical space so they don't touch
+   when they wrap onto separate lines on narrow screens. */
+.attachment-bulk-actions .btn {
+    margin-bottom: 0.25rem;
+}
+
 .ticket-info-attachments .ts-wrapper.attachment-sort {
     min-height: unset;
     min-width: 0;
