@@ -145,7 +145,7 @@ sub add_message {
         return error_as_json( $self->response, \$return_code, join "\n", @results );
     }
 
-    $self->response->body( JSON::to_json( \@results, { pretty => 1 } ) );
+    $self->response->body( JSON::to_json( \@results, { pretty => 1, utf8 => 1 } ) );
     return 1;
 }
 

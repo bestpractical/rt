@@ -101,7 +101,7 @@ sub content_types_provided { [
 
 sub to_json {
     my $self = shift;
-    return JSON::to_json($self->serialize, { pretty => 1 });
+    return JSON::to_json($self->serialize, { pretty => 1, utf8 => 1 });
 }
 
 require RT::Base;
