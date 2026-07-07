@@ -892,13 +892,15 @@ document.addEventListener('htmx:load', function(evt) {
         });
     });
 
-    elt.querySelector('.attachment-sort')?.addEventListener('change', (evt) => {
-        // sorter is like type-asc
-        const sorter = evt.target.value.toLowerCase().split('-');
+    // Sort rows by a "field-direction" value (e.g. "type-asc"), pinned on top.
+    // Shared by the desktop tom-select and the mobile sort dropdown.
+    const sortAttachmentRows = (widget, value) => {
+        const sorter = (value || '').toLowerCase().split('-');
         if ( sorter.length !== 2 ) return;
 
-        const rows = Array.from(evt.target.closest('.titlebox').querySelectorAll('.attachment-list > table > tbody > tr'));
-        const tbody = evt.target.closest('.titlebox').querySelector('.attachment-list tbody');
+        const tbody = widget?.querySelector('.attachment-list tbody');
+        if ( !tbody ) return;
+        const rows = Array.from(widget.querySelectorAll('.attachment-list > table > tbody > tr'));
         const direction = sorter[1] === 'asc' ? 1 : -1;
         const sorted_rows = rows.sort((a, b) => {
             if (!(a.classList.contains('attachment-pinned') && b.classList.contains('attachment-pinned'))) {
@@ -923,11 +925,126 @@ document.addEventListener('htmx:load', function(evt) {
             }
         });
         tbody.append(...sorted_rows);
+    };
+
+    const attachmentSort = elt.querySelector('select.attachment-sort');
+    const attachmentSortMenu = elt.querySelector('.attachment-sort-menu');
+    const attachmentSortOptions = attachmentSortMenu
+        ? Array.from(attachmentSortMenu.querySelectorAll('.attachment-sort-option'))
+        : [];
+
+    // The desktop <select> and the mobile dropdown share one value; keep both
+    // in sync so switching breakpoints never shows a stale choice. Update the
+    // tom-select silently to avoid re-triggering the sort.
+    const syncAttachmentSort = value => {
+        if ( attachmentSort ) {
+            if ( attachmentSort.tomselect ) {
+                attachmentSort.tomselect.setValue(value, true);
+            }
+            else {
+                attachmentSort.value = value;
+            }
+        }
+        attachmentSortOptions.forEach(o => o.classList.toggle('active', o.getAttribute('data-sort') === value));
+    };
+
+    if ( attachmentSort ) {
+        attachmentSort.addEventListener('change', evt => {
+            sortAttachmentRows(evt.target.closest('.ticket-info-attachments'), evt.target.value);
+            syncAttachmentSort(evt.target.value);
+        });
+    }
+
+    attachmentSortOptions.forEach(option => {
+        option.addEventListener('click', evt => {
+            evt.preventDefault();
+            const value = option.getAttribute('data-sort');
+            sortAttachmentRows(option.closest('.ticket-info-attachments'), value);
+            syncAttachmentSort(value);
+        });
     });
-    elt.querySelector('.attachment-sort')?.dispatchEvent(new Event('change'));
+
+    // Sort once on load and reflect the default choice on both controls.
+    if ( attachmentSort ) {
+        sortAttachmentRows(attachmentSort.closest('.ticket-info-attachments'), attachmentSort.value);
+        syncAttachmentSort(attachmentSort.value);
+    }
 
     elt.querySelector('.attachment-search')?.addEventListener('input', debounce(filterAttachments, 500));
-    elt.querySelector('.attachment-filter-dropdown')?.addEventListener('change', debounce(filterAttachments, 100));
+    const attachmentFilterDropdown = elt.querySelector('.attachment-filter-dropdown');
+    attachmentFilterDropdown?.addEventListener('change', debounce(filterAttachments, 100));
+    attachmentFilterDropdown?.addEventListener('change', () => {
+        const toggle = attachmentFilterDropdown.closest('.attachment-filter-toggle');
+        if ( !toggle ) return;
+        const active = !!attachmentFilterDropdown.querySelector('input[name="FilterAttachmentTypes"]:not(:checked)');
+        toggle.classList.toggle('attachment-filter-active', active);
+        const label = toggle.dataset[active ? 'labelActive' : 'label'];
+        if ( label ) {
+            toggle.querySelector('.attachment-filter')?.setAttribute('aria-label', label);
+            toggle.setAttribute('data-bs-title', label);
+            // Bootstrap reads the title once, when it creates the tooltip.
+            bootstrap.Tooltip.getInstance(toggle)?.setContent({ '.tooltip-inner': label });
+        }
+    });
+
+    // Set by ticket.css's mobile media query, so the breakpoint isn't repeated here.
+    const attachmentSearchCompact = widget =>
+        getComputedStyle(widget).getPropertyValue('--rt-attachment-search-compact').trim() === '1';
+    // Collapsing hides the focused input or close icon; move focus to the glass so it isn't lost.
+    const setAttachmentSearchOpen = (widget, open) => {
+        widget.classList.toggle('attachment-search-open', open);
+        widget.querySelector(open ? '.attachment-search' : '.attachment-search-toggle')?.focus();
+    };
+    // role="button" spans don't get a button's Enter/Space activation, so add it.
+    const clickOnEnterOrSpace = evt => {
+        if ( evt.key === 'Enter' || evt.key === ' ' ) {
+            evt.preventDefault();
+            evt.currentTarget.click();
+        }
+    };
+
+    const attachmentSearchToggle = elt.querySelector('.attachment-search-toggle');
+    attachmentSearchToggle?.addEventListener('click', evt => {
+        const widget = evt.currentTarget.closest('.titlebox');
+        if ( !widget ) return;
+        // On wider screens the search is always shown; the glass just focuses it.
+        if ( !attachmentSearchCompact(widget) ) {
+            widget.querySelector('.attachment-search')?.focus();
+            return;
+        }
+        setAttachmentSearchOpen(widget, !widget.classList.contains('attachment-search-open'));
+    });
+    attachmentSearchToggle?.addEventListener('keydown', clickOnEnterOrSpace);
+
+    const attachmentSearchClose = elt.querySelector('.attachment-search-close');
+    attachmentSearchClose?.addEventListener('click', evt => {
+        const widget = evt.currentTarget.closest('.titlebox');
+        if ( widget ) setAttachmentSearchOpen(widget, false);
+    });
+    attachmentSearchClose?.addEventListener('keydown', clickOnEnterOrSpace);
+
+    const attachmentSearch = elt.querySelector('.attachment-search');
+    attachmentSearch?.addEventListener('keydown', evt => {
+        if ( evt.key !== 'Escape' ) return;
+        const widget = evt.target.closest('.titlebox');
+        // The open class outlives a resize to a wide screen; don't pull focus off a visible search.
+        if ( widget?.classList.contains('attachment-search-open') && attachmentSearchCompact(widget) ) {
+            setAttachmentSearchOpen(widget, false);
+        }
+    });
+
+    // Mark the input group, not the toggle: the picker's glass isn't a toggle but still fills.
+    const attachmentSearchGroup = attachmentSearch?.closest('.attachment-search-input');
+    if ( attachmentSearchGroup ) {
+        const markSearchActive = () => {
+            const active = attachmentSearch.value.length > 0;
+            attachmentSearchGroup.classList.toggle('attachment-search-active', active);
+            const label = attachmentSearchToggle?.dataset[active ? 'labelActive' : 'label'];
+            if ( label ) attachmentSearchToggle.setAttribute('aria-label', label);
+        };
+        attachmentSearch.addEventListener('input', markSearchActive);
+        markSearchActive();
+    }
 
     elt.querySelector('.attachment-list')?.addEventListener('click', evt => {
         const action = evt.target.closest('.attachment-pin, .attachment-unpin, .attachment-delete, .attachment-rename');

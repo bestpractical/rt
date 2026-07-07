@@ -755,4 +755,61 @@ diag 'unpinned attachment renders no pin indicator';
         'checkbox is labeled with the filename for assistive tech' );
 }
 
+diag 'widget renders both sort controls and the collapsible search';
+{
+    my ( $ticket, $att ) = _create_ticket_with_attachment( Filename => 'web_mobile_controls.txt' );
+
+    $m->get_ok( $url . "/Ticket/Display.html?id=" . $ticket->Id, 'loaded ticket display' );
+
+    my $widget = $m->dom->at('.titlebox.ticket-info-attachments');
+    ok( $widget, 'found the attachments titlebox' );
+
+    is( $widget->find('select.attachment-sort option')->size, 8, 'full sort select has 8 options' );
+    is( $widget->find('.attachment-sort-menu .attachment-sort-option')->size,
+        8, 'compact sort menu has 8 options' );
+
+    my $toggle = $widget->at('.attachment-search-input .attachment-search-toggle');
+    ok( $toggle, 'search has the glass toggle' );
+    is( $toggle->attr('role'),     'button', 'glass toggle has the button role' );
+    is( $toggle->attr('tabindex'), '0',      'glass toggle is keyboard focusable' );
+    is( $toggle->attr('aria-label'),        'Search',          'glass toggle starts with the plain label' );
+    is( $toggle->attr('data-label-active'), 'Search (active)', 'glass toggle carries the active label to switch to' );
+    ok( $toggle->at('svg.bi-search'),      'glass toggle has the outline glass' );
+    ok( $toggle->at('svg.bi-search-fill'), 'glass toggle has the filled glass for an active search' );
+
+    my $close = $widget->at('.attachment-search-input .attachment-search-close');
+    ok( $close, 'search has the close icon' );
+    is( $close->attr('role'), 'button', 'close icon has the button role' );
+    ok( !$close->at('svg[data-bs-toggle="tooltip"]'), 'close icon has no tooltip' );
+
+    my $filter_toggle = $widget->at('.attachment-filter-toggle');
+    ok( $filter_toggle, 'found the type filter toggle' );
+    ok( !( ( $filter_toggle->attr('class') // '' ) =~ /\battachment-filter-active\b/ ),
+        'type filter starts inactive' );
+    is( $filter_toggle->attr('data-bs-title'),     'Type Filter',          'one tooltip, on the toggle, with the plain label' );
+    is( $filter_toggle->attr('data-label-active'), 'Type Filter (active)', 'toggle carries the active label to switch to' );
+
+    my $filter = $filter_toggle->at('a.attachment-filter');
+    is( $filter->attr('aria-label'), 'Type Filter', 'type filter starts with the plain label' );
+    ok( $filter->at('svg.bi-funnel'),      'type filter has the outline funnel' );
+    ok( $filter->at('svg.bi-funnel-fill'), 'type filter has the filled funnel for an active filter' );
+    ok( !$filter->at('svg[data-bs-toggle="tooltip"]'), 'funnel icons carry no tooltips of their own' );
+}
+
+diag 'reply attachment picker keeps the full search and sort';
+{
+    my ( $ticket, $att ) = _create_ticket_with_attachment( Filename => 'web_picker_controls.txt' );
+
+    $m->get_ok( $url . "/Ticket/Update.html?Action=Correspond&id=" . $ticket->Id, 'loaded reply page' );
+
+    my $picker = $m->dom->at('#reuse-attachments .attachment-picker-toolbar');
+    ok( $picker, 'found the attachment picker toolbar' );
+    ok( $picker->at('input.attachment-search'), 'picker has the search input' );
+    is( $picker->find('select.attachment-sort option')->size, 8, 'picker has the full sort select' );
+    ok( !$picker->at('.attachment-search-toggle'), 'picker search has no glass toggle' );
+    ok( !$picker->at('.attachment-search-close'),  'picker search has no close icon' );
+    ok( !$picker->at('.attachment-sort-menu'),     'picker has no compact sort menu' );
+    ok( $picker->at('svg.bi-search-fill'),         'picker search has the filled glass for an active search' );
+}
+
 done_testing;
