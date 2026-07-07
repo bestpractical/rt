@@ -188,6 +188,43 @@ diag "test custom field unique values";
 
 }
 
+# On an htmx history-cache miss (what historyCacheError causes in production) the
+# browser Back button runs htmx's loadHistoryFromServer and swaps the response into
+# the history element. With .main-container marked hx-history-elt, only the content
+# area is swapped, so the top navigation menu (outside .main-container) survives.
+diag 'Top navigation menu survives a browser Back that hits a history-cache miss';
+{
+    my $page = $p->{page};
+
+    $p->get_ok('/');
+    my $home_url = $page->url;
+    ok( $p->dom->at('#main-navigation #app-nav'), 'homepage renders the top navigation menu' );
+    ok( $p->dom->at('#page-edit'),                'homepage has the page-edit link to navigate with' );
+
+    # Marker to prove the Back is an htmx restore, not a full page reload; a reload
+    # would also show the menu and so hide a regression.
+    $page->evaluate('window.__historyProbe = "start"; return true');
+
+    # Boosted navigation to a second page so the Back button is htmx-managed.
+    $page->evaluate('return document.querySelector("#page-edit").click()');
+    $p->wait_for_htmx;
+    $p->current_url_like( qr{/Prefs/MyRT\.html}, 'boosted navigation reached the second page' );
+    ok( $p->dom->at('#main-navigation #app-nav'), 'second page also renders the menu' );
+
+    # Drop the cached snapshot so the Back is a cache miss (loadHistoryFromServer),
+    # the same path a historyCacheError puts users on in production.
+    $page->evaluate('localStorage.removeItem("htmx-history-cache"); return true');
+
+    $page->goBack;
+    $p->wait_for_htmx;
+
+    is( $page->url, $home_url, 'Back returned to the homepage' );
+    ok( $p->dom->at('#main-navigation #app-nav'), 'menu still present after Back through a history-cache miss' );
+    is( $page->evaluate('return window.__historyProbe'), 'start', 'Back was an htmx restore, not a full page reload' );
+    is( $page->evaluate('return document.querySelectorAll(".main-container").length'),
+        1, 'exactly one .main-container after restore (no double-nesting)' );
+}
+
 $p->logout;
 
 done_testing;
