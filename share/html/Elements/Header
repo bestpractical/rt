@@ -119,6 +119,7 @@
       hx-target="this"
       hx-select=".main-container"
       hx-swap="outerHTML"
+      hx-history-elt
       <% $id && qq[id="comp-$id"] |n %>
     >
       <& /Widgets/Spinner &>
@@ -126,7 +127,7 @@
       <& Footer &>
 % $m->abort;
 % } else {
-    <div class="<% join( ' ', @{$ARGS{'MainContainerClass'}} ) %>" <% $id && qq[id="comp-$id"] |n %>>
+    <div class="<% join( ' ', @{$ARGS{'MainContainerClass'}} ) %>" hx-history-elt <% $id && qq[id="comp-$id"] |n %>>
 
 %# To refresh main container, here we create a separated div so its hx-* attributes are not inherited.
       <div

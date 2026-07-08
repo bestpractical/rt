@@ -76,11 +76,11 @@ document.addEventListener('htmx:beforeHistorySave', function(evt) {
     }
 
     evt.detail.historyElt.querySelector('#hx-boost-spinner').classList.add('invisible');
-    evt.detail.historyElt.querySelector('.main-container').classList.remove('refreshing');
+    // historyElt is the .main-container itself, so clear .refreshing on it directly.
+    evt.detail.historyElt.classList.remove('refreshing');
     evt.detail.historyElt.querySelectorAll('textarea.richtext').forEach(function(elt) {
         RT.CKEditor.instances[elt.name]?.destroy();
     });
-    evt.detail.historyElt.querySelector('.ck-body-wrapper')?.remove();
 
     evt.detail.historyElt.querySelectorAll('.tomselected').forEach(elt => elt.tomselect?.destroy());
     evt.detail.historyElt.querySelectorAll('.dropzone-init').forEach(elt => elt.dropzone?.destroy());
