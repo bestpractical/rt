@@ -523,6 +523,10 @@ curl for SSL like --cacert.
     GET /ticket/:id/history
         retrieve list of transactions for ticket
 
+    GET /ticket/:id/lifecycle
+        retrieve the ticket's lifecycle and the valid next moves for the
+        current user (see L</Object Lifecycle>)
+
     POST /tickets/bulk
         create multiple tickets; provide JSON content(array of hashes)
 
@@ -762,6 +766,10 @@ in the response.
 
     GET /asset/:id/history
         retrieve list of transactions for asset
+
+    GET /asset/:id/lifecycle
+        retrieve the asset's lifecycle and the valid next moves for the
+        current user (see L</Object Lifecycle>)
 
 =head3 Asset Examples
 
@@ -1309,6 +1317,65 @@ create or update call.
     curl -X DELETE -H 'Authorization: token XX_TOKEN_XX'
          'https://myrt.com/REST/2.0/lifecycle/support'
 
+=head3 Object Lifecycle
+
+A read-only view of a single object's lifecycle, where the object is a ticket or
+an asset. Intended for agents deciding what to do with the object. Unlike the
+configuration endpoints above, this requires only C<ShowTicket> (or
+C<ShowAsset>) on the object, not C<SuperUser>.
+
+    GET /ticket/:id/lifecycle
+    GET /asset/:id/lifecycle
+        the object's lifecycle, filtered to the statuses and transitions the
+        current user can reach from the object's current status
+
+The same block is available inline on the object itself with
+C<?fields=Lifecycle> (see L</Fields>), so a ticket (or asset) and its valid next
+moves can be fetched in one request.
+
+The response describes the current status, the reachable statuses, and the
+permitted transitions. Each status and transition includes its C<description>
+(user-facing) and C<notes> (agent-facing) documentation when defined. Each
+transition also carries the action C<label>, an C<update> hint when a
+reply/comment is expected, and an C<available> flag that is true for the moves
+that can be made right now, directly from the current status. For example:
+
+    {
+        "id": 42,
+        "name": "default",
+        "type": "ticket",
+        "status": {
+            "name": "open",
+            "category": "active",
+            "description": "Work is actively underway.",
+            "notes": "Use when you are actively working on the ticket."
+        },
+        "statuses": [ ... ],
+        "transitions": [
+            {
+                "from": "open",
+                "to": "resolved",
+                "available": true,
+                "label": "Resolve",
+                "update": "Comment",
+                "description": "The task or issue on this ticket has been completed.",
+                "notes": "Resolve when the work is complete and verified."
+            },
+            ...
+        ],
+        "_url": "XX_RT_URL_XX/REST/2.0/ticket/42/lifecycle"
+    }
+
+=head3 Object Lifecycle Examples
+
+    # Get the lifecycle and valid next moves for a ticket
+    curl -H 'Authorization: token XX_TOKEN_XX'
+         'https://myrt.com/REST/2.0/ticket/42/lifecycle'
+
+    # Fetch a ticket and its lifecycle in a single request
+    curl -H 'Authorization: token XX_TOKEN_XX'
+         'https://myrt.com/REST/2.0/ticket/42?fields=Lifecycle'
+
 =head3 Miscellaneous
 
     GET /
@@ -1679,6 +1746,9 @@ ticket is displayed in this example):
       { … },
       …
    ],
+
+Additional fields, including Lifecycle for tickets and assets, are also
+supported.
 
 If the user performing the query doesn't have rights to view the record
 (or sub record), then the empty string will be returned.

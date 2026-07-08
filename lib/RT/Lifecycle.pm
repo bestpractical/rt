@@ -76,8 +76,22 @@ our %LIFECYCLES_TYPES;
 #               { from => 'a', to => 'b', label => '...', update => '...' },
 #               ....
 #            ]
+#            status_metadata => {
+#               status_x => { description => '...', notes => '...' },
+#               ....
+#            }
+#            transition_metadata => {
+#               'status_x -> status_y' => { description => '...', notes => '...' },
+#               ....
+#            }
 #        }
 #    }
+#
+# The metadata hashes carry optional human- and agent-facing text about each
+# status and transition. C<description> is a short human-facing definition
+# (surfaced as tooltips in the editor and viewer); C<notes> is longer
+# internal/advisory text (for staff documentation and AI agents over the API),
+# never shown in the read-only viewer.
 
 =head1 NAME
 
@@ -424,6 +438,22 @@ sub StatusColor {
     return $colors->{ lc $status };
 }
 
+=head3 StatusMetadata
+
+Takes a status name and returns a hash reference of the metadata defined for
+that status, with C<description> and/or C<notes> keys when set. Returns an
+empty hash reference when the status has no metadata.
+
+=cut
+
+sub StatusMetadata {
+    my $self   = shift;
+    my $status = shift;
+    return {} unless defined $status && length $status;
+    my $meta = $self->{'data'}{'status_metadata'} || {};
+    return $meta->{ lc $status } || {};
+}
+
 =head2 Default statuses
 
 In some cases when status is not provided a default values should
@@ -515,6 +545,162 @@ sub CheckRight {
         return $check if $check;
     }
     return $to eq 'deleted' ? 'DeleteTicket' : 'ModifyTicket';
+}
+
+=head3 TransitionMetadata( from => STATUS, to => STATUS )
+
+Takes a hash naming a transition (from -> to) and returns a hash reference of
+the metadata defined for that transition, with C<description> and/or C<notes>
+keys when set. Returns an empty hash reference when the transition has no
+metadata.
+
+Keys may be defined with wildcards, like rights: C<from -> to>, C<* -> to>,
+C<from -> *>, and C<* -> *>. Unlike rights, which select the single
+most-specific match, metadata is merged field by field, with the more-specific
+key winning per field. This lets a generic C<* -> to> description stand while a
+specific C<from -> to> overrides just the C<notes>. Specificity, lowest to
+highest, follows L</CheckRight>: C<* -> *>, C<from -> *>, C<* -> to>,
+C<from -> to>.
+
+=cut
+
+sub TransitionMetadata {
+    my $self = shift;
+    my %args = ( from => '', to => '', @_ );
+    my $from = lc( $args{from} // '' );
+    my $to   = lc( $args{to}   // '' );
+    my $meta = $self->{'data'}{'transition_metadata'} or return {};
+
+    my %merged;
+    for my $key ( '* -> *', "$from -> *", "* -> $to", "$from -> $to" ) {
+        my $entry = $meta->{$key} or next;
+        %merged = ( %merged, %$entry );
+    }
+    return \%merged;
+}
+
+=head3 ReachableStatuses From => STATUS, Rights => HASHREF, Allowed => CODEREF
+
+Returns the list of statuses that can be reached from C<From> by following one
+or more permitted transitions, including C<From> itself. Status names are
+returned lower-cased and in no particular order.
+
+=over 4
+
+=item From
+
+The status to start from. Required; an empty or undefined value returns an
+empty list.
+
+=item Rights
+
+A hash reference whose keys are the names of the rights the user holds. With
+the default permission test, a transition is permitted when this hash contains
+the right required to make it, or the C<SuperUser> right.
+
+=item Allowed
+
+An optional code reference, called as C<< $code->($from, $to) >>, that returns
+true when the transition from C<$from> to C<$to> should be followed. When
+given, it replaces the default C<Rights>-based test.
+
+=back
+
+=cut
+
+sub ReachableStatuses {
+    my $self = shift;
+    my %args = ( From => undef, Rights => undef, Allowed => undef, @_ );
+
+    my $from_status = $args{'From'};
+    return () unless defined $from_status && length $from_status;
+
+    my $allowed = $args{'Allowed'};
+    unless ($allowed) {
+        my $rights = $args{'Rights'} || {};
+        $allowed = sub {
+            my ($from, $to) = @_;
+            my $right = $self->CheckRight( $from => $to );
+            return $rights->{$right} || $rights->{'SuperUser'};
+        };
+    }
+
+    my %reachable = ( lc $from_status => 1 );
+    my @to_visit = ($from_status);
+    while ( defined( my $from = shift @to_visit ) ) {
+        foreach my $to ( $self->Transitions($from) ) {
+            next unless $allowed->( $from => $to );
+            next if $reachable{ lc $to };
+            $reachable{ lc $to } = 1;
+            push @to_visit, $to;
+        }
+    }
+    return keys %reachable;
+}
+
+=head3 FilterAllowedTransitions Object => OBJECT
+
+Returns a copy of this lifecycle's configuration limited to the statuses and
+transitions the current user of C<Object> can reach from C<Object>'s current
+status. Statuses and transitions the user cannot reach are removed; every other
+part of the configuration (colors, defaults, and so on) is preserved unchanged.
+
+=over 4
+
+=item Object
+
+The ticket or asset whose current status, and whose current user's rights,
+determine what is kept. Required.
+
+=back
+
+=cut
+
+sub FilterAllowedTransitions {
+    my $self = shift;
+    my %args = ( Object => undef, @_ );
+
+    my $object = $args{'Object'};
+    my $config = RT->Config->Get('Lifecycles')->{ $self->Name };
+    return $config unless $object && $config;
+
+    my %can = %{ $object->CurrentUser->PrincipalObj->HasRights( Object => $object ) };
+    my $current = $object->Status;
+
+    # Hide moves to an inactive status (e.g. resolve) when the object has
+    # unresolved dependencies and the configuration asks us to. This only
+    # applies to moves out of the current status.
+    my $hide_resolve = RT->Config->Get('HideResolveActionsWithDependencies')
+        && $object->can('HasUnresolvedDependencies')
+        && $object->HasUnresolvedDependencies;
+
+    my $allowed = sub {
+        my ($from, $to) = @_;
+        return 0 if $hide_resolve && lc($from) eq lc($current)
+            && $self->IsInactive($to) && !$self->IsInactive($from);
+        return $can{ $self->CheckRight( $from => $to ) } || $can{'SuperUser'};
+    };
+
+    my %reachable = map { $_ => 1 }
+        $self->ReachableStatuses( From => $current, Allowed => $allowed );
+
+    my $transitions = $config->{'transitions'} || {};
+    my %filtered = %$config;
+    for my $type (qw/initial active inactive/) {
+        next unless $filtered{$type};
+        $filtered{$type} = [ grep { $reachable{ lc $_ } } @{ $config->{$type} } ];
+    }
+    my %kept_transitions;
+    for my $from ( keys %$transitions ) {
+        next unless length $from;            # skip on-create entry points
+        next unless $reachable{ lc $from };
+        my @to = grep { $reachable{ lc $_ } && $allowed->( $from => $_ ) }
+            @{ $transitions->{$from} };
+        $kept_transitions{$from} = \@to if @to;
+    }
+    $filtered{'transitions'} = \%kept_transitions;
+
+    return \%filtered;
 }
 
 =head3 RightsDescription [TYPE] [LIFECYCLE]
@@ -808,6 +994,22 @@ sub FillCache {
         # normalize color keys as lowercase
         if ( my $colors = $lifecycle->{colors} ) {
             $lifecycle->{colors} = { map { lc $_ => $colors->{$_} } keys %$colors };
+        }
+
+        # normalize status_metadata keys as lowercase status names
+        if ( my $sm = $lifecycle->{status_metadata} ) {
+            $lifecycle->{status_metadata} = { map { lc $_ => $sm->{$_} } keys %$sm };
+        }
+
+        # normalize transition_metadata keys as lowercased "from -> to"
+        if ( my $tm = $lifecycle->{transition_metadata} ) {
+            my %norm;
+            for my $key ( keys %$tm ) {
+                my ( $from, $to ) = split /\s*->\s*/, $key, 2;
+                next unless defined $from && length $from && defined $to && length $to;
+                $norm{ lc($from) . ' -> ' . lc($to) } = $tm->{$key};
+            }
+            $lifecycle->{transition_metadata} = \%norm;
         }
     }
 
@@ -1305,6 +1507,90 @@ sub ValidateLifecycle {
         $lifecycle->{'actions'} = \@valid_actions;
     }
 
+    # status and transition metadata: each entry is a hash with a known set of
+    # free-text fields. Validate the statuses referenced and the field names;
+    # under Cleanup, drop unknown fields and entries that reference statuses
+    # that no longer exist.
+    my %allowed_meta_field = ( description => 1, notes => 1 );
+
+    if ( my $sm = $lifecycle->{status_metadata} ) {
+        if ( ref $sm ne 'HASH' ) {
+            push @warnings, $current_user->loc( "Invalid status metadata in [_1] lifecycle", $name );
+            delete $lifecycle->{status_metadata} if $args{Cleanup};
+        }
+        else {
+            for my $status ( keys %$sm ) {
+                unless ( $lifecycle->{canonical_case}{ lc $status } ) {
+                    push @warnings,
+                        $current_user->loc( "Nonexistent status [_1] in status metadata in [_2] lifecycle", lc $status, $name );
+                    delete $sm->{$status} if $args{Cleanup};
+                    next;
+                }
+                if ( ref $sm->{$status} ne 'HASH' ) {
+                    push @warnings,
+                        $current_user->loc( "Invalid metadata for status [_1] in [_2] lifecycle", lc $status, $name );
+                    delete $sm->{$status} if $args{Cleanup};
+                    next;
+                }
+                for my $field ( keys %{ $sm->{$status} } ) {
+                    if ( !$allowed_meta_field{$field} || ref $sm->{$status}{$field} ) {
+                        push @warnings,
+                            $current_user->loc( "Invalid metadata field [_1] for status [_2] in [_3] lifecycle", $field, lc $status, $name );
+                        delete $sm->{$status}{$field} if $args{Cleanup};
+                    }
+                }
+            }
+        }
+    }
+
+    if ( my $tm = $lifecycle->{transition_metadata} ) {
+        if ( ref $tm ne 'HASH' ) {
+            push @warnings, $current_user->loc( "Invalid transition metadata in [_1] lifecycle", $name );
+            delete $lifecycle->{transition_metadata} if $args{Cleanup};
+        }
+        else {
+            for my $schema ( keys %$tm ) {
+                my ( $from, $to ) = split /\s*->\s*/, $schema, 2;
+                unless ( $from and $to ) {
+                    push @warnings,
+                        $current_user->loc( "Invalid transition [_1] in transition metadata in [_2] lifecycle", $schema, $name );
+                    delete $tm->{$schema} if $args{Cleanup};
+                    next;
+                }
+
+                my $invalid;
+                unless ( $from eq '*' or $lifecycle->{canonical_case}{ lc $from } ) {
+                    push @warnings,
+                        $current_user->loc( "Nonexistent status [_1] in transition metadata in [_2] lifecycle", lc $from, $name );
+                    $invalid = 1;
+                }
+                unless ( $to eq '*' or $lifecycle->{canonical_case}{ lc $to } ) {
+                    push @warnings,
+                        $current_user->loc( "Nonexistent status [_1] in transition metadata in [_2] lifecycle", lc $to, $name );
+                    $invalid = 1;
+                }
+                if ( ref $tm->{$schema} ne 'HASH' ) {
+                    push @warnings,
+                        $current_user->loc( "Invalid metadata for transition [_1] in [_2] lifecycle", $schema, $name );
+                    $invalid = 1;
+                }
+
+                if ($invalid) {
+                    delete $tm->{$schema} if $args{Cleanup};
+                    next;
+                }
+
+                for my $field ( keys %{ $tm->{$schema} } ) {
+                    if ( !$allowed_meta_field{$field} || ref $tm->{$schema}{$field} ) {
+                        push @warnings,
+                            $current_user->loc( "Invalid metadata field [_1] for transition [_2] in [_3] lifecycle", $field, $schema, $name );
+                        delete $tm->{$schema}{$field} if $args{Cleanup};
+                    }
+                }
+            }
+        }
+    }
+
     return @warnings ? ( 0, uniq @warnings ) : 1;
 }
 
@@ -1424,6 +1710,32 @@ sub UpdateLifecycleLayout {
     }
 
     return 1;
+}
+
+=head2 LoadLifecycleLayout( LifecycleObj => undef )
+
+Return the saved graph layout for the given lifecycle as a hashref mapping each
+status name to its [x,y] coordinates, or an empty hashref if no layout is
+saved.
+
+=cut
+
+sub LoadLifecycleLayout {
+    my $class = shift;
+    my %args  = (
+        LifecycleObj => undef,
+        @_,
+    );
+
+    my $name = $args{LifecycleObj} ? $args{LifecycleObj}->Name : undef;
+    return {} unless defined $name && length $name;
+
+    my $setting = RT::Configuration->new( RT->SystemUser );
+    $setting->LoadByCols( Name => "LifecycleLayout-$name", Disabled => 0 );
+    return {} unless $setting->Id;
+
+    my $content = $setting->DecodedContent;
+    return ref($content) eq 'HASH' ? $content : {};
 }
 
 require RT::Base;

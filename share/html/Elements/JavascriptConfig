@@ -107,6 +107,10 @@ my $Catalog = {
     http_message_network => 'Network Error: Unable to reach the RT server.', # loc
     http_message_network_get => 'Network Error: Unable to reach the RT server. Retrying...', # loc
     revoke => 'Revoke', # loc
+    zoom_in => 'Zoom in', # loc
+    zoom_out => 'Zoom out', # loc
+    fit_to_view => 'Fit to view', # loc
+    edit_transition => 'Edit transition', # loc
 };
 $_ = loc($_) for values %$Catalog;
 

@@ -108,7 +108,7 @@ through the library itself.
   `tom-select` (autocomplete on typed input), `dropzone` (handles user
   files), `tempus-dominus` (date string parsing).
 - `false` examples: `popper` (geometric math; no user input),
-  `chart.js` (renders app-supplied data), `d3` (presentational),
+  `chart.js` (renders app-supplied data), `cytoscape` (presentational),
   `mousetrap` (keyboard binding).
 
 ### `upgrade-instructions` *(path or `~`)*

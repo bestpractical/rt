@@ -1,0 +1,16 @@
+Getting the source for the Cytoscape.js graphing library.
+
+1. Download the source tarball for the desired release from the project's
+   GitHub Releases page:
+
+    https://github.com/cytoscape/cytoscape.js/releases
+
+2. Unpack the gzipped tarball. The release already includes a built dist
+   directory containing the distributable files (cytoscape.umd.js,
+   cytoscape.min.js, and others), so there is nothing to build.
+
+4. Copy the files from the unpacked release's dist directory to the RT
+   directories shown.
+
+    cp dist/cytoscape.umd.js ~/rt-dir/devel/third-party/cytoscape/
+    cp dist/cytoscape.min.js ~/rt-dir/share/static/js/

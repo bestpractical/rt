@@ -547,6 +547,15 @@ our %META;
             Hints => 'Display all plain-text attachments in a monospace font with formatting preserved, but wrapping as needed.', #loc
         },
     },
+    LifecycleStatusChangeConfirm => {
+        Section         => 'Ticket display',
+        Overridable     => 1,
+        SortOrder       => 5.1,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Confirm status changes made from the lifecycle graph', #loc
+        },
+    },
     MoreAboutRequestorTicketList => {
         Section         => 'Ticket display',                       #loc
         Overridable     => 1,
