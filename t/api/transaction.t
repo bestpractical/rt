@@ -207,4 +207,68 @@ EOF
     is_deeply(\@asset_types, \@asset_sorted, 'Asset types list is sorted');
 }
 
+diag 'Roll back and report failure when the database aborts the transaction';
+{
+    my $queue = RT::Test->load_or_create_queue( Name => 'AbortTest' );
+    ok( $queue->id, "loaded/created queue " . $queue->id );
+
+    my $poison = '$DBIx::SearchBuilder::Handle::TRANSABORT{ RT->DatabaseHandle->dbh } = 1; return 1;';
+
+    my $comment_scrip = RT::Scrip->new( RT->SystemUser );
+    my ( $sid, $smsg ) = $comment_scrip->Create(
+        Queue             => $queue->id,
+        ScripCondition    => 'On Comment',
+        ScripAction       => 'User Defined',
+        CustomPrepareCode => 'return 1',
+        CustomCommitCode  => $poison,
+        Template          => 'Blank',
+    );
+    ok( $sid, "created On Comment poisoning scrip: $smsg" );
+
+    my $ticket = RT::Test->create_ticket( Queue => $queue->id, Subject => 'abort me' );
+    ok( $ticket->id, "created ticket " . $ticket->id );
+    my $before = $ticket->Transactions->Count;
+
+    my ( $ok, $msg );
+    warnings_like {
+        ( $ok, $msg ) = $ticket->Comment( Content => 'trigger the scrip' );
+    }
+    [ qr/the database transaction was aborted/, qr/couldn't init a transaction/ ],
+        "logged the aborted-transaction reason for the comment";
+
+    ok( !$ok, "Comment reports failure when the transaction was aborted" );
+
+    $ticket->Load( $ticket->id );
+    is( $ticket->Transactions->Count, $before, "the comment transaction was rolled back; none persisted" );
+    ok( !RT->DatabaseHandle->TransactionAborted, "the database handle is clean after the rolled-back comment" );
+
+    my $create_scrip = RT::Scrip->new( RT->SystemUser );
+    ( $sid, $smsg ) = $create_scrip->Create(
+        Queue             => $queue->id,
+        ScripCondition    => 'On Create',
+        ScripAction       => 'User Defined',
+        CustomPrepareCode => 'return 1',
+        CustomCommitCode  => $poison,
+        Template          => 'Blank',
+    );
+    ok( $sid, "created On Create poisoning scrip: $smsg" );
+
+    my $tickets = RT::Tickets->new( RT->SystemUser );
+    $tickets->Limit( FIELD => 'Queue', VALUE => $queue->id );
+    my $count = $tickets->Count;
+
+    my $id;
+    warnings_like {
+        ($id) = RT::Ticket->new( RT->SystemUser )->Create( Queue => $queue->id, Subject => 'abort on create' );
+    }
+    [ qr/the database transaction was aborted/, qr/Ticket couldn't be created/ ],
+        "logged the aborted-transaction reason for the create";
+
+    ok( !$id, "Create reports failure when a scrip aborts the transaction" );
+
+    $tickets->RedoSearch;
+    is( $tickets->Count, $count, "no new ticket persisted after the aborted create" );
+    ok( !RT->DatabaseHandle->TransactionAborted, "the database handle is clean after the rolled-back create" );
+}
+
 done_testing;
