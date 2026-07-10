@@ -633,7 +633,7 @@ sub Create {
         else {
             $RT::Handle->Rollback();
 
-            $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
+            $ErrStr = join( "\n", $Msg, @non_fatal_errors );
             $RT::Logger->error("Ticket couldn't be created: $ErrStr");
             return ( 0, 0, $self->loc( "Ticket could not be created due to an internal error"));
         }
