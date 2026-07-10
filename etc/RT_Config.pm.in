@@ -1041,11 +1041,12 @@ Set($EmailDashboardInlineCSS, 0);
 
 =item C<$EmailDashboardIncludeCharts>
 
-To use the JSChart-generated images in emailed dashboards, install the
-optional module L<WWW::Mechanize::Chrome> and enable this option.
+To include the JSChart-generated images in emailed dashboards, enable this
+option.
 
-You will also need a chrome-based browser installed on the RT server.
-See also C<$ChromePath> and C<@ChromeLaunchArguments>.
+You will need a Chrome-based browser (such as Chromium) installed on the RT
+server; RT renders the charts by running it headless. See also C<$ChromePath>
+and C<@ChromeLaunchArguments>.
 
 =cut
 
@@ -1055,9 +1056,8 @@ Set($EmailDashboardIncludeCharts, @RT_DASHBOARD_CHART_EMAILS@);
 
 This option contains the path for a compatible Chrome-based browser
 executable that will be used to generate static images for JSChart
-graphs for dashboard emails.
-
-See also L<WWW::Mechanize::Chrome/launch_exe>
+graphs for dashboard emails. A bare command name (the default,
+C<chromium>) is looked up in C<PATH>.
 
 =cut
 
@@ -1065,15 +1065,13 @@ Set($ChromePath, 'chromium');
 
 =item C<@ChromeLaunchArguments>
 
-This option contains the launch arguments when initializing
-L<WWW::Mechanize::Chrome>.
-
-If you need to run L<rt-email-dashboards> as root, you probably need to add
-C<--no-sandbox> to get around Chrome's restriction:
+This option contains extra command-line arguments passed to the
+Chrome-based browser when rendering dashboard charts, for example:
 
     Set(@ChromeLaunchArguments, '--no-sandbox');
 
-See also L<WWW::Mechanize::Chrome/launch_arg>
+When L<rt-email-dashboards> runs as root, C<--no-sandbox> is added
+automatically, since Chrome refuses to run as root otherwise.
 
 =cut
 
