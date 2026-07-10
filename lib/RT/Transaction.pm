@@ -303,6 +303,11 @@ sub Create {
         RT::Ruleset->CommitRules($rules);
     }
 
+    # An aborted transaction is rolled back at Commit, so don't return an id for it.
+    if ( RT->DatabaseHandle->TransactionAborted ) {
+        return ( 0, $self->loc("Transaction could not be created; the database transaction was aborted") );
+    }
+
     return @return;
 }
 
