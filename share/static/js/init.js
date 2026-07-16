@@ -159,6 +159,29 @@ document.addEventListener('htmx:beforeSwap', function(evt) {
         // 422 means rt validation error and is handled in other places.
         if ( status === '422' ) return;
 
+        // Retry: for a non-boosted GET whose element can re-issue itself via a
+        // `reload` trigger, show a retry toast instead of dumping the error response
+        // into the target. Keying off the reload trigger means we only offer retry
+        // where htmx.trigger(elt, 'reload') will actually re-run the request.
+        if (!evt.detail.boosted && evt.detail.requestConfig.verb === "get"
+            && (evt.detail.requestConfig.elt.getAttribute('hx-trigger') || '')
+                .split(',').some(spec => spec.trim().split(/[\s\[]/)[0] === 'reload')) {
+            evt.detail.shouldSwap = false;
+            const elt = evt.detail.requestConfig.elt;
+            // Capture params now; htmx:afterRequest will strip hx-vals before the retry fires.
+            const retryVals = JSON.stringify(evt.detail.requestConfig.parameters);
+            let message = '';
+            if ( evt.detail.serverResponse ) {
+                message = jQuery(evt.detail.serverResponse).find('#body div.error').text().trim();
+            }
+            message = message
+                || RT.I18N.Catalog['http_message_' + status]
+                || RT.I18N.Catalog['http_message_' + status.substr(0, 1) + '00']
+                || RT.I18N.Catalog['error'];
+            showRetryToast(message, function() { elt.setAttribute('hx-vals', retryVals); htmx.trigger(elt, 'reload'); });
+            return;
+        }
+
         if (!evt.detail.boosted && evt.target && evt.detail.requestConfig.verb === "get") {
             evt.detail.shouldSwap = true;
         }
