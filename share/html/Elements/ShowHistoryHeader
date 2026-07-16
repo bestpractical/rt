@@ -298,20 +298,11 @@ jQuery(function(){
         container.setAttribute('data-disable-scroll-loading', '');
         let message = loc_key('history_scroll_error');
         if (reason) message += ' ' + reason;
-        jQuery.jGrowl(
-            '<div class="p-3 text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-3">' +
-            '<div>' + escapeHTML(message) + '</div>' +
-            '<button type="button" class="btn btn-sm btn-primary mt-2 history-retry-load">' +
-            escapeHTML(loc_key('try_again')) + '</button></div>',
-            { sticky: true, themeState: 'none', open: function(elt) {
-                jQuery(elt).find('.history-retry-load').on('click', function() {
-                    jQuery(elt).trigger('jGrowl.beforeClose');
-                    container.removeAttribute('data-disable-scroll-loading');
-                    isLoading = false;
-                    loadHistoryPage();
-                });
-            } }
-        );
+        showRetryToast(message, function() {
+            container.removeAttribute('data-disable-scroll-loading');
+            isLoading = false;
+            loadHistoryPage();
+        });
     };
 
     var loadHistoryPage = function() {

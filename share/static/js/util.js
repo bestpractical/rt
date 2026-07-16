@@ -1636,6 +1636,21 @@ function alertWarning(message) {
 </div>`, { sticky: true, themeState: 'none' });
 }
 
+function showRetryToast(message, onRetry) {
+    jQuery.jGrowl(
+        '<div class="p-3 text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-3">' +
+        '<div>' + escapeHTML(message) + '</div>' +
+        '<button type="button" class="btn btn-sm btn-primary mt-2 retry-action">' +
+        escapeHTML(loc_key('try_again')) + '</button></div>',
+        { sticky: true, themeState: 'none', open: function(elt) {
+            jQuery(elt).find('.retry-action').on('click', function() {
+                jQuery(elt).trigger('jGrowl.beforeClose');
+                onRetry();
+            });
+        } }
+    );
+}
+
 function reloadElement(elt, args = {}) {
     if (args['hx-vals']) {
         elt.setAttribute('hx-vals', args['hx-vals']);
