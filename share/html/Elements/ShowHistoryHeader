@@ -285,10 +285,6 @@ jQuery(function(){
         jQuery('.loading-message').remove();
     };
 
-    var removeLoadLink = function() {
-        jQuery('.error-load-history').remove();
-    };
-
     var showLoadingMessage = function() {
         removeLoadingMessage();
         var loadingMessage = jQuery('<span class="loading-message">' +
@@ -296,14 +292,26 @@ jQuery(function(){
         jQuery(".history-container").append(loadingMessage);
     };
 
-    var loadingError = function(reason) {
+    // Report a failed history load as a sticky toast with a "Try again" action.
+    const showHistoryLoadError = function(reason) {
         removeLoadingMessage();
         container.setAttribute('data-disable-scroll-loading', '');
-        removeLoadLink();
-        var loadLink = jQuery('<div class="error-load-history">' +
-            loc_key('history_scroll_error') + ' ' + reason +
-            '<br/><a href="#">' + loc_key('try_again') + '</a></div>');
-        jQuery(".history-container").append(loadLink);
+        let message = loc_key('history_scroll_error');
+        if (reason) message += ' ' + reason;
+        jQuery.jGrowl(
+            '<div class="p-3 text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-3">' +
+            '<div>' + escapeHTML(message) + '</div>' +
+            '<button type="button" class="btn btn-sm btn-primary mt-2 history-retry-load">' +
+            escapeHTML(loc_key('try_again')) + '</button></div>',
+            { sticky: true, themeState: 'none', open: function(elt) {
+                jQuery(elt).find('.history-retry-load').on('click', function() {
+                    jQuery(elt).trigger('jGrowl.beforeClose');
+                    container.removeAttribute('data-disable-scroll-loading');
+                    isLoading = false;
+                    loadHistoryPage();
+                });
+            } }
+        );
     };
 
     var loadHistoryPage = function() {
@@ -384,11 +392,19 @@ jQuery(function(){
         }
     });
 
-    jQuery('.history-container').on('click', '.error-load-history a', function(e) {
-        e.preventDefault();
-        removeLoadLink();
-        container.removeAttribute('data-disable-scroll-loading');
-        loadHistoryPage();
+    // Handle HTTP-error load failures for this history container only (not htmx
+    // requests nested inside transactions), offering a retry instead of RT's
+    // global error-dump handler. Network errors are deliberately left to the
+    // global htmx:sendError handler, which recovers SSO redirects via a
+    // full-page GET; intercepting them here would break that recovery.
+    container.addEventListener('htmx:beforeSwap', function(evt) {
+        if (evt.detail.requestConfig.target !== container) return;
+        if (evt.detail.xhr.status >= 400) {
+            evt.stopPropagation();
+            evt.detail.shouldSwap = false;
+            isLoading = false;
+            showHistoryLoadError(evt.detail.xhr.status);
+        }
     });
 
 % if ( $ScrollShowHistory ) {

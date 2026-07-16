@@ -99,17 +99,6 @@ textarea.messagebox {
     margin-bottom: 0.75em;
 }
 
-/* infinite history error message */
-
-.error-load-history {
-    padding: 10px;
-    border-radius: 5px;
-}
-
-.error-load-history a {
-    text-decoration: underline !important;
-}
-
 .comment {
     padding-left: 0.5em;
 }
@@ -237,15 +226,6 @@ a:hover.close {
 }
 
 [data-bs-theme=light] {
-    .error-load-history {
-        background-color: #b32;
-        color: white;
-    }
-
-    .error-load-history a {
-        color: white !important;
-    }
-
     .comment {
         color: #999;
     }
