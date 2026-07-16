@@ -87,6 +87,52 @@ diag "Linked queue portlet pagination";
     is( $page->locator($rows)->count, 1, 'page 2 of linked-queue portlet shows 1 child' );
 }
 
+# A viewer loses access mid-session, so a widget loading afterwards hits a real 403
+# (CurrentUserCanSee -> Abort) and offers a retry toast instead of dumping the error
+# page. Restoring access and clicking the toast recovers the widget.
+{
+    my $queue  = RT::Test->load_or_create_queue( Name => 'Retry Queue' );
+    my $viewer = RT::Test->load_or_create_user(
+        Name       => 'retry_viewer',
+        Password   => 'password',
+        Privileged => 1,
+    );
+    $viewer->PrincipalObj->GrantRight( Right => $_, Object => $queue )
+        for qw(SeeQueue ShowTicket ShowTicketComments);
+    my $ticket    = RT::Test->create_ticket( Queue => 'Retry Queue', Subject => 'retry access' );
+    my $ticket_id = $ticket->Id;
+
+    my $page = $p->{page};
+
+    # Short viewport keeps lower widgets below the fold, unloaded.
+    $page->setViewportSize( { width => 1280, height => 500 } );
+
+    $p->login( 'retry_viewer', 'password', logout => 1 );
+
+    # Plain goto, no helper scroll, so lower widgets stay unloaded.
+    $page->goto( $p->rt_base_url . "Ticket/Display.html?id=$ticket_id", { waitUntil => 'networkidle' } );
+    $p->text_contains( 'retry access', 'Viewer can see the ticket' );
+
+    # Scroll the unloaded widget in so its first htmx GET fires now and 403s.
+    $viewer->PrincipalObj->RevokeRight( Right => 'ShowTicket', Object => $queue );
+
+    my $history = '.htmx-load-widget[hx-get*="Display/History"]';
+    $page->locator($history)->first->scrollIntoViewIfNeeded();
+    $p->wait_for_notifications(1);
+    ok( $page->locator('button.retry-action')->count >= 1, 'Widget that 403s on load shows a retry toast' );
+    $p->text_contains( 'Try again', 'Retry toast offers a Try again action' );
+
+    $viewer->PrincipalObj->GrantRight( Right => 'ShowTicket', Object => $queue );
+
+    # Clicking a retry toast closes it and re-fires its GET; clear every one.
+    $page->locator('button.retry-action')->first->click for 1 .. $page->locator('button.retry-action')->count;
+    $p->wait_for_element("$history div.history");
+    ok( $page->locator("$history div.history")->count >= 1, 'Retry recovered the widget content' );
+    is( $page->locator('button.retry-action')->count, 0, 'Retry buttons clear once access is restored' );
+
+    $p->close_jgrowl;
+}
+
 $p->logout;
 
 done_testing;
