@@ -933,6 +933,69 @@ my $json = JSON->new->utf8;
     is( $ticket->{AdminCc}[0]{id},   'root@example.com',  'AdminCc id in search result' );
 }
 
+# Ticket Search - JSON query body (consistency with the other collection endpoints)
+{
+    my $subject = 'JSONBodySearchTargetXYZ';
+    my $ticket  = RT::Test->create_ticket( Queue => 'General', Subject => $subject );
+    ok( $ticket->id, 'created ticket for JSON body search' );
+
+    # A JSON-array body is honored when no "query" parameter is supplied, just
+    # like every other collection endpoint. Previously /tickets ignored the
+    # body and returned count 0.
+    my $res = $mech->post_json(
+        "$rest_base_path/tickets",
+        [ { field => 'id', operator => '>', value => 0 } ],
+        'Authorization' => $auth,
+    );
+    is( $res->code, 200, 'POST /tickets with JSON body: 200' );
+    my $content = $mech->json_response;
+    ok( $content->{count} >= 1, 'JSON body query returns matching tickets' );
+
+    # The body actually filters: a Subject condition returns only the match.
+    $res = $mech->post_json(
+        "$rest_base_path/tickets",
+        [ { field => 'Subject', value => $subject } ],
+        'Authorization' => $auth,
+    );
+    is( $res->code, 200, 'POST /tickets Subject JSON search: 200' );
+    $content = $mech->json_response;
+    is( $content->{count},          1,            'exactly one ticket matches the unique Subject' );
+    is( $content->{items}[0]{id},   $ticket->id,  'matched the right ticket' );
+    is( $content->{items}[0]{type}, 'ticket',     'result is a ticket' );
+
+    # A non-array JSON body is rejected, rather than silently ignored.
+    $res = $mech->post_json(
+        "$rest_base_path/tickets",
+        { field => 'id', value => 0 },
+        'Authorization' => $auth,
+    );
+    is( $res->code, 400, 'non-array JSON body is rejected' );
+
+    # With neither a query parameter nor a JSON body, the search is empty
+    # (unchanged: an unrestricted ticket search matches nothing).
+    $res = $mech->post_json( "$rest_base_path/tickets", [], 'Authorization' => $auth );
+    is( $res->code, 200, 'POST /tickets empty body: 200' );
+    is( $mech->json_response->{count}, 0, 'empty search returns no tickets' );
+
+    # TicketSQL via the query parameter is still honored (body is ignored).
+    $res = $mech->post_json(
+        "$rest_base_path/tickets?query=id=" . $ticket->id,
+        [ { field => 'Subject', value => 'no such subject' } ],
+        'Authorization' => $auth,
+    );
+    is( $res->code, 200, 'POST /tickets with TicketSQL query: 200' );
+    $content = $mech->json_response;
+    is( $content->{count},        1,           'TicketSQL query returns the ticket, body ignored' );
+    is( $content->{items}[0]{id}, $ticket->id, 'TicketSQL matched the right ticket' );
+
+    # Simple search via query + simple=1 is still honored.
+    $res = $mech->get( "$rest_base_path/tickets?simple=1&query=$subject", 'Authorization' => $auth );
+    is( $res->code, 200, 'GET /tickets simple search: 200' );
+    $content = $mech->json_response;
+    is( $content->{count},        1,           'simple search returns the ticket' );
+    is( $content->{items}[0]{id}, $ticket->id, 'simple search matched the right ticket' );
+}
+
 # Content-Length for non-ASCII responses
 {
     # A string that mixes multi-byte UTF-8 characters with code points above
