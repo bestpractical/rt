@@ -6,6 +6,7 @@ use MIME::Base64;
 
 use Encode qw(decode encode);
 use JSON ();
+use URI::Escape qw(uri_escape);
 
 # Test using integer priorities
 RT->Config->Set(EnablePriorityAsString => 0);
@@ -931,6 +932,72 @@ my $json = JSON->new->utf8;
     is( $ticket->{Cc}[0]{id},        'alice@example.com', 'Cc id in search result' );
     is( $ticket->{Cc}[1]{id},        'bob@example.com',   'Cc id in search result' );
     is( $ticket->{AdminCc}[0]{id},   'root@example.com',  'AdminCc id in search result' );
+}
+
+# Ticket Search - JSON query
+{
+    my $sorted_subject = 'Ticket to test sorted search';
+    my $upload_subject = 'Ticket creation using REST, multipart/form-data, with custom field uploads';
+
+    my $res = $mech->post_json( "$rest_base_path/tickets",
+        [ { field => 'Subject', value => $sorted_subject } ],
+        'Authorization' => $auth,
+    );
+    is( $res->code, 200 );
+    is( $mech->json_response->{count}, 1, 'JSON body searches tickets' );
+
+    my $query = uri_escape( $json->encode( [ { field => 'Subject', value => $sorted_subject } ] ) );
+    $res = $mech->get( "$rest_base_path/tickets?query=$query", 'Authorization' => $auth );
+    is( $res->code, 200 );
+    is( $mech->json_response->{count}, 1, 'JSON query parameter searches tickets' );
+
+    $res = $mech->post_json( "$rest_base_path/tickets", [], 'Authorization' => $auth );
+    is( $res->code, 200 );
+    is( $mech->json_response->{count}, 0, 'empty JSON body finds no tickets' );
+
+    $res = $mech->post_json( "$rest_base_path/tickets?query=Subject = '$sorted_subject'",
+        [ { field => 'Subject', value => 'no such subject' } ],
+        'Authorization' => $auth,
+    );
+    is( $res->code, 200 );
+    is( $mech->json_response->{count}, 1, 'query parameter takes precedence over JSON body' );
+
+    $res = $mech->get( "$rest_base_path/tickets?simple=1&query=sorted", 'Authorization' => $auth );
+    is( $res->code, 200 );
+    is( $mech->json_response->{count}, 1, 'simple search' );
+
+    $res = $mech->get( "$rest_base_path/tickets?query=Subject LIKE '[sorted]'", 'Authorization' => $auth );
+    is( $res->code, 200, 'TicketSQL containing [' );
+
+    $res = $mech->get( "$rest_base_path/tickets?simple=1&query=[sorted]", 'Authorization' => $auth );
+    is( $res->code, 200, 'simple search starting with [' );
+
+    $res = $mech->post( "$rest_base_path/tickets",
+        'Authorization' => $auth,
+        Content         => 'query=id=1&fields=Queue&fields[Queue]=Name',
+    );
+    is( $res->code, 200, 'form body containing [' );
+
+    $res = $mech->post_json( "$rest_base_path/tickets",
+        [ { field => 'Subject', value => $upload_subject }, { field => 'CF.{Image}', value => 'image.png' } ],
+        'Authorization' => $auth,
+    );
+    is( $res->code, 200 );
+    is( $mech->json_response->{count}, 1, 'JSON search by Subject and custom field' );
+
+    $res = $mech->post_json( "$rest_base_path/tickets",
+        [ { field => 'Subject', value => $sorted_subject }, { field => 'CF.{Image}', value => 'image.png' } ],
+        'Authorization' => $auth,
+    );
+    is( $res->code, 200 );
+    is( $mech->json_response->{count}, 0, 'Subject is not dropped when followed by a custom field' );
+
+    $res = $mech->post_json( "$rest_base_path/tickets",
+        [ { field => 'CF.{Image}', value => 'image.png' }, { field => 'Subject', value => $sorted_subject } ],
+        'Authorization' => $auth,
+    );
+    is( $res->code, 200 );
+    is( $mech->json_response->{count}, 0, 'Subject is not dropped when preceded by a custom field' );
 }
 
 # Content-Length for non-ASCII responses
