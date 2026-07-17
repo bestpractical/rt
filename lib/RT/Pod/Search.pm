@@ -60,6 +60,21 @@ sub new {
     return $self;
 }
 
+# Prefix utility scripts with their source directory so their generated
+# filename cannot collide (case-insensitively) with a same-named module.
+# e.g. bin/rt -> bin-rt (-> bin-rt.html), sbin/rt-config -> sbin-rt-config.
+# Modules under lib/ are unaffected. Keeps output flat (single namelet, no
+# "::"), so page depth and all relative links are unchanged.
+sub _path2modname {
+    my $self = shift;
+    my ($file) = @_;
+    my $name = $self->SUPER::_path2modname(@_);
+    if ( defined $file && $file =~ m{(?:^|/)(bin|sbin)/[^/]+$} ) {
+        $name = "$1-$name";
+    }
+    return $name;
+}
+
 # RT::Base->_ImportOverlays(); # No overlays on purpose
 
 1;

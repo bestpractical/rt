@@ -110,6 +110,10 @@ sub classify {
         $info{name} =~ s/_/ /g;
         $info{name} = join "/", map { ucfirst } split /::/, $info{name};
     }
+    elsif ($info{infile} =~ m{/s?bin/}) {
+        # Strip the bin-/sbin- filename prefix for a clean TOC label
+        $info{name} =~ s/^s?bin-//;
+    }
 
     return ($info{name}, $section);
 }
