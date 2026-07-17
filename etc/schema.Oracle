@@ -595,4 +595,4 @@ CREATE TABLE Shorteners (
   LastAccessed      DATE
 );
 
-CREATE UNIQUE INDEX Shorteners1 ON Shorteners(Code);
+CREATE UNIQUE INDEX Shorteners1 ON Shorteners (LOWER(Code));

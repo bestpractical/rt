@@ -1,0 +1,2 @@
+DROP INDEX IF EXISTS Shorteners1;
+CREATE UNIQUE INDEX Shorteners1 ON Shorteners (LOWER(Code));

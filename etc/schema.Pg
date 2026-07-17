@@ -834,4 +834,4 @@ CREATE TABLE Shorteners (
   PRIMARY KEY (id)
 );
 
-CREATE UNIQUE INDEX Shorteners1 ON Shorteners(Code);
+CREATE UNIQUE INDEX Shorteners1 ON Shorteners (LOWER(Code));
