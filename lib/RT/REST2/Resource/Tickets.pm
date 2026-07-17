@@ -54,8 +54,9 @@ use Moose;
 use namespace::autoclean;
 
 extends 'RT::REST2::Resource::Collection';
-with 'RT::REST2::Resource::Collection::ProcessPOSTasGET',
-    'RT::REST2::Resource::Collection::Search';
+with 'RT::REST2::Resource::Collection::QueryByJSON';
+with 'RT::REST2::Resource::Collection::QueryBySQL';
+with 'RT::REST2::Resource::Collection::Search';
 
 sub dispatch_rules {
     Path::Dispatcher::Rule::Regex->new(
@@ -65,42 +66,36 @@ sub dispatch_rules {
 }
 
 use Encode qw( decode_utf8 );
-use RT::REST2::Util qw( error_as_json expand_uid );
 use RT::Search::Simple;
-
-has 'query' => (
-    is          => 'ro',
-    isa         => 'Str',
-    required    => 1,
-    lazy_build  => 1,
-);
-
-sub _build_query {
-    my $self  = shift;
-    my $query = decode_utf8($self->request->param('query') || "");
-
-    if ($self->request->param('simple') and $query) {
-        # XXX TODO: Note that "normal" ModifyQuery callback isn't invoked
-        # XXX TODO: Special-casing of "#NNN" isn't used
-        my $search = RT::Search::Simple->new(
-            Argument    => $query,
-            TicketsObj  => $self->collection,
-        );
-        $query = $search->QueryToSQL;
-    }
-    return $query;
-}
 
 sub allowed_methods {
     [ 'GET', 'HEAD', 'POST' ]
 }
 
-override 'limit_collection' => sub {
+# When "simple" is set, "query" is a simple search, never JSON; translate it
+# into TicketSQL for QueryBySQL.
+around 'query_json_content' => sub {
+    my $orig = shift;
     my $self = shift;
-    my ($ok, $msg) = $self->collection->FromSQL( $self->query );
-    return error_as_json( $self->response, 0, $msg ) unless $ok;
-    super();
-    return 1;
+    return if $self->request->param('simple');
+    return $self->$orig(@_);
+};
+
+around '_build_query_sql' => sub {
+    my $orig = shift;
+    my $self = shift;
+    return $self->$orig(@_) unless $self->request->param('simple');
+
+    my $query = decode_utf8( $self->request->param('query') || "" );
+    return $query unless length $query;
+
+    # XXX TODO: Note that "normal" ModifyQuery callback isn't invoked
+    # XXX TODO: Special-casing of "#NNN" isn't used
+    my $search = RT::Search::Simple->new(
+        Argument   => $query,
+        TicketsObj => $self->collection,
+    );
+    return $search->QueryToSQL;
 };
 
 sub expand_field {

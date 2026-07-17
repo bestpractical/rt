@@ -480,7 +480,12 @@ curl for SSL like --cacert.
 =head3 Tickets
 
     GET /tickets?query=<TicketSQL>
+    POST /tickets
         search for tickets using TicketSQL
+
+    GET /tickets?query=<JSON>
+    POST /tickets
+        search for tickets using JSON search syntax (see below)
 
     GET /tickets?simple=1;query=<simple search query>
         search for tickets using simple search syntax
@@ -494,10 +499,8 @@ curl for SSL like --cacert.
     # in the given saved search.
 
     GET /tickets?search=<saved search id or description>
-        search for tickets using saved search
-
     POST /tickets
-        search for tickets with the 'search' or 'query' and optional 'simple' parameters 
+        search for tickets using saved search
 
     POST /ticket
         create a ticket; provide JSON content
@@ -533,9 +536,30 @@ curl for SSL like --cacert.
     POST /tickets/bulk/comment
         add a reply or comment to multiple tickets; provide JSON content(array of hashes)
 
+When searching for tickets, the JSON payload can be passed in the "query"
+parameter or, for POST, in the request body when no "query" parameter is
+provided. In the vast majority of cases, you'll want to use the TicketSQL
+options to find sets of tickets.
+
+JSON searches use L<DBIx::SearchBuilder> syntax, not TicketSQL, to get
+records directly from the Tickets table (see L</JSON searches>). These
+searches do not automatically exclude reminders, approvals, or merged
+tickets, so add an explicit "Type" or "IsMerged" condition if you need to
+filter them. Deleted tickets are still excluded.
+
 =head3 Ticket Examples
 
 Below are some examples using the endpoints above.
+
+    # Search tickets using TicketSQL
+    curl -X POST -u 'root:password' -d "query=Status='open' AND Queue='General'"
+        'https://myrt.com/REST/2.0/tickets'
+
+    # Search tickets using JSON searches syntax
+    curl -X POST -H "Content-Type: application/json" -u 'root:password'
+        -d '[{ "field": "Status", "value": "open" },
+             { "field": "Subject", "operator": "LIKE", "value": "network" }]'
+        'https://myrt.com/REST/2.0/tickets'
 
     # Create a ticket, setting some custom fields and a custom role
     curl -X POST -H "Content-Type: application/json" -u 'root:password'

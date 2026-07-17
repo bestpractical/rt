@@ -1081,8 +1081,7 @@ my $json = JSON->new->utf8;
       )
         if defined $data;
 
-    # POST search over a collection (Collection/ProcessPOSTasGET.pm). /tickets
-    # searches with the TicketSQL "query" param, not a JSON query body.
+    # POST search over a collection (Collection/ProcessPOSTasGET.pm)
     $res
         = $mech->post_json(
         "$rest_base_path/tickets?query=id=$id&fields=Subject",
