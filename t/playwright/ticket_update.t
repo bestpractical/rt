@@ -569,6 +569,82 @@ diag "Test article SubjectOverride feature";
     }
 }
 
+diag "Test Reply from a dashboard";
+{
+    my $root = RT::CurrentUser->new('root');
+
+    my $search = RT::SavedSearch->new($root);
+    my ( $ret, $msg ) = $search->Create(
+        Name    => 'Reply search',
+        Type    => 'Ticket',
+        Content => {
+            Format => q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
+                . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject',}
+                . q{Reply},
+            Query       => 'id = 1',
+            OrderBy     => 'id',
+            Order       => 'ASC',
+            RowsPerPage => 10,
+        },
+    );
+    ok( $ret, "Created saved search: $msg" );
+
+    my $dashboard = RT::Dashboard->new($root);
+    ( $ret, $msg ) = $dashboard->Create(
+        Name    => 'Reply dashboard',
+        Content => {
+            Elements => [
+                {   Layout   => 'col-12',
+                    Elements => [
+                        [   {   portlet_type => 'search',
+                                id           => $search->Id,
+                                description  => 'Ticket: Reply search'
+                            }
+                        ]
+                    ],
+                },
+            ],
+        },
+    );
+    ok( $ret, "Created dashboard: $msg" );
+
+    ( $ret, $msg ) = $root->UserObj->SetPreferences( DefaultDashboard => $dashboard->Id );
+    ok( $ret, "Set root's default dashboard: $msg" );
+
+    $p->get_ok('/');
+
+    ok( $p->{page}->locator('.htmx-indicator')->count > 0, 'Saved-search portlet renders a persistent htmx-indicator' );
+
+    $p->wait_for_element('table.inline-edit button.inline-edit-modal:has-text("Reply")');
+    $p->{page}->locator('table.inline-edit button.inline-edit-modal:has-text("Reply")')->first->click;
+
+    # TxnSendMailToAll comes only from ShowSimplifiedRecipients, so it proves the request fired.
+    $p->wait_for_element('#dynamic-modal input[name="TxnSendMailToAll"]');
+    ok( $p->{page}->locator('#dynamic-modal input[name="TxnSendMailToAll"]')->count > 0,
+        'Recipients list loaded in dashboard inline Reply modal' );
+    ok( $p->{page}
+            ->locator('#dynamic-modal input[type="checkbox"][name="TxnSendMailTo"][value="alice@example.com"]')->count
+            > 0,
+        'Cc recipient alice loaded in dashboard inline Reply modal'
+      );
+
+    my $reply_body = 'Reply sent from a dashboard';
+    $p->{page}->locator('#dynamic-modal textarea[name="UpdateContent"] + .ck-editor .ck-editor__editable')
+        ->first->fill($reply_body);
+    $p->{page}->locator('#dynamic-modal input.submit')->first->click;
+    $p->wait_for_element('.jGrowl-message:has-text("Correspondence added")');
+
+    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+    my $ticket = RT::Ticket->new( RT->SystemUser );
+    $ticket->Load(1);
+    my $txns = $ticket->Transactions;
+    $txns->Limit( FIELD => 'Type', VALUE => 'Correspond' );
+    $txns->OrderByCols( { FIELD => 'id', ORDER => 'DESC' } );
+    my $reply = $txns->First;
+    ok( $reply, 'Reply from dashboard added a Correspond transaction' );
+    like( $reply->Content, qr/\Q$reply_body\E/, 'Reply body saved from dashboard inline Reply modal' );
+}
+
 $p->logout;
 
 done_testing;
