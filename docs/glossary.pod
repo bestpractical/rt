@@ -6,17 +6,52 @@ This document is a glossary of terms used in RT.
 
 =over 4
 
+=item Article
+
+Reusable, pre-written text stored in RT, such as a canned answer or a
+piece of standard wording, that staff can insert into a ticket reply. Articles help a
+team answer consistently. Each article belongs to a class.
+
+=item Asset
+
+A record of something your organization owns or manages, for example a
+laptop, a software license, or a piece of equipment. Assets are tracked in RT and can
+be linked to the tickets about them. Each asset belongs to a catalog. Asset tracking
+is an optional part of RT.
+
+=item Catalog
+
+A container that groups related assets, the way a queue groups
+tickets.
+
+=item Class
+
+A container that groups related articles, the way a catalog groups
+assets.
+
 =item Comment
 
 An internal note added to a ticket. In a default RT, a comment is not
 emailed to the ticket's Requestors or Ccs; AdminCcs do receive it. Administrators can
 change who is notified. Compare Reply.
 
+=item Custom Field
+
+A field an administrator adds to capture data beyond RT's
+built-in fields, for example a category or a hardware model. Custom fields can be
+defined for tickets and for other objects, such as assets and users.
+
 =item Lifecycle
 
 The set of statuses a ticket can have and the steps allowed between
 them. Each queue uses a lifecycle; RT ships with a default one, and administrators
 can define others.
+
+=item Link
+
+A relationship between one ticket and another (or an external URL) that
+keeps related work visibly related. RT's link types include depends on, refers to,
+and parent/child.
 
 =item Owner
 
@@ -28,6 +63,12 @@ Owner. Owner is one of a ticket's roles.
 A box on an RT page: each panel on the homepage (a ticket list, the
 quick ticket-creation form) and each box on a ticket's display page (The Basics,
 People, Dates) is a portlet. Also called a widget.
+
+=item Privileged user
+
+A user with access to RT's full interface, typically a staff
+member who works tickets. Privileged users are members of RT's built-in Privileged
+group. Compare Unprivileged user.
 
 =item Queue
 
@@ -52,12 +93,31 @@ Requestor. Requestor is one of a ticket's roles.
 To mark a ticket done. In RT's default lifecycle this sets the
 ticket's status to C<resolved>; a customized lifecycle may use different statuses.
 
+=item Right
+
+A permission that controls what a user can see or do in RT, for example
+viewing a ticket, replying to it, or creating tickets in a queue. Rights are granted
+to users through the groups and roles they belong to, and can apply across all of RT
+or only within a single queue, catalog, or class. Administrators grant rights.
+
 =item Role
 
 A named connection between people and a ticket: Owner, Requestor, Cc,
 and AdminCc are the roles every ticket has, and administrators can add custom roles.
 Roles determine who receives email about the ticket. See
 L<Ticket metadata|docs/ticket_metadata.pod>.
+
+=item Scrip
+
+A rule that makes RT act automatically on a ticket event. A scrip pairs
+a condition (when something happens, such as a reply being added) with an action (what
+RT does, such as emailing the Requestor). RT uses scrips to send most of its
+notifications.
+
+=item Self Service
+
+RT's simplified interface for unprivileged users. It shows a user
+their own tickets and lets them create new ones, without the full staff interface.
 
 =item Status
 
