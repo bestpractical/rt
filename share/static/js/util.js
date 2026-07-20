@@ -1557,7 +1557,7 @@ function checkRefreshState(elt) {
         let previous_data;
         functions.push(function (evt) {
             if (evt && evt.type === 'htmx:load') {
-                if (document.querySelector('.htmx-indicator')) {
+                if (document.querySelector('form[name=TicketUpdate] .htmx-widget-content-placeholder')) {
                     return;
                 }
                 else if (RT.loadListeners) {
