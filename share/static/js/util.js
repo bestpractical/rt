@@ -1415,7 +1415,7 @@ function checkRefreshState(elt) {
         let previous_data;
         functions.push(function (evt) {
             if (evt && evt.type === 'htmx:load') {
-                if (document.querySelector('.htmx-indicator')) {
+                if (document.querySelector('form[name=TicketUpdate] .htmx-indicator')) {
                     return;
                 }
                 else if (RT.loadListeners) {
