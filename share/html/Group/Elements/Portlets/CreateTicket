@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('Quick ticket creation'), class => "group create-ticket" &>
 <form name="CreateTicket" action="<%RT->Config->Get('WebPath')%>/Ticket/Create.html">
-<input type="hidden" name="AddGroupCc" value="<%$Group->Id%>">
+<input type="hidden" name="Cc" value="<% $group_cc %>">
   <div class="row mt-2">
     <div class="col-auto label">
       <&|/l&>Create a ticket with this group as Cc in Queue</&>
@@ -61,6 +61,11 @@
   </div>
 </form>
 </&>
+<%INIT>
+# A group name containing the field delimiter (comma) can't round-trip as a
+# "group:NAME" token, so fall back to the id in that case.
+my $group_cc = $Group->Name =~ /,/ ? 'group:' . $Group->Id : 'group:' . $Group->Name;
+</%INIT>
 <%ARGS>
 $Group
 </%ARGS>

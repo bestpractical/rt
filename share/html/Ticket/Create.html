@@ -59,10 +59,6 @@
   <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
   <input type="hidden" name="QueueChanged" value="0" />
 
-% if ( $ARGS{'AddGroupCc'} ){
-<input type="hidden" class="hidden" name="AddGroupCc" value="<% $ARGS{'AddGroupCc'} %>" />
-% }
-
 % if ( $ARGS{'ChangedField'} ) {
 %   for my $field ( ref $ARGS{ChangedField} eq 'ARRAY' ? @{ $ARGS{ChangedField} } : $ARGS{ChangedField} ) {
   <input type="hidden" class="hidden" name="ChangedField" value="<% $field %>" />
@@ -333,5 +329,4 @@ $DependedOnBy => undef
 $MemberOf => undef
 $QuoteTransaction => undef
 $CloneTicket => undef
-$AddGroupCc => undef
 </%ARGS>

@@ -194,6 +194,16 @@ been moved to the .main-container element. If you've customized CSS styles
 targeting body with id like C<body#comp-Ticket-Display>, update them to
 C<.main-container#comp-Ticket-Display> or just C<#comp-Ticket-Display>.
 
+=item *
+
+The group summary "Quick ticket creation" portlet no longer submits the
+group to C</Ticket/Create.html> via a hidden C<AddGroupCc> field. The ticket
+create Cc field now accepts groups directly, so the portlet prefills C<Cc>
+with a C<group:NAME> token instead, and the special C<AddGroupCc> handling
+has been removed from C</Ticket/Create.html> and C</Ticket/Display.html>. If
+you have a link or customization that passes C<AddGroupCc> to the create
+form, change it to pass C<Cc=group:NAME> (or C<Cc=group:ID>).
+
 =back
 
 =head1 DEPRECATED CODE
