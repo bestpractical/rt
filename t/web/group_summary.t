@@ -29,10 +29,12 @@ diag( 'Group Summary access and ticket creation' );
 
     $m->submit_form_ok({ form_name => 'CreateTicket' },
                          "Submitted form to create ticket with group $group_id as Cc" );
-    like( $m->uri, qr{/Ticket/Create\.html\?AddGroupCc=$group_id&Queue=1$},
-          "now on /Ticket/Create\.html with param AddGroupCc=$group_id" );
+    like( $m->uri, qr{/Ticket/Create\.html\?Cc=group.*Queue=1$},
+          "now on /Ticket/Create.html with the group prefilled as Cc" );
+    is( $m->form_name('TicketCreate')->value('Cc'), "group:$group_name",
+        "Cc field on the create form is prefilled with the group" );
 
-    my $subject = 'test AddGroupCc ticket';
+    my $subject = 'test group Cc ticket';
     $m->submit_form_ok({
         form_name => 'TicketCreate',
         fields => {
