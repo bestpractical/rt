@@ -72,11 +72,10 @@ use RT::Interface::CLI qw( loc );
 use RT::Interface::Email;
 
 RT::LoadConfig();
-RT::Init();
 
 sub usage {
     my ($error) = @_;
-    print loc("Usage:") . " $0 -m (daily|weekly) [--print] [--help]\n";
+    print loc("Usage:") . " $0 -m (daily|weekly) [--print] [--log LEVEL] [--help]\n";
     print loc(
         "[_1] is a utility, meant to be run from cron, that dispatches all deferred RT notifications as a per-user digest.",
         $0
@@ -87,6 +86,7 @@ sub usage {
         . loc("Print the resulting digest messages to STDOUT; don't mail them. Do not mark them as sent")
         . "\n";
     print "\t-v, --verbose\t" . loc("Give output even on messages successfully sent") . "\n";
+    print "\t    --log\t" . loc("Adjust LogToSTDERR config option") . "\n";
     print "\t-h, --help\t" . loc("Print this message") . "\n";
 
     if ( $error eq 'help' ) {
@@ -97,13 +97,17 @@ sub usage {
     }
 }
 
-my ( $frequency, $print, $verbose, $help ) = ( '', '', '', '' );
+my ( $frequency, $print, $verbose, $log, $help ) = ( '', '', '', '', '' );
 GetOptions(
-    'mode=s' => \$frequency,
-    'print'  => \$print,
+    'mode=s'  => \$frequency,
+    'print'   => \$print,
     'verbose' => \$verbose,
-    'help'   => \$help,
+    'log=s'   => \$log,
+    'help'    => \$help,
 );
+
+RT->Config->Set( LogToSTDERR => $log ) if $log;
+RT::Init();
 
 usage('help') if $help;
 usage("Mode argument must be 'daily' or 'weekly'")
@@ -385,7 +389,7 @@ rt-email-digest - dispatch deferred notifications as a per-user digest
 
 =head1 SYNOPSIS
 
-    rt-email-digest -m (daily|weekly) [--print] [--help]
+    rt-email-digest -m (daily|weekly) [--print] [--log LEVEL] [--help]
 
 =head1 DESCRIPTION
 
@@ -407,6 +411,10 @@ Specify whether this is a daily or weekly run.
 Print the resulting digest messages to STDOUT; don't mail them. Do not mark them as sent
 
 --print is equal to -p
+
+=item log
+
+Adjust LogToSTDERR config option
 
 =item help
 
