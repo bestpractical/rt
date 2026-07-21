@@ -142,19 +142,20 @@ if ( !defined $Maps && ( my $all_maps = RT->Config->Get('Lifecycles')->{__maps__
 
 my $redirect_to ='/Admin/Lifecycles/Advanced.html';
 my %redirect_args;
+my $keep_input;
 
 if ( $Validate || $Update ) {
     my $lifecycle = JSON::from_json($Config);
     my ( $valid, @warnings )
         = $LifecycleObj->ValidateLifecycle( Lifecycle => $lifecycle, CurrentUser => $session{CurrentUser} );
 
-    my $updated;
     if ($valid) {
         if ($Validate) {
             push @results, loc('Lifecycle is valid');
+            $keep_input = 1;
         }
         else {
-            ( $updated, my $msg ) = RT::Lifecycle->UpdateLifecycle(
+            my ( $updated, $msg ) = RT::Lifecycle->UpdateLifecycle(
                 CurrentUser  => $session{CurrentUser},
                 LifecycleObj => $LifecycleObj,
                 NewConfig    => $lifecycle,
@@ -165,20 +166,19 @@ if ( $Validate || $Update ) {
             }
             else {
                 push @results, $msg;
+                $keep_input = 1;
             }
         }
 
     }
     else {
         push @results, @warnings;
+        $keep_input = 1;
     }
 
     %redirect_args = (
         Name => $Name,
         Type => $Type,
-
-        # Get the latest canonicalized data if updated successfully
-        $updated ? () : ( Config => $Config ),
     );
 }
 elsif ( $Delete ) {
@@ -203,41 +203,43 @@ elsif ( $ValidateMaps || $UpdateMaps ) {
     my ( $valid, @warnings )
         = $LifecycleObj->ValidateLifecycleMaps( Maps => $maps, CurrentUser => $session{CurrentUser} );
 
-    my $updated;
     if ($valid) {
         if ($ValidateMaps) {
             push @results, loc('Mappings is valid');
+            $keep_input = 1;
         }
         else {
             # Maps will be merged into existing value, here we remove existing values so admins can delete items
 
-            ( $updated, my $msg ) = RT::Lifecycle->UpdateMaps(
+            my ( $updated, $msg ) = RT::Lifecycle->UpdateMaps(
                 CurrentUser => $session{CurrentUser},
                 Maps        => $maps,
                 Name        => $Name,
             );
             push @results, $msg;
+            $keep_input = 1 unless $updated;
         }
 
     }
     else {
         push @results, @warnings;
+        $keep_input = 1;
     }
 
     %redirect_args = (
         Name => $Name,
         Type => $Type,
-
-        # Get the latest canonicalized data if updated successfully
-        $updated ? () : ( Maps => $Maps ),
     );
 }
 
+# Redirect without Config or Maps: a large value overflows the web server's
+# buffers (414), and the GET reloads the saved values. When the submitted
+# input wasn't saved, rendering inline retains it.
 MaybeRedirectForResults(
     Actions   => \@results,
     Path      => $redirect_to,
     Arguments => \%redirect_args,
-);
+) unless $keep_input;
 
 </%INIT>
 <%ARGS>
