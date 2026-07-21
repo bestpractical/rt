@@ -72,6 +72,33 @@ $p->submit_form_ok(
 $p->title_is( 'Found 1 ticket', 'Found 1 ticket' );
 $p->text_contains( "ticket $search", "Found test ticket with $search" );
 
+diag "Active/Inactive Status filter on ticket search results";
+{
+    RT::Test->create_ticket(
+        Queue   => 1,
+        Subject => 'active status filter ticket',
+    );
+    RT::Test->create_ticket(
+        Queue   => 1,
+        Subject => 'inactive status filter ticket',
+        Status  => 'resolved',
+    );
+
+    $p->get_ok(q{/Search/Results.html?Query=Subject LIKE 'status filter ticket'&Rows=50});
+    $p->text_contains('active status filter ticket');
+    $p->text_contains('inactive status filter ticket');
+
+    $p->{page}->click(q{a.search-filter[hx-target="[id='search-filter-attribute-status']"]});
+    $p->wait_for_element('#Status-__Active__');
+    $p->{page}->check('#Status-__Active__');
+    $p->{page}->locator('#search-filter-attribute-status input[name=Apply]')->click;
+    $p->wait_for_htmx;
+
+    $p->text_contains('active status filter ticket');
+    $p->text_lacks('inactive status filter ticket');
+    $p->wait_for_element(q{a.search-filter[hx-target="[id='search-filter-attribute-status']"] svg.bi-funnel-fill});
+}
+
 $p->logout;
 
 done_testing;

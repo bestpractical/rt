@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 
+use URI;
 use RT::Test::Assets tests => undef;
 
 RT::Test::Assets::create_assets(
@@ -106,6 +107,33 @@ Owner,
             'Query'       => 'Catalog = \'General assets\''
         },
         'Saved search content'
+    );
+}
+
+diag "Active/Inactive options in the Status column filter (assets)";
+{
+    my $uri = URI->new( $baseurl . '/Views/Component/FilterAssets' );
+    $uri->query_form( Attribute => 'Status', Query => 'id > 0' );
+    $m->get_ok( $uri, 'Fetched FilterAssets Status panel' );
+    $m->content_contains( 'value="__Active__"',   'Active option rendered' );
+    $m->content_contains( 'value="__Inactive__"', 'Inactive option rendered' );
+    $m->content_contains( '>Active<',   'Active label rendered' );
+    $m->content_contains( '>Inactive<', 'Inactive label rendered' );
+
+    my $applied = URI->new( $baseurl . '/Views/Component/FilterAssets' );
+    $applied->query_form(
+        Attribute => 'Status',
+        Query     => '( id > 0 ) AND ( Status = "__Active__" )',
+        BaseQuery => 'id > 0',
+    );
+    $m->get_ok( $applied, 'Fetched FilterAssets Status panel with __Active__ applied' );
+    $m->content_like(
+        qr/id="Status-__Active__"[^>]*checked/,
+        'Active checkbox is checked when Status = "__Active__" is applied'
+    );
+    $m->content_unlike(
+        qr/id="Status-__Inactive__"[^>]*checked/,
+        'Inactive checkbox is not checked'
     );
 }
 
