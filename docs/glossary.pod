@@ -16,8 +16,7 @@ team answer consistently. Each article belongs to a class.
 
 A record of something your organization owns or manages, for example a
 laptop, a software license, or a piece of equipment. Assets are tracked in RT and can
-be linked to the tickets about them. Each asset belongs to a catalog. Asset tracking
-is an optional part of RT.
+be linked to the tickets about them. Each asset belongs to a catalog.
 
 =item Catalog
 
@@ -26,8 +25,8 @@ tickets.
 
 =item Class
 
-A container that groups related articles, the way a catalog groups
-assets.
+A container that groups related articles, the way a queue groups
+tickets.
 
 =item Comment
 
@@ -38,8 +37,10 @@ change who is notified. Compare Reply.
 =item Custom Field
 
 A field an administrator adds to capture data beyond RT's
-built-in fields, for example a category or a hardware model. Custom fields can be
-defined for tickets and for other objects, such as assets and users.
+built-in fields. RT supports multiple types of custom fields, like
+custom dates (e.g., "Approved Date"), dropdowns (e.g., "Issue Type"),
+text fields (e.g., "Rejection Details"), and many others. Custom fields can be
+defined for most objects in RT including tickets, assets, groups, and users.
 
 =item Lifecycle
 
@@ -49,9 +50,10 @@ can define others.
 
 =item Link
 
-A relationship between one ticket and another (or an external URL) that
-keeps related work visibly related. RT's link types include depends on, refers to,
-and parent/child.
+A record of the relationship between one object and another in RT.
+Links are available on multiple types of objects, most commonly on tickets.
+Tickets can link to other tickets, assets, other objects, or internet URLs.
+RT's link types include depends on, refers to, and parent/child.
 
 =item Owner
 
@@ -109,15 +111,21 @@ L<Ticket metadata|docs/ticket_metadata.pod>.
 
 =item Scrip
 
-A rule that makes RT act automatically on a ticket event. A scrip pairs
-a condition (when something happens, such as a reply being added) with an action (what
-RT does, such as emailing the Requestor). RT uses scrips to send most of its
-notifications.
+An automated action that may run based on a ticket or asset event. Scrips run on every
+update to a ticket or asset. They first evaluate a condition, and if the condition
+is true, RT runs the action. RT uses scrips to send most of its notifications.
 
 =item Self Service
 
 RT's simplified interface for unprivileged users. It shows a user
 their own tickets and lets them create new ones, without the full staff interface.
+
+=item SLA
+
+A service level agreement: response and resolution time targets assigned to
+a ticket. When a ticket has an SLA, RT can automatically calculate its Due
+date and track whether those targets are being met. See
+L<Ticket metadata|docs/ticket_metadata.pod>.
 
 =item Status
 
@@ -133,6 +141,13 @@ RT's record of a single request or task, from arrival to completion.
 
 One recorded change on a ticket: a reply, a comment, a status
 change, and so on. A ticket's history is its list of transactions.
+
+=item Unprivileged user
+
+A user without access to RT's full staff interface, typically a
+requester who submits and follows their own tickets. Unprivileged users are members
+of RT's built-in Unprivileged group and normally work through the simpler Self
+Service interface. Compare Privileged user.
 
 =item Watcher
 

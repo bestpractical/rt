@@ -1,0 +1,238 @@
+=encoding utf-8
+
+=head1 How RT is organized: core concepts
+
+Request Tracker (RT) has its own way of naming things, and a handful of ideas
+carry almost the whole system. This page walks through them once, in plain
+terms, so the rest of the documentation can build on a shared vocabulary. Read
+it start to finish and you will have the mental model behind every task you do
+in RT: what a ticket is, how tickets are grouped and moved along, who is
+connected to them, and the other kinds of things RT can track.
+
+Nothing here is a step-by-step procedure. Each idea gets a short introduction
+and a link to the page that covers it in depth. If you want to jump straight
+into working a ticket, start with
+L<Getting started with RT|docs/user/getting_started.pod> and come back here
+when a word needs unpacking.
+
+This guide describes a typical RT configuration; your RT may be set up
+differently.
+
+=head2 How RT tracks work: the ticket
+
+=head3 Tickets
+
+A L<ticket|docs/glossary.pod> is the unit of work in RT. It is RT's record of
+one request or task, from the moment it arrives to the moment it is done.
+Everything you do in RT happens on a ticket: you create one, add to it, hand it
+off, and eventually close it. A ticket carries a subject, the people involved,
+the messages exchanged, and a full history of what happened along the way.
+
+A ticket's importance does not end when the work does. After it is resolved, the
+ticket stays in RT as a permanent record. It is a history of past work you can
+search and reopen, a reference when a similar request comes back, the source data
+behind reports on what your team handled and how long it took, and the place where
+details like tracked time live. This is why a resolved ticket is still worth
+finding, and why searching and reporting matter as much as working a ticket does
+in the moment.
+
+The information stored on a ticket, its subject, dates, priority, and the rest,
+is covered in L<Ticket metadata|docs/ticket_metadata.pod>.
+
+=head3 Queues
+
+A L<queue|docs/glossary.pod> is how RT groups tickets. Think of it as a shared
+inbox for a team, a product, or a project: related tickets live together in one
+queue, and the people who work them share it. Every ticket belongs to exactly
+one queue. A support team might keep customer email in one queue and internal
+IT requests in another, so each group sees its own work without wading through
+everyone else's.
+
+A queue is also where much of RT's setup lives. Each queue carries its own set
+of statuses (its lifecycle), its own watchers, its own custom fields, and its
+own automation. That is why two queues in the same RT can behave differently:
+they are configured separately.
+
+=head3 Statuses and lifecycles
+
+A ticket's L<status|docs/glossary.pod> says where it stands. In RT's default
+setup a ticket usually moves from C<new> (just arrived) to C<open> (someone is
+working it) to C<resolved> (done). Other statuses exist, such as C<stalled> for
+work that is blocked. Status is what lets a team see at a glance what still needs
+attention and what is waiting on someone else, and it is one of the most common
+things to search and report on, as in "show me everything still open in my queue".
+
+The list of statuses a ticket can have, and the moves allowed between them, is
+called a L<lifecycle|docs/glossary.pod>. Each queue uses one lifecycle, and
+administrators can define their own. This is the reason the exact statuses in
+your RT may differ from the ones above: the statuses you see, and the order they
+follow, come from the lifecycle your administrator set for that queue, not from
+a fixed list. When a page in this documentation names a status like C<resolved>,
+it means the default lifecycle. For how lifecycles are defined, see
+L<Ticket Lifecycles|docs/customizing/lifecycles.pod>.
+
+=head3 People and roles
+
+People connect to a ticket through L<roles|docs/glossary.pod>. Every ticket has
+four built-in roles: the B<Owner> (the one person responsible for working it),
+the B<Requestors> (the people the ticket is for), and B<Cc> and B<AdminCc>
+(others kept in the loop). You can see them in the B<People> box on a ticket.
+
+Roles do more than label people. They decide who gets email about the ticket:
+Requestors, Ccs, and AdminCcs are the ticket's L<watchers|docs/glossary.pod>, the
+people RT notifies as the ticket changes. Roles can also carry rights. Because a
+role is a relationship to the ticket rather than a fixed name, an administrator
+can grant a permission to whoever holds a role: for example, allowing only the
+ticket's Owner to reply to it or change it. The right person's access then follows
+the ticket as it is handed off, with no one editing permissions by hand. For a
+fuller account of the built-in roles, and how administrators add custom ones, see
+L<Roles in RT|docs/custom_roles.pod>.
+
+=head3 History and transactions
+
+RT records every change to a ticket. Each recorded change, a reply, a comment, a
+status change, a handoff, is a L<transaction|docs/glossary.pod>, and a ticket's
+history is simply its list of transactions in order. Replies and comments are
+transactions too, which is why they show up in the history alongside the field
+changes.
+
+Because RT keeps the whole history, a ticket stays a complete record of what
+happened, who did it, and when. Nothing is quietly overwritten.
+
+Many other objects in RT record history as well and for the same reason. As
+changes are made, the system keeps a running log of what the change was,
+who did it, and when.
+
+=head3 Custom fields
+
+RT tickets come with a standard set of fields, but every organization tracks
+something extra. A L<custom field|docs/glossary.pod> captures that data: a
+category, a piece of hardware, a contract number, whatever your team needs beyond
+the built-in fields. Custom fields come in many types, so each piece of data is
+stored in the shape that fits it: a date for an approval date, a dropdown for an
+issue type, a text box for free-form notes, and more. Keeping this information in
+its own field, rather than buried in the ticket's messages, is what lets you
+search and report on it later, for example listing every open ticket tied to one
+contract number. An administrator defines the custom fields for a queue, and they
+then appear on its tickets.
+
+=head3 Links
+
+A L<link|docs/glossary.pod> records a relationship between one ticket and
+something else, so related work stays visibly connected instead of scattered
+across separate tickets. A ticket can depend on another, refer to it, or sit in a
+parent-and-child relationship. Links are not limited to other tickets: a ticket
+can also link to an asset, an article, or another object, and to a plain web URL.
+This is how you tie a fix to the several tickets asking for it, or point a ticket
+at the piece of equipment it concerns. Both custom fields and links are covered in
+L<Ticket metadata|docs/ticket_metadata.pod>.
+
+=head3 Scrips: automation at a glance
+
+Much of what feels automatic in RT comes from L<scrips|docs/glossary.pod>. A
+scrip is a rule made of two parts: a condition (when should this run?) and an
+action (what should happen?). On every update to a ticket, RT checks the scrip's
+condition, and if it is true, runs the action. A common example: when someone
+replies, email the Requestor.
+
+Notifications are the most visible thing scrips do, but not the limit of what
+they can do. A scrip's action can do essentially anything a program can: call an
+outside system's API, set a custom field, or even open one or more new tickets in
+response to what just happened. This is a large part of how a team makes RT fit
+its own process rather than the reverse. You do not set up scrips as an everyday
+user, but it helps to know that the emails and updates you see are usually a scrip
+doing its job, and that much more than notifying is possible. Administrators can
+add their own; for the full picture, see
+L<Scrip Conditions & Actions|docs/customizing/scrip_conditions_and_action.pod>.
+
+=head2 More than tickets
+
+Tickets are the heart of RT, but they are not the only thing it tracks. Two
+other kinds of records work much like tickets and share RT's custom fields and
+permissions.
+
+=head3 Assets and catalogs
+
+RT can track things as well as requests. An L<asset|docs/glossary.pod> is a
+record of something your organization owns or manages: a laptop, a software
+license, a piece of equipment. Assets let you tie the thing to the tickets
+about it, so its history travels with it.
+
+Assets are grouped into L<catalogs|docs/glossary.pod> the way tickets are
+grouped into queues. For an overview see L<Assets|docs/assets.pod>, and to set
+it up see the L<Assets tutorial|docs/customizing/assets/tutorial.pod>.
+
+=head3 Articles and classes
+
+An L<article|docs/glossary.pod> is reusable text: a canned answer, a set of
+instructions, a snippet of standard wording. Articles help staff answer faster
+and more consistently, and they can be dropped straight into a reply. Together
+they form a small knowledge base inside RT.
+
+Articles are organized into L<classes|docs/glossary.pod>, which group related
+articles the way a queue groups tickets (just as catalogs group assets).
+Answering faster is their most common use, but articles do more than supply
+canned text: they can also hold information that powers other RT features,
+such as Process Articles and the article links shown on dashboards. For an
+overview, see L<Introduction to Articles|docs/customizing/articles_introduction.pod>.
+
+=head2 People and permissions
+
+=head3 Privileged and unprivileged users, and the two interfaces
+
+RT users come in two kinds, and the kind decides which interface they see. This
+is worth understanding early, because it explains why the same RT can look
+completely different to two people. A L<privileged user|docs/glossary.pod> is a
+staff member or agent, someone who works tickets. They get the full RT interface:
+queues, search, dashboards, and the ticket tools this documentation describes. In
+our examples, C<staff1> is a privileged user.
+
+An L<unprivileged user|docs/glossary.pod> is usually a requester: someone who
+submits requests and follows their own, but does not work other people's tickets.
+They see a simpler interface called L<Self Service|docs/glossary.pod>, which shows
+just their own tickets and a way to create more. This keeps the full staff
+interface out of the way of people who only need to ask for help and check on
+their requests. In our examples, C<user1> is an unprivileged user. Which interface
+you land in after login depends on which kind of user your account is.
+
+With configuration, an administrator can extend an unprivileged user's rights so
+they see more than just their own tickets, for example letting everyone at a
+company see all of that company's tickets. Even then, the interface stays the
+simpler Self Service view: broader visibility does not turn an unprivileged user
+into a staff user.
+
+=head3 Rights and permissions
+
+L<Rights|docs/glossary.pod> control what each user can see and do in RT: view a
+ticket, reply to it, change its owner, create tickets in a queue, and so on.
+Nothing in RT is visible or editable to everyone by default; each ability is a
+right that someone grants.
+
+Rights are granted to people through the groups and roles they belong to, and
+they can apply across all of RT or only within a single queue (or catalog, or
+class). This is the reason a button, a queue, or a whole feature can be there
+for a colleague but missing for you: your account may not have that right. If
+you expect to see something and cannot, you are not doing anything wrong; ask
+your team lead, who can check what your account is allowed to do. Rights are set
+up by administrators, so how they are arranged is a question for whoever manages
+your RT.
+
+=head2 Where to go next
+
+Now that the vocabulary is in place, put it to work.
+L<Getting started with RT|docs/user/getting_started.pod> walks you through your
+first ticket end to end: creating it, replying, and resolving it. Task how-tos
+for the everyday jobs, such as taking ownership, searching, and merging
+duplicates, build on the same concepts and vocabulary you just met here.
+
+=head2 For administrators
+
+The behavior above is configurable, and each area has its own documentation:
+statuses and the moves between them in
+L<Ticket Lifecycles|docs/customizing/lifecycles.pod>; automation and
+notifications in
+L<Scrip Conditions & Actions|docs/customizing/scrip_conditions_and_action.pod>;
+asset tracking in L<Assets|docs/assets.pod>; and the knowledge base in
+L<Introduction to Articles|docs/customizing/articles_introduction.pod>.
+
+=cut
