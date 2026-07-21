@@ -88,6 +88,7 @@ Abort( loc("Invalid lifecycle") ) unless $LifecycleObj->Name && $LifecycleObj->{
 
 $title = loc("Modify lifecycle [_1]", $LifecycleObj->Name);
 
+my $updated;
 if ( $Update ) {
     my ( $ok, $msg ) = RT::Lifecycle->UpdateLifecycleLayout(
         CurrentUser  => $session{CurrentUser},
@@ -98,6 +99,7 @@ if ( $Update ) {
 
     if ( $ok ) {
         push @results, loc('Lifecycle layout updated');
+        $updated = 1;
     }
     elsif ($msg
         && $msg ne loc('That is already the current value')
@@ -105,6 +107,7 @@ if ( $Update ) {
     {
         # This is just svg layout change, no need to notify user if nothing changed.
         push @results, $msg;
+        $updated = 0;
     }
 
     my $lifecycle = JSON::from_json($Config);
@@ -122,13 +125,16 @@ if ( $Update ) {
         );
         if ($ok) {
             push @results, loc('Lifecycle updated');
+            $updated //= 1;
         }
         else {
             push @results, $msg;
+            $updated = 0;
         }
     }
     else {
         push @results, @warnings;
+        $updated = 0;
     }
 }
 else {
@@ -142,11 +148,13 @@ else {
     }
 }
 
-# This code does automatic redirection if any updates happen.
+# Redirect only on success, without Config: a large Config overflows the web
+# server's buffers (414), and the GET reloads it anyway. On failure, rendering
+# inline retains the submitted Config and layout.
 MaybeRedirectForResults(
     Actions   => \@results,
-    Arguments => { Name => $Name, Type => $Type, Config => $Config },
-);
+    Arguments => { Name => $Name, Type => $Type },
+) if $updated;
 </%INIT>
 <%ARGS>
 $Name   => undef
