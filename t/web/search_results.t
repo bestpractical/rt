@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 
+use URI;
 use RT::Test tests => undef;
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
@@ -104,6 +105,45 @@ diag 'Test date columns for calendar display mode';
             $m->content_lacks( 'No date columns were found', "Date column $column works" );
         }
     }
+}
+
+diag "Active/Inactive options in the Status column filter (tickets)";
+{
+    my $uri = URI->new( $baseurl . '/Views/Component/FilterTickets' );
+    $uri->query_form( Attribute => 'Status', Query => 'id > 0' );
+    $m->get_ok( $uri, 'Fetched FilterTickets Status panel' );
+    $m->content_contains( 'value="__Active__"',   'Active option rendered' );
+    $m->content_contains( 'value="__Inactive__"', 'Inactive option rendered' );
+    $m->content_contains( '>Active<',   'Active label rendered' );
+    $m->content_contains( '>Inactive<', 'Inactive label rendered' );
+
+    my $applied = URI->new( $baseurl . '/Views/Component/FilterTickets' );
+    $applied->query_form(
+        Attribute => 'Status',
+        Query     => '( id > 0 ) AND ( Status = "__Active__" )',
+        BaseQuery => 'id > 0',
+    );
+    $m->get_ok( $applied, 'Fetched FilterTickets Status panel with __Active__ applied' );
+    $m->content_like(
+        qr/id="Status-__Active__"[^>]*checked/,
+        'Active checkbox is checked when Status = "__Active__" is applied'
+    );
+    $m->content_unlike(
+        qr/id="Status-__Inactive__"[^>]*checked/,
+        'Inactive checkbox is not checked'
+    );
+
+    my $inactive = URI->new( $baseurl . '/Views/Component/FilterTickets' );
+    $inactive->query_form(
+        Attribute => 'Status',
+        Query     => '( id > 0 ) AND ( Status = "__Inactive__" )',
+        BaseQuery => 'id > 0',
+    );
+    $m->get_ok( $inactive, 'Fetched FilterTickets Status panel with __Inactive__ applied' );
+    $m->content_like(
+        qr/id="Status-__Inactive__"[^>]*checked/,
+        'Inactive checkbox is checked when Status = "__Inactive__" is applied'
+    );
 }
 
 done_testing;
