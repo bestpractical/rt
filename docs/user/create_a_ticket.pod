@@ -1,0 +1,173 @@
+=encoding utf-8
+
+=head1 How to create a ticket in RT
+
+This guide shows you how to create a L<ticket|docs/glossary.pod>: RT's record of
+a single request or task, from arrival to completion. The recommended way is the
+B<Create new ticket> button on the main menu, the navigation menu across the top of
+every page, which opens a ticket-creation form. Other ways follow: by email, from the
+homepage, from a person's user summary page, and automatically from another system.
+
+This guide describes a typical RT configuration; your RT may be set up
+differently.
+
+If this is your first time in RT, the L<Getting started with RT|docs/user/getting_started.pod>
+tutorial walks through creating a ticket, replying to it, and resolving it, all in
+order. This page covers the creation task on its own, and in more depth.
+
+=head2 Create a ticket from the main menu
+
+=over 4
+
+=item 1
+
+On the main menu, click the B<Create new ticket> button. RT opens the
+ticket-creation form in the default L<queue|docs/glossary.pod>.
+
+On a narrow or mobile-width screen, this button shows less text: it condenses to
+B<Create>, and to a B<+> at the narrowest widths.
+
+=item 2
+
+Check the B<Queue> shown in the B<Basics> box. If the ticket belongs in a different
+queue, choose it from the dropdown.
+
+=item 3
+
+Set the people the ticket is for. In B<Requestors>, RT fills in your own address.
+If the request is for someone else, remove your address and type the name or email
+address of the person it is for, then pick them from the suggestions RT offers.
+
+=item 4
+
+In B<Subject>, write a short summary of the request. This is what people see in
+ticket lists, so keep it specific. For what makes a subject useful, see
+L</Write a useful subject line> below.
+
+=item 5
+
+In the message box, describe the request in full. This first message becomes the
+start of the ticket's history.
+
+=item 6
+
+Fill in any other fields your queue requires, and leave the rest at their defaults.
+Priority, dates, and other core fields are covered in L</Set priority, dates, and
+other fields>; for the full set of fields you may see, see
+L<Ticket metadata|docs/ticket_metadata.pod>.
+
+=item 7
+
+Click B<Create>. RT saves the ticket and shows its display page, with a
+confirmation such as C<Ticket 42 created in queue 'General'> at the top. The number
+is the ticket's permanent ID.
+
+=back
+
+Creating a ticket notifies the people involved by email: RT mails the
+L<Requestor|docs/glossary.pod> an automatic confirmation. This is normal, and you can
+turn it off for a single ticket with the B<Do not send email to Requestors on create>
+checkbox under the B<Requestors> field.
+
+=head2 Write a useful subject line
+
+The subject is the first thing people see in ticket lists, in search results, and in
+email about the ticket, so it is worth a moment's thought.
+
+Include specific, unique information that clearly describes the request and makes the
+ticket easy to find later. A subject like C<Laptop won't boot after Tuesday's update,
+check-in desk> tells a reader what the ticket is about before they open it.
+
+Avoid generic subjects like C<error>, C<problem>, or C<help>. They fit every ticket
+and none, and they are almost impossible to pick out of a long list or a search.
+
+If you find yourself packing structured detail into the subject, such as an order
+number, a device ID, or a category, some of that may be better recorded in a
+L<custom field|docs/glossary.pod>, a field your administrator can add to capture data
+beyond RT's built-in fields. This matters most where some people reach RT only by
+email and never see the full form.
+
+=head2 Set priority, dates, and other fields
+
+The create form has more than the basics. You do not have to fill these in, but they
+help RT and your team sort and schedule the work.
+
+=over 4
+
+=item *
+
+B<Priority.> How important the ticket is, so busy queues can surface the urgent
+tickets first. A typical RT shows priority as Low, Medium, or High.
+
+=item *
+
+B<Dates: Starts and Due.> B<Starts> is when work should begin; B<Due> is when it
+should be finished. RT can sort by due date and highlight overdue tickets, so setting
+B<Due> helps the right tickets get attention in time.
+
+=item *
+
+B<SLA.> If your queue uses service level agreements, you may see an B<SLA> field. An
+SLA sets response and resolution time targets, and RT can calculate the B<Due> date
+from it for you. See the SLA entry in L<Ticket metadata|docs/ticket_metadata.pod>.
+
+=back
+
+=head2 Other ways to create a ticket
+
+=over 4
+
+=item *
+
+B<By email.> Send a message to a queue's email address, and RT creates a ticket from
+it. The sender becomes the Requestor, the message subject becomes the ticket subject,
+and the message body becomes the first message. Ask your team lead for the address of
+the queue you want to reach.
+
+=item *
+
+B<From the homepage.> The B<Quick ticket creation> box on the homepage creates a
+ticket without opening the full form. Fill in the subject, queue, and message, adjust
+the owner or requestors if you need to, and click B<Create>. Use it when a request
+needs only the basics; use the full form from the main menu when you need every field.
+
+=item *
+
+B<From a person's user summary page.> When you already know who a ticket is for, you
+can start it from their record. Search for the user, open their user summary page, and
+use its B<Quick ticket creation> option. Because you are creating the ticket from that
+person's context, RT fills them in as the Requestor for you.
+
+=item *
+
+B<Automatically, from another system.> Tickets do not have to be created by hand. Your
+administrator can build simplified, custom web forms for creating tickets, so people
+submit specific kinds of requests through a form tailored to them. And because RT has
+an API, other systems in your organization, such as a monitoring tool or an online
+order system, can create tickets in RT automatically when something happens. You do
+not need to be a developer to make use of either: if a routine request could arrive
+through a form or straight from another system, ask your administrator what is
+possible.
+
+=back
+
+If you don't see one of these options, your RT may not have it enabled; ask your team
+lead.
+
+=head2 Next steps
+
+Once the ticket exists, you work it from its display page. Take ownership, reply to
+the Requestor, add internal comments, and resolve the ticket when the request is
+handled. The L<Getting started with RT|docs/user/getting_started.pod> tutorial covers
+this full path from a new ticket to a resolved one, and
+L<How to reply to or comment on a ticket|docs/user/reply_vs_comment.pod> covers
+replying and commenting in depth.
+
+=head2 For administrators
+
+The create form is configurable. Which fields appear on it, and in what order, is set
+by L<Page Layouts|docs/customizing/page_layouts.pod>. Service level agreements are
+configured in L<Service Level Agreements|docs/customizing/sla.pod>. Custom ticket-creation
+forms are provided by the C<RT::Extension::FormTools> extension.
+
+=cut

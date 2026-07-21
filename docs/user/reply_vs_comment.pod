@@ -1,0 +1,268 @@
+=encoding utf-8
+
+=head1 How to reply to or comment on a ticket
+
+Request Tracker (RT) gives you two ways to add a message to a
+L<ticket|docs/glossary.pod>, and the difference is who reads it. A
+L<reply|docs/glossary.pod> is a message to the people the ticket is for: it is
+emailed to the ticket's L<Requestors|docs/glossary.pod> and Ccs. A
+L<comment|docs/glossary.pod> is an internal note: it is recorded on the ticket
+but is not sent to the Requestors or Ccs. Reply when you are answering the
+people you are helping; comment when you are leaving a note for your own team.
+
+This guide describes a typical RT configuration; your RT may be set up
+differently.
+
+This page covers the two actions on their own. For where they fit in a ticket's
+whole life, see L<Getting started with RT|docs/user/getting_started.pod>.
+
+=head2 Reply or comment: which to use
+
+The one thing to get right is who receives your message and any attachments you
+add to it:
+
+=over 4
+
+=item *
+
+A B<reply> goes out. RT emails it to the ticket's Requestors and Ccs, the
+people the ticket is for. Use a reply to answer the requester, ask them a
+question, or tell them what you have done. Often those people are outside your
+organization, for example a customer who emailed your support address. They can
+also be inside it, for example a colleague in another department who opened a
+ticket with your team. Either way, a reply leaves RT as email, so write it as a
+message the recipient will read. (RT also calls a reply I<correspondence>; you
+will meet both words as you use RT, and the L<reply|docs/glossary.pod> glossary
+entry notes the two are the same thing.)
+
+=item *
+
+A B<comment> stays in. RT records it on the ticket but does not send it to the
+Requestors or Ccs. Use a comment for an internal working note, such as what you
+found, what you are about to try, or a question for a teammate. Two cautions.
+First, a comment is not private: RT keeps it on the ticket where anyone with
+access can read it later, and it is emailed to the ticket's internal
+L<watchers|docs/glossary.pod> (its AdminCcs). Do not put passwords, keys, or
+other sensitive information in a comment. Second, mind your tone: write nothing
+you would not want the requester, or a colleague, to see.
+
+=back
+
+Who exactly receives a reply or comment depends on the ticket's
+L<roles|docs/glossary.pod>: its Requestors, Ccs, and AdminCcs. RT tracks these
+roles on every ticket, so by default you do not have to work out who will see
+your message yourself: RT already knows. The
+L<reply|docs/glossary.pod> and L<comment|docs/glossary.pod> glossary entries
+describe who is emailed in each case.
+
+You can still adjust who is copied on any one message, though normally you
+will not need to. The update screen always gives you one way to do that, and,
+depending on your permissions and how your RT is set up, it can also preview
+exactly who will be notified.
+
+The controls you always have are B<One-time Cc> and B<One-time Bcc>. These two
+fields, in the Message section, above the message box, copy someone on this one
+message without adding them to the ticket's people. Put an address in either
+field and only this update reaches them; the ticket's own Requestors, Ccs, and
+AdminCcs are unchanged.
+
+RT can also show you, before you submit, exactly who will receive this update.
+Each recipient in the preview has a checkbox, so you can leave someone off this
+one update without changing the ticket's people. To stop someone's notifications
+for good, rather than just for this update, use the ticket's People page instead.
+Whether you see a preview, and which form it takes, depends on your permissions
+and your RT's settings: a default RT shows no preview at all, and your RT may
+show one of two:
+
+=over 4
+
+=item *
+
+The B<Scrips and Recipients> box is the detailed preview. It shows a
+rule-by-rule breakdown of what RT will do when you submit: which
+L<scrips|docs/glossary.pod> (RT's automated rules) will run, and the exact
+addresses each one will email. Seeing this box takes a permission that many RTs
+give to staff, so you may or may not have it. If you don't see it, your account
+may not have that permission; ask your team lead.
+
+=item *
+
+The B<Recipients> list is the simpler preview. It shows a plain, flat list of
+everyone who will receive mail, without the scrip-by-scrip detail. It appears
+when your RT, or your own preferences, turns on the simplified recipient list.
+When that setting is on, the B<Scrips and Recipients> box, for those who can see
+it, starts collapsed at the bottom of the form.
+
+=back
+
+=for html <img alt="The ticket Reply screen: the simplified Recipients list (To/Bcc, each with a checkbox to skip notifying that recipient for this update) above the Message section's One-time Cc and One-time Bcc fields and the reply text box."
+src="images/reply-comment-recipients.png">
+
+=for :text [The ticket Reply screen's recipient controls F<docs/images/reply-comment-recipients.png>]
+
+=for :man [The ticket Reply screen's recipient controls F<docs/images/reply-comment-recipients.png>]
+
+=head2 How to reply to a ticket
+
+=over 4
+
+=item 1
+
+On the ticket's display page, open B<Actions> on the page menu, the menu for the
+page you are on, and choose B<Reply>. RT opens the update screen with B<Update Type>
+already set to B<Reply to requestors>. The message box is shaded red, a reminder that the
+Requestor will receive what you type.
+
+=item 2
+
+Type your message in the box.
+
+=item 3
+
+Click B<Update Ticket>.
+
+=back
+
+RT returns to the display page, records your message in the ticket's history,
+and emails it to the Requestors and Ccs. In a typical configuration, a
+separate email is also sent to the Owner and AdminCcs.
+
+=head2 How to comment on a ticket
+
+=over 4
+
+=item 1
+
+On the ticket's display page, open B<Actions> on the page menu and choose
+B<Comment>. RT opens the update screen with B<Update Type> already set
+to B<Comments (Not sent to requestors)>. The message box is shaded yellow, a
+reminder that your note stays internal.
+
+=item 2
+
+Type your note in the box.
+
+=item 3
+
+Click B<Update Ticket>.
+
+=back
+
+RT returns to the display page and records your note in the ticket's history. It
+sends email to AdminCcs. It does not send email to the Requestors or Ccs.
+
+=head2 Switch between reply and comment on the update screen
+
+Reply and comment share one update screen. If you open the wrong one, or change
+your mind, you do not have to start over: use the B<Update Type> control at the
+top of the form to switch between B<Reply to requestors> and B<Comments (Not
+sent to requestors)>. The message box changes color to match, light red for a reply
+and yellow for a comment, and any recipient preview on the screen updates to
+reflect the update you are about to send.
+
+=head2 Change the ticket's status while you reply or comment
+
+The same screen also has a B<Status> field. It defaults to the ticket's current
+status, shown with B<(Unchanged)> after it, so an update you submit without
+touching it leaves the status alone. Change it before you click B<Update Ticket>
+to combine your reply or comment with a status change, for example replying to a
+customer and resolving the ticket in one step.
+
+=head2 Quote part of the history in your reply or comment
+
+When you are answering a specific message, you can pull its text into your box so
+your reply reads in context:
+
+=over 4
+
+=item *
+
+B<Quote a whole entry.> Each message in the ticket's history has its own B<Reply>
+and B<Comment> icons. Click one, and RT opens the update screen with that entry's
+text already quoted in the box.
+
+=item *
+
+B<Quote just part of an entry.> Select the text you want inside a message in the
+history, then click B<Reply> or B<Comment> (either the icon on that entry or
+B<Actions> on the page menu). RT quotes only the text you selected. This is useful when an
+entry has a lot of extra content, such as a long email signature, that you do
+not need in your message.
+
+=back
+
+=head2 Reply or comment straight from search results
+
+You do not have to open a ticket to reply to it or comment on it. RT's search
+results can show a B<Reply> and a B<Comment> button for each ticket, letting
+you answer straight from the list. Not every search shows these columns by
+default. If yours does not, add them yourself: open B<Edit Search> on the page
+menu, and under B<Display Columns>, add B<Reply> and B<Comment>. See the
+L<Ticket Query Builder|docs/query_builder.pod> for more on customizing a
+search's columns.
+
+Click either button, and RT opens a popup right there on the list, without
+leaving your search results. It is a shorter version of the update screen: a
+B<Recipients> preview, with the same checkboxes to leave someone off this one
+message, a Subject field, and the message box itself, shaded the same way as
+the update screen, red for a reply and yellow for a comment. It does not
+include the Status field, one-time Cc or Bcc, or attachments; open the ticket
+itself and use B<Actions> on the page menu if you need any of those.
+
+Click B<Send>, and RT records your message exactly as it would from the
+ticket's own update screen: a new entry in the ticket's history, and the
+right people notified. Your search results then refresh in place to show the
+change, for example an updated "Last Updated" time, so you never have to
+leave the list.
+
+=for html <img alt="The Reply popup opened over a search-results list, showing the Recipients preview, the Subject field, and the red-shaded reply message box, with the Send button at the bottom" src="images/reply-from-search-results.png">
+
+=for :text [The Reply popup opened from search results F<docs/images/reply-from-search-results.png>]
+
+=for :man [The Reply popup opened from search results F<docs/images/reply-from-search-results.png>]
+
+=head2 Reply or comment by email
+
+You do not have to be in RT to reply or comment. RT sends replies and comments
+as email, and answering that email is recorded exactly as if you had typed it
+into the update screen: a new reply or comment in the ticket's history,
+keeping the same reply-or-comment distinction.
+
+RT then notifies the ticket's people exactly as it would for a web update: a
+reply goes out to the Requestors and Ccs, and in a typical configuration a
+separate copy to the Owner and AdminCcs; a comment goes only to the AdminCcs.
+You do not have to build a To or Cc list, or use Reply All. RT already knows
+the ticket's roles and takes care of notifying them, the same as if you had
+answered from the update screen: type your reply, send it, and RT handles who
+hears about it.
+
+Each message also carries its own reply-to address, which routes an answer
+back to the right place. A reply comes from the queue's correspondence
+address; a comment comes from its comment address. When someone answers from
+their mail client, their message goes to that address, so RT files it as the
+same update type it was sent as:
+
+=over 4
+
+=item *
+
+Answer a reply, and RT records your answer as a reply.
+
+=item *
+
+Answer a comment, and RT records your answer as a comment. (You need an email
+in your inbox to respond to it, so usually only your team will comment via
+email since they would have received a previous comment from the ticket.)
+
+=back
+
+This is why an email conversation on a ticket stays on the correct side of the
+reply-or-comment line without anyone having to choose each time.
+
+=head2 For administrators
+
+Whether the update screen shows a recipient preview, and which kind, is
+controlled by the C<ShowOutgoingEmail> right and the C<$SimplifiedRecipients>
+configuration option.
+
+=cut
