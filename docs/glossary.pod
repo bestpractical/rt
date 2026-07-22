@@ -6,6 +6,12 @@ This document is a glossary of terms used in RT.
 
 =over 4
 
+=item Approval
+
+A special ticket that gates another ticket's progress until an approver accepts
+or rejects it. Scrips and templates in a queue set up for approvals create and
+process these tickets automatically. See L<RT Approvals|docs/customizing/approvals.pod>.
+
 =item Article
 
 Reusable, pre-written text stored in RT, such as a canned answer or a
@@ -41,6 +47,19 @@ built-in fields. RT supports multiple types of custom fields, like
 custom dates (e.g., "Approved Date"), dropdowns (e.g., "Issue Type"),
 text fields (e.g., "Rejection Details"), and many others. Custom fields can be
 defined for most objects in RT including tickets, assets, groups, and users.
+
+=item Dashboard
+
+A customizable page built from saved searches, charts, and other components.
+Your homepage is a dashboard, and you can create others of your own. See
+L<Dashboards|docs/dashboards.pod>.
+
+=item Extension
+
+Add-on software that adds a specific capability to RT beyond what ships
+in core, such as AI features or incident-response workflow. Also called
+a plugin. Best Practical and the RT community publish hundreds of free
+extensions; see L<Finding and installing extensions|docs/extensions.pod>.
 
 =item Lifecycle
 
@@ -78,6 +97,12 @@ A container that groups related tickets, like a shared inbox. Many
 organizations give each team its own queue, but a queue can be organized around
 anything: a product, a project, a stage of work.
 
+=item Reminder
+
+A small follow-up task attached to a ticket, with its own subject, owner, and
+due date. Reminders are implemented as tickets themselves. See
+L<Reminders|docs/reminders.pod>.
+
 =item Reply
 
 A message on a ticket meant for the people the ticket is for. In a
@@ -111,9 +136,10 @@ L<Ticket metadata|docs/ticket_metadata.pod>.
 
 =item Scrip
 
-An automated action that may run based on a ticket or asset event. Scrips run on every
-update to a ticket or asset. They first evaluate a condition, and if the condition
-is true, RT runs the action. RT uses scrips to send most of its notifications.
+An automated action that may run based on a ticket, asset, or article event.
+Scrips run on every update to a ticket, asset, or article. They first
+evaluate a condition, and if the condition is true, RT runs the action. RT
+uses scrips to send most of its notifications.
 
 =item Self Service
 

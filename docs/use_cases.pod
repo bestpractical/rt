@@ -1,0 +1,191 @@
+=encoding utf-8
+
+=head1 Is Request Tracker right for your team?
+
+Every organization has a stream of requests coming in: from customers, from
+coworkers, from its own systems raising alerts. Someone has to notice each
+one, decide who handles it, and see it through. When those requests live
+scattered across personal inboxes, sticky notes, and spreadsheets that only
+one person keeps up to date, work gets missed, credit and blame land on
+whoever remembers best, and nobody can say for certain what is still open,
+who owns it, or how long it has been waiting.
+
+Request Tracker (RT) exists to close that gap: every request becomes a
+tracked, visible piece of work instead of a message sitting in someone's
+inbox. The sections below walk through the situations teams most often bring
+to RT (help desks, IT, security, change management, equipment and
+agreements, HR), each opening with the problem in the user's own words and
+the RT capability that answers it.
+
+=head2 Help desk and customer support
+
+Customers reach you by email, by phone, through a form, however they can,
+and every one of those has to turn into a real answer. Miss one and you have
+an unhappy customer; answer the same question for the tenth time this month
+and you have burned an hour you did not need to spend.
+
+RT turns incoming support email straight into L<tickets|docs/glossary.pod>,
+RT's record of a single request from the moment it arrives to the moment it
+is done, so nothing depends on one person's inbox or memory. Customers who
+want to check on their own request, without calling anyone, can use
+L<Self Service|docs/glossary.pod>, a simpler view limited to their own
+tickets. When your team answers the same question repeatedly, a shared
+library of L<Articles|docs/glossary.pod> lets staff search for a canned
+answer and drop it straight into a reply instead of retyping it; see
+L<Introduction to Articles|docs/customizing/articles_introduction.pod>. And
+if you have made a commitment (a response within four hours, nothing left
+untouched overnight), RT's L<SLA|docs/glossary.pod> feature assigns that
+target to the ticket and tracks whether you are meeting it; see
+L<Service Level Agreements|docs/customizing/sla.pod>.
+
+The result is a support operation where nothing falls through, customers can
+get a status update without asking anyone, and your team answers faster and
+more consistently than any one person's memory would allow.
+
+=head2 One system for every team
+
+IT tracks its work one way, HR another, facilities on paper, and the people
+who need to see across all of them (a manager, an operations lead) cannot,
+because every team built its own system in isolation.
+
+In RT, each team gets its own L<queue|docs/glossary.pod>: a container for
+its tickets with its own statuses, its own fields, and its own automation,
+so a support queue and an HR queue can each look and behave the way that
+team needs without touching each other's setup. Someone with the right
+access can search or report across every queue at once, so leadership gets
+one picture of what is outstanding across the whole organization instead of
+several disconnected ones. Because each queue is configured on its own,
+adding a second team, or a tenth, never means redoing the first: most
+organizations start with one team on RT and add the next once the first is
+running well.
+
+One system, many teams, each working the way it already does, with the full
+picture visible to whoever needs it. This is the strongest reason to bring
+RT in even if you only have one urgent case in mind today: the platform you
+set up for a help desk is the same platform your next team can move onto
+tomorrow.
+
+=head2 Security and incident response
+
+Reports come in faster than anyone can look at them one at a time: a
+phishing report, a vulnerability scan result, a user account behaving
+strangely. When ten of those turn out to be the same incident, someone needs
+to notice that before ten people start investigating it separately, and
+everyone with a stake (security, IT, sometimes legal) needs to see the same
+current picture.
+
+Each alert source can feed its own queue, so security reports do not mix in
+with everything else, and RT's automation, L<scrips|docs/glossary.pod>, can
+tag a report, notify the right people, or even open a follow-up ticket the
+moment one arrives, before anyone has read it. When several reports turn out
+to be the same incident, L<linking|docs/glossary.pod> them together keeps
+the investigation in one place instead of scattered across separate
+tickets, and RT's full L<transaction|docs/glossary.pod> history means every
+action taken during the incident (who did what and when) stays on the
+record afterward.
+
+If incident response is a full-time discipline for your team, a security
+operations center or a CERT, it is worth knowing about RTIR (RT for
+Incident Response): a separate product, an L<extension|docs/glossary.pod>
+built on RT and purpose-built for that workflow, using RT as the base.
+Learn more at L<requesttracker.com/rtir|https://requesttracker.com/rtir>.
+Either way, the goal is the same: nothing gets triaged twice, nothing gets
+lost in the noise, and the record survives the incident.
+
+=head2 IT operations and change management
+
+Requests pile up faster than your team can work them (an outage next to a
+password reset next to an equipment request), and when everything feels
+urgent, telling what actually is urgent, and making sure it does not sit
+forgotten while something louder takes over, is the whole job.
+
+Every ticket carries a priority, and RT can automatically raise it the
+closer a ticket gets to its due date while it remains unresolved, so aging
+work surfaces itself instead of waiting for someone to notice; see
+"Escalating Priority" in L<Automating Tasks in RT|docs/automating_rt.pod>.
+When a change should not proceed without sign-off (a configuration change, a
+policy exception), RT can create an L<approval|docs/glossary.pod>: a ticket
+that gates another ticket's progress until an approver accepts or rejects
+it. Approvals are tickets themselves, so approvers work them like any other
+ticket, and the full record of who approved what, and when, becomes part of
+the permanent history; see L<RT Approvals|docs/customizing/approvals.pod>.
+
+The result is a queue where priority reflects reality instead of whoever
+complained loudest, and changes go ahead only once the right person has
+actually said yes.
+
+=head2 Assets and agreements
+
+You know there is a pile of laptops, software licenses, and vendor contracts
+out there somewhere, but the only record of most of them is a spreadsheet
+nobody keeps current, and by the time someone notices a support contract has
+lapsed, it already has.
+
+RT can track the things themselves, not just the requests about them: an
+L<asset|docs/glossary.pod> is a record of a laptop, a license, a contract,
+anything your organization owns or manages, grouped into
+L<catalogs|docs/glossary.pod> the way tickets are grouped into queues; see
+L<Assets|docs/assets.pod>. Link an asset to the tickets about it and its
+repair and request history travels with it, so the next person who touches
+that laptop can see everything that happened to it. Give a contract or a
+license a L<custom field|docs/glossary.pod> for its renewal or expiration
+date, and you can save a search that finds everything coming due and put it
+on a L<dashboard|docs/glossary.pod> your team checks, or have RT email it to
+them on a schedule, so a lapse does not sneak up on anyone; see
+L<Subscriptions and Feeds|docs/subscriptions_feeds.pod>.
+
+Equipment and agreements stop being a mystery kept in one person's
+spreadsheet and become a searchable record that raises its hand before a
+lapse becomes a problem.
+
+=head2 HR and internal processes
+
+Onboarding a new hire touches five different people: IT provisions
+accounts, facilities issues a badge, a manager signs off on equipment, HR
+files the paperwork. Miss a handoff and the new hire shows up with no
+laptop, no badge, or no system access. Offboarding is the same list run in
+reverse, except now every step matters for security, not just first-day
+smoothness, and you may need to show later that each one actually happened.
+
+RT lets one ticket depend on another: a ticket cannot be resolved while it
+still depends on unresolved tickets, so you can require account
+provisioning, equipment issue, and paperwork to finish in whatever order the
+process actually needs, and nothing gets marked done out of turn; see
+L<Ticket metadata|docs/ticket_metadata.pod>. Every step along the way (who
+did what and when) is recorded automatically and never quietly edited, so
+the finished checklist is also a record you can produce later if a process
+needs to be shown to have happened, not just remembered.
+
+An onboarding or offboarding process becomes a checklist that enforces its
+own order and leaves proof of itself behind, instead of a series of emails
+and hallway reminders.
+
+=head2 Why one system covers this much ground
+
+Help desk, multi-department platform, security response, change
+management, assets, HR process: these look like different problems, but RT
+answers all of them with the same handful of parts. A queue gives every
+kind of work its own space. L<Roles|docs/glossary.pod> and
+L<watchers|docs/glossary.pod> track who is connected to each piece of work
+and make sure the right people hear about it. L<Lifecycles|docs/glossary.pod>
+and scrips encode the steps a process must follow and automate what would
+otherwise be manual busywork. A complete transaction history means nothing
+is ever quietly lost. And email sits at the core of all of it, since most
+requests still arrive that way. Combine those parts differently and you get
+a help desk, an IT service desk, an incident response system, a
+change-approval process, an asset registry, or an HR workflow, all running
+on the same underlying platform.
+
+The same parts support plenty of other uses as well: project management,
+bug tracking, sales lead tracking, even a personal to-do list.
+
+=head2 Where to go next
+
+If one of the cases above fits, L<What Request Tracker does|docs/overview.pod>
+is the full tour of RT's capabilities, and L<Getting started with
+RT|docs/user/getting_started.pod> walks through logging in, creating a
+ticket, and resolving it end to end. L<How RT is organized: core
+concepts|docs/concepts.pod> is the fastest way to pick up RT's vocabulary
+before you dive into either one.
+
+=cut

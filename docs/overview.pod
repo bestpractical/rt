@@ -1,0 +1,374 @@
+=encoding utf-8
+
+=head1 What is Request Tracker?
+
+Request Tracker (RT) is an open source, flexible ticket-tracking platform: it
+turns any request or item you need to track into a L<ticket|docs/glossary.pod>
+with a complete history, and gives your team the workflow, search, reporting,
+and automation to work it to done. Support and help desk work is where RT
+started and remains one of its strongest uses, but RT tracks anything with a
+lifecycle: internal IT and change requests, security incidents, approvals, or
+a process you define yourself. You can run RT self-hosted or on
+L<Best Practical|https://bestpractical.com>'s managed cloud service, and
+either way every installation ships with the same, complete feature set.
+
+Tickets aren't the whole story, either. The same custom fields, permissions,
+and search that work tickets also power an asset inventory, a knowledge base
+of reusable answers, and (as of RT 6) a set of free AI features you run on
+your own infrastructure. This page tours all of it: the capabilities that set
+RT apart, the ones every ticketing product needs, and the extension ecosystem
+that adds hundreds more without waiting on a new release.
+
+=head2 What sets RT apart
+
+These are the capabilities new users tend to ask about first, and where RT
+goes deeper than most ticketing products, open source or otherwise.
+
+=head3 AI features you run on your own terms
+
+RT 6 ships a set of AI features as a free extension,
+L<RT::Extension::AI|https://metacpan.org/pod/RT::Extension::AI>: suggested
+replies, ticket summaries, sentiment detection, smart routing suggestions
+(queue, owner, priority), inline actions like rewriting or translating a
+draft, and lookup of similar past tickets. You choose and configure the AI
+engine yourself (OpenAI, Google Gemini, Anthropic Claude, or a model you host
+yourself). RT itself and the ticket data it stores stay on your
+infrastructure either way. Choose a hosted engine, and only the specific
+request an AI feature sends it (drafting a reply, summarizing a ticket)
+leaves your infrastructure, going to that engine under your own account and
+terms, the same as calling any other outside API would.
+
+A companion L<RT MCP server|https://github.com/bestpractical/mcp-server-rt>
+lets an AI tool connect to RT directly and take action (look up tickets,
+update them, add a comment) using your own RT account and permissions, so an
+AI agent works within the same rights any other user would have.
+
+RT's workflow engine was built with this in mind, too: each status and
+transition in a L<lifecycle|docs/customizing/lifecycles.pod> can carry
+plain-language notes on when it applies, shown in the lifecycle editor and
+available to API clients, so a person, or an AI agent, can understand the
+intent behind a workflow, not just its mechanics.
+
+=head3 A workflow builder that fits your process
+
+Each L<queue|docs/glossary.pod> follows a L<lifecycle|docs/glossary.pod>, the
+statuses a ticket can have and the moves allowed between them, and you build
+lifecycles visually in a graphical editor rather than hand-writing
+configuration: add statuses, drag connections between them to define
+transitions, and optionally give each status a color that RT shows as a
+badge on the ticket's Status field and in search results. Different queues
+can run entirely different lifecycles, so a support queue and a
+change-management queue enforce their own rules without leaving RT. See
+L<Ticket Lifecycles|docs/customizing/lifecycles.pod>.
+
+=for html <img alt="The lifecycle editor showing RT's default lifecycle: a graph of status circles (new, open, stalled, resolved, rejected, deleted), each in its own color, joined by arrows that mark the allowed transitions"
+src="images/lifecycle-editor-workflow.png">
+
+=for :text [The lifecycle editor, showing statuses and the transitions between them F<docs/images/lifecycle-editor-workflow.png>]
+
+=for :man [The lifecycle editor, showing statuses and the transitions between them F<docs/images/lifecycle-editor-workflow.png>]
+
+Most of what feels automatic in RT comes from L<scrips|docs/glossary.pod>:
+rules that watch for an event, such as a reply or a status change, and take
+an action, most often sending a notification, when a condition is met. As of
+RT 6, scrips aren't limited to tickets: assets can trigger them too.
+See L<Scrip Conditions & Actions|docs/customizing/scrip_conditions_and_action.pod>.
+
+=head3 A fast, modern interface
+
+RT 6's interface is built on htmx, so most actions on a page (editing a
+field, loading history, refreshing a search) update in place instead of
+reloading the whole page. Page Layouts let you rearrange and hide widgets on
+the ticket create, display, and update pages, and on the asset create and
+display pages, and apply different layouts per queue or catalog, so each
+team's tickets can look different without a separate skin. Inline edit
+works throughout, including directly in search results and dashboards; the
+message editor is full rich text, with images pasted or dragged straight
+in; and RT's built-in theme supports a dark mode alongside the default
+light one, switchable per user in preferences. See
+L<Page Layouts|docs/customizing/page_layouts.pod> and
+L<Customizing the Look of Your RT|docs/customizing/styling_rt.pod>.
+
+=for html <img alt="A support dashboard with a saved search, a chart of tickets by status, and a My reminders list; the Status field of the first ticket in the search is being edited inline, with a dropdown of statuses open and buttons to confirm or cancel"
+src="images/dashboard-inline-edit.png">
+
+=for :text [Editing a ticket's status inline, right on a dashboard F<docs/images/dashboard-inline-edit.png>]
+
+=for :man [Editing a ticket's status inline, right on a dashboard F<docs/images/dashboard-inline-edit.png>]
+
+=head3 Dashboards, charts, and reports on a schedule
+
+Any saved search or chart can go on a L<dashboard|docs/glossary.pod>, a
+customizable page you build from rows and columns of these building blocks;
+your homepage is a dashboard, and you can build others and share them with a
+group or the whole system. Each saved search on a dashboard can auto-refresh
+on its own schedule, right in the browser, and you can also subscribe to
+have the whole dashboard emailed to you (with chart images included) daily,
+weekly, or on whatever cadence you set. See
+L<Dashboards|docs/dashboards.pod> and L<RT Charts|docs/charts.pod>.
+
+=for html <img alt="A Support Operations dashboard with three columns of widgets: the newest unowned tickets above a quick ticket creation form, bar charts of active tickets by owner and by priority, and a pie chart of active tickets by status above a My reminders list"
+src="images/support-dashboard.png">
+
+=for :text [A support dashboard combining saved searches, charts, and a quick ticket creation form F<docs/images/support-dashboard.png>]
+
+=for :man [A support dashboard combining saved searches, charts, and a quick ticket creation form F<docs/images/support-dashboard.png>]
+
+=head3 Search that finds anything, and reports on it
+
+The L<Ticket Query Builder|docs/query_builder.pod> lets you assemble search
+criteria visually or write them directly in RT's own query language,
+TicketSQL, and a separate Transaction Query Builder searches the individual
+replies, comments, and changes inside tickets, not just the tickets
+themselves. Full-text search covers ticket content and, as of RT 6, custom
+field values too, once indexing is turned on for your database (see
+L<Full text indexing|docs/full_text_indexing.pod>). Once you have results,
+each column header carries its own filter icon and sort click, so you can
+narrow and reorder what you're looking at right there, no trip back to the
+search form required, and any search you build can be saved, shared,
+exported, turned into a chart, or dropped onto a dashboard.
+
+=for html <img alt="Search results with a filter icon beside each column heading, and the Filter Results dialog open on the Priority column with Priority equal to set to High"
+src="images/query-builder-dynamic-filter-priority.png">
+
+=for :text [Filtering search results from a column header, without returning to the search form F<docs/images/query-builder-dynamic-filter-priority.png>]
+
+=for :man [Filtering search results from a column header, without returning to the search form F<docs/images/query-builder-dynamic-filter-priority.png>]
+
+=head3 Asset management alongside your tickets
+
+L<Assets|docs/glossary.pod> (records of equipment, licenses, cloud
+resources, or anything else your organization tracks) live in RT with the
+same depth as tickets: their own L<catalogs|docs/glossary.pod> (the asset
+equivalent of a queue), their own lifecycles and custom fields, their own
+roles (Owner, Held By, Contact), and links to the tickets about them. A
+dedicated query builder searches assets the way TicketSQL searches tickets,
+and a free extension,
+L<RT::Extension::Assets::Import::CSV|https://metacpan.org/pod/RT::Extension::Assets::Import::CSV>,
+can import asset records from a CSV file and keep them in sync with an
+external inventory system. See L<Assets|docs/assets.pod>.
+
+=for html <img alt="An asset's detail page for a laptop in the IT Department Assets catalog, with The Basics (name, description, and an in-use status badge), People (Owner, Held By, Contact), Dates, Custom Fields (serial number, manufacturer, support expiration), and a Links box listing three tickets the asset refers to, each with a colored status badge"
+src="images/asset-detail-links.png">
+
+=for :text [An asset's detail page, with its people, custom fields, and links to related tickets F<docs/images/asset-detail-links.png>]
+
+=for :man [An asset's detail page, with its people, custom fields, and links to related tickets F<docs/images/asset-detail-links.png>]
+
+=head3 Permissions and roles as deep as you need them
+
+Rights in RT can be granted globally or scoped to a single queue, catalog, or
+class, to a group, or to a L<role|docs/glossary.pod>, the relationship
+between a person and a specific ticket (Owner, Requestor, Cc, AdminCc, or a
+custom role your organization adds). Granting a right to a role, rather than
+a named person, means the permission follows the ticket as it's handed
+off: whoever is Owner today has whatever access the Owner role carries, with
+no one editing permissions by hand.
+
+Roles do more than gate access: they're also how RT decides who hears about a
+ticket. Because every ticket's roles track everyone connected to it, you
+don't have to work out who should see a reply; RT already knows, from the
+roles on that ticket. You can still adjust who's copied on any one message,
+but normally you won't need to. See L<Roles in RT|docs/custom_roles.pod>.
+
+=for html <img alt="The Recipients box on a reply: All recipients is checked, with the requestor listed under To and a staff member under Bcc, each with a checkbox to turn off notification for this message only. Below it, the Message box with the reply being written"
+src="images/reply-comment-recipients.png">
+
+=for :text [The recipients RT chose for a reply, which you can adjust for this one message F<docs/images/reply-comment-recipients.png>]
+
+=for :man [The recipients RT chose for a reply, which you can adjust for this one message F<docs/images/reply-comment-recipients.png>]
+
+=head3 Open source, your data, every feature on every plan
+
+RT is fully open source (GPL), so you can read, audit, and modify every line
+of it. Run it yourself, or run it on Best Practical's managed cloud service;
+either way, you own your data, and there's no separate tier of RT features
+to unlock. What's described on this page is what you get.
+
+=head2 The capabilities every ticketing system needs
+
+RT also covers the ground every ticketing product is expected to cover.
+Below is a sampling of the core features powering every RT instance.
+
+=over 4
+
+=item Email-first intake
+
+Any queue can be set up to take tickets by email as well as through the
+web, and RT sends the replies and notifications that keep everyone in the
+loop, all without anyone learning a new inbox. See
+L<RT and Email|docs/email_management.pod>.
+
+=item Self-service for the people you support
+
+Anyone who doesn't work tickets full time can get
+L<Self Service|docs/glossary.pod>, a simpler interface limited to submitting
+and following their own requests, so you're not handing a customer or an
+occasional internal requester your full staff interface.
+
+=item A knowledge base built in
+
+L<Articles|docs/glossary.pod>, organized into classes, are RT's knowledge
+base: reusable answers and standard wording your team can search, browse,
+and insert straight into a reply without leaving the update screen. See
+L<Introduction to Articles|docs/customizing/articles_introduction.pod>.
+
+=item Response and resolution deadlines (SLA)
+
+Assign a service level to a ticket and RT calculates its due date and tracks
+whether your team is meeting it, measured in real time or against defined
+business hours and holidays. See
+L<Service Level Agreements|docs/customizing/sla.pod>.
+
+=item Custom fields and guided forms
+
+Typed L<custom fields|docs/glossary.pod> (dates, dropdowns, free text, and
+more) capture whatever your organization needs to track on tickets, assets,
+or articles. A free extension,
+L<RT::Extension::FormTools|https://metacpan.org/pod/RT::Extension::FormTools>,
+can turn a set of them into a multi-page, guided intake form. See
+L<Ticket metadata|docs/ticket_metadata.pod>.
+
+=item Approvals and change management
+
+An L<approval|docs/glossary.pod> is a ticket that gates another ticket's
+progress until someone signs off, with support for multi-step chains and a
+permanent record of who approved what. See
+L<RT Approvals|docs/customizing/approvals.pod>.
+
+=item A documented API and integrations
+
+RT's REST 2.0 API (L<RT::REST2>) exposes tickets, assets, and articles as
+JSON over HTTP, so other systems can create and update RT records directly.
+It's the same API the RT MCP server (see above) uses to connect AI tools to
+RT, and the one integrations like Zapier build on. See
+L<developer.bestpractical.com|https://developer.bestpractical.com> for the
+full reference.
+
+=item Time tracking
+
+Every ticket carries Estimated, Worked, and Left time fields, time can be
+logged from a running timer or on the update screen, and time on linked
+child tickets rolls up to a parent. See
+L<Tracking Time on Tickets|docs/tracking_time.pod>.
+
+=item An audit trail and tools for regulated work
+
+Every change to a ticket is a permanently recorded L<transaction|docs/glossary.pod>,
+which doubles as an audit trail. Built-in tools handle GDPR access,
+download, and removal requests (see L<GDPR support in RT|docs/GDPR.pod>),
+and RT can sign, verify, encrypt, and decrypt ticket email with GnuPG or
+S/MIME (see L<RT::Crypt>).
+
+=back
+
+=head2 Implementing ITIL processes in RT
+
+If you're evaluating RT against an ITSM product, you're probably looking for
+incident, problem, change, and asset management by name. RT doesn't ship as
+a pre-configured "ITIL-compliant" product, and neither, really, does ITIL
+itself: it's a framework of process guidance, deliberately non-prescriptive
+about which software implements it. What RT gives you is the tooling to
+build the ITIL processes your organization wants. A custom
+L<lifecycle|docs/customizing/lifecycles.pod> can model an incident or change
+workflow, queue by queue; L<approvals|docs/customizing/approvals.pod> gate a
+change until the right people sign off; and RT's
+L<asset|docs/assets.pod> inventory tracks the configuration items those
+processes touch, linked to the tickets about them. None of this needs an
+extension: lifecycles, approvals, and assets all ship with core RT.
+
+=head2 Extend RT: hundreds of extensions, including AI and incident response
+
+An L<extension|docs/glossary.pod> (RT also calls it a plugin) adds a
+capability to RT beyond what ships in core. Best Practical and the RT
+community publish hundreds of them, free, distributed and versioned like any
+other Perl module. If a feature you need isn't on this page, there's a good
+chance an extension already provides it; see
+L<Finding and installing extensions|docs/extensions.pod>.
+
+The AI features toured above are themselves one example: they ship as the
+free L<RT::Extension::AI|https://metacpan.org/pod/RT::Extension::AI> plugin,
+not as a paid tier bolted onto core RT. A second flagship extension is
+L<RTIR|https://requesttracker.com/rtir> (RT for Incident Response), a
+separate product built entirely on top of RT for security and
+incident-response teams: pre-configured queues for triage, investigation,
+and countermeasures, correlation across incoming reports from people and
+automated tools, and integration with tools like Splunk and Nagios.
+
+Below is a sample of the most popular and useful free extensions.
+
+=over 4
+
+=item Single sign-on
+
+RT's core authentication hands off to your web server for this: with
+C<$WebRemoteUserAuth>, Apache or nginx (both have SAML modules) performs the
+SAML login and passes RT the authenticated identity, so people sign in
+seamlessly without a separate RT password. For OAuth2 specifically, the free
+L<RT::Authen::OAuth2|https://metacpan.org/pod/RT::Authen::OAuth2> extension
+adds direct support. See L<RT Authentication|docs/authentication.pod>.
+
+=item Preventing duplicate work on the same ticket
+
+Taking ownership of a ticket already signals to your team who's handling it,
+so two people are less likely to answer the same request at once. If you
+want RT to actively lock a ticket while someone is working on it, the free
+L<RT::Extension::TicketLocking|https://metacpan.org/pod/RT::Extension::TicketLocking>
+extension adds that.
+
+=item Recurring tickets
+
+For work that repeats on a schedule (a monthly maintenance check, a weekly
+report), the free
+L<RT::Extension::RepeatTicket|https://metacpan.org/pod/RT::Extension::RepeatTicket>
+extension creates a new ticket automatically each time one is due.
+
+=item Round-robin ticket assignment
+
+Core RT can restrict who a ticket may be assigned to, but it doesn't pick
+an owner for you. The free
+L<RT::Extension::AutomaticAssignment|https://metacpan.org/pod/RT::Extension::AutomaticAssignment>
+extension adds that, with round-robin, current-workload, or random
+assignment from a group you define.
+
+=back
+
+=head2 And many more features
+
+RT has been under continuous development for three decades, and this page
+doesn't try to list everything. A few more capabilities worth knowing about:
+
+=over 4
+
+=item Unlimited custom fields and unlimited queues
+
+=item A theme builder for your own logo and colors
+
+=item A multilingual interface, in 35 or more languages
+
+=item A command-line client, for scripting against RT from a terminal
+
+=item Escalations, so priority can climb on its own as a due date nears
+
+=item Bulk actions, for updating many tickets at once
+
+=back
+
+And many more, like migrating your data from another system, running
+several brands or departments out of one RT, or building the one custom
+report your team has always wanted. If you don't find what you need on this
+page, it's worth asking: there's a good chance RT, or one of its extensions,
+already does it.
+
+=head2 Where to go next
+
+To see how these capabilities map to your own situation,
+L<Is Request Tracker right for your team?|docs/use_cases.pod> walks through
+common scenarios: support, IT operations, incident response, approvals, and
+more. If you're ready to try RT hands-on,
+L<Getting started with RT|docs/user/getting_started.pod> walks through
+logging in, creating a ticket, and resolving it end to end. For the
+vocabulary behind everything on this page, from queues to lifecycles to
+roles, see L<How RT is organized|docs/concepts.pod>.
+
+=cut
