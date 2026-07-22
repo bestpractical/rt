@@ -4178,17 +4178,6 @@ Set ($ArticleRecentDefaultSearchResultFormat, qq{
 
 =over 4
 
-=item C<@AssetQueues>
-
-This should be a list of names of queues whose tickets should always
-display the "Assets" box.  This is useful for queues which deal
-primarily with assets, as it provides a ready box to link an asset to
-the ticket, even when the ticket has no related assets yet.
-
-=cut
-
-# Set(@AssetQueues, ());
-
 =item C<$DefaultCatalog>
 
 This provides the default catalog after a user initially logs in.

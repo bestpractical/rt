@@ -79,17 +79,7 @@ $base_assets->Limit(
 # Show if there are any linked assets
 return 1 if $base_assets->Count > 0;
 
-# Check if user can modify ticket and queue allows assets
-return 0 unless $Object->CurrentUserHasRight("ModifyTicket");
-
-my $asset_queue;
-if ( RT->Config->Get('AssetQueues') ) {
-    $asset_queue = 1 if grep { $_ eq $Object->QueueObj->__Value('Name') } @{ RT->Config->Get('AssetQueues') };
-}
-else {
-    $asset_queue = 0;
-}
-
-return $asset_queue;
+# Otherwise show only if the user can add assets
+return $Object->CurrentUserHasRight("ModifyTicket") ? 1 : 0;
 </%init>
 </%METHOD>

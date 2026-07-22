@@ -70,14 +70,7 @@ push @linked_assets, grep { defined } map { $_->TargetURI->IsLocal }
 push @linked_assets, grep { defined } map { $_->BaseURI->IsLocal }
     @{ $base_assets->ItemsArrayRef };
 
-my $asset_queue;
-if (RT->Config->Get('AssetQueues')) {
-    $asset_queue = 1 if grep {$_ eq $Ticket->QueueObj->__Value('Name')} @{RT->Config->Get('AssetQueues')}
-} else {
-    $asset_queue = 0;
-}
-return unless @linked_assets or ($Ticket->CurrentUserHasRight("ModifyTicket")
-                                     and $asset_queue);
+return unless @linked_assets or $Ticket->CurrentUserHasRight("ModifyTicket");
 
 my $assets = RT::Assets->new( $session{CurrentUser} );
 $assets->OrderBy( FIELD => "Name", ORDER => "ASC" );

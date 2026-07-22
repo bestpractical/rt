@@ -473,6 +473,28 @@ On new installs, RT's built-in lifecycles (default, approvals, and assets)
 ship with default colors. For existing systems, you can select new colors
 after upgrading.
 
+=item Asset widget placement moved to Page Layouts
+
+The C<@AssetQueues> configuration option has been removed. It listed the queues
+whose tickets always showed the Assets widget, even when a ticket had no linked
+assets yet, so users could link the first one.
+
+The Assets widget already had to be present in a queue's ticket page layout to
+appear at all, so C<@AssetQueues> was an extra per-queue gate on top of the
+layout. That gate is gone, and the widget now follows the same rules wherever it
+is in the layout (the default ticket layouts include it). On the display page it
+shows when a ticket has linked assets or the current user can add them, and is
+hidden otherwise. On the create page it shows only when the new ticket already
+has linked assets, such as when creating a ticket linked to an asset, and is
+hidden on an ordinary create even for users who could add assets.
+
+The practical effect is that, on display, the Assets widget now appears on
+tickets in any queue whose layout includes it, not only the queues formerly
+listed in C<@AssetQueues>. To control this, add or remove the Assets widget in a
+page layout under Admin > Page Layouts (the C<%PageLayouts> configuration), and
+assign layouts to queues on each queue's admin page (the C<%PageLayoutMapping>
+configuration).
+
 =back
 
 =cut
