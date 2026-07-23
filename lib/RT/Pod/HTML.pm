@@ -164,6 +164,20 @@ sub resolve_local_link {
         ? '#' . $self->idify($section, 1)
         : '';
 
+    # Utility scripts under bin/ and sbin/ are registered with a bin-/sbin-
+    # name prefix (see RT::Pod::Search::_path2modname) so their generated
+    # filenames don't collide case-insensitively with module docs. A POD link
+    # such as L<rt-crontool> uses the bare command name, so map it to the page
+    # that was actually generated.
+    if ( not $self->batch->found($name) ) {
+        for my $prefixed ( "bin-$name", "sbin-$name" ) {
+            if ( $self->batch->found($prefixed) ) {
+                $name = $prefixed;
+                last;
+            }
+        }
+    }
+
     my $local;
     if ($name =~ /^RT(::(?!Extension::|Authen::(?!ExternalAuth))|$)/ or $self->batch->found($name)) {
         $local = join "/",

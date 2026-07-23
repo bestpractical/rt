@@ -5,6 +5,7 @@ use Test::Deep;
 use MIME::Base64;
 
 use Encode qw(decode encode);
+use JSON ();
 
 # Test using integer priorities
 RT->Config->Set(EnablePriorityAsString => 0);
@@ -932,6 +933,100 @@ my $json = JSON->new->utf8;
     is( $ticket->{Cc}[0]{id},        'alice@example.com', 'Cc id in search result' );
     is( $ticket->{Cc}[1]{id},        'bob@example.com',   'Cc id in search result' );
     is( $ticket->{AdminCc}[0]{id},   'root@example.com',  'AdminCc id in search result' );
+}
+
+# Content-Length for non-ASCII responses
+{
+    # A string that mixes multi-byte UTF-8 characters with code points above
+    # U+00FF, so a response body is unambiguously non-ASCII.
+    my $unicode = "Test \x{e9}\x{e1}\x{159}\x{161} \x{2603} \x{41a}\x{43e}";
+
+    # Assert the body is a UTF-8 octet stream with a matching Content-Length,
+    # then return the decoded structure.
+    my $check_response_bytes = sub {
+        my ( $res, $desc ) = @_;
+        local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+        my $content = $res->content;
+
+        ok( $content !~ /[^\x00-\xff]/,
+            "$desc: body is an octet string, not wide characters" );
+
+        is( $res->header('Content-Length'),
+            length($content),
+            "$desc: Content-Length matches body byte length" );
+
+        my $data = eval { JSON->new->utf8->decode($content) };
+        ok( $data, "$desc: body is complete, parseable UTF-8 JSON" )
+            or diag("decode failed: $@");
+
+        return $data;
+    };
+
+    my $cf = RT::Test->load_or_create_custom_field(
+        Name  => 'UTF8 Test CF',
+        Type  => 'FreeformSingle',
+        Queue => 'General',
+    );
+    ok( $cf->id, 'created custom field for non-ASCII value' );
+
+    my $res = $mech->post_json(
+        "$rest_base_path/ticket",
+        {   Queue   => 'General',
+            Subject => $unicode,
+            Content => 'Testing Content-Length for non-ASCII responses.',
+        },
+        'Authorization' => $auth,
+    );
+    is( $res->code, 201, 'created ticket with non-ASCII subject' );
+    ok( ( my $url = $res->header('location') ), 'got ticket location' );
+    ok( ( my ($id) = $url =~ qr[/ticket/(\d+)] ), 'got ticket id' );
+
+    # GET an individual record (Resource/Record/Readable.pm)
+    $res = $mech->get( $url, 'Authorization' => $auth );
+    is( $res->code, 200, 'fetched ticket' );
+    my $data = $check_response_bytes->( $res, 'GET /ticket/:id' );
+    is( $data->{Subject}, $unicode,
+        'GET /ticket/:id: non-ASCII subject survived the round trip' )
+        if $data;
+
+    # GET a collection listing (Resource/Collection.pm)
+    $res = $mech->get( "$rest_base_path/tickets?query=id=$id&fields=Subject",
+        'Authorization' => $auth );
+    is( $res->code, 200, 'fetched ticket collection' );
+    $data = $check_response_bytes->( $res, 'GET /tickets' );
+    is( $data->{items}[0]{Subject},
+        $unicode, 'GET /tickets: non-ASCII subject survived the round trip' )
+        if $data;
+
+  # POST a comment whose result echoes a non-ASCII value (Resource/Message.pm)
+    $res = $mech->post_json(
+        "$rest_base_path/ticket/$id/comment",
+        {   Content =>
+                'Adding a comment with a non-ASCII custom field value.',
+            ContentType  => 'text/plain',
+            CustomFields => { $cf->id => $unicode },
+        },
+        'Authorization' => $auth,
+    );
+    is( $res->code, 201, 'added comment' );
+    $data = $check_response_bytes->( $res, 'POST /ticket/:id/comment' );
+    ok( ( $data && grep { index( $_, "\x{2603}" ) >= 0 } @$data ),
+        'POST /ticket/:id/comment: result echoes the non-ASCII value'
+      )
+        if defined $data;
+
+    # POST search over a collection (Collection/ProcessPOSTasGET.pm). /tickets
+    # searches with the TicketSQL "query" param, not a JSON query body.
+    $res
+        = $mech->post_json(
+        "$rest_base_path/tickets?query=id=$id&fields=Subject",
+        [], 'Authorization' => $auth, );
+    is( $res->code, 200, 'searched tickets via POST' );
+    $data = $check_response_bytes->( $res, 'POST /tickets (search)' );
+    is( $data->{items}[0]{Subject},
+        $unicode, 'POST /tickets: non-ASCII subject survived the round trip' )
+        if $data;
 }
 
 done_testing;
