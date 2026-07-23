@@ -1,6 +1,6 @@
 # This Dockerfile is for testing only.
 
-FROM bpssysadmin/rt-base-debian:RT-6.0.3-trixie-20260722
+FROM bpssysadmin/rt-base-debian@sha256:8fead0595a786aad6e78b08a5f8b2bd2ad9558090a011646b7d64e16325f9d8f
 
 ENV RT_TEST_PARALLEL 1
 ENV RT_TEST_DEVEL 1
