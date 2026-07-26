@@ -82,15 +82,15 @@ sub Prepare {
 
     my $ticket = $self->TicketObj;
     my $next = $ticket->FirstActiveStatus;
-    return 1 unless defined $next;
+    return 0 unless defined $next;
 
     # no change if the ticket is in initial status and the message is a mail
     # from a requestor
-    return 1 if $ticket->LifecycleObj->IsInitial($ticket->Status)
+    return 0 if $ticket->LifecycleObj->IsInitial($ticket->Status)
         && $self->TransactionObj->IsInbound;
 
     if ( my $msg = $self->TransactionObj->Message->First ) {
-        return 1 if ($msg->GetHeader('RT-Control') || '') =~ /\bno-autoopen\b/i;
+        return 0 if ($msg->GetHeader('RT-Control') || '') =~ /\bno-autoopen\b/i;
     }
 
     $self->{'set_status_to'} = $next;

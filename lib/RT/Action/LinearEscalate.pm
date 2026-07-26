@@ -157,22 +157,22 @@ sub Prepare {
 
     unless ( $ticket->DueObj->IsSet ) {
         $RT::Logger->debug('Due is not set. Not escalating.');
-        return 1;
+        return 0;
     }
 
     my $priority_range = ($ticket->FinalPriority ||0) - ($ticket->InitialPriority ||0);
     unless ( $priority_range ) {
         $RT::Logger->debug('Final and Initial priorities are equal. Not escalating.');
-        return 1;
+        return 0;
     }
 
     if ( $ticket->Priority >= $ticket->FinalPriority && $priority_range > 0 ) {
         $RT::Logger->debug('Current priority is greater than final. Not escalating.');
-        return 1;
+        return 0;
     }
     elsif ( $ticket->Priority <= $ticket->FinalPriority && $priority_range < 0 ) {
         $RT::Logger->debug('Current priority is lower than final. Not escalating.');
-        return 1;
+        return 0;
     }
 
     # TODO: compute the number of business days until the ticket is due
@@ -186,7 +186,7 @@ sub Prepare {
     # do nothing if we didn't reach starts or created date
     if ( $starts > $now ) {
         $RT::Logger->debug('Starts(Created) is in future. Not escalating.');
-        return 1;
+        return 0;
     }
 
     my $due = $ticket->DueObj->Unix;
