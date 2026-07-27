@@ -32,6 +32,10 @@ img.rt-user-image-lg {
     height: 100px;
 }
 
+#create-auth-token .modal-dialog {
+    margin-top: 15vh;
+}
+
 [data-bs-theme=light] {
     span.rt-user-avatar {
         color: white;

@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="modal" id="create-auth-token">
-  <div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title"><&|/l&>Create authentication token</&></h5>
@@ -73,19 +73,21 @@
               </div>
             </&>
 
-            <&| /Elements/LabeledValue &>
-              <select name="ExpiresSelect" id="ExpiresSelect" class="form-select selectpicker">
-                <option value="1M" ><&|/l, 1 &>[quant,_1,Month,Months]</&></option>
-                <option value="3M"><&|/l, 3 &>[quant,_1,Month,Months]</&></option>
-                <option value="6M"><&|/l, 6 &>[quant,_1,Month,Months]</&></option>
-                <option value="1Y"><&|/l, 1 &>[quant,_1,Year,Years]</&></option>
-                <option value="Custom"><&|/l&>Custom Date</&></option>
-              </select>
-            </&>
+            <div id="expires-options" class="hidden">
+              <&| /Elements/LabeledValue &>
+                <select name="ExpiresSelect" id="ExpiresSelect" class="form-select selectpicker">
+                  <option value="1M" ><&|/l, 1 &>[quant,_1,Month,Months]</&></option>
+                  <option value="3M"><&|/l, 3 &>[quant,_1,Month,Months]</&></option>
+                  <option value="6M"><&|/l, 6 &>[quant,_1,Month,Months]</&></option>
+                  <option value="1Y"><&|/l, 1 &>[quant,_1,Year,Years]</&></option>
+                  <option value="Custom"><&|/l&>Custom Date</&></option>
+                </select>
+              </&>
 
-            <&| /Elements/LabeledValue &>
-              <& /Elements/SelectDate, Name=>"Expires", id=>"Expires", Default => $Expires, ShowTime => 1 &>
-            </&>
+              <&| /Elements/LabeledValue &>
+                <& /Elements/SelectDate, Name => "Expires", id => "Expires", Default => $Expires, ShowTime => 1 &>
+              </&>
+            </div>
 
           <& /Elements/Submit, Label => loc("Create"), Name => 'Create', FullWidth => 1, Attributes => q{data-bs-dismiss="modal"} &>
         </form>
@@ -162,6 +164,7 @@
       else {
         expiresSelect.get(0).tomselect?.enable();
       }
+      document.getElementById("expires-options").classList.toggle( "hidden", disable );
       onExpiresSelectChange();
     }
   );
