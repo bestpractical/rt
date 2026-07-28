@@ -47,104 +47,99 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
-<h1><% $caption %></h1>
-
-<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Groups/index.html">
+<div class="container">
+<&| /Widgets/TitleBox, hideable => 0, class => 'admin-select-group', content_class => 'mx-auto width-md' &>
+  <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Groups/index.html" class="mx-auto">
   <input type="hidden" name="GroupField" value="Name" />
   <input type="hidden" name="GroupOp" value="LIKE" />
-  <div class="row">
-    <div class="col-xl-6">
 
-      <div class="row mt-2">
-        <div class="label col-3 text-start">
-          <&|/l&>Go to group</&>
-        </div>
-        <div class="value col-3">
-          <input type="text" class="form-control" name="GroupString" value="" data-autocomplete="Groups" data-autocomplete-return="id" id="autocomplete-GroupString" />
-          <script type="text/javascript">
-    jQuery(function(){
-        // Jump directly to the page if a group is chosen
-        jQuery("#autocomplete-GroupString").on("change", function() {
-            if ( this.value && this.value.match(/^\d+$/) ) {
-                htmx.ajax('GET', RT.Config.WebPath + "/Admin/Groups/Modify.html?id=" + this.value, {
-                    target: '.main-container',
-                    select: '.main-container',
-                    swap: 'outerHTML',
-                    headers: {
-                        'HX-Boosted': true
-                    }
-                });
-            }
-        });
+  <div class="row mt-2">
+    <div class="label col-4 text-start">
+      <&|/l&>Go to group</&>
+    </div>
+    <div class="col-8">
+      <input type="text" class="form-control" name="GroupString" value="" data-autocomplete="Groups" data-autocomplete-return="id" id="autocomplete-GroupString" />
+    </div>
+  </div>
+<script type="text/javascript">
+jQuery(function(){
+    // Jump directly to the page if a group is chosen
+    jQuery("#autocomplete-GroupString").on("change", function() {
+        if ( this.value && this.value.match(/^\d+$/) ) {
+            htmx.ajax('GET', RT.Config.WebPath + "/Admin/Groups/Modify.html?id=" + this.value, {
+                target: '.main-container',
+                select: '.main-container',
+                swap: 'outerHTML',
+                headers: {
+                    'HX-Boosted': true
+                }
+            });
+        }
     });
-          </script>
-        </div>
+});
+</script>
+  </form>
+  <hr />
+  <p class="fw-bold"><&|/l&>Additional search options</&></p>
+  <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Groups/index.html" name="GroupsAdmin" class="mx-auto max-width-md">
+
+  <div class="row mt-2">
+    <div class="label col-3 text-start">
+      <&|/l&>Find all groups whose</&>
+    </div>
+    <& /Elements/SelectGroups,
+           GroupField      => $GroupField,
+           GroupOp         => $GroupOp,
+           GroupString     => $GroupString,
+    &>
+  </div>
+  <div class="row mt-2">
+    <div class="label col-3 text-start">
+      <&|/l&>And all groups whose</&>
+    </div>
+      <& /Elements/SelectGroups,
+           SelectFieldName => 'GroupField2',
+           SelectOpName    => 'GroupOp2',
+           InputStringName => 'GroupString2',
+           GroupField      => $GroupField2,
+           GroupOp         => $GroupOp2,
+           GroupString     => $GroupString2,
+      &>
+  </div>
+  <div class="row mt-2">
+    <div class="label col-3 text-start">
+      <&|/l&>And all groups whose</&>
+    </div>
+    <& /Elements/SelectGroups,
+      SelectFieldName => 'GroupField3',
+      SelectOpName    => 'GroupOp3',
+      InputStringName => 'GroupString3',
+      GroupField      => $GroupField3,
+      GroupOp         => $GroupOp3,
+      GroupString     => $GroupString3,
+    &>
+  </div>
+  <div class="row mt-2">
+    <div class="col-12">
+      <div class="form-check">
+        <input type="checkbox" class="checkbox form-check-input" id="FindDisabledGroups" name="FindDisabledGroups" value="1" <% $FindDisabledGroups? 'checked="checked"': '' |n %> />
+        <label class="form-check-label" for="FindDisabledGroups"><&|/l&>Include disabled groups in listing.</&></label><br />
       </div>
     </div>
   </div>
-</form>
 
-<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Groups/index.html" name="GroupsAdmin">
-
-  <div class="row">
-    <div class="col-xl-6">
-
-      <div class="row mt-2">
-        <div class="label col-3 text-start">
-          <&|/l&>Find groups whose</&>
-        </div>
-        <& /Elements/SelectGroups,
-               GroupField      => $GroupField,
-               GroupOp         => $GroupOp,
-               GroupString     => $GroupString,
-        &>
-      </div>
-      <div class="row mt-2">
-        <div class="label col-3 text-start">
-          <&|/l&>And groups whose</&>
-        </div>
-          <& /Elements/SelectGroups,
-               SelectFieldName => 'GroupField2',
-               SelectOpName    => 'GroupOp2',
-               InputStringName => 'GroupString2',
-               GroupField      => $GroupField2,
-               GroupOp         => $GroupOp2,
-               GroupString     => $GroupString2,
-          &>
-      </div>
-      <div class="row mt-2">
-        <div class="label col-3 text-start">
-          <&|/l&>And groups whose</&>
-        </div>
-        <& /Elements/SelectGroups,
-          SelectFieldName => 'GroupField3',
-          SelectOpName    => 'GroupOp3',
-          InputStringName => 'GroupString3',
-          GroupField      => $GroupField3,
-          GroupOp         => $GroupOp3,
-          GroupString     => $GroupString3,
-        &>
-      </div>
-      <div class="row mt-2">
-        <div class="col-12">
-          <div class="form-check">
-            <input type="checkbox" class="checkbox form-check-input" id="FindDisabledGroups" name="FindDisabledGroups" value="1" <% $FindDisabledGroups? 'checked="checked"': '' |n %> />
-            <label class="form-check-label" for="FindDisabledGroups"><&|/l&>Include disabled groups in listing.</&></label><br />
-          </div>
-        </div>
-      </div>
-
-      <div class="row mt-2">
-        <div class="col-12 text-end">
-          <input type="submit" class="btn btn-primary" name="Go" value="<&|/l&>Go!</&>" />
-        </div>
-      </div>
+  <div class="row mt-2">
+    <div class="col-12 text-end">
+      <input type="submit" class="btn btn-primary" name="Go" value="<&|/l&>Go!</&>" />
     </div>
   </div>
-</form>
+  </form>
+</&>
+</div>
+<br />
 
 % unless ( $Groups->Count ) {
-<em><&|/l&>No groups matching search criteria found.</&></em>
+<p class="fw-bold"><&|/l&>No groups matching search criteria found.</&></p>
 % } else {
 <p><&|/l&>Select a group</&>:</p>
 
