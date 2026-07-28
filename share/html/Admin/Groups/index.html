@@ -159,13 +159,11 @@ jQuery(function(){
 my $Groups = RT::Groups->new($session{'CurrentUser'});
 $Groups->LimitToUserDefinedGroups();
 my $title = loc('Select a group');
-my $caption;
 
 if ($FindDisabledGroups) {
     $Groups->FindAllRows();
 }
 
-$caption = loc("Groups matching search criteria");
 my @groups = ();
 push @groups, { field => $GroupField, op => $GroupOp, string => $GroupString } if length $GroupString;
 push @groups, { field => $GroupField2, op => $GroupOp2, string => $GroupString2 } if length $GroupString2;
@@ -202,9 +200,6 @@ if ( scalar @groups ) {
     }
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Admin/Groups/Modify.html?id=".$Groups->First->id)
           if $Groups->Count == 1 and $Groups->First;
-}
-else {
-    $caption = loc("User-defined groups");
 }
 
 $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Groups'};

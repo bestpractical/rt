@@ -262,7 +262,6 @@ my %collection_list_args = (
 % }
 
 <%INIT>
-my $caption;
 my $users = RT::Users->new( $session{'CurrentUser'} );
 
 if ( $FindEnabledUsers ) {
@@ -279,7 +278,6 @@ else {
 
 $m->callback( UsersObj => $users, ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
-$caption = loc("Users matching search criteria");
 my @users_queries = ();
 push @users_queries, { field => $UserField, op => $UserOp, string => $UserString } if length $UserString;
 push @users_queries, { field => $UserField2, op => $UserOp2, string => $UserString2 } if length $UserString2;
@@ -318,16 +316,10 @@ if ( scalar @users_queries ) {
 }
 
 if ( $IncludeSystemGroups eq 'Privileged' ) {
-    $caption = loc("Privileged users");
     $users->LimitToPrivileged;
 }
 elsif ( $IncludeSystemGroups eq 'Unprivileged' ) {
-    $caption = loc("Unprivileged users");
     $users->LimitToUnprivileged;
-}
-else {
-    # Must be all
-    $caption = loc("All users");
 }
 
 $users->LimitToEndUsers;
