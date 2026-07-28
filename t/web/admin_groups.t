@@ -154,6 +154,41 @@ ok( $m->login(), 'logged in' );
 }
 
 {
+    diag "Filter on enabled and disabled groups";
+
+    RT::Test->load_or_create_group('FilterEnabledGroup');
+    my $disabled = RT::Test->load_or_create_group('FilterDisabledGroup');
+    my ( $ret, $msg ) = $disabled->SetDisabled( 1 );
+    ok( $ret, $msg );
+
+    diag "Enabled groups only is the default";
+    $m->get_ok( $url . '/Admin/Groups/index.html' );
+    $m->text_contains( 'FilterEnabledGroup' );
+    $m->text_lacks( 'FilterDisabledGroup' );
+
+    diag "Both boxes ticked finds enabled and disabled groups";
+    ok( $m->form_name( 'GroupsAdmin' ), 'found the filter admin groups form' );
+    $m->tick( 'FindDisabledGroups', 1 );
+    $m->click( 'Go' );
+    $m->text_contains( 'FilterEnabledGroup' );
+    $m->text_contains( 'FilterDisabledGroup' );
+
+    diag "Disabled groups only";
+    ok( $m->form_name( 'GroupsAdmin' ), 'found the filter admin groups form' );
+    $m->untick( 'FindEnabledGroups', 1 );
+    $m->click( 'Go' );
+    $m->text_contains( 'FilterDisabledGroup' );
+    $m->text_lacks( 'FilterEnabledGroup' );
+
+    diag "Unticking both falls back to enabled groups";
+    ok( $m->form_name( 'GroupsAdmin' ), 'found the filter admin groups form' );
+    $m->untick( 'FindDisabledGroups', 1 );
+    $m->click( 'Go' );
+    $m->text_contains( 'FilterEnabledGroup' );
+    $m->text_lacks( 'FilterDisabledGroup' );
+}
+
+{
     diag "Delete group members" if $ENV{TEST_VERBOSE};
     my $group = RT::Group->new( RT->SystemUser );
     $group->LoadUserDefinedGroup('test group');
