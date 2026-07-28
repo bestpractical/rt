@@ -120,10 +120,19 @@ jQuery(function(){
     &>
   </div>
   <div class="row mt-2">
-    <div class="col-12">
+    <div class="label col-3 text-start pt-1">
+      <&|/l&>Include all</&>
+    </div>
+    <div class="col-auto mt-1">
       <div class="form-check">
-        <input type="checkbox" class="checkbox form-check-input" id="FindDisabledGroups" name="FindDisabledGroups" value="1" <% $FindDisabledGroups? 'checked="checked"': '' |n %> />
-        <label class="form-check-label" for="FindDisabledGroups"><&|/l&>Include disabled groups in listing.</&></label><br />
+        <input type="checkbox" class="form-check-input checkbox" id="FindEnabledGroups" name="FindEnabledGroups" value="1" <% $FindEnabledGroups? 'checked="checked"': '' |n %> />
+        <label class="form-check-label" for="FindEnabledGroups"><&|/l&>Enabled groups</&></label>
+      </div>
+    </div>
+    <div class="col-auto mt-1">
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input checkbox" id="FindDisabledGroups" name="FindDisabledGroups" value="1" <% $FindDisabledGroups? 'checked="checked"': '' |n %> />
+        <label class="form-check-label" for="FindDisabledGroups"><&|/l&>Disabled groups</&></label>
       </div>
     </div>
   </div>
@@ -151,7 +160,7 @@ jQuery(function(){
     Format => $Format,
     Collection => $Groups,
     AllowSorting => 1,
-    PassArguments => [qw(Format Rows Page Order OrderBy GroupString GroupOp GroupField GroupString2 GroupOp2 GroupField2 GroupString3 GroupOp3 GroupField3 FindDisabledGroups)],
+    PassArguments => [qw(Format Rows Page Order OrderBy GroupString GroupOp GroupField GroupString2 GroupOp2 GroupField2 GroupString3 GroupOp3 GroupField3 FindDisabledGroups FindEnabledGroups)],
 &>
 % }
 
@@ -160,9 +169,16 @@ my $Groups = RT::Groups->new($session{'CurrentUser'});
 $Groups->LimitToUserDefinedGroups();
 my $title = loc('Select a group');
 
-if ($FindDisabledGroups) {
-    $Groups->FindAllRows();
+# With neither box checked nothing could match, so fall back to enabled groups
+$FindEnabledGroups = 1 unless $FindEnabledGroups || $FindDisabledGroups;
+
+if ( $FindEnabledGroups && $FindDisabledGroups ) {
+    $Groups->FindAllRows;
 }
+elsif ( $FindDisabledGroups ) {
+    $Groups->LimitToDeleted;
+}
+# Enabled groups alone needs no limit, RT::Groups excludes disabled ones by default
 
 my @groups = ();
 push @groups, { field => $GroupField, op => $GroupOp, string => $GroupString } if length $GroupString;
@@ -219,4 +235,5 @@ $GroupString3 => undef
 $GroupOp3 => undef
 $GroupField3 => 'Name'
 $FindDisabledGroups => 0
+$FindEnabledGroups => undef
 </%ARGS>
