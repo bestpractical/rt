@@ -61,8 +61,32 @@ with (
         => { -alias => { hypermedia_links => '_default_hypermedia_links' } },
     'RT::REST2::Resource::Record::Deletable',
     'RT::REST2::Resource::Record::Writable'
-        => { -alias => { create_record => '_create_record', update_record => '_update_record' } },
+        => { -alias => { create_record => '_create_record', update_record => '_update_record',
+                         immutable_fields => '_default_immutable_fields' } },
 );
+
+=head2 immutable_fields
+
+Adds C<EffectiveId> and C<IsMerged>, plus C<Type> on update. Merging via
+REST2 goes through the C<MergeInto> field of an update, which is
+rights-checked.
+
+C<Type> stays settable on create, as that is the only way REST2 clients have
+to make a reminder. Setting it afterwards is another matter: searches match
+C<Type = 'ticket'>, so re-typing an existing ticket would drop it out of
+every result.
+
+=cut
+
+sub immutable_fields {
+    my $self   = shift;
+    my $action = shift // '';
+
+    my @fields = ( $self->_default_immutable_fields($action), qw(EffectiveId IsMerged) );
+    push @fields, 'Type' unless $action eq 'create';
+
+    return @fields;
+}
 
 has 'action' => (
     is  => 'ro',
