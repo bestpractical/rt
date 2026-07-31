@@ -284,6 +284,7 @@ my %search_whitelist = (
     group => {
         disabled => 1,
         map { lc $_ => 1 }
+          grep { !/^(?:Domain|Instance)$/ }
           grep { $RT::Record::_TABLE_ATTR->{'RT::Group'}{$_}{read} }
           keys %{ $RT::Record::_TABLE_ATTR->{'RT::Group'} }
     }
