@@ -7370,6 +7370,29 @@ sub GenerateUniqueId {
     return 'rt-' . lc Data::GUID->new->as_string();
 }
 
+=head2 CalendarColorsModalId TARGET_ID
+
+Returns the DOM id of the color legend modal for a calendar, scoped to the
+widget it belongs to. TARGET_ID is the htmx id of the enclosing saved search
+portlet, which is unique per widget.
+
+A dashboard can hold several calendars, each rendering its own legend, so the
+id has to differ between them. Bootstrap resolves C<data-bs-target> with
+C<querySelector>, so duplicate ids would make every info button open the first
+legend on the page.
+
+TARGET_ID is optional: pages that render a single calendar, such as
+F</Search/Calendar.html>, don't have one and get the unsuffixed id.
+
+=cut
+
+sub CalendarColorsModalId {
+    my $target_id = shift;
+    my $id        = 'calendar-date-colors-modal';
+    $id .= "-$target_id" if defined $target_id && length $target_id;
+    return $id;
+}
+
 package RT::Interface::Web;
 require RT::Base;
 RT::Base->_ImportOverlays();

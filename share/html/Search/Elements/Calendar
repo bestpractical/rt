@@ -328,14 +328,14 @@ while ($date <= $end) {
 % }
 
 <!-- Bootstrap Modal for Calendar Color Legend -->
-<div class="modal fade" id="calendar-date-colors-modal" aria-labelledby="calendar-date-type-colors-<% $ARGS{SavedSearchId} || 0 %>">
+<div class="modal fade calendar-date-colors-modal" id="<% $ColorsModalId %>" aria-labelledby="<% $ColorsModalId %>-title">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
 % if ( $CalendarColorMode eq 'status' ) {
-        <h5 class="modal-title" id="calendar-date-type-colors-<% $ARGS{SavedSearchId} || 0 %>"><&|/l&>Status Colors</&></h5>
+        <h5 class="modal-title" id="<% $ColorsModalId %>-title"><&|/l&>Status Colors</&></h5>
 % } else {
-        <h5 class="modal-title" id="calendar-date-type-colors-<% $ARGS{SavedSearchId} || 0 %>"><&|/l&>Date Type Colors</&></h5>
+        <h5 class="modal-title" id="<% $ColorsModalId %>-title"><&|/l&>Date Type Colors</&></h5>
 % }
         <a href="javascript:void(0)" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -453,6 +453,12 @@ if ( !$SavedSearchForOptions && $ARGS{SavedSearchId} ) {
     $SavedSearchForOptions->Load( $ARGS{SavedSearchId} );
     undef $SavedSearchForOptions unless $SavedSearchForOptions->Id;
 }
+
+# A dashboard can hold more than one calendar, and each one renders its own
+# color legend, so the modal id has to be unique per widget. TargetId is the
+# htmx id of the enclosing saved search portlet; /Search/Calendar.html renders
+# a single calendar and doesn't pass one.
+my $ColorsModalId = CalendarColorsModalId( $ARGS{TargetId} );
 
 my $CalendarColorMode = $DECODED_ARGS->{CalendarColorMode} || 'date';
 if ( $CalendarColorMode eq 'date' && $SavedSearchForOptions && $SavedSearchForOptions->Id ) {

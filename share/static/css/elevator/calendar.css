@@ -280,13 +280,13 @@ table.rt-calendar .ticket-entry.first-day.last-day {
 
 /* Starts (Green) */
 table.rt-calendar .ticket-entry.starts,
-#calendar-date-colors-modal .ticket-entry.starts {
+.calendar-date-colors-modal .ticket-entry.starts {
     background-color: #e9f7ef !important;
     color: #155724 !important;
 }
 
 table.rt-calendar .ticket-entry.starts.first-day:not(.first-day-week),
-#calendar-date-colors-modal .ticket-entry.starts {
+.calendar-date-colors-modal .ticket-entry.starts {
     border-left: 4px solid #28a745 !important;
 }
 
@@ -295,19 +295,19 @@ table.rt-calendar .ticket-entry.starts.last-day {
 }
 
 table.rt-calendar .ticket-entry.starts:hover,
-#calendar-date-colors-modal .ticket-entry.starts:hover {
+.calendar-date-colors-modal .ticket-entry.starts:hover {
     background-color: #d4edda !important;
 }
 
 /* Due (Yellow/Amber) */
 table.rt-calendar .ticket-entry.due,
-#calendar-date-colors-modal .ticket-entry.due {
+.calendar-date-colors-modal .ticket-entry.due {
     background-color: #fef9e7 !important;
     color: #856404 !important;
 }
 
 table.rt-calendar .ticket-entry.due.first-day:not(.first-day-week),
-#calendar-date-colors-modal .ticket-entry.due {
+.calendar-date-colors-modal .ticket-entry.due {
     border-left: 4px solid #ffc107 !important;
 }
 
@@ -316,19 +316,19 @@ table.rt-calendar .ticket-entry.due.last-day {
 }
 
 table.rt-calendar .ticket-entry.due:hover,
-#calendar-date-colors-modal .ticket-entry.due:hover {
+.calendar-date-colors-modal .ticket-entry.due:hover {
     background-color: #fff3cd !important;
 }
 
 /* Created (Blue) */
 table.rt-calendar .ticket-entry.created,
-#calendar-date-colors-modal .ticket-entry.created {
+.calendar-date-colors-modal .ticket-entry.created {
     background-color: #e7f3ff !important;
     color: #004085 !important;
 }
 
 table.rt-calendar .ticket-entry.created.first-day:not(.first-day-week),
-#calendar-date-colors-modal .ticket-entry.created {
+.calendar-date-colors-modal .ticket-entry.created {
     border-left: 4px solid #007bff !important;
 }
 
@@ -337,19 +337,19 @@ table.rt-calendar .ticket-entry.created.last-day {
 }
 
 table.rt-calendar .ticket-entry.created:hover,
-#calendar-date-colors-modal .ticket-entry.created:hover {
+.calendar-date-colors-modal .ticket-entry.created:hover {
     background-color: #cce7ff !important;
 }
 
 /* Started (Teal) */
 table.rt-calendar .ticket-entry.started,
-#calendar-date-colors-modal .ticket-entry.started {
+.calendar-date-colors-modal .ticket-entry.started {
     background-color: #e2f6f8 !important;
     color: #0c5460 !important;
 }
 
 table.rt-calendar .ticket-entry.started.first-day:not(.first-day-week),
-#calendar-date-colors-modal .ticket-entry.started {
+.calendar-date-colors-modal .ticket-entry.started {
     border-left: 4px solid #17a2b8 !important;
 }
 
@@ -358,19 +358,19 @@ table.rt-calendar .ticket-entry.started.last-day {
 }
 
 table.rt-calendar .ticket-entry.started:hover,
-#calendar-date-colors-modal .ticket-entry.started:hover {
+.calendar-date-colors-modal .ticket-entry.started:hover {
     background-color: #d1ecf1 !important;
 }
 
 /* Resolved (Purple) */
 table.rt-calendar .ticket-entry.resolved,
-#calendar-date-colors-modal .ticket-entry.resolved {
+.calendar-date-colors-modal .ticket-entry.resolved {
     background-color: #f0ebf8 !important;
     color: #4a154b !important;
 }
 
 table.rt-calendar .ticket-entry.resolved.first-day:not(.first-day-week),
-#calendar-date-colors-modal .ticket-entry.resolved {
+.calendar-date-colors-modal .ticket-entry.resolved {
     border-left: 4px solid #6f42c1 !important;
 }
 
@@ -379,19 +379,19 @@ table.rt-calendar .ticket-entry.resolved.last-day {
 }
 
 table.rt-calendar .ticket-entry.resolved:hover,
-#calendar-date-colors-modal .ticket-entry.resolved:hover {
+.calendar-date-colors-modal .ticket-entry.resolved:hover {
     background-color: #e2d9f3 !important;
 }
 
 /* Last Updated (Gray) */
 table.rt-calendar .ticket-entry.last-updated,
-#calendar-date-colors-modal .ticket-entry.last-updated {
+.calendar-date-colors-modal .ticket-entry.last-updated {
     background-color: #f8f9fa !important;
     color: #495057 !important;
 }
 
 table.rt-calendar .ticket-entry.last-updated.first-day:not(.first-day-week),
-#calendar-date-colors-modal .ticket-entry.last-updated {
+.calendar-date-colors-modal .ticket-entry.last-updated {
     border-left: 4px solid #6c757d !important;
 }
 
@@ -400,19 +400,19 @@ table.rt-calendar .ticket-entry.last-updated.last-day {
 }
 
 table.rt-calendar .ticket-entry.last-updated:hover,
-#calendar-date-colors-modal .ticket-entry.last-updated:hover {
+.calendar-date-colors-modal .ticket-entry.last-updated:hover {
     background-color: #e9ecef !important;
 }
 
 /* Custom Field Dates (Tan/Brown) */
 table.rt-calendar .ticket-entry.custom-field,
-#calendar-date-colors-modal .ticket-entry.custom-field {
+.calendar-date-colors-modal .ticket-entry.custom-field {
     background-color: #fdf6e3 !important;
     color: #8b4513 !important;
 }
 
 table.rt-calendar .ticket-entry.custom-field.first-day:not(.first-day-week),
-#calendar-date-colors-modal .ticket-entry.custom-field {
+.calendar-date-colors-modal .ticket-entry.custom-field {
     border-left: 4px solid #d2691e !important;
 }
 
@@ -421,7 +421,7 @@ table.rt-calendar .ticket-entry.custom-field.last-day {
 }
 
 table.rt-calendar .ticket-entry.custom-field:hover,
-#calendar-date-colors-modal .ticket-entry.custom-field:hover {
+.calendar-date-colors-modal .ticket-entry.custom-field:hover {
     background-color: #f8f4e6 !important;
 }
 
@@ -549,13 +549,13 @@ table.rt-calendar .ticket-entry.custom-field:hover,
 /* Status-based coloring using CSS custom properties
  * Placed after theme blocks to ensure these override default ticket-entry colors */
 table.rt-calendar .ticket-entry.status-color,
-#calendar-date-colors-modal .ticket-entry.status-color {
+.calendar-date-colors-modal .ticket-entry.status-color {
     background-color: color-mix(in srgb, var(--event-color) 15%, white) !important;
     color: color-mix(in srgb, var(--event-color) 80%, black) !important;
 }
 
 table.rt-calendar .ticket-entry.status-color.first-day:not(.first-day-week),
-#calendar-date-colors-modal .ticket-entry.status-color {
+.calendar-date-colors-modal .ticket-entry.status-color {
     border-left: 4px solid var(--event-color) !important;
 }
 
@@ -564,7 +564,7 @@ table.rt-calendar .ticket-entry.status-color.last-day {
 }
 
 table.rt-calendar .ticket-entry.status-color:hover,
-#calendar-date-colors-modal .ticket-entry.status-color:hover {
+.calendar-date-colors-modal .ticket-entry.status-color:hover {
     background-color: color-mix(in srgb, var(--event-color) 25%, white) !important;
 }
 
@@ -572,7 +572,7 @@ table.rt-calendar .ticket-entry.status-color > a {
     color: color-mix(in srgb, var(--event-color) 80%, black) !important;
 }
 
-#calendar-date-colors-modal .modal-body {
+.calendar-date-colors-modal .modal-body {
     max-height: 70vh;
     overflow-y: auto;
 }

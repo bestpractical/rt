@@ -505,7 +505,7 @@ if ( $HTMXLoad && ( $mode // '' ) eq 'Calendar' ) {
             icon_name    => 'info',
             tooltip_text => $color_mode eq 'status' ? loc('Status Colors') : loc('Date Type Colors'),
             icon_href    => 'javascript:void(0)',
-            modal        => "#calendar-date-colors-modal",
+            modal        => '#' . CalendarColorsModalId($htmx_id),
         };
 
     if ( $color_mode eq 'status' ) {
