@@ -452,6 +452,17 @@ $htmx_query_args .= "&ShowPagination=$ShowPagination" if defined $ShowPagination
 $htmx_query_args .= "&AllowSorting=$AllowSorting" if defined $AllowSorting;
 $htmx_query_args .= "&SearchDisplayMode=$mode" if $mode;
 
+# Only the title bar and its icons are rendered on this request; htmx fetches
+# the calendar itself afterwards, using the URL built here. Pass along a
+# requested color mode so the icons and the calendar don't end up showing
+# different modes.
+my $calendar_color_mode_arg;
+if ( ( $mode // '' ) eq 'Calendar' ) {
+    $calendar_color_mode_arg = $DECODED_ARGS->{CalendarColorMode}
+        if ( $DECODED_ARGS->{CalendarColorMode} // '' ) =~ /^(?:date|status)$/;
+    $htmx_query_args .= "&CalendarColorMode=$calendar_color_mode_arg" if $calendar_color_mode_arg;
+}
+
 my $title;
 if ( $search ) {
     $title = loc(RT::SavedSearch->EscapeDescription($search->Description), $ProcessedSearchArg->{'Rows'});
@@ -499,7 +510,7 @@ push @icon_links,
 
 # Add info icon for calendar display mode to show color legend
 if ( $HTMXLoad && ( $mode // '' ) eq 'Calendar' ) {
-    my $color_mode = ( $search ? $search->GetOption('CalendarColorMode') : '' ) || 'date';
+    my $color_mode = ResolveCalendarColorMode( $calendar_color_mode_arg, $search );
     push @icon_links,
         {
             icon_name    => 'info',

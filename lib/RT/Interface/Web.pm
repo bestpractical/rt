@@ -7393,6 +7393,40 @@ sub CalendarColorsModalId {
     return $id;
 }
 
+=head2 ResolveCalendarColorMode ARGUMENT, SAVED_SEARCH
+
+Returns the mode a calendar's events are colored by, either 'date' or 'status'.
+
+ARGUMENT is the CalendarColorMode request argument, if any. It wins when it
+names a mode, so a calendar can be drawn in a mode other than the one it was
+saved with. SAVED_SEARCH is the L<RT::SavedSearch> being displayed, if any; its
+CalendarColorMode option applies when the request didn't ask for a mode.
+Anything else, including an unrecognized ARGUMENT, gives 'date'.
+
+Test ARGUMENT for a mode rather than testing the resolved value, so that an
+explicit request for 'date' is distinguishable from no request at all and can
+override a saved 'status'.
+
+The saved search widget's title bar (F</Elements/ShowSearch>) and the calendar
+itself (F</Search/Elements/Calendar>) are rendered by separate requests and have
+to agree on the answer, so both resolve it here rather than each consulting its
+own source.
+
+=cut
+
+sub ResolveCalendarColorMode {
+    my ( $argument, $saved_search ) = @_;
+
+    my $mode = $argument;
+    undef $mode unless defined $mode && ( $mode eq 'date' || $mode eq 'status' );
+
+    if ( !defined $mode && $saved_search && $saved_search->Id ) {
+        $mode = $saved_search->GetOption('CalendarColorMode');
+    }
+
+    return defined $mode && $mode eq 'status' ? 'status' : 'date';
+}
+
 package RT::Interface::Web;
 require RT::Base;
 RT::Base->_ImportOverlays();

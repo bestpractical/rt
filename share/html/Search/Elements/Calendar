@@ -460,10 +460,7 @@ if ( !$SavedSearchForOptions && $ARGS{SavedSearchId} ) {
 # a single calendar and doesn't pass one.
 my $ColorsModalId = CalendarColorsModalId( $ARGS{TargetId} );
 
-my $CalendarColorMode = $DECODED_ARGS->{CalendarColorMode} || 'date';
-if ( $CalendarColorMode eq 'date' && $SavedSearchForOptions && $SavedSearchForOptions->Id ) {
-    $CalendarColorMode = $SavedSearchForOptions->GetOption('CalendarColorMode') || 'date';
-}
+my $CalendarColorMode = ResolveCalendarColorMode( $DECODED_ARGS->{CalendarColorMode}, $SavedSearchForOptions );
 
 # Collect status colors from ticket lifecycles during rendering.
 # @SeenLifecycleOrder preserves the order lifecycles were first encountered.
