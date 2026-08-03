@@ -247,6 +247,15 @@ sub RunCrontoolJob {
     eval {
         run3( \@cmd, \$stdin, \$stdout, \$stderr );
     };
+
+    # run3 can die before rt-crontool is ever started, in which case $? still
+    # holds the status of whatever ran before it. Bail out rather than read a
+    # stale exit code and report a run that never happened as a success.
+    if ( my $error = $@ ) {
+        $RT::Logger->error( "scheduled process rt-crontool failed to run: $error" );
+        return 0;
+    }
+
     my $exit = $? >> 8;
 
     $RT::Logger->debug( "scheduled process rt-crontool exit: $exit" );
