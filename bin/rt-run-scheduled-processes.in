@@ -309,6 +309,15 @@ This tool will find any scheduled processes that are scheduled and run them.
 Each scheduled process has a minute and hour, and possibly day of week or day
 of month. These are taken to be in the RT server timezone.
 
+Each scheduled process carries a counter which is incremented every time the
+process runs successfully. Weekly processes configured to run every N weeks use
+that counter to work out which weeks they are due; on the weeks they are not
+due the counter is incremented without the process running.
+
+A run that fails does not increment the counter, so a weekly process is
+considered due again the following week rather than waiting out the full N
+weeks.
+
 =head1 SETUP
 
 You'll need to have cron run this script every 15 minutes. Here's an
@@ -333,7 +342,9 @@ Display this documentation
 
 =item --dryrun
 
-Figure out which scheduled processes would be run, but don't actually run them
+Figure out which scheduled processes would be run, but don't actually run them.
+Counters are left untouched, so a dry run does not disturb the schedule of
+weekly processes.
 
 =item --time SECONDS
 
@@ -345,6 +356,11 @@ C<1192216018> would be Oct 12 19:06:58 GMT 2007).
 
 Ignore scheduled process frequency when considering each scheduled process.
 This will run all enabled scheduled processes.
+
+Because this increments the counter described above, it advances the schedule of
+any weekly process configured to run every N weeks (where N is greater than
+one): its next scheduled run happens a week earlier than it otherwise would,
+and the cadence stays offset from then on.
 
 =item --log LEVEL
 
