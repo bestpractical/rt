@@ -255,7 +255,7 @@ sub RunCrontoolJob {
     $RT::Logger->error( "scheduled process rt-crontool error: $stderr" )
         if $stderr;
 
-    return $exit ? 1 : 0;
+    return $exit ? 0 : 1;
 }
 
 sub MinuteHourDowDomIn {
