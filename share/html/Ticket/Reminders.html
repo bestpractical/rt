@@ -75,6 +75,14 @@ my @actions = $Ticket->Atomic(sub{
     ProcessTicketReminders( TicketObj => $Ticket, ARGSRef => \%ARGS );
 });
 
+unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
+    Abort(
+        loc("No permission to view ticket"),
+        Actions => \@actions,
+        Code    => HTTP::Status::HTTP_FORBIDDEN,
+    );
+}
+
 $Ticket->CurrentUser->AddRecentlyViewedTicket($Ticket);
 
 </%INIT>
