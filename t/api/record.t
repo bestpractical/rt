@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 22;
+use RT::Test tests => 29;
 
 
 {
@@ -65,5 +65,50 @@ ok($rid, $rmsg);
 
 
 
+}
+
+diag "hashref values in LoadByCols";
+{
+    $RT::Handle->LogSQLStatements(1);
+
+    RT::Record->FlushCache;
+    $RT::Handle->ClearSQLStatementLog;
+    my $user = RT::User->new( RT->SystemUser );
+    $user->LoadByCols( Name => 'root' );
+    is( $user->Name, 'root', 'loaded user by name' );
+
+    my ($statement) = grep { /\bUsers\b/i } map { $_->[1] } $RT::Handle->SQLStatementLog;
+    if ( $RT::Handle->CaseSensitive ) {
+        like( $statement, qr/WHERE LOWER\(Name\) = /i, 'name is lowered to load case insensitively' );
+    }
+    else {
+        like( $statement, qr/WHERE Name = \?/, 'name is compared as is on case-insensitive databases' );
+    }
+
+    RT::Record->FlushCache;
+    $RT::Handle->ClearSQLStatementLog;
+    $user = RT::User->new( RT->SystemUser );
+    $user->LoadByCols( Name => { value => 'root', operator => '=' } );
+    is( $user->Name, 'root', 'loaded user by name case sensitively' );
+
+    ($statement) = grep { /\bUsers\b/i } map { $_->[1] } $RT::Handle->SQLStatementLog;
+    like( $statement, qr/WHERE Name = \?/, 'name is compared as is' );
+
+    RT::Record->FlushCache;
+    $RT::Handle->ClearSQLStatementLog;
+    $user = RT::User->new( RT->SystemUser );
+    $user->LoadByCols( Name => { value => 'root', operator => '=' }, EmailAddress => 'ROOT@localhost' );
+    is( $user->Name, 'root', 'loaded user by name and email address' );
+
+    ($statement) = grep { /\bUsers\b/i } map { $_->[1] } $RT::Handle->SQLStatementLog;
+    like( $statement, qr/\bName = \?/, 'name is still compared as is' );
+    if ( $RT::Handle->CaseSensitive ) {
+        like( $statement, qr/\bLOWER\(EmailAddress\) = /i, 'email address is still lowered' );
+    }
+    else {
+        like( $statement, qr/\bEmailAddress = \?/, 'email address is compared as is on case-insensitive databases' );
+    }
+
+    $RT::Handle->LogSQLStatements(0);
 }
 
