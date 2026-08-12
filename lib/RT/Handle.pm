@@ -2645,7 +2645,7 @@ sub IndexDescription {
 
 sub MakeSureIndexExists {
     my $self = shift;
-    my %args = ( Table => undef, Columns => [], Optional => [], @_ );
+    my %args = ( Table => undef, Columns => [], Optional => [], Unique => 0, @_ );
 
     my @list = $self->IndexesThatBeginWith(
         Table => $args{'Table'}, Columns => [@{$args{'Columns'}}, @{$args{'Optional'}}],
@@ -2662,7 +2662,7 @@ sub MakeSureIndexExists {
     );
     if ( !@list ) {
         my ($status, $msg) = $self->CreateIndex(
-            Table => $args{'Table'}, Columns => [@{$args{'Columns'}}, @{$args{'Optional'}}],
+            Table => $args{'Table'}, Columns => [@{$args{'Columns'}}, @{$args{'Optional'}}], Unique => $args{'Unique'},
         );
         my $method = $status ? 'debug' : 'warning';
         RT->Logger->$method($msg);
