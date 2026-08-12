@@ -147,7 +147,18 @@ sub LoadByCode {
 sub LoadByContent {
     my $self    = shift;
     my $content = shift;
-    return $self->LoadByCols( Code => { value => sha1_hex($content), operator => '=' } );
+
+    # Code is a prefix of the sha1 of Content, of a varying length
+    my $sha1      = sha1_hex($content);
+    my $shortener = RT::Shortener->new( $self->CurrentUser );
+
+    for my $length ( 8 .. 40 ) {
+        $shortener->LoadByCode( substr $sha1, 0, $length );
+        next unless $shortener->Id;
+        return $self->LoadById( $shortener->Id ) if $shortener->Content eq $content;
+    }
+
+    return wantarray ? ( 0, $self->loc("Couldn't find row") ) : 0;
 }
 
 sub DecodedContent {
