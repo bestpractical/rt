@@ -43,4 +43,26 @@ diag "Codes are loaded case sensitively";
     }
 }
 
+diag "Loading by content";
+{
+    my $shortener = RT::Shortener->new( RT->SystemUser );
+    $shortener->LoadByContent('Query=id<10&Rows=50');
+    is( $shortener->Id, $s->Id, 'loaded the shortener with a 10 character code' );
+
+    my $other = RT::Shortener->new( RT->SystemUser );
+    my $id = $other->LoadOrCreate( Content => 'Query=id>10&Rows=100' );
+    ok( $id, 'created another shortener' );
+    is( length $other->Code, 8, 'LoadOrCreate uses a shorter code' );
+
+    $shortener = RT::Shortener->new( RT->SystemUser );
+    $shortener->LoadByContent('Query=id>10&Rows=100');
+    is( $shortener->Id, $id, 'loaded the shortener with an 8 character code' );
+
+    $shortener = RT::Shortener->new( RT->SystemUser );
+    ( $ret, $msg ) = $shortener->LoadByContent('Query=id>20&Rows=100');
+    ok( !$ret, "unknown content is not loaded: $msg" );
+    ok( !$shortener->Id, 'and the object is left unloaded' );
+    ok( !$shortener->LoadByContent('Query=id>20&Rows=100'), 'false in scalar context too' );
+}
+
 done_testing();
