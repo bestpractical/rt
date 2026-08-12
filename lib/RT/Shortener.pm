@@ -139,13 +139,15 @@ sub LoadOrCreate {
 sub LoadByCode {
     my $self = shift;
     my $code  = shift;
-    return $self->LoadByCols( Code => $code );
+
+    # Codes are lowercase sha1 hex digests, so there is no case to fold
+    return $self->LoadByCols( Code => { value => $code, operator => '=' } );
 }
 
 sub LoadByContent {
     my $self    = shift;
     my $content = shift;
-    return $self->LoadByCols( Code => sha1_hex($content) );
+    return $self->LoadByCols( Code => { value => sha1_hex($content), operator => '=' } );
 }
 
 sub DecodedContent {
