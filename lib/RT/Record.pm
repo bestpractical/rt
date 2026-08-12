@@ -371,6 +371,13 @@ sub Create {
 Override DBIx::SearchBuilder::LoadByCols to do case-insensitive loads if the 
 DB is case sensitive
 
+Values passed as hashrefs are handed to DBIx::SearchBuilder as is, i.e. without
+the C<LOWER()> wrapping:
+
+    $record->LoadByCols( Code => { value => $code, operator => '=' } );
+
+Do that for columns that are stored in a known case.
+
 =cut
 
 sub LoadByCols {
@@ -390,6 +397,7 @@ sub LoadByCols {
     # explicit loading
     my %hash = (@_);
     foreach my $key ( keys %hash ) {
+        next if ref $hash{$key} eq 'HASH';
 
         # If we've been passed an empty value, we can't do the lookup. 
         # We don't need to explicitly downcase integers or an id.
