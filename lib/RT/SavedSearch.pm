@@ -84,6 +84,21 @@ sub PostLoad {
     $self->{'Type'} = $self->{'Attribute'}->SubValue('SearchType');
 }
 
+=head2 PostLoadValidate
+
+Ensure that the ID corresponds to an actual saved search, since it's all
+attributes under the hood. RT's built-in searches are named C<Search - I<name>>
+rather than C<SavedSearch>, so they count too.
+
+=cut
+
+sub PostLoadValidate {
+    my $self = shift;
+    my $name = $self->{'Attribute'}->__Value('Name') // '';
+    return ( 0, "Invalid object type" ) unless $name eq 'SavedSearch' || $name =~ /^Search - /;
+    return 1;
+}
+
 sub SaveAttribute {
     my $self   = shift;
     my $object = shift;

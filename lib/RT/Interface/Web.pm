@@ -5334,7 +5334,7 @@ Instantiate container object for saving searches.
 
 sub _load_container_object {
     my ( $obj_type, $obj_id ) = @_;
-    return RT::SavedSearch->new( $session{'CurrentUser'} )->_load_privacy_object( $obj_type, $obj_id );
+    return RT::SavedSearch->new( $session{'CurrentUser'} )->_GetObject("$obj_type-$obj_id");
 }
 
 =head2 _parse_saved_search ( $arg );
@@ -5354,7 +5354,28 @@ sub _parse_saved_search {
     my $obj_id    = $2;
     my $search_id = $3;
 
-    return ( _load_container_object( $obj_type, $obj_id ), $search_id );
+    my $container = _load_container_object( $obj_type, $obj_id );
+    return unless $container && $container->Id;
+
+    my $search = RT::Attribute->new( RT->SystemUser );
+    $search->LoadByCols(
+        id         => $search_id,
+        ObjectType => ref($container),
+        ObjectId   => $container->Id,
+    );
+
+    unless ( $search->Id ) {
+        RT->Logger->debug("Attribute $search_id is not stored on $obj_type-$obj_id");
+        return;
+    }
+
+    my $name = $search->Name // '';
+    unless ( $name eq 'SavedSearch' || $name =~ /^Search - / ) {
+        RT->Logger->debug("Attribute $search_id is not a saved search");
+        return;
+    }
+
+    return ( $container, $search_id );
 }
 
 =head2 ScrubHTML Content => CONTENT, Permissive => 1|0, Restrictive => 1|0, SkipStructureCheck => 1|0

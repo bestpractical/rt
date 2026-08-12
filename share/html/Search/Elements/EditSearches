@@ -334,6 +334,11 @@ elsif ( $ARGS{'SavedSearchDelete'} ) {
             return @results;
         }
     }
+    else {
+        push @results, loc( 'Can not load saved search "[_1]"', $SavedSearch->{'Id'} );
+        return @results;
+    }
+
     $SavedSearch->{'Id'}          = 'new';
     $SavedSearch->{'Object'}      = undef;
     $SavedSearch->{'Description'} = undef;
@@ -341,6 +346,12 @@ elsif ( $ARGS{'SavedSearchDelete'} ) {
 }
 elsif ( $ARGS{'SavedSearchCopy'} ) {
     my ($container, $id ) = _parse_saved_search( $ARGS{'SavedSearchId'} );
+
+    unless ( $container ) {
+        push @results, loc( 'Can not load saved search "[_1]"', $ARGS{'SavedSearchId'} );
+        return @results;
+    }
+
     $SavedSearch->{'Object'} = RT::Attribute->new( $session{'CurrentUser'} );
     $SavedSearch->{'Object'}->Load( $id );
     if ( $ARGS{'SavedSearchDescription'} && $ARGS{'SavedSearchDescription'} ne $SavedSearch->{'Object'}->Description ) {
@@ -356,9 +367,12 @@ if ( $SavedSearch->{'Id'} && $SavedSearch->{'Id'} ne 'new'
      && !$SavedSearch->{'Object'} )
 {
     my ($container, $id ) = _parse_saved_search( $ARGS{'SavedSearchId'} );
-    $SavedSearch->{'Object'} = RT::Attribute->new( $session{'CurrentUser'} );
-    $SavedSearch->{'Object'}->Load( $id );
-    $SavedSearch->{'Description'} ||= $SavedSearch->{'Object'}->Description;
+
+    if ( $id ) {
+        $SavedSearch->{'Object'} = RT::Attribute->new( $session{'CurrentUser'} );
+        $SavedSearch->{'Object'}->Load( $id );
+        $SavedSearch->{'Description'} ||= $SavedSearch->{'Object'}->Description;
+    }
 }
 
 return @results;
@@ -429,6 +443,9 @@ if ( $obj && $obj->id ) {
             }
             # Reload to refresh $obj->Object
             $obj->Load( $obj->Id );
+
+            my ( $type, $oid ) = ( $obj->__Value('ObjectType'), $obj->__Value('ObjectId') );
+            $SavedSearch->{'Id'} = join '-', $type, $oid, 'SavedSearch', $obj->Id;
         }
         else {
             # two loc are just for convenience so we don't need to
@@ -455,11 +472,7 @@ elsif ( $id eq 'new' and defined $desc and length $desc ) {
         $SavedSearch->{'Object'} = RT::Attribute->new( $session{'CurrentUser'} );
         $SavedSearch->{'Object'}->Load( $saved_search->Id );
         # Build new SearchId
-        $SavedSearch->{'Id'} =
-                ref( $session{'CurrentUser'}->UserObj ) . '-'
-                    . $session{'CurrentUser'}->UserObj->Id
-                    . '-SavedSearch-'
-                    . $SavedSearch->{'Object'}->Id;
+        $SavedSearch->{'Id'} = join '-', $saved_search->Privacy, 'SavedSearch', $saved_search->Id;
     }
     else {
         push @results, loc("Can't find a saved search to work with").': '.loc($msg);

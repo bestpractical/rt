@@ -102,19 +102,32 @@ sub Load {
     my ($privacy, $id) = @_;
     my $object = $self->_GetObject($privacy);
 
-    if ($object) {
-        $self->{'Attribute'} = RT::Attribute->new($self->CurrentUser);
-        $self->{'Attribute'}->Load( $id );
-        if ($self->{'Attribute'}->Id) {
-            $self->{'Id'} = $self->{'Attribute'}->Id;
-            $self->{'Privacy'} = $privacy;
+    if ( $object && $object->Id ) {
+        my $attribute = RT::Attribute->new( $self->CurrentUser );
+        $attribute->Load($id);
+        if ( $attribute->Id ) {
+            unless ( ( $attribute->__Value('ObjectType') // '' ) eq ref($object)
+                && ( $attribute->__Value('ObjectId') // 0 ) == $object->Id )
+            {
+                RT->Logger->warning("Attribute $id is not stored on object $privacy");
+                return wantarray ? ( 0, $self->loc("Permission Denied") ) : 0;
+            }
+
+            $self->{'Attribute'} = $attribute;
+            $self->{'Id'}        = $attribute->Id;
+            $self->{'Privacy'}   = $self->_build_privacy($object);
+
+            # The checks need the attribute in place, so on failure put it back
+            # out of reach of callers that ignore us
+            my ( $ok, $msg ) = $self->CurrentUserCanSee ? $self->PostLoadValidate : ( 0, 'Permission Denied' );
+
+            if ( !$ok ) {
+                delete $self->{$_} for qw/Attribute Privacy/;
+                $self->{'Id'} = 0;
+                return wantarray ? ( $ok, $self->loc($msg) ) : $ok;
+            }
+
             $self->PostLoad();
-
-            return wantarray ? (0, $self->loc("Permission Denied")) : 0
-                unless $self->CurrentUserCanSee;
-
-            my ($ok, $msg) = $self->PostLoadValidate;
-            return wantarray ? ($ok, $msg) : $ok if !$ok;
 
             return wantarray ? (1, $self->loc("Loaded [_1] [_2]", $self->ObjectName, $self->Name)) : 1;
         } else {
@@ -200,7 +213,9 @@ sub Save {
     my $object  = $self->_GetObject($privacy);
 
     return (0, $self->loc("Failed to load object for [_1]", $privacy))
-        unless $object;
+        unless $object && $object->Id;
+
+    $privacy = $self->_build_privacy($object);
 
     return (0, $self->loc("Permission Denied"))
         unless $self->CurrentUserCanCreate($privacy);
@@ -276,6 +291,8 @@ where status is true upon success.
 
 sub Delete {
     my $self = shift;
+    return ( 0, $self->loc( "No [_1] loaded", $self->ObjectName ) ) unless $self->Id;
+
     return (0, $self->loc("Permission Denied"))
         unless $self->CurrentUserCanDelete;
 
@@ -417,8 +434,17 @@ sub _GetObject {
 
     my $object = $self->_load_privacy_object($obj_type, $obj_id);
 
+    # _load_privacy_object has already said why it declined
+    return undef unless $object;
+
     unless (ref($object) eq $obj_type) {
-        $RT::Logger->error("Could not load object of type $obj_type with ID $obj_id, got object of type " . (ref($object) || 'undef'));
+        RT->Logger->error(
+            "Could not load object of type $obj_type with ID $obj_id, got object of type " . ref($object) );
+        return undef;
+    }
+
+    unless ( $object->Id ) {
+        RT->Logger->debug("Could not load object of type $obj_type with ID $obj_id");
         return undef;
     }
 
