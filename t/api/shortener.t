@@ -22,4 +22,25 @@ for my $field (qw/Created LastUpdated LastAccessed/) {
 ( $ret, $msg ) = $s->SetPermanent(1);
 ok( $ret, $msg );
 
+diag "Codes are loaded case sensitively";
+{
+    $RT::Handle->LogSQLStatements(1);
+    $RT::Handle->ClearSQLStatementLog;
+
+    my $shortener = RT::Shortener->new( RT->SystemUser );
+    $shortener->LoadByCode('dc4195253b');
+    is( $shortener->Id, $s->Id, 'loaded by code' );
+
+    my ($statement) = grep { /\bShorteners\b/i } map { $_->[1] } $RT::Handle->SQLStatementLog;
+    like( $statement, qr/WHERE Code = \?/, 'Code is compared as is, so the index on Code can be used' );
+
+    $RT::Handle->LogSQLStatements(0);
+
+    if ( $RT::Handle->CaseSensitive ) {
+        $shortener = RT::Shortener->new( RT->SystemUser );
+        $shortener->LoadByCode('DC4195253B');
+        ok( !$shortener->Id, 'uppercased code is not loaded' );
+    }
+}
+
 done_testing();
