@@ -60,6 +60,8 @@ my $group = RT::Group->new($session{CurrentUser});
 $group->Load($id);
 if (!$group->Id) {
     return [ "# Group $id does not exist.", [], {}, 1 ];
+} elsif ( !$group->CurrentUserHasRight('SeeGroup') ) {
+    return [ "# You are not allowed to display group $id.", [], {}, 1 ];
 }
 
 if (%$changes) {
