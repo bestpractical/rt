@@ -497,16 +497,29 @@ sub HandleRequest {
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Final', CallbackPage => '/autohandler' );
 
     # Don't show the footer for htmx components
-    if ( $HTML::Mason::Commands::m->request_path !~ /^(?:\/SelfService)?\/Views/ ) {
+    my $skip_footer = $HTML::Mason::Commands::m->request_path =~ /^(?:\/SelfService)?\/Views/;
+    if ( !$skip_footer ) {
         $HTML::Mason::Commands::m->comp( '/Elements/Footer', %$ARGS );
     }
 
-    if ( RT::Interface::Web::RequestENV('HTTP_HX_REQUEST') && $HTML::Mason::Commands::m->notes('HXUserWarnings') ) {
+    my @user_warnings = @{ $HTML::Mason::Commands::m->notes('HXUserWarnings') || [] };
+
+    # Elements/Footer passes user messages to the page for growl to display, so
+    # requests that skip it need to send them with the other warnings instead.
+    if ($skip_footer) {
+        foreach my $note ( sort keys %{ $HTML::Mason::Commands::m->notes } ) {
+            next unless my ($code) = $note =~ /^Message\:(\w+)/;
+            next unless my $user_message = RT->System->UserMessages->{$code};
+            push @user_warnings, HTML::Mason::Commands::loc($user_message);
+        }
+    }
+
+    if ( RT::Interface::Web::RequestENV('HTTP_HX_REQUEST') && @user_warnings ) {
         my $data;
         if ( my $old_trigger = $HTML::Mason::Commands::r->headers_out->{'HX-Trigger'} ) {
             $data = JSON::decode_json($old_trigger);
         }
-        push @{ $data->{userWarnings} ||= [] }, @{ $HTML::Mason::Commands::m->notes('HXUserWarnings') };
+        push @{ $data->{userWarnings} ||= [] }, @user_warnings;
         $HTML::Mason::Commands::r->headers_out->{'HX-Trigger'} = EncodeJSON( $data, ascii => 1 );
     }
 }
