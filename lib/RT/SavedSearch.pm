@@ -193,6 +193,30 @@ sub SetName {
     }
 }
 
+=head2 SetPrincipalId PRINCIPALID
+
+Moves this saved search to another principal.
+
+=cut
+
+sub SetPrincipalId {
+    my $self  = shift;
+    my $value = shift // '';
+
+    if ( $value ne ( $self->__Value('PrincipalId') // '' ) ) {
+        return ( 0, $self->loc('Permission Denied') )
+            unless $self->CurrentUser->Id == RT->System->Id
+            || grep { $_->Id eq $value } $self->ObjectsForCreating;
+
+        my ( $ret, $msg ) = $self->ValidateName( $self->__Value('Name'), PrincipalId => $value );
+        return ( $ret, $msg ) unless $ret;
+    }
+
+    my ( $ret, $msg ) = $self->_Set( Field => 'PrincipalId', Value => $value, @_ );
+    delete $self->{_cached}{PrincipalObj} if $ret && $self->{_cached};
+    return ( $ret, $msg );
+}
+
 
 =head2 Delete
 
