@@ -904,6 +904,13 @@ C<Crypt::URandom>, C<CryptX>, and C<Text::QRCode> (which in turn needs the
 C<libqrencode> system library). Run F<configure> with C<--enable-mfa>, then
 C<make testdeps>, to check for missing modules.
 
+=item Simple templates with CreateTickets directives are limited to their own queue
+
+A Simple template saved in a queue can now only create or update tickets in
+that same queue. Global templates are unaffected, as are users with
+ModifyTemplate granted globally. See the Rights section in
+L<RT::Action::CreateTickets>.
+
 =back
 
 =cut

@@ -289,6 +289,15 @@ sub Create {
             if $tmp->id;
     }
 
+    {
+        my ( $ok, $msg ) = $self->CheckCreateTicketsQueue(
+            Queue   => $args{'Queue'},
+            Type    => $args{'Type'},
+            Content => $args{'Content'},
+        );
+        return ( undef, $msg ) unless $ok;
+    }
+
     my ( $result, $msg ) = $self->SUPER::Create(
         Content     => $args{'Content'},
         Queue       => $args{'Queue'},
@@ -784,7 +793,120 @@ sub SetContent {
         return ( undef, $self->loc('Permission Denied') );
     }
 
+    # __Value, not Queue and Type, because a user with ModifyTemplate but not
+    # ShowTemplate reads undef from both, which would skip the check entirely.
+    # CurrentUserHasQueueRight below reads the queue the same way.
+    my ( $ok, $msg ) = $self->CheckCreateTicketsQueue(
+        Queue   => $self->__Value('Queue'),
+        Type    => $self->__Value('Type'),
+        Content => $NewContent,
+    );
+    return ( undef, $msg ) unless $ok;
+
     return $self->_Set( Field => 'Content', Value => $NewContent );
+}
+
+=head2 CheckCreateTicketsQueue Queue => ID, Type => TYPE, Content => CONTENT
+
+Confines the C<===Create-Ticket:> and C<===Update-Ticket:> directives of a
+queue-specific template to that template's own queue.
+
+L<RT::Action::CreateTickets> runs as the system user, so a directive naming
+another queue, or a ticket by id in another queue, would otherwise act outside
+the queue whose C<ModifyTemplate> right allowed the template to be written.
+
+C<ModifyTemplate> granted globally is already permission to act on every queue, so
+a user who holds it is exempt, as are global templates, which require it to
+write. C<Perl> templates are exempt because if a user has C<ExecuteCode>, they
+can modify any other objects in Perl code.
+
+The check therefore applies only to a user whose C<ModifyTemplate> is limited to
+particular queues and is using Simple type templates.
+
+Returns a status, and a message when the check fails.
+
+=cut
+
+sub CheckCreateTicketsQueue {
+    my $self = shift;
+    my %args = (
+        Queue   => undef,
+        Type    => undef,
+        Content => undef,
+        @_
+    );
+
+    # A global template has a Queue of 0, and is not confined to any queue.
+    # Callers must read Queue in a way that doesn't depend on the current user's
+    # rights, or a user who can't read the template skips the check entirely.
+    return (1) unless $args{'Queue'};
+    return (1) if ( $args{'Type'} // '' ) eq 'Perl';
+    return (1)
+        if $self->CurrentUser->HasRight( Object => RT->System, Right => 'ModifyTemplate' );
+
+    my $content = $args{'Content'};
+    return (1) unless defined $content && length $content;
+
+    # Hand RT::Action::CreateTickets->Parse only what it can parse. Anything
+    # else makes it log an error for every ordinary template that is saved.
+    return (1)
+        unless substr( $content, 0, 3 ) eq '==='
+        or $content =~ /(?:\t|,)/;
+
+    my $queue = RT::Queue->new( RT->SystemUser );
+    $queue->Load( $args{'Queue'} );
+    return ( 0, $self->loc('Invalid queue') ) unless $queue->id;
+
+    RT::StaticUtil::RequireModule('RT::Action::CreateTickets')
+        or return ( 0, $self->loc('Could not load the CreateTickets action') );
+
+    # Parse with the action itself, and read the fields of each directive with
+    # the same method the action reads them with when it runs, so this check and
+    # the directives it is checking cannot drift apart. A non-Perl template is
+    # parsed without interpolation, so every value here is the literal value
+    # that will be used.
+    my $action = RT::Action::CreateTickets->new( CurrentUser => $self->CurrentUser );
+    $action->Parse( Content => $content );
+
+    my $denied = $self->loc(
+        "A template in the [_1] queue can only create or update tickets in that queue. Contact your RT admin for additional rights.",
+        $queue->Name );
+
+    my @targets = ( @{ $action->{'create_tickets'} || [] },
+                    @{ $action->{'update_tickets'} || [] } );
+
+    for my $target (@targets) {
+        my $directives = $action->{'templates'}->{$target};
+        next unless defined $directives;
+
+        my ($fields) = $action->ParseFields($directives);
+        my $value = $fields->{'queue'};
+        next unless defined $value;
+
+        # Naming a field twice yields every value it was given.
+        for my $name ( ref $value eq 'ARRAY' ? @$value : $value ) {
+            # An empty Queue sets nothing, and creating without one fails.
+            next unless defined $name && length $name;
+
+            my $target_queue = RT::Queue->new( RT->SystemUser );
+            $target_queue->Load($name);
+            return ( 0, $denied )
+                unless $target_queue->id and $target_queue->id == $queue->id;
+        }
+    }
+
+    # An update names its target by id, which has to be in this queue too.
+    for my $target ( @{ $action->{'update_tickets'} || [] } ) {
+        my ($id) = $target =~ /^update-(\d+)/;
+        next unless $id;
+
+        my $ticket = RT::Ticket->new( RT->SystemUser );
+        $ticket->LoadById($id);
+        return ( 0, $denied )
+            unless $ticket->id and $ticket->Queue == $queue->id;
+    }
+
+    return (1);
 }
 
 sub _UpdateAttributes {
