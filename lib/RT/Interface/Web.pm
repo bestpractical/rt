@@ -1895,11 +1895,10 @@ our %IS_WHITELISTED_COMPONENT = (
     # While these can be used for denial-of-service against RT
     # (construct a very inefficient query and trick lots of users into
     # running them against RT) it's incredibly useful to be able to link
-    # to a search result (or chart) or bookmark a result page.
+    # to a search result or bookmark a result page.
     '/Search/Results.html' => 1,
     '/Search/Simple.html'  => 1,
     '/m/tickets/search'    => 1,
-    '/Search/Chart.html'   => 1,
     '/User/Search.html'    => 1,
 
     # This page takes Attachment and Transaction argument to figure
@@ -1932,6 +1931,9 @@ our @GLOBAL_WHITELISTED_ARGS = (
 
     # The Shortener code
     'sc',
+
+    # Pagination, which only says which page of results to show
+    'Page',
 
     # Search and chart arguments, which only say what to show and how
     @SHORTENER_ARGS,
