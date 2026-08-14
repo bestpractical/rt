@@ -234,6 +234,10 @@ Updates the parameters of an existing shared setting. Any arguments are passed
 to the L</UpdateAttribute> method. Returns a tuple of status and message, where
 status is true on success.
 
+A C<Privacy> that names a different container moves the setting there, which
+takes the rights to create it there as well as the rights to modify it where it
+is now.
+
 =cut
 
 sub Update {
@@ -246,6 +250,12 @@ sub Update {
 
     return (0, $self->loc("Permission Denied"))
         unless $self->CurrentUserCanModify;
+
+    if ( defined $args{'Privacy'} && $args{'Privacy'} ne ( $self->Privacy // '' ) ) {
+        return ( 0, $self->loc("Permission Denied") )
+            unless $self->_GetObject( $args{'Privacy'} )
+            && $self->CurrentUserCanCreate( $args{'Privacy'} );
+    }
 
     my ($status, $msg) = $self->UpdateAttribute(\%args);
 
