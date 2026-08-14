@@ -904,6 +904,14 @@ C<Crypt::URandom>, C<CryptX>, and C<Text::QRCode> (which in turn needs the
 C<libqrencode> system library). Run F<configure> with C<--enable-mfa>, then
 C<make testdeps>, to check for missing modules.
 
+=item Moving an Article Requires CreateArticle on the Destination Class
+
+Changing an article's class now requires the C<CreateArticle> right on the
+class the article is moved to, in addition to C<ModifyArticle> on the
+article itself. This matches tickets and assets, which have always required
+C<CreateTicket> on the new queue or C<CreateAsset> on the new catalog when
+they are moved.
+
 =back
 
 =cut
