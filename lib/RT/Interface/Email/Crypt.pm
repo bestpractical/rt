@@ -89,6 +89,25 @@ sub VerifyDecrypt {
         %args,
         Entity => $args{'Message'},
     );
+
+    # Verifying and decrypting replaces protected parts with their plaintext,
+    # so parts built from the message body enter the entity object only now.
+    # Whatever headers the sender included are added, including the
+    # ones cleaned previously. Clean the whole entity a second time and then write
+    # back only what the crypt backends themselves reported, so the status
+    # below is derived from the backend results alone.
+
+    foreach my $p ( $args{'Message'}->parts_DFS ) {
+        $p->head->delete($_) for @headers;
+    }
+    foreach my $res ( @res ) {
+        RT::Crypt->AddStatusHeader(
+            Entity   => $res->{'status_on'},
+            Protocol => $res->{'Protocol'},
+            Status   => $res->{'status'},
+        );
+    }
+
     if ( !@res ) {
         $args{'Message'}->head->replace(
             'X-RT-Incoming-Encryption' => 'Not encrypted'
