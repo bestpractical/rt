@@ -147,6 +147,26 @@ sub _Value {
 
 }
 
+# Takes an optional type, and defaults to this template's stored type. Returns
+# true if content of that type is Perl, which allows code.
+#
+# This wrapper can always access the stored Type value, even if CurrentUser
+# doesn't have ShowTemplate, so it will always see what is in the DB.
+#
+# An undetermined type counts as Perl as has been true historically.
+#
+# The rights checks that gate code use this. _ParseContent dispatches on Type
+# directly, because it has already passed a read check and reads the stored
+# value anyway, and an undetermined type renders there without running code.
+
+sub _TypeIsPerl {
+    my $self = shift;
+    my $type = @_ ? shift : $self->__Value('Type');
+
+    return 1 unless defined $type;
+    return $type eq 'Perl';
+}
+
 =head2 Load <identifier>
 
 Load a template, either by number or by name.
@@ -259,7 +279,8 @@ sub Create {
         @_
     );
 
-    if ( $args{Type} eq 'Perl' && !$self->CurrentUser->HasRight(Right => 'ExecuteCode', Object => $RT::System) ) {
+    if ( $self->_TypeIsPerl( $args{Type} )
+        && !$self->CurrentUser->HasRight(Right => 'ExecuteCode', Object => $RT::System) ) {
         return ( undef, $self->loc('Permission Denied') );
     }
 
@@ -772,7 +793,7 @@ sub SetType {
     my $self    = shift;
     my $NewType = shift;
 
-    if ($NewType eq 'Perl' && !$self->CurrentUser->HasRight(Right => 'ExecuteCode', Object => $RT::System)) {
+    if ($self->_TypeIsPerl($NewType) && !$self->CurrentUser->HasRight(Right => 'ExecuteCode', Object => $RT::System)) {
         return ( undef, $self->loc('Permission Denied') );
     }
 
@@ -789,7 +810,7 @@ sub SetContent {
     my $self       = shift;
     my $NewContent = shift;
 
-    if ($self->Type eq 'Perl' && !$self->CurrentUser->HasRight(Right => 'ExecuteCode', Object => $RT::System)) {
+    if ($self->_TypeIsPerl && !$self->CurrentUser->HasRight(Right => 'ExecuteCode', Object => $RT::System)) {
         return ( undef, $self->loc('Permission Denied') );
     }
 
@@ -916,10 +937,10 @@ sub _UpdateAttributes {
         @_,
     );
 
-    my $type = $args{NewValues}{Type} || $self->Type;
+    my $type = $args{NewValues}{Type} || $self->__Value('Type');
 
     # forbid updating content when the (possibly new) value of Type is Perl
-    if ($type eq 'Perl' && exists $args{NewValues}{Content}) {
+    if ($self->_TypeIsPerl($type) && exists $args{NewValues}{Content}) {
         if (!$self->CurrentUser->HasRight(Right => 'ExecuteCode', Object => $RT::System)) {
             return $self->loc('Permission Denied');
         }
@@ -942,7 +963,7 @@ sub CompileCheck {
     my $self = shift;
 
     return (1, $self->loc("Template does not include Perl code"))
-        unless $self->Type eq 'Perl';
+        unless $self->_TypeIsPerl;
 
     my $content = $self->Content;
     $content = '' if !defined($content);
