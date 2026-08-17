@@ -1948,6 +1948,9 @@ our %WHITELISTED_COMPONENT_ARGS = (
 our %IS_BLACKLISTED_COMPONENT = (
     # Takes only id and toggles bookmark state
     '/Helpers/Toggle/TicketBookmark' => 1,
+
+    # Takes only id and revokes the named right
+    '/Helpers/RightsInspector/Revoke' => 1,
 );
 
 sub IsCompCSRFWhitelisted {
