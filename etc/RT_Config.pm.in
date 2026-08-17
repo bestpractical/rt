@@ -1253,9 +1253,18 @@ defaults alone.
 =item C<$DisallowExecuteCode>
 
 If set to 1, the C<ExecuteCode> right will be removed from
-all users, B<including> the superuser.  This is intended for when RT is
-installed into a shared environment where even the superuser should not
-be allowed to run arbitrary Perl code on the server via scrips.
+all users, B<including> the SuperUser. The setting is evaluated on save, so
+existing scrip code and templates will continue to run after this is set.
+Some parts of the web UI, like components for directly adding Perl code for
+scrip conditions and actions, are also hidden.
+
+This is intended for when RT is installed into a shared environment where
+even the SuperUser should not be allowed to run arbitrary Perl code on
+the server via scrips.
+
+This option also prevents saving code in article content when
+L<$EnableArticleTemplates|/$EnableArticleTemplates> is set because the templates
+can contain Perl code.
 
 =cut
 
@@ -4109,8 +4118,8 @@ custom field "Ticket Type" and you want to show the
 
 =item C<$EnableArticleTemplates>
 
-Enable this option to create dynamic articles like scrip templates.
-See also L<articles_introduction|docs/customizing/articles_introduction.pod/Article-Templates>.
+Enable this option to create dynamic articles by inserting Perl code in
+articles, similar to scrip templates. See also L<articles_introduction|docs/customizing/articles_introduction.pod/Article-Templates>.
 
 Disabled by default.
 

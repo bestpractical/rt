@@ -64,6 +64,7 @@ use RT::Links;
 use RT::CustomFields;
 use RT::URI::fsck_com_article;
 use RT::Transactions;
+use Text::Template;
 
 
 sub Table {'Articles'}
@@ -946,6 +947,69 @@ sub ParseTemplate {
 
     return ( undef, $self->loc('Article parsing error') ) if $is_broken;
     return ($retval);
+}
+
+=head2 ContentHasTemplateCode CONTENT
+
+Returns true if C<CONTENT> contains a L<Text::Template> code block, i.e. Perl
+code that L</ParseTemplate> would run.
+
+=cut
+
+sub ContentHasTemplateCode {
+    my $self    = shift;
+    my $content = shift;
+
+    return 0 unless defined $content && length $content;
+
+    # Cheap check to avoid compiling content without delimiters
+    return 0 unless $content =~ /[{}]/;
+
+    # Untaint, as compile() works with the content
+    $content =~ s/^(.*)$/$1/;
+
+    my $template = Text::Template->new( TYPE => 'STRING', SOURCE => $content );
+
+    # Content with unbalanced delimiters is also reported as code. It can't
+    # run on its own, but joined content such as rendering several values of
+    # a custom field can.
+    return 1 unless $template && $template->compile;
+
+    return ( grep { $_->[0] eq 'PROG' } @{ $template->{'SOURCE'} || [] } ) ? 1 : 0;
+}
+
+=head2 _AddCustomFieldValue
+
+Articles get their content from custom field values, and with
+L<$EnableArticleTemplates|RT_Config/$EnableArticleTemplates> that content is
+run as Perl by L</ParseTemplate>. Refuse to store a value containing code when
+L<$DisallowExecuteCode|RT_Config/$DisallowExecuteCode> is set, so that option
+holds for articles the same way it does for scrip templates.
+
+=cut
+
+sub _AddCustomFieldValue {
+    my $self = shift;
+    my %args = (@_);
+
+    if (   RT->Config->Get('EnableArticleTemplates')
+        && RT->Config->Get('DisallowExecuteCode') )
+    {
+        my @content = ( $args{'Value'} );
+
+        # LargeContent is only rendered as the value's content, and so only
+        # parsed as a template, when it is text
+        my $type = $args{'ContentType'} || 'text/plain';
+        push @content, $args{'LargeContent'} if $type =~ m{^text/};
+
+        for my $content (@content) {
+            next unless $self->ContentHasTemplateCode($content);
+            return ( 0,
+                $self->loc("Permission Denied: Cannot save articles containing code with DisallowExecuteCode enabled.") );
+        }
+    }
+
+    return $self->SUPER::_AddCustomFieldValue(%args);
 }
 
 sub _CoreAccessible {
