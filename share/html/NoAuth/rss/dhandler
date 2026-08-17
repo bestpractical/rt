@@ -71,6 +71,23 @@ my $user = RT::User->new(RT->SystemUser);
 $user->Load($name);
 $notfound->("Invalid user: $user") unless $user->id;
 
+my @search_args = qw(Query Order OrderBy);
+
+# The auth string covers Query, Order and OrderBy as one concatenation, so it
+# does not pin down where each one ends. Whatever a caller trims off the Query
+# lands at the start of the next argument, so requiring that one to look like
+# a sort argument keeps the split where it was signed.
+my %sort_format = (
+    Order   => qr{^(?:ASC|DESC)?$}i,
+    OrderBy => qr{^[\w.]*(?:\{[^{}]*\}[\w.]*)*$},
+);
+
+for my $arg (qw(Order OrderBy)) {
+    next unless defined $ARGS{$arg} && length $ARGS{$arg};
+    $notfound->("Invalid $arg: $ARGS{$arg}") if grep { !/$sort_format{$arg}/ } split /\|/, $ARGS{$arg};
+    last;
+}
+
 $notfound->("Invalid authstring")
   unless $user->ValidateAuthString( $auth,
           $ARGS{sc} || ( $ARGS{Query} . $ARGS{Order} . $ARGS{OrderBy} ) );
@@ -79,21 +96,18 @@ my $cu = RT::CurrentUser->new;
 $cu->Load($user);
 local $session{'CurrentUser'} = $cu;
 
+my %search;
 if ( my $sc = $ARGS{sc} ) {
     my $shortener = RT::Shortener->new( $session{CurrentUser} );
     $shortener->LoadByCode($sc);
-    if ( $shortener->Id ) {
-        my $content = $shortener->DecodedContent;
-        for my $key ( keys %$content ) {
-            if ( !exists $ARGS{$key} ) {
-                $ARGS{$key} = $content->{$key};
-            }
-        }
-    }
-    else {
-        RT->Logger->warning("Couldn't load shortener $sc");
-    }
+    $notfound->("Couldn't load shortener $sc") unless $shortener->Id;
+
+    my $content = $shortener->DecodedContent;
+    %search = map { $_ => $content->{$_} // '' } @search_args;
+}
+else {
+    %search = map { $_ => $ARGS{$_} // '' } @search_args;
 }
 
-$m->comp("/Search/Elements/ResultsRSSView", %ARGS);
+$m->comp("/Search/Elements/ResultsRSSView", %search);
 </%init>
