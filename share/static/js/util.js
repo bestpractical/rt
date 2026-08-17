@@ -1654,6 +1654,17 @@ function inlineAddMessageIncludeArticle() {
     );
 };
 
+// Pick the correct article autosubmit based on the page context,
+// either a page load or inline edit.
+function articleAutoSubmit(elt) {
+    if ( elt.closest('#dynamic-modal') ) {
+        inlineAddMessageIncludeArticle();
+    }
+    else {
+        reloadElement(elt.closest('[hx-post]'));
+    }
+};
+
 function disposeCombobox(elt) {
     jQuery(elt).find('.combobox').each(function() {
         const $select = jQuery(this);
