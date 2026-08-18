@@ -133,6 +133,9 @@ $WarnUnsigned => 0
 $displayed_inline => {}
 </%ARGS>
 <%INIT>
+$AttachmentPath //= RT->Config->Get('WebPath')
+    . ( $HTML::Mason::Commands::r->path_info =~ m{^/SelfService/} ? '/SelfService/Attachment' : '/Ticket/Attachment' );
+
 my @DisplayHeaders=qw(_all);
 if ( $Transaction->Type =~ /EmailRecord$/ ) {
     @DisplayHeaders = qw(To Cc Bcc);
@@ -358,10 +361,11 @@ my $render_attachment = sub {
 
         my $url = RT->System->ExternalStorageURLFor($message)
                || $AttachmentPath .'/'. $Transaction->Id .'/'. $message->Id .'/'
-                . $m->interp->apply_escapes( $filename, 'u', 'h' );
+                . $m->interp->apply_escapes( $filename, 'u' );
+        my $eurl = $m->interp->apply_escapes( $url, 'h' );
 
         $m->out(
-            qq{<img alt="$efilename" title="$efilename" src="$url" loading="lazy" />}
+            qq{<img alt="$efilename" title="$efilename" src="$eurl" loading="lazy" />}
         );
     }
     elsif ( $message->ContentLength && $message->ContentLength > 0 ) {

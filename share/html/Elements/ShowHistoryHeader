@@ -96,7 +96,13 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
 
     # Don't need to reverse history when showing a single transaction
     unless ( $SingleTransaction ) {
-        my $href = $ARGS{ReverseHistoryOrderLink} || do {
+        my $link = $ARGS{ReverseHistoryOrderLink};
+        if ( !RT::Interface::Web->LinkPathIsSafe($link) ) {
+            RT->Logger->warning("Ignoring ReverseHistoryOrderLink that is not an internal path: $link");
+            undef $link;
+        }
+
+        my $href = $link || do {
             my $reverse_txns = $ARGS{'ReverseTxns'} // $DECODED_ARGS->{ReverseTxns};
             if ($reverse_txns) {
 
@@ -111,6 +117,7 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
             }
             qq{?ForceShowHistory=1;ReverseTxns=$reverse_txns;id=} . $Object->id;
         };
+        $href = $m->interp->apply_escapes( $href, 'h' );
         push @elements, qq{<a href="$href#$histid">} . loc("Reverse history order") . qq{</a>};
     }
 

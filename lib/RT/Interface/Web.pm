@@ -1522,6 +1522,41 @@ sub ComponentPathIsSafe {
     return($path !~ m{(?:^|/)\.} and $path !~ m{\0});
 }
 
+=head2 LinkPathIsSafe PATH
+
+Takes C<PATH>, a link target handed to a component to build its links from,
+and returns a boolean indicating whether it is an internal path that is safe
+to render into an C<href> or C<src> attribute.
+
+Safe means the path is internal: it carries no URI scheme, is not protocol
+relative, and holds nothing that could end the attribute it lands in. An
+undefined or empty path is safe, since components give those their own
+meaning.
+
+Components that take such a path from their arguments must run it through
+this and discard whatever fails.
+
+=cut
+
+sub LinkPathIsSafe {
+    my $self = shift;
+    my $path = shift;
+
+    return 1 unless defined $path and length $path;
+
+    # A scheme of any kind makes this someone else's URL rather than ours
+    return 0 if $path =~ m{^[a-z][a-z0-9.+-]*:}i;
+
+    # Protocol relative, including the backslash form browsers accept
+    return 0 if $path =~ m{^[/\\]{2}};
+
+    # Anything that could end the attribute we land in, and anything a
+    # browser might strip before it looks for a scheme
+    return 0 if $path =~ m{['"<>\s]|[^[:print:]]};
+
+    return 1;
+}
+
 =head2 PathIsSafe
 
 Takes a C<< Path => path >> and returns a boolean indicating that
