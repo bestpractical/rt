@@ -62,10 +62,12 @@ return unless $Condition && $Condition->{'Name'};
 $m->callback( Condition => \$Condition );
 return unless $Condition;
 
+my $escape = sub { return $m->interp->apply_escapes( defined $_[0] ? $_[0] : '', 'h' ) };
+
 my $handle_block = RT::Util::RecursiveSub(sub {
     my $self_cb = shift;
     my $box = shift;
-    return $box unless ref $box;
+    return $escape->($box) unless ref $box;
 
     my $name = shift;
     if ( UNIVERSAL::isa($box, 'ARRAY') ) {
@@ -89,13 +91,14 @@ my $handle_block = RT::Util::RecursiveSub(sub {
     }
     if ( $box->{'Type'} eq 'select' ) {
         my $res = '';
-        my $id = $box->{Id} // $name;
-        $res .= qq{<select id="$id" name="$name" class="form-control selectpicker">};
+        my ( $id, $select_name ) = ( $escape->( $box->{Id} // $name ), $escape->($name) );
+        $res .= qq{<select id="$id" name="$select_name" class="form-control selectpicker">};
         my @options = @{ $box->{'Options'} };
         while( defined( my $k = shift @options ) ) {
             my $v = shift @options;
             my $class = CSSClass($k);
-            $res .= qq{<option class="$class" value="$k">$v</option>};
+            my ( $value, $label ) = ( $escape->($k), $escape->($v) );
+            $res .= qq{<option class="$class" value="$value">$label</option>};
         }
         $res .= qq{</select>};
         return $res;
