@@ -30,7 +30,12 @@ upgrade-instructions: ~
 
 artifacts: []
 
-patches: []
+patches:
+  - file: escape-highlighter.patch
+    reason: >
+      Escape each part of the item in highlighter() so that option text,
+      which parse() reads back out of the select already decoded by the
+      browser, is not reinserted as markup by the .html() call in render().
 
 notes: |
   The scoped npm package @danielfarrell/bootstrap-combobox stops at 1.1.8;
