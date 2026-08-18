@@ -245,6 +245,13 @@ sub AddTicket {
         @_
     );
 
+    unless ( $args{'Ticket'}->CurrentUserCanSee ) {
+        return $args{'Graph'}->add_node(
+            name  => $args{'Ticket'}->id,
+            style => 'filled,rounded',
+        );
+    }
+
     my %node_style = (
         style => 'filled,rounded',
         %{ $ticket_status_style{ $args{'Ticket'}->Status } || {} },
