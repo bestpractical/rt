@@ -188,15 +188,16 @@ my $print_value = sub {
 
     # This section automatically populates a div with the "IncludeContentForValue" for this custom
     # field if it's been defined
-    if ( $cf->IncludeContentForValue ) {
+    my $include = $value->IncludeContentForValue;
+    if ( defined $include && length $include ) {
        my $vid = $value->id;
        $m->out(   '<div class="object_cf_value_include" id="object_cf_value_'. $vid .'">' );
        $m->print( loc("See also:") );
-       $m->out(   '<a href="'. $m->interp->apply_escapes($value->IncludeContentForValue, 'h') .'">' );
-       $m->out( $m->interp->apply_escapes($value->IncludeContentForValue, 'h') );
+       $m->out(   '<a href="'. $m->interp->apply_escapes($include, 'h') .'">' );
+       $m->out( $m->interp->apply_escapes($include, 'h') );
        $m->out(   qq{</a></div>\n} );
        $m->out(   qq{<script><!--\njQuery('#object_cf_value_$vid').load(} );
-       $m->out(   $m->interp->apply_escapes($value->IncludeContentForValue, 'j') );
+       $m->out(   $m->interp->apply_escapes($include, 'j') );
        $m->out(   qq{);\n--></script>\n} );
     }
 };
