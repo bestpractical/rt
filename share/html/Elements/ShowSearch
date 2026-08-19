@@ -202,8 +202,20 @@ if ($SavedSearch) {
     $loaded_date = RT::Date->new( $session{CurrentUser} );
     $loaded_date->Set( Format => 'Unix', Value => $m->{'rt_base_time'}->[0] );
 
-    if ( $SearchArg->{'SearchRefreshInterval'} && $SearchArg->{'SearchRefreshInterval'} > 0 ) {
-        $refresh_seconds = $SearchArg->{'SearchRefreshInterval'};
+    my $interval = $SearchArg->{'SearchRefreshInterval'};
+    if ( defined $interval && length $interval ) {
+        # $refresh_seconds ends up in an hx-trigger value below, where htmx
+        # evaluates trigger filter expressions, so only an interval will do.
+        if ( RT::SavedSearch->ValidateOption( 'SearchRefreshInterval', $interval ) ) {
+            $refresh_seconds = $interval if $interval > 0;
+        }
+        else {
+            RT->Logger->error(
+                "Ignoring unusable SearchRefreshInterval in saved search $SavedSearch" );
+            # Treat it as absent so it isn't carried into the links built from
+            # these args either. Content gives us our own copy to edit.
+            delete $SearchArg->{'SearchRefreshInterval'};
+        }
     }
 }
 elsif ( $ARGS{sc} ) {
@@ -255,7 +267,7 @@ $mode = $mode->[-1] if ref $mode eq 'ARRAY';
 
 # Handle display mode for both SavedSearch and short code paths
 if ( $mode ) {
-    if ( RT::Interface::Web::IsValidSearchDisplayMode($mode) ) {
+    if ( RT::SavedSearch->ValidateOption( 'SearchDisplayMode', $mode ) ) {
         if ( $mode ne 'CollectionList' ) {
             $query_display_component = '/Search/Elements/' . $mode;
             $ShowCount = 0;

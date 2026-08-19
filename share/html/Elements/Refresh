@@ -78,6 +78,10 @@ $Default => 0
 $SavedSearch => 0
 </%ARGS>
 <%INIT>
+# $Default may come from stored saved search content, which is only compared
+# numerically below. Anything that isn't an interval selects no refresh.
+$Default = 0 unless RT::SavedSearch->ValidateOption( 'SearchRefreshInterval', $Default );
+
 my $no_refresh = loc("Don't refresh this page.");
 
 if ( $SavedSearch ) {

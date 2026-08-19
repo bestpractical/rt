@@ -68,7 +68,28 @@ use 5.26.3;
 
 use base 'RT::Record';
 use Role::Basic 'with';
-with "RT::Record::Role::ObjectContent", "RT::Record::Role::Principal" => { -excludes => [ qw/SavedSearches Dashboards/ ] };
+with
+    "RT::Record::Role::ObjectContent" => { -rename   => { SetContent => '_SetContent' } },
+    "RT::Record::Role::Principal"     => { -excludes => [ qw/SavedSearches Dashboards/ ] };
+
+# Valid display modes for search results. CollectionList is the default table
+# view. These correspond to Mason components in /Search/Elements/.
+our @SEARCH_DISPLAY_MODES = qw/CollectionList Calendar/;
+
+# Valid ways of coloring calendar events. These correspond to the options in
+# /Elements/SelectCalendarColorMode.
+our @CALENDAR_COLOR_MODES = qw/date status/;
+
+our %OPTION_VALIDATORS = (
+    SearchDisplayMode => sub { grep { $_ eq $_[0] } @SEARCH_DISPLAY_MODES },
+    CalendarColorMode => sub { grep { $_ eq $_[0] } @CALENDAR_COLOR_MODES },
+
+    # A refresh interval is a whole number of seconds; at or below zero means no
+    # refresh. Any integer is accepted rather than only the values currently in
+    # @RefreshIntervals, because an admin may add to or remove from that list at
+    # any time and an interval a search already stored should keep working.
+    SearchRefreshInterval => sub { $_[0] =~ /\A-?[0-9]+\z/ },
+);
 
 =head1 NAME
 
@@ -308,6 +329,49 @@ sub DeleteOption {
         return $self->SetContent($values);
     }
     return undef;
+}
+
+=head2 ValidateOption Option_Name, Option_Value
+
+Returns true if Option_Value is acceptable for the named option, false
+otherwise.
+
+An option RT has no validator for is accepted, so extensions that add their
+own options keep working; an extension is responsible for validating what it
+adds.
+
+=cut
+
+sub ValidateOption {
+    my $self  = shift;
+    my $name  = shift;
+    my $value = shift;
+
+    my $validator = $OPTION_VALIDATORS{ $name // '' } or return 1;
+    return 0 unless defined $value && length $value;
+    return $validator->($value) ? 1 : 0;
+}
+
+=head2 SetContent HASHREF
+
+Set the content. Values are checked with L</ValidateOption> first.
+
+Returns a tuple of (status, message).
+
+=cut
+
+sub SetContent {
+    my $self    = shift;
+    my $content = shift;
+
+    if ( ref $content eq 'HASH' ) {
+        for my $name ( sort keys %$content ) {
+            next if $self->ValidateOption( $name, $content->{$name} );
+            return ( 0, $self->loc( 'Invalid value for [_1]', $name ) );
+        }
+    }
+
+    return $self->_SetContent( $content, @_ );
 }
 
 =head2 SetOption ( Option_Name, Option_Value  )
