@@ -103,7 +103,7 @@ if ( $m->request_path =~ /^(?:\/SelfService)?\/Views/ && $m->request_path !~ m{(
 elsif ( my $name = $m->notes('HTMXLoadComponent') ) {
     # Request for a mason component
     $htmx_load //= 1;
-    $htmx_get = RT->Config->Get('WebPath') . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' ) . '/Views/Component/' . $name . '?From=' . RT->Config->Get('WebPath') . $m->request_path;
+    $htmx_get = RT->Config->Get('WebPath') . ( $session{CurrentUser}->Privileged ? '' : '/SelfService' ) . '/Views/Component/' . $name;
 }
 
 $content = $m->content unless $htmx_load && RT::Interface::Web->ModernClient();

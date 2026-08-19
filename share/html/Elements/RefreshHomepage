@@ -46,7 +46,6 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox, title => loc('Refresh')&>
-<form method="get" action="<% $ARGS{From} || ( RT->Config->Get('WebPath') . $m->request_path ) %>">
 <div class="row mt-2">
   <div class="col-auto">
     <p><% loc('Each saved search can now have an individual refresh timer set, so the Refresh portlet no longer needs to refresh the entire page.') %></p>
@@ -54,5 +53,4 @@
         <p><% loc('To refresh a search directly, click the reload icon on the search.') %></p>
   </div>
 </div>
-</form>
 </&>
