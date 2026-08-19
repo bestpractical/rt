@@ -46,18 +46,27 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>" class="form-select selectpicker">
-<option value="date"
-% if ( !$Default || $Default eq 'date' ) {
+% foreach my $mode ( @RT::SavedSearch::CALENDAR_COLOR_MODES ) {
+<option value="<% $mode %>"
+%   if ( $mode eq $selected ) {
  selected="selected"
+%   }
+><% $labels{$mode} // $mode %></option>
 % }
-><&|/l&>Date Type</&></option>
-<option value="status"
-% if ( $Default && $Default eq 'status' ) {
- selected="selected"
-% }
-><&|/l&>Status</&></option>
 </select>
 <%args>
 $Name => undef
 $Default => 'date'
 </%args>
+<%init>
+my %labels = (
+    date   => loc('Date Type'),
+    status => loc('Status'),
+);
+
+# Offer exactly the modes RT accepts for the option, so the two can't drift.
+my $selected
+    = ( $Default && RT::SavedSearch->ValidateOption( 'CalendarColorMode', $Default ) )
+    ? $Default
+    : 'date';
+</%init>

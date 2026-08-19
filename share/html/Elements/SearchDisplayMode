@@ -46,20 +46,25 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>" class="form-select selectpicker">
-<option value="CollectionList"
-%unless ($Default) {
+% foreach my $mode ( @RT::SavedSearch::SEARCH_DISPLAY_MODES ) {
+<option value="<% $mode %>"
+%   if ( $mode eq $selected ) {
  selected="selected"
-%}
-><% loc('Table') %></option>
-<option value="Calendar"
-% if  ( $Default && ($Default eq 'Calendar')) {
-selected="selected"
+%   }
+><% $labels{$mode} // $mode %></option>
 % }
->
-<&|/l&>Calendar</&></option>
 </select>
 <%init>
+my %labels = (
+    CollectionList => loc('Table'),
+    Calendar       => loc('Calendar'),
+);
 
+# Offer exactly the modes RT accepts for the option, so the two can't drift.
+my $selected
+    = ( $Default && RT::SavedSearch->ValidateOption( 'SearchDisplayMode', $Default ) )
+    ? $Default
+    : 'CollectionList';
 </%init>
 <%args>
 $Name => undef
