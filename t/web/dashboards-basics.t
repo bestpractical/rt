@@ -303,12 +303,13 @@ for my $page (qw/Modify Queries Render Subscription/) {
     $m->next_warning_like(qr/Could not load dashboard $bad_id/);
 }
 
-diag "Test IsValidSearchDisplayMode";
+diag "Test SearchDisplayMode validation";
 {
-    ok(RT::Interface::Web::IsValidSearchDisplayMode('CollectionList'), 'CollectionList is valid');
-    ok(RT::Interface::Web::IsValidSearchDisplayMode('Calendar'), 'Calendar is valid');
-    ok(!RT::Interface::Web::IsValidSearchDisplayMode('InvalidMode'), 'InvalidMode is not valid');
-    ok(!RT::Interface::Web::IsValidSearchDisplayMode('../etc/passwd'), 'Path traversal is not valid');
+    my $search = RT::SavedSearch->new( RT->SystemUser );
+    ok($search->ValidateOption('SearchDisplayMode', 'CollectionList'), 'CollectionList is valid');
+    ok($search->ValidateOption('SearchDisplayMode', 'Calendar'), 'Calendar is valid');
+    ok(!$search->ValidateOption('SearchDisplayMode', 'InvalidMode'), 'InvalidMode is not valid');
+    ok(!$search->ValidateOption('SearchDisplayMode', '../etc/passwd'), 'Path traversal is not valid');
 }
 
 done_testing();
