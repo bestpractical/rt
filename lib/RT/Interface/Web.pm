@@ -995,6 +995,11 @@ sub AttemptPasswordAuthentication {
             # Invalid hash, but still wants to go somewhere, take them to /
             Redirect(RT->Config->Get('WebURL'));
         }
+        elsif ($m->request_comp->path eq '/NoAuth/Login.html') {
+            # Logged in from the login page at the full path. We don't want to show
+            # them the login page again. Redirect to the home page.
+            Redirect(RT->Config->Get('WebURL'));
+        }
 
         return (1, HTML::Mason::Commands::loc('Logged in'));
     }
