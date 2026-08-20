@@ -297,8 +297,10 @@
           <label class="custom-control-label d-inline-block" for="send-test-email-type-first">
 %#          Make input a bit wider if possible to not squeeze content too much
 %           my $max = RT->Config->Get('DashboardTestEmailLimit') || 50;
+%           my $first = $ARGS{'SendTestEmailToFirst'};
+%           $first = 1 unless defined($first) && $first =~ /^[0-9]+$/ && $first >= 1 && $first <= $max;
             <&|/l_unsafe,
-                qq!<input size="@{[1+length $max]}" type="number" min="1" max="@{[ $max ]}" class="form-control w-auto d-inline-block" name="SendTestEmailToFirst" value="@{[ $ARGS{'SendTestEmailToFirst'} || 1 ]}" />!,
+                qq!<input size="@{[1+length $max]}" type="number" min="1" max="@{[ $max ]}" class="form-control w-auto d-inline-block" name="SendTestEmailToFirst" value="$first" />!,
                 $max, &>First [_1] recipient(s) from the list above (Max: [_2])</&>
           </label>
         </div>
