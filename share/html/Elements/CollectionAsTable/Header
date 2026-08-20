@@ -144,7 +144,7 @@ foreach my $col ( @Format ) {
         );
         ProcessColumnMapValue( $tmp_columnmap, Arguments => [ $attr ] );
     };
-    $m->out(qq{ style="text-align: $align"}) if $align;
+    $m->out( ' style="text-align: ' . $m->interp->apply_escapes( $align => 'h' ) . '"' ) if $align;
     $m->out('>');
 
     my $loc_title;
