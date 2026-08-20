@@ -2456,6 +2456,12 @@ sub SetImage {
     return $self->_Set( Field => 'Image', Value => $encoded_content );
 }
 
+sub SetImageContentType {
+    my $self         = shift;
+    my $content_type = shift;
+    return $self->_Set( Field => 'ImageContentType', Value => CanonicalizeContentType($content_type) );
+}
+
 sub Image {
     my $self = shift;
     if ( my $image = $self->_Value('Image') ) {
