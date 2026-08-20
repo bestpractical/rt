@@ -434,6 +434,11 @@ sub Create {
 
     $args{'Subject'} =~ s/\n//g;
 
+    $args{'Description'} = HTML::Mason::Commands::ScrubHTML(
+        Content    => $args{'Description'},
+        Permissive => $self->_ContentIsPermissive,
+    ) if defined $args{'Description'} && length $args{'Description'};
+
     $RT::Handle->BeginTransaction();
 
     my %params = (
@@ -1250,6 +1255,38 @@ sub SetSubject {
     my $value = shift;
     $value =~ s/\n//g;
     return $self->_Set( Field => 'Subject', Value => $value );
+}
+
+=head2 SetDescription VALUE
+
+Sets the ticket's Description. This field is HTML content. It is processed by
+the RT HTML scrubber utility using the selected scrubber level.
+
+=cut
+
+sub SetDescription {
+    my $self  = shift;
+    my $value = shift;
+
+    $value = HTML::Mason::Commands::ScrubHTML(
+        Content    => $value,
+        Permissive => $self->_ContentIsPermissive,
+    ) if defined $value && length $value;
+
+    return $self->_Set( Field => 'Description', Value => $value );
+}
+
+=head2 _ContentIsPermissive
+
+Returns a boolean indicating whether ticket content should be scrubbed with
+the permissive scrubber. The default for tickets is false, matching how ticket
+custom field values are handled in L<RT::CustomField/_ContentIsPermissive>.
+
+=cut
+
+sub _ContentIsPermissive {
+    my $self = shift;
+    return 0;
 }
 
 =head2 SubjectTag
