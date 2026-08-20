@@ -48,6 +48,25 @@ diag "normal login";
     $m->max_redirect($max_redirect);
 }
 
+diag "login from the login page itself";
+{
+    # Reached directly rather than by a tangent, so there is no stashed
+    # destination to return to.
+    $m->get( $baseurl . '/NoAuth/Login.html' );
+    $m->title_is( 'Login', 'got the login page' );
+
+    $m->submit_form(
+        form_id => 'login',
+        fields  => {
+            user => $user,
+            pass => $pass,
+        }
+    );
+    is( $m->uri, "$baseurl/", 'redirected to the front page' );
+    $m->title_is( 'RT at a glance', 'logged in' );
+    $m->follow_link_ok( { text => 'Logout' }, 'follow logout' );
+}
+
 diag "tangent login";
 
 {
