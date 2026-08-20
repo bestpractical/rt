@@ -99,6 +99,8 @@ push @results, $m->comp( '/Search/Elements/EditSearches:Init',
     Type         => 'Graph',
 );
 
+$ARGS{'Direction'} = 'TB'
+    unless defined $ARGS{'Direction'} && $RT::Graph::Tickets::RANKDIR_VALUES{ $ARGS{'Direction'} };
 $ARGS{'LeadingLink'} ||= 'Members';
 if ( $ARGS{'ShowLinks'} && !ref $ARGS{'ShowLinks'} ) {
     $ARGS{'ShowLinks'} = [$ARGS{'ShowLinks'}];
