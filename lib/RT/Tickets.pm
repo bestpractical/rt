@@ -414,6 +414,24 @@ sub _EnumLimit {
     );
 }
 
+=head2 IsHiddenTimeField FIELD
+
+Returns true if FIELD is one of the time columns and the current user may not
+see it, per L<RT::Ticket/CurrentUserCanSeeTime>.
+
+=cut
+
+sub IsHiddenTimeField {
+    my $self  = shift;
+    my $field = shift;
+
+    return 0 unless defined $field;
+    return 0 unless RT::Ticket->IsTimeField($field);
+
+    my $ticket = RT::Ticket->new( $self->CurrentUser );
+    return $ticket->CurrentUserCanSeeTime ? 0 : 1;
+}
+
 =head2 _IntLimit
 
 Handle fields where the values are limited to integers.  (For example,
@@ -426,6 +444,8 @@ Meta Data:
 
 sub _IntLimit {
     my ( $sb, $field, $op, $value, @rest ) = @_;
+
+    return if $sb->IsHiddenTimeField($field);
 
     my $is_a_like = $op =~ /MATCHES|ENDSWITH|STARTSWITH|LIKE/i;
 
@@ -1625,6 +1645,7 @@ sub OrderByCols {
             push @res, $row;
             next;
         }
+        next if $self->IsHiddenTimeField( $row->{FIELD} );
         if ( $row->{FIELD} !~ /\./ ) {
             my $meta = $FIELD_METADATA{ $row->{FIELD} };
             unless ( $meta ) {
