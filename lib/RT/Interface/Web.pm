@@ -2155,10 +2155,21 @@ sub ExpandCSRFToken {
 sub StoreRequestToken {
     my $ARGS = shift;
 
-    my $token = Digest::MD5::md5_hex(time . {} . $$ . rand(1024));
+    my $token = RT::Util::random_hex(32);
+    unless ( defined $token ) {
+        RT->Logger->error("Couldn't generate a request token");
+        return;
+    }
+
     my $user = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
+    my $auth = $user->GenerateAuthString( $token );
+    unless ( defined $auth ) {
+        RT->Logger->error("Couldn't sign a request token for user " . $user->id);
+        return;
+    }
+
     my $data = {
-        auth => $user->GenerateAuthString( $token ),
+        auth => $auth,
         path => $HTML::Mason::Commands::r->path_info,
         args => $ARGS,
     };
@@ -2196,6 +2207,16 @@ sub MaybeShowInterstitialCSRFPage {
     $RT::Logger->notice("Possible CSRF: ".RT::CurrentUser->new->loc($msg, @loc));
 
     my $token = StoreRequestToken($ARGS);
+    unless ( defined $token ) {
+        # The interstitial is what lets the user confirm this request, and it
+        # needs a token. Without one, refuse rather than wave the request
+        # through the check the interstitial exists to perform.
+        HTML::Mason::Commands::Abort(
+            HTML::Mason::Commands::loc("Your request could not be verified. Please try again, and contact your administrator if the problem persists."),
+            Code => HTTP::Status::HTTP_INTERNAL_SERVER_ERROR,
+        );
+    }
+
     $HTML::Mason::Commands::m->comp(
         '/Elements/CSRF',
         OriginalURL => RT->Config->Get('WebBaseURL') . RT->Config->Get('WebPath') . $HTML::Mason::Commands::r->path_info,

@@ -255,10 +255,13 @@ my $refresh = $session{$interval_name} || RT->Config->Get('SearchResultsRefreshI
 
 # Check $m->request_args, not $DECODED_ARGS, to avoid creating a new CSRF token on each refresh
 if (RT->Config->Get('RestrictReferrer') and $refresh and not $m->request_args->{CSRF_Token}) {
+    # Auto-refresh needs a token to get back past the referrer check. If one
+    # cannot be minted the results still render; only the refresh is dropped.
     my $token = RT::Interface::Web::StoreRequestToken( $session{$hash_name} );
     $m->notes->{RefreshURL} = RT->Config->Get('WebURL')
         . "Search/Results.html?CSRF_Token="
-            . $token;
+            . $token
+        if defined $token;
 }
 
 my %link_rel;
