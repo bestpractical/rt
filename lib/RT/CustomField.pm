@@ -1427,6 +1427,11 @@ Autrijus: care to doc how LookupTypes work?
 sub SetLookupType {
     my $self = shift;
     my $lookup = shift;
+
+    unless ( $self->CurrentUserHasRight('AdminCustomField') ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
+
     if ( $lookup ne $self->LookupType ) {
         # Okay... We need to invalidate our existing relationships
         RT::ObjectCustomField->new($self->CurrentUser)->DeleteAll( CustomField => $self );
