@@ -232,13 +232,13 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 
     <&| /Widgets/TitleBox, title => loc("Calculate"), class => "chart-calculate" &>
       <&| /Elements/LabeledValue, Label => loc('Calculate values of'), &>
-        <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[0], Class => $Class, &>
+        <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[0], Class => $Class, Query => $query{Query}, &>
       </&>
       <&| /Elements/LabeledValue, Label => loc('and then'), &>
-        <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[1] // q{}, ShowEmpty => 1, Class => $Class, &>
+        <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[1] // q{}, ShowEmpty => 1, Class => $Class, Query => $query{Query}, &>
       </&>
       <&| /Elements/LabeledValue, Label => loc('and then'), &>
-        <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[2] // q{}, ShowEmpty => 1, Class => $Class, &>
+        <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[2] // q{}, ShowEmpty => 1, Class => $Class, Query => $query{Query}, &>
       </&>
     </&>
 
