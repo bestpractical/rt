@@ -226,13 +226,13 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 
     <&| /Widgets/TitleBox, title => loc("Calculate"), class => "chart-calculate" &>
       <fieldset><legend><% loc('Calculate values of') %></legend>
-        <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[0], Class => $Class, &>
+        <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[0], Class => $Class, Query => $query{Query}, &>
       </fieldset>
       <fieldset><legend><% loc('and then') %></legend>
-        <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[1] // q{}, ShowEmpty => 1, Class => $Class, &>
+        <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[1] // q{}, ShowEmpty => 1, Class => $Class, Query => $query{Query}, &>
       </fieldset>
       <fieldset><legend><% loc('and then') %></legend>
-        <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[2] // q{}, ShowEmpty => 1, Class => $Class, &>
+        <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[2] // q{}, ShowEmpty => 1, Class => $Class, Query => $query{Query}, &>
       </fieldset>
     </&>
 
