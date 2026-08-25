@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>" class="form-control selectpicker <%$Name%>">
 % if ($DefaultValue) {
-<option value=""<% !$Default ? qq[ selected="selected"] : '' |n %>><%$DefaultLabel |n%></option>
+<option value=""<% !$Default ? qq[ selected="selected"] : '' |n %>><% $DefaultLabel %></option>
 % }
 % for my $sla ( sort keys %{RT->Config->Get('ServiceAgreements')->{'Levels'}} )  {
 <option <% $sla eq ($Default//'') ? qq[ selected="selected"] : '' |n %> value="<% $sla %>" ><% $sla %></option>
