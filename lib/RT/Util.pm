@@ -56,6 +56,7 @@ our @EXPORT = qw/safe_run_child mime_recommended_filename EntityLooksLikeEmailMe
 
 use Scalar::Util qw/weaken/;
 use Encode qw/encode/;
+use Crypt::URandom ();
 
 sub safe_run_child (&) {
     my $our_pid = $$;
@@ -214,6 +215,66 @@ sub constant_time_eq {
         }
     }
     return 0 + not $result;
+}
+
+=head2 C<random_bytes($count)>
+
+Returns C<$count> random octets.
+
+Returns undef, having logged the reason, if the platform cannot supply
+random data or supplies less than was asked for.
+
+=cut
+
+sub random_bytes {
+    my $count = shift;
+
+    # Count must be a positive integer.
+    unless ( defined $count && $count =~ /\A[0-9]+\z/ && $count > 0 ) {
+        RT->Logger->error('random_bytes requires a positive integer count');
+        return;
+    }
+
+    # Crypt::URandom reports failure by croaking; convert that to RT's
+    # convention here so callers only ever have to check for undef.
+    my $bytes = eval { Crypt::URandom::urandom($count) };
+    unless ( defined $bytes ) {
+        RT->Logger->error("Could not read $count octets from the system CSPRNG: $@");
+        return;
+    }
+
+    unless ( length($bytes) == $count ) {
+        RT->Logger->error(
+            "Asked the system CSPRNG for $count octets and got " . length($bytes) );
+        return;
+    }
+
+    return $bytes;
+}
+
+=head2 C<random_hex($count)>
+
+Returns a string of C<$count> lowercase hexadecimal digits drawn from
+L</random_bytes>, so C<$count> characters carry C<$count * 4> bits of
+entropy. Convenient where a random value has to survive as text, in a
+URL or an ascii database column.
+
+Returns undef under the same conditions as L</random_bytes>.
+
+=cut
+
+sub random_hex {
+    my $count = shift;
+
+    unless ( defined $count && $count =~ /\A[0-9]+\z/ && $count > 0 ) {
+        RT->Logger->error('random_hex requires a positive integer count');
+        return;
+    }
+
+    my $bytes = random_bytes( int( ( $count + 1 ) / 2 ) );
+    return unless defined $bytes;
+
+    return substr( unpack( 'H*', $bytes ), 0, $count );
 }
 
 =head2 EntityLooksLikeEmailMessage( MIME::Entity )

@@ -783,20 +783,34 @@ sub BuildMainNav {
                                 OrderBy => $rss_data{OrderBy}
                               )
                         );
-                    my $RSSPath = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
-                        $current_user->UserObj->Name,
-                        $current_user->UserObj->GenerateAuthString( $short_query{sc}
+                    # The feed URL carries its own signature, so with no auth
+                    # string there is no link to offer. Leave the item out
+                    # rather than produce one that cannot authenticate.
+                    my $rss_auth = $current_user->UserObj->GenerateAuthString( $short_query{sc}
                             || ( $rss_data{Query} . $rss_data{Order} . $rss_data{OrderBy} ) );
+                    if ( defined $rss_auth ) {
+                        my $RSSPath = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
+                            $current_user->UserObj->Name, $rss_auth;
 
-                    $more->child( rss => title => loc('RSS'), path => "/NoAuth/rss/$RSSPath/$RSSQueryString" );
+                        $more->child( rss => title => loc('RSS'), path => "/NoAuth/rss/$RSSPath/$RSSQueryString" );
+                    }
+                    else {
+                        RT->Logger->error("Couldn't sign an RSS feed URL; omitting the RSS link");
+                    }
                 }
 
                 if ( RT->Config->Get('EnableICal') ) {
-                    my $ical_path = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
-                        $current_user->UserObj->Name,
-                        $current_user->UserObj->GenerateAuthString( $rss_data{Query} ),
-                        $short_query{sc} ? "sc-$short_query{sc}" : $rss_data{Query};
-                    $more->child( ical => title => loc('iCal'), path => '/NoAuth/iCal/' . $ical_path );
+                    my $ical_auth = $current_user->UserObj->GenerateAuthString( $rss_data{Query} );
+                    if ( defined $ical_auth ) {
+                        my $ical_path = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
+                            $current_user->UserObj->Name,
+                            $ical_auth,
+                            $short_query{sc} ? "sc-$short_query{sc}" : $rss_data{Query};
+                        $more->child( ical => title => loc('iCal'), path => '/NoAuth/iCal/' . $ical_path );
+                    }
+                    else {
+                        RT->Logger->error("Couldn't sign an iCal feed URL; omitting the iCal link");
+                    }
                 }
             }
 
