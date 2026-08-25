@@ -47,6 +47,27 @@ To keep the index up-to-date, you will need to run:
 tickets at a time; you can adjust this upwards by passing C<--limit
 500>.  Larger batch sizes will take longer and consume more memory.
 
+C<--limit> is a batch size, not a total for the run.  The scheduled run
+processes a single batch and then exits.  Tune the batch size and how
+often the run is scheduled so that together they keep pace with the
+content your RT receives.  If they do not, the index will fall
+progressively further behind, and recent tickets will be missing from
+search results.
+
+To catch up an index that has fallen behind, run the indexer with
+C<--all>, which keeps processing batches until nothing is left to index:
+
+    /opt/rt6/sbin/rt-fulltext-indexer --all
+
+On a large database with a substantial backlog, this may take a long
+time.  Raising C<--limit> will generally let it finish sooner, as larger
+batches mean fewer queries against the database and larger bulk inserts
+into the index.  The trade-off is more memory used, so raise it only as
+far as the memory available to the process comfortably allows.
+
+Once the backlog is cleared, adjust the batch size and schedule of the
+regular run so that the index does not fall behind again.
+
 If there is already an instance of C<rt-fulltext-indexer> running, new
 ones will exit with the message "rt-fulltext-indexer is already running".
 You can suppress this message and other output to C<STDERR> using the
@@ -91,6 +112,27 @@ To keep the index up-to-date, you will need to run:
 ...at regular intervals.  By default, this will only tokenize up to 200
 tickets at a time; you can adjust this upwards by passing C<--limit
 500>.  Larger batch sizes will take longer and consume more memory.
+
+C<--limit> is a batch size, not a total for the run.  The scheduled run
+processes a single batch and then exits.  Tune the batch size and how
+often the run is scheduled so that together they keep pace with the
+content your RT receives.  If they do not, the index will fall
+progressively further behind, and recent tickets will be missing from
+search results.
+
+To catch up an index that has fallen behind, run the indexer with
+C<--all>, which keeps processing batches until nothing is left to index:
+
+    /opt/rt6/sbin/rt-fulltext-indexer --all
+
+On a large database with a substantial backlog, this may take a long
+time.  Raising C<--limit> will generally let it finish sooner, as larger
+batches mean fewer queries against the database and larger bulk inserts
+into the index.  The trade-off is more memory used, so raise it only as
+far as the memory available to the process comfortably allows.
+
+Once the backlog is cleared, adjust the batch size and schedule of the
+regular run so that the index does not fall behind again.
 
 If there is already an instance of C<rt-fulltext-indexer> running, new
 ones will exit with the message "rt-fulltext-indexer is already running".
