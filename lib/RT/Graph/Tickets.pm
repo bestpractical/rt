@@ -77,6 +77,11 @@ our %link_style = (
     RefersTo  => { style => 'dotted' },
 );
 
+# The values dot accepts for the rankdir graph attribute. GraphViz2 quotes
+# attribute values but does not escape quotes embedded in them, so anything
+# reaching rankdir has to be constrained to this set rather than escaped.
+our %RANKDIR_VALUES = map { $_ => 1 } qw(TB LR BT RL);
+
 # We don't use qw() because perl complains about "possible attempt to put comments in qw() list"
 our @fill_colors = split ' ',<<EOT;
     #0000FF #8A2BE2 #A52A2A #DEB887 #5F9EA0 #7FFF00 #D2691E #FF7F50
@@ -312,11 +317,15 @@ sub TicketLinks {
     $args{ShowLinks}   = [ grep { $valid_links{$_} } @{$args{ShowLinks}} ];
     $args{LeadingLink} = 'Members' unless $valid_links{ $args{LeadingLink} };
 
+    # Validate the graph direction. Normalized here so the recursive calls
+    # and AddTicket below all see the checked value.
+    $args{Direction} = 'TB' unless defined $args{Direction} && $RANKDIR_VALUES{ $args{Direction} };
+
     unless ( $args{'Graph'} ) {
         $args{'Graph'} = GraphViz2->new(
             name    => 'ticket_links_'. $args{'Ticket'}->id,
             bgcolor => "transparent",
-            graph => { rankdir => ($args{'Direction'} || "TB") },
+            graph => { rankdir => $args{'Direction'} },
             node => { shape => 'box', style => 'filled,rounded', fillcolor => 'white' },
             global => {directed => 1},
         );
