@@ -88,6 +88,20 @@ sub dispatch_rules {
     )
 }
 
+=head2 resource_exists
+
+A value is only a resource under the custom field that owns it.
+
+=cut
+
+sub resource_exists {
+    my $self = shift;
+
+    my $record = $self->record;
+    return 0 unless $record->id && $self->customfield->id;
+    return $record->CustomField == $self->customfield->id;
+}
+
 sub forbidden {
     my $self = shift;
     my $method = $self->request->method;
