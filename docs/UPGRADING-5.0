@@ -904,6 +904,24 @@ C<Crypt::URandom>, C<CryptX>, and C<Text::QRCode> (which in turn needs the
 C<libqrencode> system library). Run F<configure> with C<--enable-mfa>, then
 C<make testdeps>, to check for missing modules.
 
+=item CSRF protection for cookie-authenticated REST 2.0 requests
+
+REST 2.0 accepts the ordinary web UI session cookie, and requests that
+rely on it are now checked for cross-site request forgery like the rest of
+the web UI. On a request that changes state, that is anything other than
+GET, HEAD, or OPTIONS, RT checks the C<Origin> header, falling back to
+C<Referer>, and rejects the request with a 403 unless it matches RT's own
+hostname or an entry in C<@ReferrerWhitelist>. As with the web UI, this is
+governed by C<$RestrictReferrer>.
+
+Requests that supply credentials explicitly in an C<Authorization> header,
+an authentication token or basic auth, are not affected.
+
+Scripts that drive REST 2.0 with a saved session cookie and send neither
+C<Origin> nor C<Referer> are now rejected. Change them to use an
+authentication token, which is the supported way for a script to
+authenticate. See F<docs/authentication.pod> for how to create one.
+
 =back
 
 =cut
