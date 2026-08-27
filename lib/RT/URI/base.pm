@@ -127,6 +127,17 @@ sub IsLocal {
     return undef;
 }
 
+=head2 IsInternalOnly
+
+Returns false, meaning this scheme may be used in caller-supplied links.
+
+Resolvers for schemes RT maintains for its own bookkeeping should override this
+and return true. See L<RT::Record/_AddLink>.
+
+=cut
+
+sub IsInternalOnly {0}
+
 =head2 AsString
 
 Return a "pretty" string representing the URI object.
