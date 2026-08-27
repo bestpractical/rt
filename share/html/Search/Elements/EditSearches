@@ -482,16 +482,21 @@ return @results;
 % my $links = $Object->DependedOnBy;
 % $links->RowsPerPage(50);
 % my $total = $links->CountAll;
+% my $dashboard = RT::Dashboard->new( $session{CurrentUser} );
   <p>
     <&|/l, $total &>This search is used in the following [quant,_1,dashboard,dashboards]</&>:
   </p>
   <ul class="saved-search-depended-on-by-list list-group-compact">
 % while ( my $link = $links->Next ) {
+%   my $resolver = $link->BaseURI->Resolver;
+%   my $base     = $resolver->Object;
+%   next unless $base && $base->isa('RT::Attribute') && $base->Name eq 'Dashboard';
+%   my $privacy = $dashboard->_build_privacy( $base->ObjectType, $base->ObjectId );
     <li class="list-group-item">
-%   if ( $link->BaseObj->Name eq 'Dashboard' ) {
-      <a href="<% $link->BaseURI->Resolver->HREF %>" target="_blank"><% $link->BaseURI->AsString %></a>
+%   if ( $dashboard->CurrentUserCanSee($privacy) ) {
+      <a href="<% $resolver->HREF %>" target="_blank"><% $resolver->AsString %></a>
 %   } else {
-      <% $link->BaseObj->ObjectType %>: #<% $link->BaseObj->ObjectId %>
+      <% loc( 'Dashboard #[_1]', $base->id ) %>
 %   }
     </li>
 % }
