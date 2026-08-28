@@ -69,7 +69,16 @@ sub dispatch_rules {
     ),
     Path::Dispatcher::Rule::Regex->new(
         regex => qr{^/group/(\d+)/?$},
-        block => sub { { record_class => 'RT::Group', record_id => shift->pos(1) } },
+        block => sub {
+            my ($match, $req) = @_;
+            my $group = RT::Group->new( $req->env->{"rt.current_user"} );
+            $group->LoadUserDefinedGroup( $match->pos(1) );
+            return {
+                record_class => 'RT::Group',
+                record_id    => $match->pos(1),
+                record       => $group,
+            };
+        },
     )
 }
 

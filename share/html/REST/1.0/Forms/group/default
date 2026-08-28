@@ -67,7 +67,7 @@ if ( $fields && %$fields ) {
 my %fields = map { lc $_ => $_ } @fields;
 
 if ($id ne 'new') {
-    $group->Load($id);
+    $group->LoadUserDefinedGroup($id);
     if (!$group->Id) {
         return [ "# Group $id does not exist.", [], {}, 1 ];
     }
