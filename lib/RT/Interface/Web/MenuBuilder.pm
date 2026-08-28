@@ -150,7 +150,7 @@ sub BuildMainNav {
         my $dash = RT::Dashboard->new( $current_user );
         my ( $status, $msg ) = $dash->LoadById($id);
         if ( $status ) {
-            if ( $dash->Disabled ) {
+            if ( $dash->__Value('Disabled') ) {
                 $RT::Logger->debug( "dashboard $id is disabled, skipping" );
             }
             else {
@@ -169,10 +169,9 @@ sub BuildMainNav {
 
     if (@dashboards) {
         for my $dash (@dashboards) {
-            $reports->child( 'dashboard-' . $dash->id,
-                title => $dash->Name,
-                path  => '/Dashboards/' . $dash->id . '/' . $dash->Name
-            );
+            my $path = '/Dashboards/' . $dash->id;
+            $path .= '/' . $dash->Name if $dash->CurrentUserCanSee;
+            $reports->child( 'dashboard-' . $dash->id, title => $dash->Label, path => $path );
         }
     }
 
@@ -395,7 +394,7 @@ sub BuildPageNav {
         if ( my $id = ( $1 || $HTML::Mason::Commands::DECODED_ARGS->{'id'} ) ) {
             my $obj = RT::Dashboard->new( $current_user );
             $obj->LoadById($id);
-            if ( $obj and $obj->id ) {
+            if ( $obj->id && $obj->CurrentUserCanSee ) {
                 $page->child( basics       => title => loc('Basics'),       path => "/Dashboards/Modify.html?id=" . $obj->id);
                 $page->child( content      => title => loc('Content'),      path => "/Dashboards/Queries.html?id=" . $obj->id);
                 $page->child( subscription => title => loc('Subscription'), path => "/Dashboards/Subscription.html?id=" . $obj->id)
