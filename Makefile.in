@@ -244,7 +244,7 @@ RT_TEST_PARALLEL_NUM ?= 5
 all: default
 
 default:
-	@echo "Please read RT's README before beginning your installation."
+	@echo "Please read RT's README.md before beginning your installation."
 
 
 
@@ -457,7 +457,7 @@ doc-install:
 @COMMENT_INPLACE_LAYOUT@	-( cd docs && find . -type f -print ) | while read file ; do \
 @COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "docs/$$file" "$(DESTDIR)$(RT_DOC_PATH)/$$file" ; \
 @COMMENT_INPLACE_LAYOUT@	done
-@COMMENT_INPLACE_LAYOUT@	-$(INSTALL) -m 0644 ./README $(DESTDIR)$(RT_DOC_PATH)/
+@COMMENT_INPLACE_LAYOUT@	-$(INSTALL) -m 0644 ./README.md $(DESTDIR)$(RT_DOC_PATH)/
 
 
 etc-install:
