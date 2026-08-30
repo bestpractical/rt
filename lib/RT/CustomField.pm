@@ -1687,6 +1687,32 @@ sub RemoveFromObject {
 }
 
 
+=head2 CurrentUserCanSeeObject OBJECT
+
+Returns true if the current user can see OBJECT, the record a value of this
+custom field would be attached to, otherwise false.
+
+=cut
+
+sub CurrentUserCanSeeObject {
+    my $self   = shift;
+    my $object = shift;
+
+    return 0 unless $object && $object->id;
+    return 1 if $self->CurrentUser->Id == RT->SystemUser->Id;
+    return 1 if $object->isa('RT::User');
+    return 1 unless $object->can('CurrentUserCanSee');
+
+    # Transaction custom fields are updated right after the transaction is
+    # created, when its author can not necessarily see it yet.
+    if ( $object->isa('RT::Transaction') ) {
+        return 1 if ( $object->__Value('Creator') // 0 ) == $self->CurrentUser->Id;
+    }
+
+    return $object->CurrentUserCanSee ? 1 : 0;
+}
+
+
 =head2 AddValueForObject HASH
 
 Adds a custom field value for a record object of some kind. 
@@ -1720,6 +1746,10 @@ sub AddValueForObject {
         $self->CurrentUserHasRight('ModifyCustomField') ||
         ($args{ForCreation} && $self->CurrentUserHasRight('SetInitialCustomField'))
     ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
+
+    unless ( $args{'ForCreation'} || $self->CurrentUserCanSeeObject($obj) ) {
         return ( 0, $self->loc('Permission Denied') );
     }
 
@@ -1994,8 +2024,9 @@ sub DeleteValueForObject {
                  Id => undef,
              @_ );
 
+    my $obj = $args{'Object'} or return ( 0, $self->loc('Invalid object') );
 
-    unless ($self->CurrentUserHasRight('ModifyCustomField')) {
+    unless ($self->CurrentUserHasRight('ModifyCustomField') && $self->CurrentUserCanSeeObject($obj)) {
         return (0, $self->loc('Permission Denied'));
     }
 
@@ -2003,11 +2034,20 @@ sub DeleteValueForObject {
 
     if (my $id = $args{'Id'}) {
         $oldval->Load($id);
+
+        if ( $oldval->id
+            && !(  $oldval->__Value('CustomField') == $self->Id
+                && $oldval->__Value('ObjectType') eq ref($obj)
+                && $oldval->__Value('ObjectId') == $obj->Id ) )
+        {
+            return ( 0,
+                $self->loc( "Custom field value [_1] could not be found for custom field [_2]", $id, $self->Name ) );
+        }
     }
     unless ($oldval->id) { 
         $oldval->LoadByObjectContentAndCustomField(
-            Object => $args{'Object'}, 
-            Content =>  $args{'Content'}, 
+            Object => $obj,
+            Content =>  $args{'Content'},
             CustomField => $self->Id,
         );
     }
