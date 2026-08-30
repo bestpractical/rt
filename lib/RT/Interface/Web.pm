@@ -3916,7 +3916,9 @@ sub ProcessObjectCustomFieldUpdates {
         foreach my $id ( keys %{ $custom_fields_to_mod{$class} } ) {
             my $Object = $args{'Object'};
             $Object = $class->new( $session{'CurrentUser'} )
-                unless $Object && ref $Object eq $class;
+                unless $Object
+                    && ref $Object eq $class
+                    && ( !$id || ( $Object->id || 0 ) == $id );
 
             # skip if we have no object to update
             next unless $id || $Object->id;
