@@ -1820,10 +1820,11 @@ sub Atomic {
         }
 
         if (%granted) {
+            my $atomic_id = $self->id;
             *CurrentUserHasRight = sub {
                 my $self  = shift;
                 my $right = shift;
-                return 1 if $granted{$right};
+                return 1 if $granted{$right} && ( $self->id // 0 ) == ( $atomic_id // 0 );
                 return $orig_current_user_has_right->( $self, $right, @_ );
             };
         }
