@@ -40,7 +40,7 @@ my $text_ocfv = $ticket->CustomFieldValues('Text CF')->First;
     is($res->code, 403);
 }
 
-$user->PrincipalObj->GrantRight( Right => 'SeeCustomField' );
+$user->PrincipalObj->GrantRight( Right => $_ ) for qw(SeeCustomField ShowTicket);
 
 # Try undef ObjectCustomFieldValue
 {
