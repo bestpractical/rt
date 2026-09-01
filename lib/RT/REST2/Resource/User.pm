@@ -81,6 +81,21 @@ sub dispatch_rules {
             return { record => $user };
         },
     ),
+      Path::Dispatcher::Rule::Regex->new(
+        regex => qr{^/user/([^/]+)/set-password/?$},
+        block => sub {
+            my ($match, $req) = @_;
+            my $user = RT::User->new($req->env->{"rt.current_user"});
+            $user->Load($match->pos(1));
+            my $user_data = JSON::from_json($req->content);
+            $user->SafeSetPassword(
+                Current      => $user_data->{"Current"},
+                New          => $user_data->{"New"},
+                Confirmation => $user_data->{"Confirmation"},
+            );
+            return { record => $user };
+        },
+    ),
 }
 
 around 'serialize' => sub {
