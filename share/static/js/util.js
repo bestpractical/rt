@@ -1796,3 +1796,15 @@ jQuery.fn.combobox.Constructor.prototype.clearElement = function () {
 
 htmx.config.includeIndicatorStyles = false;
 htmx.config.scrollBehavior = 'smooth';
+
+// Disable automatic scroll-to-content on boosted navigation
+// which causes unwanted viewport shifts when combined with menu expansion
+htmx.config.scrollIntoViewOnBoost = false;
+
+// Scroll to top only on full-page boosted navigations (body target),
+// not widget/element reloads which should preserve scroll position
+document.body.addEventListener('htmx:afterSwap', function(evt) {
+    if (evt.target === document.body) {
+        window.scrollTo(0, 0);
+    }
+});
