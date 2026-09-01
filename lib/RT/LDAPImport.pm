@@ -1150,6 +1150,16 @@ sub import_groups {
     return unless $self->_check_ldap_mapping( mapping => $mapping );
 
     my $done = 0; my $count = scalar @results;
+    foreach my $entry (@results) {
+        my $groupdn = $entry->{'asn'}{'objectName'};
+        my $groupname;
+        foreach my $attr (@{$entry->{'asn'}{'attributes'}}) {
+            if ($attr->{'type'} eq 'cn') {
+                $self->{'groups'}{lc $groupdn} = $attr->{'vals'}[0] || '';
+                last();
+            }
+        }
+    }
     while (my $entry = shift @results) {
         my $group = $self->_parse_ldap_mapping(
             %args,
@@ -1456,6 +1466,7 @@ sub add_group_members {
     my %rt_group_members;
     if ($args{group} and not $args{new}) {
         my $user_members = $group->UserMembersObj( Recursively => 0);
+        my $group_members = $group->GroupMembersObj( Recursively => 0);
 
         # find members who are Disabled too so we don't try to add them below
         $user_members->FindAllRows;
@@ -1463,15 +1474,42 @@ sub add_group_members {
         while ( my $member = $user_members->Next ) {
             $rt_group_members{$member->Name} = $member;
         }
+
+        $group_members->FindAllRows;
+
+        while ( my $member = $group_members->Next ) {
+            $rt_group_members{$member->Name} = $member;
+        }
     } elsif (not $args{import}) {
         $RT::Logger->debug("No group in RT, would create with members:");
     }
 
     my $users = $self->_users;
+    my $groups = $self->{'groups'};
     foreach my $member (@$members) {
-        my $username;
-        if (exists $users->{lc $member}) {
-            next unless $username = $users->{lc $member};
+        my $membername;
+        if (exists $groups->{lc $member}) {
+            next unless $membername = $groups->{lc $member};
+            $RT::Logger->debug($group ? "\t$membername\tin LDAP, adding to RT" : "\t$membername");
+            if ( delete $rt_group_members{$membername} ) {
+                $RT::Logger->debug("\t$membername\tin RT and LDAP");
+                next;
+            }
+            next unless $args{import};
+
+            my $rt_group = RT::Group->new($RT::Group);
+            my ($res,$msg) = $rt_group->LoadUserDefinedGroup( $membername );
+            unless ($res) {
+                $RT::Logger->warn("Unable to load $membername: $msg");
+                next;
+            }
+            ($res,$msg) = $group->AddMember($rt_group->PrincipalObj->Id);
+            unless ($res) {
+                $RT::Logger->warn("Failed to add $membername to $groupname: $msg");
+            }
+            next;
+        } elsif (exists $users->{lc $member}) {
+            next unless $membername = $users->{lc $member};
         } else {
             my $attr    = lc($RT::LDAPGroupMapping->{Member_Attr_Value} || 'dn');
             my $base    = $attr eq 'dn' ? $member : $RT::LDAPBase;
@@ -1490,34 +1528,34 @@ sub add_group_members {
                 next;
             }
             my $ldap_user = shift @results;
-            $username = $self->_cache_user( ldap_entry => $ldap_user );
+            $membername = $self->_cache_user( ldap_entry => $ldap_user );
         }
-        if ( delete $rt_group_members{$username} ) {
-            $RT::Logger->debug("\t$username\tin RT and LDAP");
+        if ( delete $rt_group_members{$membername} ) {
+            $RT::Logger->debug("\t$membername\tin RT and LDAP");
             next;
         }
-        $RT::Logger->debug($group ? "\t$username\tin LDAP, adding to RT" : "\t$username");
+        $RT::Logger->debug($group ? "\t$membername\tin LDAP, adding to RT" : "\t$membername");
         next unless $args{import};
 
         my $rt_user = RT::User->new($RT::SystemUser);
-        my ($res,$msg) = $rt_user->Load( $username );
+        my ($res,$msg) = $rt_user->Load( $membername );
         unless ($res) {
-            $RT::Logger->warn("Unable to load $username: $msg");
+            $RT::Logger->warn("Unable to load $membername: $msg");
             next;
         }
         ($res,$msg) = $group->AddMember($rt_user->PrincipalObj->Id);
         unless ($res) {
-            $RT::Logger->warn("Failed to add $username to $groupname: $msg");
+            $RT::Logger->warn("Failed to add $membername to $groupname: $msg");
         }
     }
 
-    for my $username (sort keys %rt_group_members) {
-        $RT::Logger->debug("\t$username\tin RT, not in LDAP, removing");
+    for my $membername (sort keys %rt_group_members) {
+        $RT::Logger->debug("\t$membername\tin RT group $groupname, not in LDAP, removing");
         next unless $args{import};
 
-        my ($res,$msg) = $group->DeleteMember($rt_group_members{$username}->PrincipalObj->Id);
+        my ($res,$msg) = $group->DeleteMember($rt_group_members{$membername}->PrincipalObj->Id);
         unless ($res) {
-            $RT::Logger->warn("Failed to remove $username to $groupname: $msg");
+            $RT::Logger->warn("Failed to remove $membername to $groupname: $msg");
         }
     }
 }
