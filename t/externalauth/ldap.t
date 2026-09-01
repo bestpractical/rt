@@ -1,21 +1,13 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef;
+use RT::Test::LDAP tests => undef;
 
-eval { require RT::Authen::ExternalAuth; require Net::LDAP::Server::Test; 1; } or do {
-    plan skip_all => 'Unable to test without Net::LDAP and Net::LDAP::Server::Test';
-};
+my $test = RT::Test::LDAP->new();
+my $base = $test->{'base_dn'};
+my $ldap = $test->new_server();
 
-
-my $ldap_port = RT::Test->find_idle_port;
-ok( my $server = Net::LDAP::Server::Test->new( $ldap_port, auto_schema => 1 ),
-    "spawned test LDAP server on port $ldap_port" );
-
-my $ldap = Net::LDAP->new("localhost:$ldap_port");
-$ldap->bind();
 my $username = "testuser";
-my $base     = "dc=bestpractical,dc=com";
 my $dn       = "uid=$username,$base";
 my $entry    = {
     cn           => $username,
@@ -62,40 +54,24 @@ ok( $delegate_cf->Create(
 );
 ok( $delegate_cf->AddToObject( RT::User->new( RT->SystemUser ) ), 'applied Delegate globally' );
 
-RT->Config->Set( ExternalAuthPriority        => ['My_LDAP'] );
-RT->Config->Set( ExternalInfoPriority        => ['My_LDAP'] );
-RT->Config->Set( AutoCreateNonExternalUsers  => 0 );
-RT->Config->Set( AutoCreate  => undef );
-RT->Config->Set(
-    ExternalSettings => {    # AN EXAMPLE DB SERVICE
-        'My_LDAP' => {
-            'type'            => 'ldap',
-            'server'          => "127.0.0.1:$ldap_port",
-            'base'            => $base,
-            'filter'          => '(objectClass=*)',
-            'd_filter'        => '()',
-            'tls'             => 0,
-            'net_ldap_args'   => [ version => 3 ],
-            'attr_match_list' => [ 'Name', 'EmailAddress' ],
-            'attr_map'        => {
-                'Name'                 => 'uid',
-                'EmailAddress'         => 'mail',
-                'FreeformContactInfo'  => [ 'uid', 'mail' ],
-                'CF.Employee Type'     => 'employeeType',
-                'UserCF.Employee Type' => 'employeeType',
-                'UserCF.Employee ID'   => sub {
-                    my %args = @_;
-                    return ( 'employeeType', 'employeeID' ) unless $args{external_entry};
-                    return (
-                        $args{external_entry}->get_value('employeeType') // '',
-                        $args{external_entry}->get_value('employeeID') // '',
-                    );
-                },
-            }
-        },
-    }
-);
-RT->Config->PostLoadCheck;
+# Just wholesale replace the default attr_map.
+$test->{'externalauth'}{'My_LDAP'}{'attr_map'} = {
+    'Name'                 => 'uid',
+    'EmailAddress'         => 'mail',
+    'FreeformContactInfo'  => [ 'uid', 'mail' ],
+    'CF.Employee Type'     => 'employeeType',
+    'UserCF.Employee Type' => 'employeeType',
+    'UserCF.Employee ID'   => sub {
+        my %args = @_;
+        return ( 'employeeType', 'employeeID' ) unless $args{external_entry};
+        return (
+            $args{external_entry}->get_value('employeeType') // '',
+            $args{external_entry}->get_value('employeeID')   // '',
+        );
+    },
+};
+
+$test->config_set_externalauth();
 
 my ( $baseurl, $m ) = RT::Test->started_ok();
 
@@ -217,31 +193,20 @@ diag "test user update via login";
 
 diag 'Login with UserCF as username';
 
-RT::Test->stop_server();
+$test->stop_server();
 
-RT->Config->Set(
-    ExternalSettings => {    # AN EXAMPLE DB SERVICE
-        'My_LDAP' => {
-            'type'            => 'ldap',
-            'server'          => "127.0.0.1:$ldap_port",
-            'base'            => $base,
-            'filter'          => '(objectClass=*)',
-            'd_filter'        => '()',
-            'tls'             => 0,
-            'net_ldap_args'   => [ version => 3 ],
-            'attr_match_list' => [ 'UserCF.Employee ID', 'EmailAddress' ],
-            'attr_map'        => {
-                'Name'                 => 'uid',
-                'EmailAddress'         => 'mail',
-                'FreeformContactInfo'  => [ 'uid', 'mail' ],
-                'CF.Employee Type'     => 'employeeType',
-                'UserCF.Employee Type' => 'employeeType',
-                'UserCF.Employee ID'   => 'employeeID',
-            }
-        },
-    }
-);
-RT->Config->PostLoadCheck;
+$test->{'externalauth'}{'My_LDAP'}{'attr_match_list'}
+    = [ 'UserCF.Employee ID', 'EmailAddress' ];
+$test->{'externalauth'}{'My_LDAP'}{'attr_map'} = {
+    'Name'                 => 'uid',
+    'EmailAddress'         => 'mail',
+    'FreeformContactInfo'  => [ 'uid', 'mail' ],
+    'CF.Employee Type'     => 'employeeType',
+    'UserCF.Employee Type' => 'employeeType',
+    'UserCF.Employee ID'   => 'employeeID',
+};
+
+$test->config_set_externalauth();
 
 ( $baseurl, $m ) = RT::Test->started_ok();
 
