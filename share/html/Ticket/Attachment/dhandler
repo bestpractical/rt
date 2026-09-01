@@ -46,6 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%perl>
+use RT::Util 'CanonicalizeContentType';
+
 my ( $ticket, $trans, $attach, $filename );
 my $arg = $m->dhandler_arg;    # get rest of path
 if ( $arg =~ m{^(\d+)/(\d+)} ) {
@@ -66,7 +68,7 @@ unless ( $AttachmentObj->TransactionId() == $trans ) {
 }
 
 my $content = $AttachmentObj->OriginalContent;
-my $content_type = $AttachmentObj->ContentType || 'text/plain';
+my $content_type = CanonicalizeContentType( $AttachmentObj->ContentType ) || 'text/plain';
 
 my $attachment_regex = qr{^(image/svg\+xml|application/pdf)}i;
 if ( RT->Config->Get('AlwaysDownloadAttachments') || ($content_type =~ $attachment_regex) ) {
