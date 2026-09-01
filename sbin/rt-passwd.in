@@ -105,7 +105,7 @@ die "Couldn't change password for user $username: $msg\n" unless $ret;
 
 print "Successfully changed password for user $username.\n";
 
-exit 1;
+exit 0;
 
 =head1 NAME
 
