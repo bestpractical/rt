@@ -2579,9 +2579,14 @@ sub _SetStatus {
         );
     }
 
+    my $raw_resolved = RT::Date->new(RT->SystemUser);
+    $raw_resolved->Set(Format => 'ISO', Value => $self->__Value('Resolved'));
+
     # When we close a ticket, set the 'Resolved' attribute to now.
     # It's misnamed, but that's just historical.
-    if ( $args{NewLifecycle}->IsInactive($args{Status}) ) {
+    if ( ( !$raw_resolved->IsSet || !$args{Lifecycle}->IsInactive($old) )
+        && $args{NewLifecycle}->IsInactive( $args{Status} ) )
+    {
         $self->_Set(
             Field             => 'Resolved',
             Value             => $now->ISO,
