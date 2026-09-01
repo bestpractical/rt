@@ -55,6 +55,8 @@
     TitleBox => 1,
     ShowHeader => 1,
     Format => RT->Config->Get('UserSummaryTicketListFormat'),
+    Order => RT->Config->Get('UserSummaryTicketListOrder'),
+    OrderBy => RT->Config->Get('UserSummaryTicketListOrderBy'),
 &>
 <%INIT>
 unless ( @$conditions ) {
