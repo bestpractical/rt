@@ -176,6 +176,9 @@ exit handler();
 sub shell {
     $|=1;
     my $term = Term::ReadLine->new('RT CLI');
+    if ( not -t STDIN) {
+       $term->newTTY(*STDIN, *STDOUT);
+    }
     while ( defined ($_ = $term->readline($prompt)) ) {
         next if /^#/ || /^\s*$/;
 
