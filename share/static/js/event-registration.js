@@ -78,6 +78,8 @@ htmx.onLoad(function(elt) {
                 var vals;
                 if ( jQuery(this).is('select') ) {
                     vals = based_on.first().val();
+                } else if (jQuery(this).is('input[type="text"]')) {
+                    vals = based_on.val();
                 }
                 else {
                     vals = [];
