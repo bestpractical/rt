@@ -61,6 +61,8 @@ if ( $Default ) {
     my $user = RT::User->new( $session{'CurrentUser'} );
     $user->Load($Default);
     $value = $user->$ValueAttribute;
+} elsif ( $Default ) {
+    $value = $Default;
 } elsif (defined $TicketObj) {
     $value = $TicketObj->OwnerObj->$ValueAttribute;
 }
