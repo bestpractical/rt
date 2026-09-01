@@ -174,7 +174,7 @@ sub CleanupRequest {
         $RT::Handle->ForceRollback;
         $RT::Logger->crit(
             "Transaction not committed. Usually indicates a software fault."
-            . "Data loss may have occurred" );
+            . " Data loss may have occurred." );
     }
 
     # Clean out the ACL cache. the performance impact should be marginal.
