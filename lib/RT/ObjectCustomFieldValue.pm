@@ -375,18 +375,10 @@ sub _FillInTemplateURL {
     return undef unless defined $url && length $url;
 
     # special case, whole value should be an URL
-    if ( $url =~ /^__CustomField__/ ) {
+    my $value_is_url = $url =~ /^__CustomField__/ ? 1 : 0;
+    if ( $value_is_url ) {
         my $value = $self->Content;
         $value //= '';
-        # protect from potentially malicious URLs
-        if ( $value =~ /^\s*(?:javascript|data):/i ) {
-            my $object = $self->Object;
-            $RT::Logger->error(
-                "Potentially dangerous URL type in custom field '". $self->CustomFieldObj->Name ."'"
-                ." on ". ref($object) ." #". $object->id
-            );
-            return undef;
-        }
         $url =~ s/^__CustomField__/$value/;
     }
 
@@ -400,8 +392,36 @@ sub _FillInTemplateURL {
         }gxe;
     }
 
+    # protect from potentially malicious URLs
+    if ( $value_is_url && $self->_IsDangerousURL($url) ) {
+        my $object = $self->Object;
+        $RT::Logger->error(
+            "Potentially dangerous URL type in custom field '". $self->CustomFieldObj->Name ."'"
+            ." on ". ref($object) ." #". $object->id
+        );
+        return undef;
+    }
+
     return $url;
 } }
+
+=head2 _IsDangerousURL URL
+
+Returns true if the given URL uses a scheme that browsers can execute as
+code. Characters that browsers ignore when they parse the scheme are removed
+before the check.
+
+=cut
+
+sub _IsDangerousURL {
+    my $self = shift;
+    my $url  = shift;
+
+    $url =~ s/[\x09\x0a\x0d]//g;
+    $url =~ s/^[\x00-\x20]+//;
+
+    return $url =~ /^(?:javascript|data):/i ? 1 : 0;
+}
 
 
 =head2 ValueLinkURL
