@@ -48,7 +48,6 @@
 <%$wiki_content|n%>
 <%init>
 my $content = $Object->LargeContent || $Object->Content;
-$content = $m->comp('/Elements/ScrubHTML', Content => $content, Permissive => $Object->_ContentIsPermissive);
 my $base = $Object->Object->WikiBase;
 my %wiki_args = (
     extended => 1,
@@ -60,6 +59,8 @@ $m->callback( CallbackName => 'WikiFormatArgs', ARGSRef => \%ARGS, WikiArgsRef =
 
 use Text::WikiFormat;
 my $wiki_content = Text::WikiFormat::format( $content."\n" , {}, { %wiki_args } );
+$wiki_content = $m->comp('/Elements/ScrubHTML', Content => $wiki_content,
+    Permissive => $Object->_ContentIsPermissive);
 </%init>
 <%ARGS>
 $Object
