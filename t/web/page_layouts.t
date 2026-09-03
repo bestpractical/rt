@@ -1,8 +1,20 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef;
+use RT::Test
+    tests  => undef,
+    config => q{
+Set( %PageLayouts,
+    'RT::Ticket' => {
+        'Display' => {
+            'Foo & Bar' => [ { Layout => 'col-12', Elements => ['Basics'] } ],
+        },
+    },
+);
+};
 use RT::Interface::Web;
+use URI;
+use URI::QueryParam;
 
 # Create two queues
 my $queue1 = RT::Test->load_or_create_queue(Name => 'TestQueue1');
@@ -282,6 +294,78 @@ diag "EditPageLayout renders the Links widget edit modal reflecting config";
         'load the ticket Create page-layout editor' );
     $m->content_lacks( 'pagelayout-links-hide-inactive', 'Create: no Links default-filter modal' );
     $m->content_lacks( 'pagelayout-widget-Links-modal', 'Create: no Links edit pencil' );
+}
+
+diag "Testing page layout name validation";
+{
+    my $invalid_msg = 'Page Layout Name may only contain alphanumeric characters, underscores, dashes, and spaces';
+
+    for my $name ( 'Bad & Name', "Caf\x{e9}" ) {
+        $m->get_ok('/Admin/PageLayouts/Create.html');
+        $m->submit_form_ok(
+            {   form_name => 'CreatePageLayout',
+                fields    => { Name => $name, Class => 'RT::Ticket', Page => 'Display' },
+                button    => 'Create',
+            },
+            "Submitted create form for '$name'"
+        );
+        $m->text_contains( $invalid_msg, "Rejected page layout name '$name'" );
+    }
+
+    # Spaces are allowed, as RT ships a layout named "One Column"
+    for my $name ( 'One Column 2', 'Foo-Bar_1' ) {
+        $m->get_ok('/Admin/PageLayouts/Create.html');
+        $m->submit_form_ok(
+            {   form_name => 'CreatePageLayout',
+                fields    => { Name => $name, Class => 'RT::Ticket', Page => 'Display' },
+                button    => 'Create',
+            },
+            "Submitted create form for '$name'"
+        );
+        $m->text_contains( 'Page Layout created', "Created page layout '$name'" );
+    }
+
+    # Renaming is validated too
+    $m->submit_form_ok(
+        {   with_fields => { NewName => 'Bad & Name' },
+            button      => 'UpdatePage',
+        },
+        'Submitted rename form with an ampersand in the name'
+    );
+    $m->text_contains( $invalid_msg, 'Rejected a rename to a name containing an ampersand' );
+
+    $m->get_ok('/Admin/PageLayouts/?Class=RT::Ticket&Page=Display');
+    $m->text_contains( 'Foo-Bar_1', 'Layout kept its original name' );
+    $m->text_lacks( 'Bad &', 'Rejected name was not created' );
+}
+
+diag "Testing page layout names containing an ampersand";
+{
+    my $name = 'Foo & Bar';
+
+    # The list page links to each layout by name
+    $m->get_ok('/Admin/PageLayouts/?Class=RT::Ticket&Page=Display');
+    my $list_link = $m->find_link( text => $name, url_regex => qr{/Admin/PageLayouts/Modify\.html} );
+    ok( $list_link, "Found the list link for '$name'" );
+    is( $list_link->URI->query_param('Name'), $name, 'List link passes the name unmangled' );
+
+    # Load Modify.html directly with a correctly encoded name, so the page menu
+    # links below are tested independently of the list page
+    my $modify_uri = URI->new('/Admin/PageLayouts/Modify.html');
+    $modify_uri->query_form( Class => 'RT::Ticket', Page => 'Display', Name => $name );
+    $m->get_ok( $modify_uri->as_string );
+    $m->text_contains( "page layout: $name", 'Modify page loaded the right layout' );
+
+    for my $page (qw/Modify Advanced/) {
+        my $tab = $m->find_link( url_regex => qr{/Admin/PageLayouts/\Q$page\E\.html} );
+        ok( $tab, "Found the $page tab link" );
+        is( $tab->URI->query_param('Name'), $name, "$page tab link passes the name unmangled" );
+
+        next unless $page eq 'Advanced';
+        $m->get_ok( $tab->url );
+        $m->text_lacks( 'Invalid Page Layout', 'Advanced tab loaded the right layout' );
+        $m->text_contains( "page layout: $name", 'Advanced page shows the right layout name' );
+    }
 }
 
 done_testing;
