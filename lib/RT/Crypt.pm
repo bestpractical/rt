@@ -572,13 +572,11 @@ sub VerifyDecrypt {
             %args, Protocol => $protected->{'Protocol'}, Info => $protected
         );
 
-        # Let the header be modified so continuations are handled
-        my $modify = $res{status_on}->head->modify;
-        $res{status_on}->head->modify(1);
-        $res{status_on}->head->add(
-            "X-RT-" . $protected->{'Protocol'} . "-Status" => Encode::encode( "UTF-8", $res{'status'} )
+        $self->AddStatusHeader(
+            Entity   => $res{status_on},
+            Protocol => $protected->{'Protocol'},
+            Status   => $res{'status'},
         );
-        $res{status_on}->head->modify($modify);
 
         push @res, \%res;
     }
@@ -587,6 +585,37 @@ sub VerifyDecrypt {
         if $args{Recursive} and @res and not grep {$_->{'exit_code'}} @res;
 
     return @res;
+}
+
+=head2 AddStatusHeader Entity => ENTITY, Protocol => NAME, Status => STATUS
+
+Records the C<STATUS> a crypt backend reported for protocol C<NAME> on the
+L<MIME::Entity> C<ENTITY>, as an C<X-RT-I<NAME>-Status> header. Existing
+headers of that name are kept, since a single entity can be the subject of
+more than one operation.
+
+=cut
+
+sub AddStatusHeader {
+    my $self = shift;
+    my %args = (
+        Entity   => undef,
+        Protocol => undef,
+        Status   => undef,
+        @_
+    );
+
+    my $head = $args{'Entity'}->head;
+
+    # Let the header be modified so continuations are handled
+    my $modify = $head->modify;
+    $head->modify(1);
+    $head->add(
+        "X-RT-" . $args{'Protocol'} . "-Status" => Encode::encode( "UTF-8", $args{'Status'} )
+    );
+    $head->modify($modify);
+
+    return;
 }
 
 =head2 DecryptContent Protocol => NAME, Content => STRINGREF, [Passphrase => undef]
