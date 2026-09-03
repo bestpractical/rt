@@ -6684,6 +6684,29 @@ sub GetPageLayout {
     return;
 }
 
+=head2 ValidatePageLayoutName NAME
+
+Returns 1 if NAME is acceptable as a page layout name, otherwise
+C<(0, MESSAGE)>.
+
+Page layout names are the keys of L<RT_Config/%PageLayouts> and are passed
+in URLs, so they are limited to ASCII alphanumerics, underscores, dashes,
+and spaces.
+
+=cut
+
+sub ValidatePageLayoutName {
+    my $name = shift;
+
+    return ( 0, loc('Invalid Name') ) unless defined $name && length $name;
+
+    return ( 0,
+        loc('Page Layout Name may only contain alphanumeric characters, underscores, dashes, and spaces') )
+        if $name =~ /[^A-Za-z0-9_ -]/;
+
+    return 1;
+}
+
 =head2 GetAvailableWidgets Class => $Class, Page => $Page
 
 Returns a list of available widgets for the given C<$Class> and C<$Page>.

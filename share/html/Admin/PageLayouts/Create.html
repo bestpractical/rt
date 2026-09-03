@@ -108,7 +108,11 @@ if ($Create) {
     $Name =~ s!^\s+!!;
     $Name =~ s!\s+$!!;
     my ( $ret, $msg );
-    if ( length $Name ) {
+    my ( $name_ok, $name_msg ) = ValidatePageLayoutName($Name);
+    if ( !$name_ok ) {
+        push @results, $name_msg;
+    }
+    else {
         if ( $page_layouts->{$Class}{$Page}{$Name} ) {
             push @results, loc( 'Page Layout [_1] already exists', $Name );
         }
@@ -131,9 +135,6 @@ if ($Create) {
                 push @results, $msg if $msg;
             }
         }
-    }
-    else {
-        push @results, loc('Invalid Name');
     }
 
     if ($ret) {

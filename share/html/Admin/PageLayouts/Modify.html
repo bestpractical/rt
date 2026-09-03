@@ -120,7 +120,11 @@ if ( $AddRow || $Update || $UpdatePage ) {
         $new_name =~ s!^\s+!!;
         $new_name =~ s!\s+$!!;
 
-        if ( length $new_name ) {
+        my ( $name_ok, $name_msg ) = ValidatePageLayoutName($new_name);
+        if ( !$name_ok ) {
+            push @results, $name_msg;
+        }
+        else {
             if ( $page_layouts->{$Class}{$Page}{$new_name} ) {
                 # No change to the name, nothing to do
             }
@@ -141,9 +145,6 @@ if ( $AddRow || $Update || $UpdatePage ) {
                     push @results, $msg;
                 }
             }
-        }
-        else {
-            push @results, loc('Invalid Name');
         }
     }
 

@@ -2011,15 +2011,17 @@ sub _BuildAdminPageMenu {
 
         if ( $HTML::Mason::Commands::DECODED_ARGS->{Name} ) {
             my $args = $HTML::Mason::Commands::DECODED_ARGS;
+            my $query = $HTML::Mason::Commands::m->comp(
+                '/Elements/QueryString',
+                map { $_ => $args->{$_} } qw/Class Page Name/,
+            );
             $page->child(
                 modify => title => loc('Modify'),
-                path     =>
-                    "/Admin/PageLayouts/Modify.html?Class=$args->{Class}&Page=$args->{Page}&Name=$args->{Name}",
+                path   => "/Admin/PageLayouts/Modify.html?$query",
             );
             $page->child(
                 advanced => title => loc('Advanced'),
-                path     =>
-                    "/Admin/PageLayouts/Advanced.html?Class=$args->{Class}&Page=$args->{Page}&Name=$args->{Name}",
+                path     => "/Admin/PageLayouts/Advanced.html?$query",
             );
         }
     }
