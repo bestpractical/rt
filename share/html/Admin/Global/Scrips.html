@@ -52,6 +52,11 @@
 <%init>
 my $title = loc("Modify scrips which apply to all queues");
 my (@actions);
+
+if ( $ARGS{MoveScripUp} || $ARGS{MoveScripDown} ) {
+    Abort( loc("Permission Denied"), Code => HTTP::Status::HTTP_FORBIDDEN )
+        unless $session{CurrentUser}->HasRight( Object => RT->System, Right => 'ModifyScrips' );
+}
 </%init>
 <%ARGS>
 $id => 0

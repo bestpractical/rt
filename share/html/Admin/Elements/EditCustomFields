@@ -95,7 +95,7 @@
 
 <%INIT>
 my $id = $Object->Id || 0;
-if ($id and !$Object->CurrentUserHasRight('AssignCustomFields')) {
+if (!$Object->CurrentUserHasRight('AssignCustomFields')) {
     $m->out('<p><i>', loc('(No custom fields)'), '</i></p>');
     return;
 }
