@@ -77,6 +77,9 @@
 my $catalog = RT::Catalog->new( $session{CurrentUser} );
 $catalog->Load($id) || Abort( loc( "Couldn't load asset [_1]", $id ) );
 
+Abort( loc("Permission Denied"), Code => HTTP::Status::HTTP_FORBIDDEN )
+    unless $catalog->CurrentUserHasRight('AdminCatalog');
+
 my $title = loc( 'Default Values for catalog [_1]', $catalog->Name );
 
 my @results;

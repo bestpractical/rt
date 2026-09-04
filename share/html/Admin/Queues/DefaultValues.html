@@ -150,6 +150,9 @@
 my $queue = RT::Queue->new( $session{CurrentUser} );
 $queue->Load($id) || Abort( loc( "Couldn't load object [_1]", $id ) );
 
+Abort( loc("Permission Denied"), Code => HTTP::Status::HTTP_FORBIDDEN )
+    unless $queue->CurrentUserHasRight('AdminQueue');
+
 my $title = loc( 'Default Values for queue [_1]', $queue->Name );
 my @groupings = (RT::CustomField->CustomGroupings('RT::Ticket', $queue->Name), '');
 
