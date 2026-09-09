@@ -188,7 +188,7 @@ if ($ShowRelatedTickets) {
   <&| /Elements/LabeledValue, Label => loc('Add an asset to this ticket'), ReadOnly => 0 &>
     <div class="d-flex gap-2">
       <div class="flex-grow-1">
-        <input data-autocomplete="Assets" class="form-control" size="10" name="<% $Ticket->id %>-RefersTo" data-autocomplete-exclude="<% join(',', @linked_assets) |n %>" type="text">
+        <input data-autocomplete="Assets" data-autocomplete-multiple="1" class="form-control" size="10" name="<% $Ticket->id %>-RefersTo" data-autocomplete-exclude="<% join(',', @linked_assets) |n %>" type="text">
       </div>
       <button type="submit" name="AddAsset" value="Add" class="btn btn-primary"><% loc('Add') %></button>
     </div>

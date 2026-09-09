@@ -180,7 +180,7 @@ window.RT.Autocomplete.bind = function(from) {
         }
 
         if (input.is('[data-autocomplete-multiple]')) {
-            if ( what != 'Tickets' && what != 'LinkTargets' ) {
+            if ( what != 'Tickets' && what != 'LinkTargets' && what != 'Assets' ) {
                 queryargs.delim = ',';
             }
             else {
