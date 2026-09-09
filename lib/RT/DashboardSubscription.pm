@@ -138,6 +138,17 @@ sub Create {
     return ( $self->Id, $self->loc("Dashboard subscription created") );
 }
 
+=head2 Delete
+
+Disable object.
+
+=cut
+
+sub Delete {
+    my $self = shift;
+    return $self->SetDisabled(1);
+}
+
 sub _Set {
     my $self = shift;
     my %args = @_;
