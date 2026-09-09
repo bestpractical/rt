@@ -109,24 +109,39 @@ my %TYPE = (
 my @models = qw(
     ACE
     Article
+    Asset
     Attachment
     Attribute
+    AuthToken
     CachedGroupMember
+    Catalog
+    Class
+    Configuration
     CustomField
     CustomFieldValue
+    CustomRole
+    Dashboard
+    DashboardSubscription
     GroupMember
     Group
     Link
+    ObjectClass
+    ObjectContent
     ObjectCustomField
     ObjectCustomFieldValue
+    ObjectCustomRole
+    ObjectTopic
     Principal
     Queue
+    SavedSearch
     ScripAction
     ScripCondition
     Scrip
     ObjectScrip
+    Shortener
     Template
     Ticket
+    Topic
     Transaction
     User
 );
