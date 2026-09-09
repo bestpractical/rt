@@ -78,6 +78,16 @@ Init(
     'cgm-only',
 );
 
+# Load URI modules explicitly so rt_uri_modules can see them via %INC.
+require RT::URI::asset;
+require RT::URI::attribute;
+require RT::URI::dashboard;
+require RT::URI::fsck_com_article;
+require RT::URI::fsck_com_rt;
+require RT::URI::group;
+require RT::URI::savedsearch;
+require RT::URI::user;
+
 Pod::Usage::pod2usage( { verbose => 2 } ) unless $opt{check};
 
 usage_warning() if $opt{'resolve'} && !$opt{'force'};
@@ -1393,18 +1403,27 @@ push @CHECKS, 'Links: missing object' => sub {
         my $scheme = $rt_uri->Scheme;
         my $prefix = $rt_uri->LocalURIPrefix;
 
+        # A resolver named after a model addresses that model alone, with plain
+        # "<scheme>://<organization>/<id>" URIs
+        my ($scheme_model) = grep { lc $_ eq $scheme } @models;
+
         foreach my $use ( @URI_USES ) {
             my $stable = m2t( $use->{'model'} );
             my $stablename = $db_type eq 'mysql' ? "`$stable`" : $stable;
             my $scolumn = $use->{'column'};
 
-            foreach my $tmodel ( @models ) {
-                my $tclass = 'RT::'. $tmodel;
+            foreach my $tmodel ( $scheme_model ? $scheme_model : @models ) {
+                # the article resolvers only ever address articles
+                next if $tmodel ne 'Article' && $package->isa('RT::URI::fsck_com_article');
+
                 my $ttable = m2t($tmodel);
                 my $ttablename = ($db_type eq 'mysql') ? "`$ttable`" : $ttable;
-                my $tprefix = $prefix .'/'. ($tclass eq 'RT::Ticket'? 'ticket' : $tclass) .'/';
-
-                $tprefix = $prefix . '/article/' if $tclass eq 'RT::Article';
+                my $tprefix = $prefix .'/';
+                unless ( $scheme_model ) {
+                    $tprefix .= ( $tmodel eq 'Ticket'  ? 'ticket'
+                                : $tmodel eq 'Article' ? 'article'
+                                :                        "RT::$tmodel" ) .'/';
+                }
 
                 my $query = "SELECT s.id FROM $stablename s LEFT JOIN $ttablename t "
                   ." ON t.id = ". sql_str2int("SUBSTR(s.$scolumn, ?)")
