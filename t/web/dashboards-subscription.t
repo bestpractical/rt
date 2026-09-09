@@ -140,4 +140,33 @@ $m->content_contains('customers test group removed from dashboard subscription r
 $m->follow_link_ok({ id => 'page-subscription' });
 $m->content_lacks('customers test group');
 
+diag 'Owners can disable and re-enable their subscription in the web UI';
+{
+    my $subscription_id = $user->DashboardSubscriptions->First->Id;
+    ok( $subscription_id, 'Found the subscription' );
+
+    my $subscription = RT::DashboardSubscription->new( RT->SystemUser );
+
+    $m->follow_link_ok( { id => 'page-subscription' } );
+    $m->form_name('SubscribeDashboard');
+    $m->untick( 'Enabled', 1 );
+    $m->click_button( name => 'Save' );
+    $m->text_lacks('Permission Denied');
+    $m->content_contains('Subscription updated');
+
+    $subscription->Load($subscription_id);
+    is( $subscription->Disabled, 1, 'Subscription is disabled' );
+
+    $m->follow_link_ok( { id => 'page-subscription' } );
+    ok( !$m->form_name('SubscribeDashboard')->value('Enabled'), 'Enabled box is unchecked' );
+
+    $m->tick( 'Enabled', 1 );
+    $m->click_button( name => 'Save' );
+    $m->text_lacks('Permission Denied');
+    $m->content_contains('Subscription updated');
+
+    $subscription->Load($subscription_id);
+    is( $subscription->Disabled, 0, 'Subscription is enabled again' );
+}
+
 done_testing;
