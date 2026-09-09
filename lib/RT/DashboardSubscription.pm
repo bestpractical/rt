@@ -144,7 +144,7 @@ sub _Set {
 
     return ( 0, $self->loc('Permission Denied') )
         unless $self->CurrentUser->HasRight( Right => 'SuperUser', Object => RT->System )
-        || ( $args{UserId} == $self->CurrentUser->Id && $args{Field} !~ /^(?:UserId|DashboardId)$/ );
+        || ( $self->__Value('UserId') == $self->CurrentUser->Id && $args{Field} !~ /^(?:UserId|DashboardId)$/ );
     return $self->SUPER::_Set(@_);
 }
 
