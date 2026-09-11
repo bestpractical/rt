@@ -512,6 +512,16 @@ function initializeSelectElement(elt) {
         }
     };
 
+    // Options may carry a short alternative label (data-short, e.g. the Links add-row selects).
+    // Render the selected item with both forms so CSS can swap to the short one where the control
+    // is narrow (see .ts-label-short in boxes.css); the open dropdown keeps the full labels.
+    if ( elt.querySelector && elt.querySelector('option[data-short]') ) {
+        settings.render.item = function(data, escape) {
+            return '<div><span class="ts-label-full">' + escape(data.text) + '</span>'
+                 + '<span class="ts-label-short">' + escape(data.short || data.text) + '</span></div>';
+        };
+    }
+
     settings.onDropdownOpen = function (dropdown) {
         // Hide the dropdown temporarily to avoid the possible flash when dropdown becomes dropup.
         dropdown.style.visibility = 'hidden';

@@ -170,9 +170,31 @@ div.results .titlebox .titlebox-content {
 }
 
 
+/* The widget and its add-links block are size containers, so the header controls, add-link rows
+   and default tables below step down by the widget's own width (a col-4 asset portlet, a narrow
+   custom page layout), not the viewport's. Named so nested queries pick the right ancestor. */
+.titlebox.links-widget {
+    container: links-widget / inline-size;
+}
+.add-links-section {
+    container: add-links / inline-size;
+}
+
 .links-search-input {
     width: 200px;
     font-size: 1.1em;
+}
+
+/* Narrow widget: a shorter search box that grows back while it has focus, so the "Links" title
+   and the filter/info/edit icons all fit on the one header line. */
+@container links-widget (max-width: 30rem) {
+    .links-search-input {
+        width: 7.5rem;
+        transition: width 0.15s ease-out;
+    }
+    .links-search-input:focus-within {
+        width: 12rem;
+    }
 }
 
 .links-search-input .input-group-text,
@@ -228,6 +250,40 @@ div.results .titlebox .titlebox-content {
     width: 8.5rem;
 }
 
+/* Each option carries a short label alongside its full one (data-short in Elements/AddLinksRow;
+   initializeSelectElement renders both into the selected item). Like the "Create new ticket" ->
+   "Create" step-down in the top nav: in a narrow add-links block the selects show the short form
+   and take less room, leaving the value box usable. The open dropdown still lists full labels. */
+.ts-label-short {
+    display: none;
+}
+@container add-links (max-width: 32rem) {
+    .add-link-row .link-type-select {
+        width: 5.75rem;
+    }
+    .add-link-row .link-object-type-select {
+        width: 5.5rem;
+    }
+    .add-link-row .ts-label-full {
+        display: none;
+    }
+    .add-link-row .ts-label-short {
+        display: inline;
+    }
+}
+
+/* A picked label ("#3: Testing the foo with HTML") can be long; keep the row one line and let the
+   label ellipsize rather than growing the value box several lines tall in a narrow row. */
+.add-link-row > .col {
+    min-width: 0;    /* else the nowrap label below sets the column's minimum and squashes the selects */
+}
+.add-link-row .link-value .ts-control .item {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
 /* Drop the autocomplete's clear-button + caret right-padding while the field is empty (clear
    button is hidden then) so the placeholder isn't clipped in a narrow widget. calc(0px), not 0px:
    a unitless 0 wouldn't survive minification and would break tom-select's max(...) padding math. */
@@ -278,26 +334,40 @@ div.results .titlebox .titlebox-content {
     width: 16%;
 }
 
-/* Ticket table: fixed layout + explicit widths for a stable id/Subject/Status/Owner ~ 2/7/2/3. */
-.titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"] table.collection-as-table {
-    table-layout: fixed;
+/* Ticket table: fixed layout + explicit widths for a stable id/Subject/Status/Owner ~ 2/7/2/3.
+   Only while the widget is wide enough to honor them: at a col-4 width the 16% Owner slice breaks
+   names one letter per line (and trips clipContent). A narrow widget falls back to automatic table
+   layout, where the browser gives each column its natural width and Subject absorbs the squeeze. */
+@container links-widget (min-width: 30rem) {
+    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"] table.collection-as-table {
+        table-layout: fixed;
+    }
+    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(2) {
+        width: 47%;
+    }
+    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(3) {
+        width: 15%;
+    }
+    /* Owner takes the full 22% in the read view (delete column hidden). In edit mode it yields a
+       slim slice to the now-visible trailing delete column, so id/Subject/Status don't shift on
+       the flip. */
+    .titlebox.links-widget:not(.editing) .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(4) {
+        width: 22%;
+    }
+    .titlebox.links-widget.editing .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(4) {
+        width: 16%;
+    }
+    .titlebox.links-widget.editing .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:last-child {
+        width: 6%;
+    }
 }
-.titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(2) {
-    width: 47%;
-}
-.titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(3) {
-    width: 15%;
-}
-/* Owner takes the full 22% in the read view (delete column hidden). In edit mode it yields a slim
-   slice to the now-visible trailing delete column, so id/Subject/Status don't shift on the flip. */
-.titlebox.links-widget:not(.editing) .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(4) {
-    width: 22%;
-}
-.titlebox.links-widget.editing .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(4) {
-    width: 16%;
-}
-.titlebox.links-widget.editing .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:last-child {
-    width: 6%;
+/* Narrow widget, automatic layout: hand Subject whatever is left once the other columns have
+   their minimum (longest-word) widths, so Status and Owner wrap by word but Subject is the
+   column that gives, not the one that gets squeezed to a word per line. */
+@container links-widget (max-width: 30rem) {
+    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(2) {
+        width: 100%;
+    }
 }
 
 /* Jumbo (embedded) links list: it isn't a .links-widget, so the read-view alignment above doesn't
