@@ -1878,6 +1878,40 @@ sub StaticRoots {
     return grep { $_ and -d $_ } @static;
 }
 
+=head2 Themes
+
+Returns the names of the themes this instance of RT provides, i.e. the
+directories with a F<main.css> under F<css> in any of the L</StaticRoots>.
+C<$WebDefaultStylesheet> and the per-user theme preference name one of these.
+
+The list is cached for the life of the process, so a theme added on disk is
+not offered until RT is restarted.
+
+=cut
+
+sub Themes {
+    my $self = shift;
+
+    state @themes;
+    return @themes if @themes;
+
+    my %seen;
+    for my $root ( $self->StaticRoots ) {
+        my $path = "$root/css";
+        next unless -d $path;
+
+        if ( opendir my $dh, $path ) {
+            push @themes, grep { !/^\./ && -e "$path/$_/main.css" && !$seen{$_}++ } readdir $dh;
+            closedir $dh;
+        }
+        else {
+            RT->Logger->error("Can't read $path: $!");
+        }
+    }
+    @themes = sort { lc $a cmp lc $b } @themes;
+    return @themes;
+}
+
 our %IS_WHITELISTED_COMPONENT = (
     # The RSS feed embeds an auth token in the path, but query
     # information for the search.  Because it's a straight-up read, in

@@ -54,7 +54,6 @@ use warnings;
 use 5.010;
 use File::Spec ();
 use Symbol::Global::Name;
-use List::MoreUtils 'uniq';
 use Clone ();
 
 # Store log messages generated before RT::Logger is available
@@ -264,34 +263,14 @@ our %META;
         WidgetArguments => {
             Description => 'Theme',                  #loc
             Callback    => sub {
-                state @stylesheets;
-                unless (@stylesheets) {
-                    for my $static_path ( RT::Interface::Web->StaticRoots ) {
-                        my $css_path =
-                          File::Spec->catdir( $static_path, 'css' );
-                        next unless -d $css_path;
-                        if ( opendir my $dh, $css_path ) {
-                            push @stylesheets, grep {
-                                -e File::Spec->catfile( $css_path, $_, 'main.css' )
-                            } readdir $dh;
-                        }
-                        else {
-                            RT->Logger->error("Can't read $css_path: $!");
-                        }
-                    }
-                    @stylesheets = sort { lc $a cmp lc $b } uniq @stylesheets;
-                }
-                return { Values => \@stylesheets };
+                return { Values => [ RT::Interface::Web->Themes ] };
             },
         },
         PostLoadCheck => sub {
             my $self = shift;
             my $value = $self->Get('WebDefaultStylesheet');
 
-            my @roots = RT::Interface::Web->StaticRoots;
-            for my $root (@roots) {
-                return if -d "$root/css/$value";
-            }
+            return if grep { $_ eq $value } RT::Interface::Web->Themes;
 
             $RT::Logger->warning(
                 "The default stylesheet ($value) does not exist in this instance of RT. "

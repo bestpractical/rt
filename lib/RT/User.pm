@@ -2595,14 +2595,7 @@ sub Stylesheet {
     my $self = shift;
 
     my $style = RT->Config->Get('WebDefaultStylesheet', $self);
-
-    if (RT::Interface::Web->ComponentPathIsSafe($style)) {
-        for my $root (RT::Interface::Web->StaticRoots) {
-            if (-d "$root/css/$style") {
-                return $style
-            }
-        }
-    }
+    return $style if grep { $_ eq $style } RT::Interface::Web->Themes;
 
     # Fall back to the system stylesheet.
     return RT->Config->Get('WebDefaultStylesheet');
