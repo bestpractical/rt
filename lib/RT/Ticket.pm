@@ -1484,6 +1484,9 @@ Returns the amount of time worked on this ticket and all child tickets
 sub TotalTimeWorked {
     my $self = shift;
     my $seen = shift || {};
+
+    return 0 unless $self->CurrentUserCanSeeTime;
+
     my $time = $self->TimeWorked;
     my $links = $self->Members;
     LINK: while (my $link = $links->Next) {
@@ -1518,6 +1521,8 @@ that user
 sub TimeWorkedPerUser {
     my $self = shift;
     my %time_worked;
+
+    return \%time_worked unless $self->CurrentUserCanSeeTime;
 
     my $transactions = $self->Transactions;
     $transactions->Limit(
@@ -2934,6 +2939,9 @@ sub _Value {
     unless ( $self->CurrentUserHasRight('ShowTicket') ) {
         return (undef);
     }
+
+    return undef if $self->IsTimeField($field) && !$self->CurrentUserCanSeeTime;
+
     return ( $self->SUPER::_Value($field) );
 
 }
@@ -3313,8 +3321,24 @@ Returns true if the current user can see time worked, estimated, left
 sub CurrentUserCanSeeTime {
     my $self = shift;
 
-    return $self->CurrentUser->Privileged ||
-           !RT->Config->Get('HideTimeFieldsFromUnprivilegedUsers');
+    return 1 unless RT->Config->Get('HideTimeFieldsFromUnprivilegedUsers');
+    return 1 if $self->CurrentUser->Id == RT->SystemUser->Id;
+    return $self->CurrentUser->Privileged ? 1 : 0;
+}
+
+=head2 IsTimeField FIELD
+
+Returns true if FIELD is one of the ticket time columns governed by
+C<$HideTimeFieldsFromUnprivilegedUsers>. Callable as a class method.
+
+=cut
+
+sub IsTimeField {
+    my $self  = shift;
+    my $field = shift;
+
+    return 0 unless defined $field;
+    return $field =~ /^Time(?:Worked|Estimated|Left)$/i ? 1 : 0;
 }
 
 sub _DateForCustomDateRangeField {
