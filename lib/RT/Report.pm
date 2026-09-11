@@ -92,7 +92,7 @@ our %GROUPINGS_META = (
 
             my $queue = RT::Queue->new( $self->CurrentUser );
             $queue->Load( $args{'VALUE'} );
-            return $queue->Name;
+            return _DisplayValue( $queue->Name, $args{FORMAT} );
         },
         Localize => 1,
         Distinct => 1,
@@ -104,7 +104,7 @@ our %GROUPINGS_META = (
 
             my $catalog = RT::Catalog->new( $self->CurrentUser );
             $catalog->Load( $args{'VALUE'} );
-            return $catalog->Name;
+            return _DisplayValue( $catalog->Name, $args{FORMAT} );
         },
         Localize => 1,
         Distinct => 1,
@@ -157,7 +157,7 @@ our %GROUPINGS_META = (
                 # Count from high down to low until we find one that our number is
                 # greater than or equal to.
                 foreach my $label ( sort { $map_ref->{$b} <=> $map_ref->{$a} } keys %$map_ref ) {
-                    return $label if $value >= $map_ref->{$label};
+                    return _DisplayValue( $label, $args{FORMAT} ) if $value >= $map_ref->{$label};
                 }
             }
             else {
@@ -223,11 +223,12 @@ our %GROUPINGS_META = (
             if ( $args{FIELD} eq 'id' && ($args{'VALUE'} // '') !~ /\D/ ) {
                 my $princ = RT::Principal->new( $self->CurrentUser );
                 $princ->Load( $args{'VALUE'} ) if $args{'VALUE'};
-                return $self->loc('(no value)') unless $princ->Id;
-                return $princ->IsGroup ? $self->loc( 'Group: [_1]', $princ->Object->Name ) : $princ->Object->Name;
+                return _DisplayValue( $self->loc('(no value)'), $args{FORMAT} ) unless $princ->Id;
+                my $name = _DisplayValue( $princ->Object->Name, $args{FORMAT} );
+                return $princ->IsGroup ? $self->loc( 'Group: [_1]', $name ) : $name;
             }
             else {
-                return $args{VALUE};
+                return _DisplayValue( $args{VALUE}, $args{FORMAT} );
             }
         },
         Distinct => sub {
@@ -287,7 +288,7 @@ our %GROUPINGS_META = (
             elsif ( $args{'SUBKEY'} eq 'Month' ) {
                 return $self->loc($RT::Date::MONTHS[ int($raw) - 1 ]);
             }
-            return $raw;
+            return _DisplayValue( $raw, $args{FORMAT} );
         },
         Sort => 'raw',
         Distinct => 1,
@@ -513,6 +514,14 @@ our %STATISTICS_META = (
         },
     },
 );
+
+sub _DisplayValue {
+    my $value  = shift;
+    my $format = shift || 'text';
+
+    RT::Interface::Web::EscapeHTML( \$value ) if $format eq 'html';
+    return $value;
+}
 
 sub Groupings {
     my $self = shift;
@@ -1217,15 +1226,29 @@ sub Deserialize {
 }
 
 
+=head2 FormatTable Groups => ARRAYREF, Functions => ARRAYREF, Format => 'html'
+
+Returns the report as C<thead>, C<tbody> and C<tfoot> lists of rows of cells.
+C<Format> is what the cells are built for, C<html> by default, where labels and
+values are escaped as they can contain names and custom field values entered by
+other users. Pass C<text> to get them as they are stored.
+
+=cut
+
 sub FormatTable {
     my $self = shift;
     my %columns = @_;
+    my $format = delete $columns{'Format'} || 'html';
+
+    my $escape = $format eq 'html'
+        ? sub { my $value = shift; RT::Interface::Web::EscapeHTML( \$value ); return $value }
+        : sub { return shift };
 
     my (@head, @body, @footer);
 
     @head = ({ cells => []});
     foreach my $column ( @{ $columns{'Groups'} } ) {
-        push @{ $head[0]{'cells'} }, { type => 'head', value => $self->Label( $column ) };
+        push @{ $head[0]{'cells'} }, { type => 'head', value => $escape->( $self->Label( $column ) ) };
     }
 
     my $i = 0;
@@ -1240,7 +1263,7 @@ sub FormatTable {
         $i = 0;
         my $last;
         while ( my $entry = $self->Next ) {
-            my $value = $entry->LabelValue( $column, 'html' );
+            my $value = $entry->LabelValue( $column, $format );
             if ( !$last || $last->{'value'} ne $value ) {
                 push @{ $body[ $i++ ]{'cells'} }, $last = { type => 'label', value => $value };
                 $last->{even} = $g++ % 2
@@ -1287,7 +1310,7 @@ sub FormatTable {
                 unless $info->{'META'}{'NoHideEmpty'};
         }
 
-        my $label = $self->Label( $column );
+        my $label = $escape->( $self->Label( $column ) );
 
         unless (@subs) {
             while ( my $entry = $self->Next ) {
@@ -1320,13 +1343,14 @@ sub FormatTable {
             };
         } else {
             push @{ $head[0]{'cells'} }, { type => 'head', value => $label, colspan => scalar @subs };
-            push @{ $head[1]{'cells'} }, { type => 'head', value => $_, color => $pick_color->(++$function_count) }
+            push @{ $head[1]{'cells'} },
+                { type => 'head', value => $escape->($_), color => $pick_color->( ++$function_count ) }
                 foreach @subs;
         }
 
         while ( my $entry = $self->Next ) {
             my $query = $entry->Query;
-            my $value = $entry->LabelValue( $column, 'html' ) || {};
+            my $value = $entry->LabelValue( $column, $format ) || {};
             $value = { '' => $value } unless ref $value;
             foreach my $e ( @subs ) {
                 push @{ $body[ $i ]{'cells'} }, {
@@ -1343,7 +1367,7 @@ sub FormatTable {
             my $total_code = $self->LabelValueCode( $column );
             foreach my $e ( @subs ) {
                 my $total = $total{ $e };
-                $total = $total_code->( $self, %$info, VALUE => $total, FORMAT => 'html' )
+                $total = $total_code->( $self, %$info, VALUE => $total, FORMAT => $format )
                     if $total_code;
                 push @{ $footer[0]{'cells'} }, { type => 'value', value => $total };
             }
