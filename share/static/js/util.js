@@ -2125,6 +2125,9 @@ function initAddLinkRows(section) {
         } else {
             input.value = rest;
             syncSubmit(row);
+            // Setting .value fires no 'input' event, so the bound handler's auto-append never
+            // runs for a pasted URL or shorthand; append the blank row here as typing would.
+            ensureBlankRow();
             input.focus();
         }
     }

@@ -161,4 +161,31 @@ my $prefix_hidden = $p->{page}->evaluate(
     'return document.querySelector("div.ticket-info-links .add-link-row:first-child .link-value-submit").value');
 is( $prefix_hidden, 'user:' . $user_name, 'committed value composes user:<name> after the prefix switch' );
 
+# Filling row 1 above appended a blank row 2. A pasted URL or txn: shorthand switches a row to a
+# plain-input type (Web Link / Transaction) through seedRow, which sets the value directly rather
+# than via typing; that path must still append a blank row so the user can keep adding links.
+$p->wait_for_element('div.ticket-info-links .add-link-row:nth-child(2)');
+
+my $row2_ctrl  = 'div.ticket-info-links .add-link-row:nth-child(2) .link-value + .ts-wrapper .ts-control input';
+my $row2_otype = 'div.ticket-info-links .add-link-row:nth-child(2) .link-object-type-select';
+$p->{page}->locator($row2_ctrl)->click();
+$p->{page}->locator($row2_ctrl)->fill('https://example.com/pasted');
+$p->{handle}->await( $p->{page}->waitForFunction(qq{document.querySelector("$row2_otype").value === "url"}) );
+my $url_visible = $p->{page}
+    ->evaluate('return document.querySelector("div.ticket-info-links .add-link-row:nth-child(2) .link-value").value');
+is( $url_visible, 'https://example.com/pasted', 'pasted URL lands in the Web Link row value box' );
+$p->wait_for_element('div.ticket-info-links .add-link-row:nth-child(3)');
+pass('pasting a URL appends a blank row');
+
+my $row3_ctrl  = 'div.ticket-info-links .add-link-row:nth-child(3) .link-value + .ts-wrapper .ts-control input';
+my $row3_otype = 'div.ticket-info-links .add-link-row:nth-child(3) .link-object-type-select';
+$p->{page}->locator($row3_ctrl)->click();
+$p->{page}->locator($row3_ctrl)->fill('txn:12');
+$p->{handle}->await( $p->{page}->waitForFunction(qq{document.querySelector("$row3_otype").value === "transaction"}) );
+my $txn_hidden = $p->{page}->evaluate(
+    'return document.querySelector("div.ticket-info-links .add-link-row:nth-child(3) .link-value-submit").value');
+is( $txn_hidden, 'txn:12', 'pasted txn: shorthand composes the txn: submit value' );
+$p->wait_for_element('div.ticket-info-links .add-link-row:nth-child(4)');
+pass('pasting a txn: shorthand appends a blank row');
+
 done_testing;
