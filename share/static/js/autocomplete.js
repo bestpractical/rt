@@ -267,6 +267,10 @@ window.RT.Autocomplete.bind = function(from) {
                             callback();
                         },
                         success: function(res) {
+                            // The widget may have been destroyed while this request was in
+                            // flight (e.g. the Links add-row rebinds its value box when a
+                            // typed prefix switches the object type). Nothing left to update.
+                            if (!input[0].tomselect) return;
                             input[0].tomselect.clearOptions();
                             callback(res);
                         }
