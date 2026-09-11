@@ -334,38 +334,50 @@ div.results .titlebox .titlebox-content {
     width: 16%;
 }
 
-/* Ticket table: fixed layout + explicit widths for a stable id/Subject/Status/Owner ~ 2/7/2/3.
-   Only while the widget is wide enough to honor them: at a col-4 width the 16% Owner slice breaks
-   names one letter per line (and trips clipContent). A narrow widget falls back to automatic table
-   layout, where the browser gives each column its natural width and Subject absorbs the squeeze. */
+/* Fixed layout + explicit id/Subject/Status/Owner widths (~2/7/2/3) so the Ticket table and the
+   Children tree line up column for column. Only while the widget is wide enough to honor them; a
+   narrow widget falls back to automatic layout (the browser sizes each column, Subject absorbing
+   the squeeze), which avoids the 16% Owner slice wrapping names one letter per line. */
 @container links-widget (min-width: 30rem) {
-    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"] table.collection-as-table {
+    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"] table.collection-as-table,
+    .titlebox.links-widget table.links-tree.links-default-format {
         table-layout: fixed;
     }
-    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(2) {
+    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(2),
+    .titlebox.links-widget .links-tree.links-default-format thead th:nth-child(2) {
         width: 47%;
     }
-    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(3) {
+    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(3),
+    .titlebox.links-widget .links-tree.links-default-format thead th:nth-child(3) {
         width: 15%;
     }
     /* Owner takes the full 22% in the read view (delete column hidden). In edit mode it yields a
        slim slice to the now-visible trailing delete column, so id/Subject/Status don't shift on
        the flip. */
-    .titlebox.links-widget:not(.editing) .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(4) {
+    .titlebox.links-widget:not(.editing) .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(4),
+    .titlebox.links-widget:not(.editing) .links-tree.links-default-format thead th:nth-child(4) {
         width: 22%;
     }
-    .titlebox.links-widget.editing .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(4) {
+    .titlebox.links-widget.editing .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(4),
+    .titlebox.links-widget.editing .links-tree.links-default-format thead th:nth-child(4) {
         width: 16%;
     }
-    .titlebox.links-widget.editing .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:last-child {
+    .titlebox.links-widget.editing .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:last-child,
+    .titlebox.links-widget.editing .links-tree.links-default-format thead th:last-child {
         width: 6%;
     }
+    /* A deep tree (tagged links-tree-deep, see Elements/ShowLinksTree and fitLinksTree) can't fit
+       the cascade in the fixed id column. Give it automatic layout so the id column grows and
+       Subject yields; this one section skews while shallow sections stay aligned. */
+    .titlebox.links-widget .links-tree.links-default-format.links-tree-deep {
+        table-layout: auto;
+    }
 }
-/* Narrow widget, automatic layout: hand Subject whatever is left once the other columns have
-   their minimum (longest-word) widths, so Status and Owner wrap by word but Subject is the
-   column that gives, not the one that gets squeezed to a word per line. */
+/* Narrow widget: let Subject take the slack so it's the column that gives, rather than Status and
+   Owner getting squeezed to a word per line. */
 @container links-widget (max-width: 30rem) {
-    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(2) {
+    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(2),
+    .titlebox.links-widget .links-tree.links-default-format thead th:nth-child(2) {
         width: 100%;
     }
 }
@@ -628,44 +640,20 @@ div.results .titlebox .titlebox-content {
     font-style: italic;
 }
 
-/* Left-align the id (right-aligned by default) so the tree cascade reads left-to-right; target it
-   by the tree's id-column class. nowrap keeps the id on the connector's line: as the tree deepens
-   the indent grows, and a squeezed column would otherwise wrap the id below its connector. */
+/* Left-align the tree id so the cascade reads left-to-right, and keep it nowrap so it stays on its
+   connector's line (a deep tree grows the id column instead; see links-tree-deep above). */
 .links-tree .links-tree-id {
     text-align: left !important;
     white-space: nowrap;
 }
 
-/* The id header inherits the column's right alignment; in the tree read view the id cascades from
-   the left, so left-align its header too instead of letting "Ticket" float right over the rows. */
-.titlebox.links-widget:not(.editing) .links-tree thead th.text-end {
+/* Left-align the id column (header and values) in every default-format link table, overriding
+   Bootstrap's numeric right alignment, so the id is consistent across the tree and the flat
+   per-type tables in both display and edit. */
+.titlebox.links-widget .links-type-table.links-default-format thead th.collection-as-table:first-child,
+.titlebox.links-widget .links-type-table.links-default-format tbody td.collection-as-table:first-child,
+.titlebox.links-widget .links-type-table.links-default-format tbody td.collection-as-table:first-child > div {
     text-align: left !important;
-}
-
-/* Edit mode shows only flush-left direct children (no connectors), so restore the id's default
-   right alignment to match the flat per-type tables. */
-.titlebox.links-widget.editing .links-tree .links-tree-id {
-    text-align: right !important;
-}
-
-/* Edit mode collapses the tree to a flush-left list of direct children, so give it the flat Ticket
-   tables' fixed column widths for a consistent edit view (id width comes from the shared
-   default-format rule above). The read view keeps auto sizing so the cascade's id column can grow
-   with depth. */
-.titlebox.links-widget.editing .links-tree.links-default-format {
-    table-layout: fixed;
-}
-.titlebox.links-widget.editing .links-tree.links-default-format thead th:nth-child(2) {
-    width: 47%;
-}
-.titlebox.links-widget.editing .links-tree.links-default-format thead th:nth-child(3) {
-    width: 15%;
-}
-.titlebox.links-widget.editing .links-tree.links-default-format thead th:nth-child(4) {
-    width: 16%;
-}
-.titlebox.links-widget.editing .links-tree.links-default-format thead th:last-child {
-    width: 6%;
 }
 
 /* Links widget: one body serves both display and edit. The form is always visible (override the

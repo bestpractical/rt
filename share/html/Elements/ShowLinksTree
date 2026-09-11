@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table class="table <% RT->Config->Get('TableAccent') %> ticket-list links-type-table links-tree<% $default_format ? ' links-default-format' : '' %> collection-as-table<% $inline_edit ? ' inline-edit' : '' %>" data-class="RT::Ticket" data-max-items="<% $maxitems %>" data-mark-inactive="1" data-display-format="<% $format |h %>"<% $Edit ? ' data-link-delete-type="MemberOf" data-link-delete-mode="Base"' : '' |n %> role="treegrid">
+<table class="table <% RT->Config->Get('TableAccent') %> ticket-list links-type-table links-tree<% $default_format ? ' links-default-format' : '' %><% $deep ? ' links-tree-deep' : '' %> collection-as-table<% $inline_edit ? ' inline-edit' : '' %>" data-class="RT::Ticket" data-max-items="<% $maxitems %>" data-mark-inactive="1" data-display-format="<% $format |h %>"<% $Edit ? ' data-link-delete-type="MemberOf" data-link-delete-mode="Base"' : '' |n %> role="treegrid">
   <& /Elements/CollectionAsTable/Header, Class => 'RT::Tickets', Format => \@parsed_format, maxitems => $maxitems, AllowSorting => 0 &>
   <tbody>
 % for my $node (@nodes) {
@@ -160,6 +160,15 @@ for my $idx ( 0 .. $#shown ) {
 
 # No visible nodes: render nothing so the caller drops the Children section, like the flat tables.
 return unless @nodes;
+
+# Tag a deep tree so CSS gives it an auto-sized id column (see links-tree-deep in boxes.css);
+# a shallow one keeps the fixed widths that line up with the flat tables. This is only a no-JS
+# baseline: fitLinksTree (util.js) measures the real id overflow and refines the tag when JS runs.
+my $max_depth = 0;
+for my $node (@nodes) {
+    $max_depth = $node->{depth} if $node->{depth} > $max_depth;
+}
+my $deep = $max_depth >= 4 ? 1 : 0;
 </%init>
 <%args>
 $Object
