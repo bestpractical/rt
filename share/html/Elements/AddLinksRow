@@ -47,21 +47,21 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="add-link-row row g-2 align-items-center mb-2"<% $row_data |n %>>
   <div class="col-auto">
-    <select class="form-select form-select-sm link-type-select selectpicker" aria-label="<&|/l&>Link type</&>">
+    <select class="form-select link-type-select selectpicker mw-100" aria-label="<&|/l&>Link type</&>">
 % for my $opt (@link_types) {
-      <option value="<% $opt->{field} %>" data-mode="<% $opt->{mode} %>" data-type="<% $opt->{type} %>"<% $opt->{field} eq ( $InitField || $default_type ) ? ' selected' : '' %>><% $opt->{label} %></option>
+      <option value="<% $opt->{field} %>" data-mode="<% $opt->{mode} %>" data-type="<% $opt->{type} %>" data-short="<% $opt->{short} %>"<% $opt->{field} eq ( $InitField || $default_type ) ? ' selected' : '' %>><% $opt->{label} %></option>
 % }
     </select>
   </div>
   <div class="col-auto">
-    <select class="form-select form-select-sm link-object-type-select selectpicker" aria-label="<&|/l&>Object type</&>">
+    <select class="form-select link-object-type-select selectpicker mw-100" aria-label="<&|/l&>Object type</&>">
 % for my $ot (@object_types) {
-      <option value="<% $ot->{value} %>" data-autocomplete="<% $ot->{autocomplete} // '' %>" data-return="<% $ot->{return} %>" data-prefix="<% $ot->{prefix} // '' %>" data-placeholder="<% $ot->{placeholder} %>"<% $ot->{value} eq $init_object_type ? ' selected' : '' %>><% $ot->{label} %></option>
+      <option value="<% $ot->{value} %>" data-autocomplete="<% $ot->{autocomplete} // '' %>" data-return="<% $ot->{return} %>" data-prefix="<% $ot->{prefix} // '' %>" data-short="<% $ot->{short} // $ot->{label} %>" data-placeholder="<% $ot->{placeholder} %>"<% $ot->{value} eq $init_object_type ? ' selected' : '' %>><% $ot->{label} %></option>
 % }
     </select>
   </div>
   <div class="col">
-    <input type="text" class="form-control form-control-sm link-value" placeholder="<% $object_types[0]{placeholder} %>"
+    <input type="text" class="form-control link-value mw-100" placeholder="<% $object_types[0]{placeholder} %>"
            data-autocomplete="<% $object_types[0]{autocomplete} %>" data-autocomplete-return="<% $object_types[0]{return} %>"
            value="<% $InitValue %>" />
 %# This hidden field is what submits, carrying the object-type prefix (asset:4, user:jdoe) the
@@ -73,13 +73,15 @@
   </div>
 </div>
 <%init>
+# short: the abbreviated label the select shows while the add-links block is narrow (the add-links
+# container query in boxes.css); the open dropdown always lists the full label.
 my @link_types = (
-    { label => loc('Depends on'),     field => $id . '-DependsOn', type => 'DependsOn', mode => 'Target' },
-    { label => loc('Depended on by'), field => 'DependsOn-' . $id, type => 'DependsOn', mode => 'Base' },
-    { label => loc('Parent of'),      field => 'MemberOf-' . $id,  type => 'MemberOf',  mode => 'Base' },
-    { label => loc('Child of'),       field => $id . '-MemberOf',  type => 'MemberOf',  mode => 'Target' },
-    { label => loc('Refers to'),      field => $id . '-RefersTo',  type => 'RefersTo',  mode => 'Target' },
-    { label => loc('Referred to by'), field => 'RefersTo-' . $id,  type => 'RefersTo',  mode => 'Base' },
+    { label => loc('Depends on'),     short => loc('Dep on'), field => $id . '-DependsOn', type => 'DependsOn', mode => 'Target' },
+    { label => loc('Depended on by'), short => loc('Dep by'), field => 'DependsOn-' . $id, type => 'DependsOn', mode => 'Base' },
+    { label => loc('Parent of'),      short => loc('Parent'),  field => 'MemberOf-' . $id,  type => 'MemberOf',  mode => 'Base' },
+    { label => loc('Child of'),       short => loc('Child'),   field => $id . '-MemberOf',  type => 'MemberOf',  mode => 'Target' },
+    { label => loc('Refers to'),      short => loc('Refers'),  field => $id . '-RefersTo',  type => 'RefersTo',  mode => 'Target' },
+    { label => loc('Referred to by'), short => loc('Ref by'), field => 'RefersTo-' . $id,  type => 'RefersTo',  mode => 'Base' },
 );
 my $default_type = $id . '-RefersTo';
 
@@ -108,6 +110,7 @@ my @object_types = (
     },
     {   value        => 'transaction',
         label        => loc('Transaction'),
+        short        => loc('Txn'),
         autocomplete => '',
         prefix       => 'txn:',
         return       => 'id',
@@ -143,6 +146,7 @@ my @object_types = (
     },
     {   value        => 'url',
         label        => loc('Web Link'),
+        short        => loc('URL'),
         autocomplete => '',
         prefix       => '',
         return       => 'id',
