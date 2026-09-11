@@ -2313,3 +2313,23 @@ function initAddLinkRows(section) {
     section.querySelectorAll('.add-link-row').forEach(row => { bindRow(row); applyObjectType(row); });
 }
 
+// Tag a Children tree links-tree-deep (boxes.css gives it an auto-sized id column) when its id
+// column can't fit the cascade, so the id doesn't spill into Subject. Measuring the rendered cells
+// beats the server's depth guess (Elements/ShowLinksTree): it catches large ids and reacts to the
+// widget width. Re-run on htmx swaps, resize and expanding a rolled-up box.
+function fitLinksTree(scope) {
+    const root = scope && scope.querySelectorAll ? scope : document;
+    root.querySelectorAll('.titlebox.links-widget .links-tree.links-default-format').forEach(function (tree) {
+        // A rolled-up box measures every cell as 0; keep the server's guess until it is shown.
+        if (!tree.getClientRects().length) return;
+        // Drop the class first so we measure against the fixed layout; the toggle is synchronous,
+        // so there's no flicker.
+        tree.classList.remove('links-tree-deep');
+        let overflow = false;
+        const cells = tree.querySelectorAll('tbody .links-tree-id');
+        for (let i = 0; i < cells.length; i++) {
+            if (cells[i].scrollWidth > cells[i].clientWidth + 1) { overflow = true; break; }
+        }
+        if (overflow) tree.classList.add('links-tree-deep');
+    });
+}

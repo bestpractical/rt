@@ -1261,6 +1261,7 @@ document.addEventListener('htmx:load', function(evt) {
     }
 
     expandCalendar(elt);
+    fitLinksTree(elt);
 
     // Delay calendar popup requests so that mousing across the calendar
     // does not fire a request for every ticket the cursor passes over.
@@ -1285,6 +1286,10 @@ document.addEventListener('htmx:load', function(evt) {
     if (elt.matches && elt.matches('.add-links-section')) addLinkSections.add(elt);
     addLinkSections.forEach(el => initAddLinkRows(el));
 
+});
+
+document.addEventListener('shown.bs.collapse', function (e) {
+    fitLinksTree(e.target);
 });
 
 /* Load the owner dropdown when the user clicks the pencil in basics */
@@ -1676,6 +1681,14 @@ jQuery(function () {
         clearTimeout(expandCalendarResizeTimeout);
         expandCalendarResizeTimeout = setTimeout(() => {
             expandCalendar(document);
+        }, 150);
+    });
+
+    let fitLinksTreeResizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(fitLinksTreeResizeTimeout);
+        fitLinksTreeResizeTimeout = setTimeout(() => {
+            fitLinksTree(document);
         }, 150);
     });
 

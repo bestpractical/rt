@@ -637,6 +637,47 @@ diag "Display mode: filtering the children tree keeps a deep match plus its ance
     ok( $other_hidden, 'the unrelated sibling branch (other, depth 1) is hidden with d-none' );
 }
 
+diag "A deep children tree keeps links-tree-deep while rolled up and re-measures when expanded";
+{
+    my ($root) = RT::Test->create_tickets( { Queue => $queue->id }, { Subject => 'deep tree root' } );
+    my $parent = $root;
+    for my $level ( 1 .. 7 ) {
+        my ($kid) = RT::Test->create_tickets( { Queue => $queue->id }, { Subject => "deep tree level $level" } );
+        my ( $ok, $msg ) = $parent->AddLink( Type => 'MemberOf', Base => $kid->id );
+        ok( $ok, "linked level $level: $msg" );
+        $parent = $kid;
+    }
+
+    $p->goto_ticket( $root->id );
+    $p->wait_for_element('.ticket-info-links .links-tree');
+
+    my $tree     = '.titlebox.links-widget .links-tree';
+    my $deep     = "document.querySelector('$tree').classList.contains('links-tree-deep')";
+    my $collapse = "bootstrap.Collapse.getOrCreateInstance(document.querySelector('$tree').closest('.titlebox-content'), { toggle: false })";
+    my $wait_deep = sub {
+        $p->{handle}->await( $p->{page}->waitForFunction( $deep, {}, { timeout => 5000 } ) );
+    };
+
+    # Test ids are short, so lengthen the deepest one until it can't fit the fixed id column.
+    $p->{page}->evaluate(
+        "const ids = document.querySelectorAll('$tree tbody .links-tree-id'); ids[ids.length - 1].append('0'.repeat(40))");
+    $p->{page}->evaluate("window.dispatchEvent(new Event('resize'))");
+    $wait_deep->();
+    pass('an id too wide for its column tags the tree links-tree-deep');
+
+    $p->{page}->evaluate("$collapse.hide()");
+    $p->wait_for_element( $tree, { state => 'hidden' } );
+    $p->{page}->evaluate("window.dispatchEvent(new Event('resize'))");
+    $p->{handle}->await( $p->{page}->waitForTimeout(500) );    # fitLinksTree runs 150ms after the last resize
+    ok( $p->{page}->evaluate("return $deep"), 'a resize while rolled up keeps links-tree-deep' );
+
+    # Drop the class to check that expanding re-measures rather than keeping what was there.
+    $p->{page}->evaluate("document.querySelector('$tree').classList.remove('links-tree-deep')");
+    $p->{page}->evaluate("$collapse.show()");
+    $wait_deep->();
+    pass('expanding the box re-measures and tags the tree links-tree-deep again');
+}
+
 $p->logout;
 
 done_testing;
