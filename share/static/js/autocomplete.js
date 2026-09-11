@@ -258,6 +258,7 @@ window.RT.Autocomplete.bind = function(from) {
                 load: function(query, callback) {
                     if (!query.length) return callback();
                     queryargs.term = query;
+                    const ts = this;
                     jQuery.ajax({
                         url: source,
                         type: 'GET',
@@ -267,7 +268,12 @@ window.RT.Autocomplete.bind = function(from) {
                             callback();
                         },
                         success: function(res) {
-                            input[0].tomselect.clearOptions();
+                            // The widget may have been destroyed while this request was in
+                            // flight (e.g. the Links add-row rebinds its value box when a
+                            // typed prefix switches the object type), possibly with a new widget
+                            // bound in its place. Nothing left to update.
+                            if (input[0].tomselect !== ts) return;
+                            ts.clearOptions();
                             callback(res);
                         }
                     });
