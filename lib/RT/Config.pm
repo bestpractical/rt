@@ -106,6 +106,77 @@ $page_layout_mapping_merger->add_behavior_spec($page_layout_mapping_merger_behav
 # Store log messages generated before RT::Logger is available
 our @PreInitLoggerMessages;
 
+# For custom field groupings, we use a merger that normalizes both operands
+# before merging them. Two config files can each write a different one of the
+# accepted shapes, and the default merger only recurses on HASH/HASH, returning
+# the left-hand (already loaded) operand for every other pairing, so one
+# files's groupings are silently discarded. Once both sides are keyed by
+# category, they can be merged category by category and group by group.
+#
+# Groupings written as a hash carry no order of their own and are displayed
+# alphabetically, so _CanonicalizeCustomFieldGroupings leaves them as a hash and
+# they are sorted only once, by _FlattenCustomFieldGroupings, after every config
+# file has been merged.
+#
+# Only the HASH/HASH entry is replaced, and it does not recurse back into the
+# merger, so it is called exactly once per merge with the whole class-keyed
+# structure. Each nested value's meaning is therefore known from its position
+# here, rather than having to be guessed by a handler that gets no path
+# information.
+my $custom_field_groupings_merger = Hash::Merge->new();
+my $custom_field_groupings_merger_behavior = Clone::clone(Hash::Merge::Extra::L_OVERRIDE);
+$custom_field_groupings_merger_behavior->{HASH}{HASH} = sub {
+    my $left  = RT::Config->_CanonicalizeCustomFieldGroupings( shift );
+    my $right = RT::Config->_CanonicalizeCustomFieldGroupings( shift );
+
+    for my $class ( keys %$right ) {
+        unless ( $left->{$class} ) {
+            $left->{$class} = $right->{$class};
+            next;
+        }
+
+        for my $category ( keys %{ $right->{$class} } ) {
+            my $l = $left->{$class}{$category};
+            my $r = $right->{$class}{$category};
+
+            unless ($l) {
+                $left->{$class}{$category} = $r;
+                next;
+            }
+
+            # Two unsorted sets of groupings stay unsorted, to be sorted as a
+            # whole once all config files are loaded.
+            if ( ref $l eq 'HASH' && ref $r eq 'HASH' ) {
+                for my $group ( keys %$r ) {
+                    $l->{$group} = RT::Config->_MergeCustomFieldList( $l->{$group}, $r->{$group} );
+                }
+                next;
+            }
+
+            # At least one side is explicitly ordered, so merge the two
+            # "group => [ cfs ]" lists by group name, keeping left-hand order
+            # and appending the custom fields of any group both sides define.
+            my ( @groups, %cfs );
+            my @pairs = (
+                RT::Config->_CustomFieldGroupingPairs($l),
+                RT::Config->_CustomFieldGroupingPairs($r),
+            );
+            while (@pairs) {
+                my $group = shift @pairs;
+                my $list  = shift @pairs;
+                push @groups, $group unless exists $cfs{$group};
+                $cfs{$group} = RT::Config->_MergeCustomFieldList( $cfs{$group}, $list );
+            }
+
+            $left->{$class}{$category} = [ map { $_, $cfs{$_} } @groups ];
+        }
+    }
+
+    return $left;
+};
+
+$custom_field_groupings_merger->add_behavior_spec($custom_field_groupings_merger_behavior, "CUSTOM_FIELD_GROUPINGS");
+
 =head1 NAME
 
 RT::Config - RT's config
@@ -1287,80 +1358,13 @@ our %META;
     CustomFieldGroupings => {
         Type            => 'HASH',
         MergeMode       => 'recursive',
+        Merger          => $custom_field_groupings_merger,
         PostLoadCheck   => sub {
             my $config = shift;
             # use scalar context intentionally to avoid not a hash error
             my $groups = $config->Get('CustomFieldGroupings') || {};
-
-            unless (ref($groups) eq 'HASH') {
-                RT->Logger->error("Config option \%CustomFieldGroupings is a @{[ref $groups]} not a HASH; ignoring");
-                $groups = {};
-            }
-
-            for my $class (keys %$groups) {
-                my %h;
-                if (ref($groups->{$class}) eq 'HASH') {
-                    for my $key ( keys %{ $groups->{$class} } ) {
-                        my $value = $groups->{$class}{$key};
-                        if ( ref $value eq 'ARRAY' ) {
-                            if ( ref $value->[1] eq 'ARRAY' ) {
-                                # 'RT::Ticket' => {
-                                #     General => [
-                                #         'Network' => [ 'IP Address', 'Router', ],
-                                #     ],
-                                # }
-                                $h{$key} = $value;
-                            }
-                            else {
-                                # 'RT::Ticket' => {
-                                #     'Network' => [ 'IP Address', 'Router', ],
-                                # }
-                                $h{Default} = [
-                                    map { $_, $groups->{$class}->{$_} }
-                                    sort { lc($a) cmp lc($b) } keys %{ $groups->{$class} }
-                                ];
-                                last;
-                            }
-                        }
-                        elsif ( ref $value eq 'HASH' ) {
-                            # 'RT::Ticket' => {
-                            #     General => {
-                            #         'Network' => [ 'IP Address', 'Router', ],
-                            #     },
-                            # }
-                            $h{$key} = [ map { $_, $groups->{$class}{$key}{$_} }
-                                    sort { lc($a) cmp lc($b) } keys %{ $groups->{$class}{$key} } ];
-                        }
-                        else {
-                            RT->Logger->error(
-                                "Config option \%CustomFieldGroupings{$class}{$key} is not a HASH or ARRAY; ignoring");
-                        }
-                    }
-                } elsif (ref($groups->{$class}) eq 'ARRAY') {
-                    $h{Default} = $groups->{$class};
-                } else {
-                    RT->Logger->error("Config option \%CustomFieldGroupings{$class} is not a HASH or ARRAY; ignoring");
-                    delete $groups->{$class};
-                    next;
-                }
-
-                $groups->{$class} = {};
-                for my $category ( keys %h ) {
-                    my @h = @{ $h{$category} };
-                    while (@h) {
-                        my $group = shift @h;
-                        my $ref   = shift @h;
-                        if ( ref($ref) eq 'ARRAY' ) {
-                            push @{ $groups->{$class}{$category} }, $group => $ref;
-                        }
-                        else {
-                            RT->Logger->error(
-                                "Config option \%CustomFieldGroupings{$class}{$category}{$group} is not an ARRAY; ignoring");
-                        }
-                    }
-                }
-            }
-            $config->Set( CustomFieldGroupings => %$groups );
+            my $merged = $config->_CanonicalizeCustomFieldGroupings($groups);
+            $config->Set( CustomFieldGroupings => %{ $config->_FlattenCustomFieldGroupings($merged) } );
         },
     },
     CustomDateRanges => {
@@ -3347,6 +3351,132 @@ sub LoadConfigFromDatabase {
     }
 
     $database_config_cache_time = $now;
+}
+
+# Handle log messages that happen before the Logger is available
+sub _LogConfigError {
+    my ( $self, $message ) = @_;
+    if ( RT->Logger ) {
+        RT->Logger->error($message);
+    }
+    else {
+        push @PreInitLoggerMessages, { Level => 'error', Message => $message };
+    }
+}
+
+# %CustomFieldGroupings accepts several shapes for a class. Normalize them all
+# to { class => { category => groupings } }, where groupings is either an
+# ARRAY of "group => [ cfs ]" pairs, when the config gave them in an explicit
+# order, or a HASH of "group => [ cfs ]", when it did not and they are to be
+# sorted by group name. _FlattenCustomFieldGroupings turns the latter into the
+# former, once all config files have been merged.
+sub _CanonicalizeCustomFieldGroupings {
+    my ( $self, $groups ) = @_;
+
+    unless ( ref($groups) eq 'HASH' ) {
+        $self->_LogConfigError("Config option \%CustomFieldGroupings is a @{[ref $groups]} not a HASH; ignoring");
+        return {};
+    }
+
+    for my $class ( keys %$groups ) {
+        my $value = $groups->{$class};
+
+        if ( ref $value eq 'HASH' ) {
+            my %categories;
+            for my $key ( keys %$value ) {
+                my $entry = $value->{$key};
+                if ( ref $entry eq 'ARRAY' ) {
+                    if ( ref $entry->[1] eq 'ARRAY' ) {
+                        # 'RT::Ticket' => {
+                        #     General => [
+                        #         'Network' => [ 'IP Address', 'Router', ],
+                        #     ],
+                        # }
+                        $categories{$key} = $entry;
+                    }
+                    else {
+                        # 'RT::Ticket' => {
+                        #     'Network' => [ 'IP Address', 'Router', ],
+                        # }
+                        %categories = ( Default => $value );
+                        last;
+                    }
+                }
+                elsif ( ref $entry eq 'HASH' ) {
+                    # 'RT::Ticket' => {
+                    #     General => {
+                    #         'Network' => [ 'IP Address', 'Router', ],
+                    #     },
+                    # }
+                    $categories{$key} = $entry;
+                }
+                else {
+                    $self->_LogConfigError(
+                        "Config option \%CustomFieldGroupings{$class}{$key} is not a HASH or ARRAY; ignoring");
+                }
+            }
+            $groups->{$class} = \%categories;
+        }
+        elsif ( ref $value eq 'ARRAY' ) {
+            # 'RT::Ticket' => [ 'Network' => [ 'IP Address', 'Router', ], ]
+            $groups->{$class} = { Default => $value };
+        }
+        else {
+            $self->_LogConfigError("Config option \%CustomFieldGroupings{$class} is not a HASH or ARRAY; ignoring");
+            delete $groups->{$class};
+        }
+    }
+
+    return $groups;
+}
+
+# Reduce the groupings of one category, as normalized by
+# _CanonicalizeCustomFieldGroupings, to a list of "group => [ cfs ]" pairs,
+# sorting the groups by name when the config did not order them itself.
+sub _CustomFieldGroupingPairs {
+    my ( $self, $groupings ) = @_;
+    return @$groupings if ref $groupings eq 'ARRAY';
+    return map { $_, $groupings->{$_} } sort { lc($a) cmp lc($b) } keys %$groupings;
+}
+
+# Combine the custom fields of a grouping two config files both define, keeping
+# the order of the first and dropping duplicates. Anything that isn't a list of
+# custom fields is passed through for _FlattenCustomFieldGroupings to report.
+sub _MergeCustomFieldList {
+    my ( $self, $left, $right ) = @_;
+    return $right unless ref $left eq 'ARRAY';
+    return $left  unless ref $right eq 'ARRAY';
+
+    my %seen = map { $_ => 1 } @$left;
+    return [ @$left, grep { !$seen{$_}++ } @$right ];
+}
+
+# Turn the normalized groupings of every class into "group => [ cfs ]" lists,
+# sorting the groups of any category the config didn't order itself.
+sub _FlattenCustomFieldGroupings {
+    my ( $self, $groups ) = @_;
+
+    for my $class ( keys %$groups ) {
+        my $categories = $groups->{$class};
+        for my $category ( keys %$categories ) {
+            my @pairs = $self->_CustomFieldGroupingPairs( $categories->{$category} );
+            delete $categories->{$category};
+
+            while (@pairs) {
+                my $group = shift @pairs;
+                my $cfs   = shift @pairs;
+                if ( ref($cfs) eq 'ARRAY' ) {
+                    push @{ $categories->{$category} }, $group => $cfs;
+                }
+                else {
+                    $self->_LogConfigError(
+                        "Config option \%CustomFieldGroupings{$class}{$category}{$group} is not an ARRAY; ignoring");
+                }
+            }
+        }
+    }
+
+    return $groups;
 }
 
 sub _GetFromFilesOnly {

@@ -380,8 +380,17 @@ sub InitLogging {
 # Output them here.
 
 sub ProcessPreInitMessages {
+    my %levels = map { $_ => 1 } qw(debug info notice warning error critical alert emergency);
+
     foreach my $message ( @RT::Config::PreInitLoggerMessages ){
-        RT->Logger->debug($message);
+        # Messages are either plain strings, logged at debug level, or a
+        # hashref recording the level they were reported at.
+        my $level = 'debug';
+        if ( ref $message eq 'HASH' ) {
+            $level   = $message->{Level} if $levels{ $message->{Level} // '' };
+            $message = $message->{Message};
+        }
+        RT->Logger->$level($message);
     }
 }
 
