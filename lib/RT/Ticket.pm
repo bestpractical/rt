@@ -3252,8 +3252,23 @@ sub Forward {
         @_
     );
 
-    unless ( $self->CurrentUserHasRight('ForwardMessage') ) {
+    unless ( $self->CurrentUserCanSee && $self->CurrentUserHasRight('ForwardMessage') ) {
         return ( 0, $self->loc("Permission Denied") );
+    }
+
+    if ( $args{Transaction} ) {
+        my $txn = RT::Transaction->new( $self->CurrentUser );
+        $txn->Load( $args{Transaction}->id );
+
+        unless ($txn->id
+            && $txn->CurrentUserCanSee
+            && $txn->ObjectType eq 'RT::Ticket'
+            && $txn->Object->id == $self->id )
+        {
+            return ( 0, $self->loc("Permission Denied") );
+        }
+
+        $args{Transaction} = $txn;
     }
 
     if ( $args{MIMEObj} ) {
