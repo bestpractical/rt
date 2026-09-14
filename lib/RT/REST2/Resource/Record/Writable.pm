@@ -62,6 +62,22 @@ with 'RT::REST2::Resource::Role::RequestBodyIsJSON'
 requires 'record';
 requires 'record_class';
 
+=head2 immutable_fields
+
+Returns the fields to drop from the request body, given C<create> or
+C<update> for the operation in progress. The fields listed here are dropped
+for both, so this ignores the argument; resource classes override it to
+append their own, and may vary those by operation. Fields are dropped
+silently rather than rejected.
+
+=cut
+
+sub immutable_fields {
+    my $self = shift;
+
+    return qw(id Creator Created LastUpdated LastUpdatedBy);
+}
+
 sub post_is_create            { 1 }
 sub allow_missing_post        { 1 }
 sub create_path_after_handler { 1 }
@@ -151,6 +167,8 @@ sub from_json {
 sub update_record {
     my $self = shift;
     my $data = shift;
+
+    delete @{$data}{ $self->immutable_fields('update') };
 
     # update_role_members wants custom role IDs (like RT::CustomRole-ID)
     # rather than role names.
@@ -296,6 +314,8 @@ sub update_resource {
 sub create_record {
     my $self = shift;
     my $data = shift;
+
+    delete @{$data}{ $self->immutable_fields('create') };
 
     my $record = $self->record;
     my %args = %$data;
