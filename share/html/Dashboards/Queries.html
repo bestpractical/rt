@@ -84,6 +84,19 @@ if ($self_service_dashboard) {
 }
 my $content = ($Dashboard->Content || {})->{Elements} || [];
 
+my @available_widgets = GetAvailableWidgets(
+    Class     => 'RT::Dashboard',
+    Page      => $self_service_dashboard ? 'SelfService' : '',
+    Dashboard => $Dashboard,
+);
+
+$m->callback(
+    CallbackName     => 'Default',
+    AvailableWidgets => \@available_widgets,
+    Content          => $content,
+    Dashboard        => $Dashboard,
+);
+
 if ( $ARGS{AddRow} || $ARGS{Update} ) {
 
     if ( $ARGS{AddRow} ) {
@@ -108,7 +121,19 @@ if ( $ARGS{AddRow} || $ARGS{Update} ) {
             push @results, loc("Couldn't decode JSON");
         }
         else {
-            if ( JSON::to_json( $new_content, { canonical => 1, pretty => 1 } ) ne
+            my ( $valid, @invalid_msgs ) = ValidateWidgets(
+                Class            => 'RT::Dashboard',
+                Content          => $new_content,
+                AvailableWidgets => \@available_widgets,
+            );
+
+            if ( !$valid ) {
+                for my $invalid_msg (@invalid_msgs) {
+                    push @results, $invalid_msg;
+                    RT->Logger->warning( "Rejecting content for dashboard #" . $Dashboard->Id . ": $invalid_msg" );
+                }
+            }
+            elsif ( JSON::to_json( $new_content, { canonical => 1, pretty => 1 } ) ne
                 JSON::to_json( $content, { canonical => 1, pretty => 1 } ) )
             {
 
@@ -139,20 +164,6 @@ if ( $ARGS{AddRow} || $ARGS{Update} ) {
         );
     }
 }
-
-my @available_widgets = GetAvailableWidgets(
-    Class     => 'RT::Dashboard',
-    Page      => $self_service_dashboard ? 'SelfService' : '',
-    Dashboard => $Dashboard,
-);
-
-
-$m->callback(
-    CallbackName     => 'Default',
-    AvailableWidgets => \@available_widgets,
-    Content          => $content,
-    Dashboard        => $Dashboard,
-);
 
 my %available_widgets = map { join( '-', $_->{portlet_type}, $_->{component} || $_->{id} ) => $_ }
     @available_widgets;

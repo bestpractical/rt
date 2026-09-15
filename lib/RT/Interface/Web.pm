@@ -6801,6 +6801,57 @@ sub GetAvailableWidgets {
     return sort keys %widget;
 }
 
+=head2 ValidateWidgets Class => $Class, Content => ARRAYREF, AvailableWidgets => ARRAYREF
+
+Takes page layout content and the list of widgets L</GetAvailableWidgets>
+returned for the same class and page.
+
+Only C<RT::Dashboard> content is validated for now. Page layouts for other
+classes allow shapes this does not walk yet, so they are accepted as is.
+
+Returns a tuple of (status, messages).
+
+=cut
+
+sub ValidateWidgets {
+    my %args = (
+        Class            => 'RT::Ticket',
+        Content          => undef,
+        AvailableWidgets => undef,
+        @_,
+    );
+
+    return 1 unless $args{Class} eq 'RT::Dashboard';
+
+    return ( 0, loc('Invalid Content') ) unless ref $args{Content} eq 'ARRAY';
+
+    my $key_for = sub {
+        my $item = shift;
+        return join '-', $item->{portlet_type} // '', $item->{component} || $item->{id} // '' if ref $item eq 'HASH';
+        return ref $item ? JSON::to_json( $item, { canonical => 1 } ) : $item // '';
+    };
+
+    my %available = map { $key_for->($_) => 1 } @{ $args{AvailableWidgets} || [] };
+
+    my @invalid;
+    for my $row ( @{ $args{Content} } ) {
+        unless ( ref $row eq 'HASH' && ref $row->{Elements} eq 'ARRAY' ) {
+            push @invalid, $key_for->($row);
+            next;
+        }
+
+        for my $element ( @{ $row->{Elements} } ) {
+            for my $item ( ref $element eq 'ARRAY' ? @$element : $element ) {
+                my $key = $key_for->($item);
+                push @invalid, $key unless $available{$key};
+            }
+        }
+    }
+
+    return ( 0, map { loc( 'Invalid widget: [_1]', $_ ) } @invalid ) if @invalid;
+    return 1;
+}
+
 =head2 UpdateConfig Name => $Name, Value => $Value
 
 Update Config C<$Name>. It will create L<RT::Configuration> if needed.

@@ -125,34 +125,15 @@ my %available_widgets = map { join( '-', $_->{portlet_type}, $_->{component} || 
 
 if ( $Validate || $Update ) {
     my $new_content = JSON::from_json($Content);
-    my ( $valid, @warnings );
+    my ( $valid, @invalid_msgs ) = ValidateWidgets(
+        Class            => 'RT::Dashboard',
+        Content          => $new_content,
+        AvailableWidgets => \@available_widgets,
+    );
 
-    for my $item (@$new_content) {
-        if ( ref $item eq 'HASH' ) {
-            if ( $item->{Elements} ) {
-                for my $element ( @{ $item->{Elements} } ) {
-                    for my $item ( ref $element eq 'ARRAY' ? @$element : $element ) {
-                        my $key = join '-', $item->{portlet_type}, $item->{component} || $item->{id};
-                        if ( !$available_widgets{$key} ) {
-                            push @warnings, loc( 'Invalid widget: [_1]', $key );
-                            $valid = 0;
-                        }
-                    }
-                }
-            }
-            else {
-                my $key = join '-', $item->{portlet_type}, $item->{component} || $item->{id};
-                push @warnings, loc( 'Invalid widget: [_1]', $key );
-            }
-        }
-        else {
-            push @warnings,
-                loc( 'Invalid widget: [_1]',
-                    ref $item ? JSON::to_json( $item, { canonical => 1, pretty => 1 } ) : $item );
-            $valid = 0;
-        }
+    if ( !$valid && $Update ) {
+        RT->Logger->warning( "Rejecting content for dashboard #" . $Dashboard->Id . ": $_" ) for @invalid_msgs;
     }
-    $valid //= 1;
 
     my $updated;
     if ($valid) {
@@ -174,7 +155,7 @@ if ( $Validate || $Update ) {
         }
     }
     else {
-        push @results, @warnings;
+        push @results, @invalid_msgs;
     }
 
     my $path;
