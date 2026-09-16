@@ -198,4 +198,139 @@ run_tests(
 
 @tickets = ();
 
+diag "Re-indexing with rt-fulltext-indexer --reindex";
+
+my $dbh = $RT::Handle->dbh;
+my $short_cf = RT::Test->load_or_create_custom_field(
+    Name => 'short', Type => 'FreeformSingle', Queue => $q->Id );
+
+sub run_indexer {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    return RT::Test->run_and_capture(
+        command => $RT::SbinPath . '/rt-fulltext-indexer',
+        @_,
+    );
+}
+
+sub index_content_for {
+    my $attachment_id = shift;
+    my ($content) = $dbh->selectrow_array(
+        "SELECT ContentIndex FROM AttachmentsIndex WHERE id = ?", undef, $attachment_id );
+    return $content;
+}
+
+sub blank_index_for {
+    my @ids = @_;
+    $dbh->do( "UPDATE AttachmentsIndex SET ContentIndex = ''::tsvector WHERE id IN ("
+            . join( ',', ('?') x @ids ) . ")", undef, @ids );
+}
+
+sub new_attachment_id {
+    my ( $subject, $content ) = @_;
+    my $ticket = RT::Test->create_ticket(
+        Queue => $queue, Subject => $subject, Content => $content );
+    return $ticket->Transactions->First->Attachments->First->id;
+}
+
+my $attachment_id = new_attachment_id( 'reindex blank', 'unmistakable haystack content' );
+ok( $attachment_id, 'created an indexable attachment' );
+
+RT::Test::FTS->sync_index();
+like( index_content_for($attachment_id), qr/haystack/,
+    'attachment is indexed to start with' );
+
+diag "--reindex blank re-indexes rows the indexer previously gave up on";
+
+# An empty tsvector is what rt-fulltext-indexer leaves behind for an
+# attachment that failed to index; the MAX(id) resume never revisits it.
+blank_index_for($attachment_id);
+is( index_content_for($attachment_id), '', 'index entry blanked' );
+
+( $exit_code, $output ) = run_indexer( reindex => 'blank' );
+is( $exit_code, 0, '--reindex blank exited 0' ) or diag "output: $output";
+like( index_content_for($attachment_id), qr/haystack/,
+    '--reindex blank restored the content' );
+
+diag "--reindex only touches the attachments it selected";
+
+my @pair = (
+    new_attachment_id( 'selective 1', 'selective marker oneword' ),
+    new_attachment_id( 'selective 2', 'selective marker twoword' ),
+);
+RT::Test::FTS->sync_index();
+blank_index_for(@pair);
+
+( $exit_code, $output ) = run_indexer( reindex => "id = $pair[0]" );
+is( $exit_code, 0, '--reindex <sql> exited 0' ) or diag "output: $output";
+like( index_content_for( $pair[0] ), qr/oneword/,
+    'the selected attachment was re-indexed' );
+is( index_content_for( $pair[1] ), '',
+    'the unselected attachment was left blank' );
+
+diag "--reindex processes the whole set, not just the first --limit batch";
+
+my @batch = map { new_attachment_id( "batch $_", "batch marker number$_" ) } 1 .. 3;
+RT::Test::FTS->sync_index();
+blank_index_for(@batch);
+
+( $exit_code, $output ) = run_indexer( reindex => 'blank', limit => 2 );
+is( $exit_code, 0, '--reindex with a limit smaller than the set exited 0' )
+    or diag "output: $output";
+for my $n ( 1 .. 3 ) {
+    like( index_content_for( $batch[ $n - 1 ] ), qr/number$n/,
+        "batch attachment $n re-indexed despite --limit 2" );
+}
+
+diag "--dry-run reports what would be re-indexed and changes nothing";
+
+blank_index_for($attachment_id);
+
+# Content that tokenises to nothing is stored as an empty tsvector too,
+# and is indistinguishable from an entry the indexer gave up on, so count
+# rather than assuming this attachment is the only one selected.
+my ($blank_count) = $dbh->selectrow_array(
+    "SELECT COUNT(*) FROM AttachmentsIndex WHERE ContentIndex = ''::tsvector" );
+cmp_ok( $blank_count, '>=', 1, 'at least the blanked attachment is selectable' );
+
+( $exit_code, $output ) = run_indexer( reindex => 'blank', 'dry-run' => 1 );
+is( $exit_code, 0, '--dry-run exited 0' ) or diag "output: $output";
+like( $output, qr/\b$blank_count attachments? would be re-indexed/,
+    '--dry-run reported the count' )
+    or diag "output: $output";
+is( index_content_for($attachment_id), '', '--dry-run left the index untouched' );
+
+diag "--reindex leaves custom field values alone";
+
+sub ocfv_index_count {
+    my ($count) = $dbh->selectrow_array("SELECT COUNT(*) FROM OCFVsIndex");
+    return $count;
+}
+
+# Get any already-outstanding custom field values indexed, so the only
+# unindexed one left is the value created below.
+RT::Test::FTS->sync_index();
+my $ocfv_rows_before = ocfv_index_count();
+
+my $cf_ticket = RT::Test->create_ticket(
+    Queue                        => $queue,
+    Subject                      => 'ocfv untouched',
+    Content                      => 'ocfv marker',
+    'CustomField-' . $short_cf->id => 'indexable custom value',
+);
+ok( $cf_ticket->id, 'created a ticket with a custom field value' );
+
+blank_index_for($attachment_id);
+
+( $exit_code, $output ) = run_indexer( reindex => 'blank' );
+is( $exit_code, 0, '--reindex blank exited 0' ) or diag "output: $output";
+
+like( index_content_for($attachment_id), qr/haystack/,
+    '--reindex still re-indexed the attachment' );
+is( ocfv_index_count(), $ocfv_rows_before,
+    '--reindex did not index the outstanding custom field value' );
+
+RT::Test::FTS->sync_index();
+cmp_ok( ocfv_index_count(), '>', $ocfv_rows_before,
+    'an ordinary run still indexes custom field values' );
+
 done_testing;

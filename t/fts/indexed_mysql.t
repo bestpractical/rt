@@ -156,4 +156,187 @@ run_tests(
 
 @tickets = ();
 
+diag "Re-indexing with rt-fulltext-indexer --reindex";
+
+my $dbh = $RT::Handle->dbh;
+my $short_cf = RT::Test->load_or_create_custom_field(
+    Name => 'short', Type => 'FreeformSingle', Queue => $q->Id );
+
+sub run_indexer {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    my @args = @_;
+    my ( $exit_code, $output ) = RT::Test->run_and_capture(
+        command => $RT::SbinPath . '/rt-fulltext-indexer',
+        @args,
+    );
+    return ( $exit_code, $output );
+}
+
+sub index_content_for {
+    my $attachment_id = shift;
+    my ($content) = $dbh->selectrow_array(
+        "SELECT Content FROM AttachmentsIndex WHERE id = ?", undef, $attachment_id );
+    return $content;
+}
+
+my $ticket = RT::Test->create_ticket(
+    Queue   => $queue,
+    Subject => 'reindex blank',
+    Content => 'unmistakable haystack content',
+);
+ok( $ticket->id, 'created ticket' );
+
+my $attachments = $ticket->Transactions->First->Attachments;
+my $attachment_id = $attachments->First->id;
+ok( $attachment_id, 'found the attachment' );
+
+RT::Test::FTS->sync_index();
+like( index_content_for($attachment_id), qr/unmistakable haystack content/,
+    'attachment is indexed to start with' );
+
+diag "--reindex blank re-indexes rows the indexer previously gave up on";
+
+# This is the state rt-fulltext-indexer leaves behind when an attachment
+# fails to index: a zero-length row, which the MAX(id) resume will never
+# revisit.
+$dbh->do( "UPDATE AttachmentsIndex SET Content = '' WHERE id = ?", undef, $attachment_id );
+is( index_content_for($attachment_id), '', 'index row blanked' );
+
+my ( $exit_code, $output ) = run_indexer( reindex => 'blank' );
+is( $exit_code, 0, '--reindex blank exited 0' ) or diag "output: $output";
+
+like( index_content_for($attachment_id), qr/unmistakable haystack content/,
+    '--reindex blank restored the content' );
+
+diag "--reindex accepts a SQL predicate against Attachments";
+
+my $sql_ticket = RT::Test->create_ticket(
+    Queue   => $queue,
+    Subject => 'reindex by sql',
+    Content => 'distinctive needle phrase',
+);
+my $sql_attachment_id = $sql_ticket->Transactions->First->Attachments->First->id;
+
+RT::Test::FTS->sync_index();
+$dbh->do( "DELETE FROM AttachmentsIndex WHERE id = ?", undef, $sql_attachment_id );
+is( index_content_for($sql_attachment_id), undef, 'index row removed' );
+
+( $exit_code, $output ) = run_indexer( reindex => "id = $sql_attachment_id" );
+is( $exit_code, 0, '--reindex <sql> exited 0' ) or diag "output: $output";
+
+like( index_content_for($sql_attachment_id), qr/distinctive needle phrase/,
+    '--reindex <sql> indexed the selected attachment' );
+
+diag "--reindex blank selects only zero-length rows";
+
+# A one-byte row is what a genuinely empty attachment indexes to: the
+# normal path always writes join("\n", Subject, Content).  Use a sentinel
+# of the same length to prove the boundary is LENGTH = 0, not falsiness.
+$dbh->do( "UPDATE AttachmentsIndex SET Content = 'X' WHERE id = ?", undef, $attachment_id );
+
+( $exit_code, $output ) = run_indexer( reindex => 'blank' );
+is( $exit_code, 0, '--reindex blank exited 0 with nothing to do' ) or diag "output: $output";
+
+is( index_content_for($attachment_id), 'X',
+    '--reindex blank left the one-byte row alone' );
+
+diag "--dry-run reports what would be re-indexed and changes nothing";
+
+$dbh->do( "UPDATE AttachmentsIndex SET Content = '' WHERE id = ?", undef, $attachment_id );
+
+( $exit_code, $output ) = run_indexer( reindex => 'blank', 'dry-run' => 1 );
+is( $exit_code, 0, '--dry-run exited 0' ) or diag "output: $output";
+like( $output, qr/\b1 attachment\b/, '--dry-run reported the count' )
+    or diag "output: $output";
+is( index_content_for($attachment_id), '',
+    '--dry-run left the index untouched' );
+
+# and without --dry-run the same selection is actually applied
+( $exit_code, $output ) = run_indexer( reindex => 'blank' );
+is( $exit_code, 0, 'follow-up run exited 0' ) or diag "output: $output";
+like( index_content_for($attachment_id), qr/unmistakable haystack content/,
+    'follow-up run re-indexed what --dry-run predicted' );
+
+diag "--reindex processes the whole set, not just the first --limit batch";
+
+my @batch_ids;
+for my $n ( 1 .. 3 ) {
+    my $t = RT::Test->create_ticket(
+        Queue   => $queue,
+        Subject => "batch $n",
+        Content => "batch marker $n",
+    );
+    push @batch_ids, $t->Transactions->First->Attachments->First->id;
+}
+RT::Test::FTS->sync_index();
+
+$dbh->do( "UPDATE AttachmentsIndex SET Content = '' WHERE id IN ("
+        . join( ',', ('?') x @batch_ids ) . ")", undef, @batch_ids );
+
+( $exit_code, $output ) = run_indexer( reindex => 'blank', limit => 2 );
+is( $exit_code, 0, '--reindex with a limit smaller than the set exited 0' )
+    or diag "output: $output";
+
+for my $n ( 1 .. 3 ) {
+    like( index_content_for( $batch_ids[ $n - 1 ] ), qr/batch marker $n/,
+        "batch attachment $n re-indexed despite --limit 2" );
+}
+
+diag "--reindex only touches the attachments it selected";
+
+my @pair;
+for my $n ( 1 .. 2 ) {
+    my $t = RT::Test->create_ticket(
+        Queue   => $queue,
+        Subject => "selective $n",
+        Content => "selective marker $n",
+    );
+    push @pair, $t->Transactions->First->Attachments->First->id;
+}
+RT::Test::FTS->sync_index();
+$dbh->do( "UPDATE AttachmentsIndex SET Content = '' WHERE id IN (?,?)", undef, @pair );
+
+( $exit_code, $output ) = run_indexer( reindex => "id = $pair[0]" );
+is( $exit_code, 0, '--reindex <sql> exited 0' ) or diag "output: $output";
+
+like( index_content_for( $pair[0] ), qr/selective marker 1/,
+    'the selected attachment was re-indexed' );
+is( index_content_for( $pair[1] ), '',
+    'the unselected attachment was left blank' );
+
+diag "--reindex leaves custom field values alone";
+
+sub ocfv_index_count {
+    my ($count) = $dbh->selectrow_array("SELECT COUNT(*) FROM OCFVsIndex");
+    return $count;
+}
+
+# Get any already-outstanding custom field values indexed, so the only
+# unindexed one left is the value created below.
+RT::Test::FTS->sync_index();
+my $ocfv_rows_before = ocfv_index_count();
+
+my $cf_ticket = RT::Test->create_ticket(
+    Queue   => $queue,
+    Subject => 'ocfv untouched',
+    Content => 'ocfv marker',
+    'CustomField-' . $short_cf->id => 'indexable custom value',
+);
+ok( $cf_ticket->id, 'created a ticket with a custom field value' );
+
+$dbh->do( "UPDATE AttachmentsIndex SET Content = '' WHERE id = ?", undef, $attachment_id );
+
+( $exit_code, $output ) = run_indexer( reindex => 'blank' );
+is( $exit_code, 0, '--reindex blank exited 0' ) or diag "output: $output";
+
+like( index_content_for($attachment_id), qr/unmistakable haystack content/,
+    '--reindex still re-indexed the attachment' );
+is( ocfv_index_count(), $ocfv_rows_before,
+    '--reindex did not index the outstanding custom field value' );
+
+# ...and an ordinary run still picks it up
+RT::Test::FTS->sync_index();
+cmp_ok( ocfv_index_count(), '>', $ocfv_rows_before,
+    'an ordinary run still indexes custom field values' );
+
 done_testing;
