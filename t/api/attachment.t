@@ -214,4 +214,104 @@ diag 'Test clearing and replacing header and content in attachments from example
     }
 }
 
+diag "Content returns a character string even when Content-Type is missing or oddly labelled";
+{
+    require HTML::Entities;
+
+    # Pure ASCII body, so nothing but the entities can introduce a
+    # non-ASCII character.  Also valid UTF-7, since it contains no "+".
+    my $body = '<div>&nbsp;&copy;</div>';
+
+    my %case = (
+        'no Content-Type header at all' => sub {
+            my $att = shift;
+            $att->DelHeader('Content-Type');
+        },
+        'Content-Type with no space after the colon' => sub {
+            my $att = shift;
+            my $headers = $att->_Value('Headers');
+            $headers =~ s/^Content-Type:\s+/Content-Type:/mi;
+            $att->__Set( Field => 'Headers', Value => $headers );
+        },
+        'charset="UTF-7", which Encode decodes without upgrading' => sub {
+            my $att = shift;
+            $att->SetHeader( 'Content-Type' => 'text/html; charset="UTF-7"' );
+        },
+    );
+
+    for my $desc ( sort keys %case ) {
+        my $att = RT::Attachment->new( RT->SystemUser );
+        my ($id) = $att->Create(
+            TransactionId => 1,
+            Attachment    => MIME::Entity->build(
+                Type => 'text/html; charset="UTF-8"',
+                Data => [$body],
+            ),
+        );
+        ok( $id, "created attachment for: $desc" );
+
+        $case{$desc}->($att);
+
+        $att = RT::Attachment->new( RT->SystemUser );
+        $att->Load($id);
+        is( $att->ContentType, 'text/html', "ContentType column is still text/html ($desc)" );
+
+        my $content = $att->Content;
+        ok( utf8::is_utf8($content), "Content is a character string, not octets ($desc)" );
+        is( $content, $body, "Content round-trips unchanged ($desc)" );
+
+        # The failure this guards against: decoding entities into an octet
+        # string yields bare \xA0/\xA9, which MySQL rejects with error 1366
+        # when rt-fulltext-indexer binds it to a utf8mb4 column.
+        HTML::Entities::decode_entities($content);
+        is( $content, "<div>\x{00a0}\x{00a9}</div>",
+            "entities decode to the expected codepoints ($desc)" );
+        # Encode::encode would upgrade the string for us, hiding the bug.
+        # DBD does no such thing: it binds the SV's internal buffer, which is
+        # what _utf8_off exposes.  Bare \xA0/\xA9 here is what MySQL rejects.
+        my $bound = $content;
+        Encode::_utf8_off($bound);
+        is( $bound, "<div>\xc2\xa0\xc2\xa9</div>",
+            "internal bytes are valid UTF-8, as bound by DBD ($desc)" );
+    }
+}
+
+diag "Header methods accept a header with no space after the colon";
+{
+    my $att = RT::Attachment->new( RT->SystemUser );
+    my ($id) = $att->Create(
+        TransactionId => 1,
+        Attachment    => MIME::Entity->build(
+            Type => 'text/plain; charset="UTF-8"',
+            Data => ['hi'],
+        ),
+    );
+    ok( $id, 'created attachment for no-space header tests' );
+
+    $att->__Set(
+        Field => 'Headers',
+        Value => "X-Test:no-space\nX-Test-Other: spaced\n",
+    );
+
+    is( $att->GetHeader('X-Test'), 'no-space',
+        'GetHeader finds a header with no space after the colon' );
+    is_deeply( [ $att->GetAllHeaders('X-Test') ], ['no-space'],
+        'GetAllHeaders finds a header with no space after the colon' );
+
+    # Without the match, SetHeader falls through and appends a second
+    # X-Test rather than replacing the one already there.  Count the raw
+    # header lines: GetAllHeaders would miss the stale no-space one.
+    $att->SetHeader( 'X-Test' => 'replaced' );
+    is( scalar( grep { /^X-Test:/i } $att->_SplitHeaders ), 1,
+        'SetHeader leaves exactly one X-Test header, not a duplicate' );
+    is_deeply( [ $att->GetAllHeaders('X-Test') ], ['replaced'],
+        'SetHeader replaces the value of a no-space header' );
+
+    $att->DelHeader('X-Test');
+    is( scalar( grep { /^X-Test:/i } $att->_SplitHeaders ), 0,
+        'DelHeader removes a no-space header' );
+    is( $att->GetHeader('X-Test-Other'), 'spaced',
+        'DelHeader leaves the unrelated header alone' );
+}
+
 done_testing();
