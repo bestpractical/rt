@@ -705,6 +705,76 @@ This is a helper script to keep full text indexes in sync with data.
 Read F<docs/full_text_indexing.pod> for complete details on how and when
 to run it.
 
+=head1 OPTIONS
+
+=over
+
+=item C<--all>
+
+Keep fetching batches until every outstanding attachment is indexed,
+rather than stopping after a single batch.
+
+=item C<--limit NUMBER>
+
+How many attachments to fetch per batch.  Defaults to 200.
+
+=item C<--memory SIZE>
+
+Oracle only.  The amount of memory C<ctx_ddl.sync_index> may use.
+Defaults to C<2M>.
+
+=item C<--reindex blank>
+
+=item C<--reindex SQL>
+
+Re-index attachments that have already been indexed.  Ordinarily the
+indexer resumes from the highest id it has seen, so it never revisits a
+row; C<--reindex> names an explicit set instead and works through all of
+it, regardless of C<--all>.
+
+C<--reindex blank> selects every attachment whose index entry is empty.
+That is what the indexer leaves behind for an attachment it could not
+index, so this recovers rows that were skipped because of, for example,
+invalid encoding -- once the underlying cause is fixed.
+
+On PostgreSQL an attachment whose content tokenises to nothing is stored
+as an empty C<tsvector> as well, and cannot be told apart from one the
+indexer gave up on.  Such attachments are selected on every run and
+re-indexed to the same empty value.
+
+Anything else is used as a SQL C<WHERE> clause against the
+C<Attachments> table, for example:
+
+    rt-fulltext-indexer --reindex 'id IN (1402005, 2334433)'
+
+The clause is passed to the database unaltered.  Only the ordinary
+indexable attachments are considered, whatever the clause matches.
+
+C<--reindex> only touches attachments; custom field values are left to
+the ordinary incremental pass.
+
+Supported for MySQL, MariaDB and PostgreSQL.
+
+=item C<--dry-run>
+
+With C<--reindex>, report how many attachments would be re-indexed and
+exit without changing anything.
+
+=item C<--quiet>
+
+Suppress output to C<STDERR>, including the message printed when another
+instance is already running.  Useful under C<cron>.
+
+=item C<--verbose>
+
+Report each attachment as it is processed.
+
+=item C<--help>
+
+Show this documentation.
+
+=back
+
 =cut
 
 __DATA__
