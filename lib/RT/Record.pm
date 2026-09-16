@@ -887,6 +887,12 @@ sub _DecodeLOB {
         $charset = 'utf-8' if not $charset or not Encode::find_encoding($charset);
 
         $Content = Encode::decode($charset,$Content,Encode::FB_PERLQQ);
+
+        # Not every decoder honors Encode's contract of returning a
+        # character string; UTF-7, HZ and GSM0338 hand back unflagged
+        # octets when the decoded text is pure ASCII.  Restore character
+        # semantics so callers can safely append non-ASCII to the result.
+        utf8::upgrade($Content) if defined $Content;
     }
     return ($Content);
 }
