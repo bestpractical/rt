@@ -196,6 +196,33 @@ cause severe performance problems.
 
 Custom field values are not supported in this mode.
 
+=head1 RE-INDEXING
+
+The indexer resumes from the highest attachment id already in the index,
+so it never revisits a row it has processed.  When an attachment cannot
+be indexed -- most often because its content is not valid UTF-8 -- the
+indexer logs a warning and stores an empty index entry, which counts as
+processed.  The attachment is then absent from search results, and
+subsequent runs will not retry it.
+
+Once the underlying problem is resolved, recover those attachments with:
+
+    rt-fulltext-indexer --reindex blank --dry-run
+    rt-fulltext-indexer --reindex blank
+
+The first command reports how many attachments would be re-indexed
+without changing anything.  Attachments that still cannot be indexed are
+reported and keep their empty entry, so the command is safe to re-run.
+
+To re-index a specific set, pass a SQL C<WHERE> clause against the
+C<Attachments> table instead:
+
+    rt-fulltext-indexer --reindex 'Created > \'2026-01-01\''
+
+Note that attachments larger than C<$MaxFulltextAttachmentSize> are
+skipped without an index entry at all, so C<--reindex blank> will not
+find them.
+
 =head1 LIMIT ATTACHMENT SIZE
 
 On some systems, very large attachments can cause memory and other
