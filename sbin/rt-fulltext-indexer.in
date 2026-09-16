@@ -84,6 +84,8 @@ Init(
     "all!",
     "limit=i",
     "memory=s",
+    "reindex=s",
+    "dry-run!",
 );
 $OPT{limit} ||= 200;
 
@@ -115,6 +117,11 @@ EOT
     exit 1;
 }
 
+if ( $OPT{'reindex'} and $db_type ne 'mysql' and $db_type ne 'Pg' ) {
+    print STDERR "--reindex is not supported for DatabaseType $db_type\n";
+    exit 1;
+}
+
 if ( $db_type eq 'Oracle' ) {
     my $index = $fts_config->{'IndexName'} || 'rt_fts_index';
     $RT::Handle->dbh->do(
@@ -143,42 +150,114 @@ if ( $db_type eq 'Oracle' ) {
 }
 
 my $LAST;
+my $REINDEX;
+if ( $OPT{'reindex'} ) {
+    $REINDEX = reindex_ids();
+    unless ( @$REINDEX ) {
+        print "No attachments to re-index.\n";
+        exit 0;
+    }
+    if ( $OPT{'dry-run'} ) {
+        printf "%d attachment%s would be re-indexed.\n",
+            scalar @$REINDEX, @$REINDEX == 1 ? "" : "s";
+        exit 0;
+    }
+}
+
+# --reindex names a set of attachments, so leave custom field values to
+# the ordinary incremental pass rather than doing unrelated work.
 if ($db_type eq 'mysql') {
     process_mysql();
-    process_ocfv_mysql();
+    process_ocfv_mysql() unless $OPT{'reindex'};
 } elsif ($db_type eq 'Pg') {
     process_pg();
-    process_ocfv_pg();
+    process_ocfv_pg() unless $OPT{'reindex'};
+}
+
+sub reindex_ids {
+    my $dbh = $RT::Handle->dbh;
+
+    # Anything but "blank" is a raw SQL predicate against Attachments.
+    # This is deliberately unsanitized: the caller already has database
+    # access, and anything less than full SQL defeats the purpose.
+    unless ( $OPT{'reindex'} eq 'blank' ) {
+        return $dbh->selectcol_arrayref(
+            "SELECT id FROM Attachments WHERE $OPT{'reindex'} ORDER BY id"
+        );
+    }
+
+    # An empty index entry is what the error handlers below leave behind
+    # for an attachment that could not be indexed; the normal path always
+    # writes at least the "\n" that joins Subject to Content.
+    my $table = $fts_config->{'Table'};
+    if ( $db_type eq 'mysql' ) {
+        return $dbh->selectcol_arrayref(
+            "SELECT id FROM $table WHERE LENGTH(Content) = 0 ORDER BY id"
+        );
+    }
+
+    # An empty tsvector is distinct from NULL, which means "never
+    # indexed" and is picked up by the ordinary incremental pass.
+    my $column = $fts_config->{'Column'};
+    return $dbh->selectcol_arrayref(
+        "SELECT id FROM $table WHERE $column = ''::tsvector ORDER BY id"
+    );
+}
+
+# Indexes all text/plain and text/html attachments
+sub indexable_attachments {
+    my $attachments = RT::Attachments->new( RT->SystemUser );
+    my $txn_alias = $attachments->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'TransactionId',
+        TABLE2 => 'Transactions',
+        FIELD2 => 'id',
+    );
+    $attachments->Limit(
+        ALIAS    => $txn_alias,
+        FIELD    => 'Type',
+        OPERATOR => 'NOT IN',
+        VALUE    => ['EmailRecord', 'CommentEmailRecord'],
+    );
+    $attachments->Limit(
+        FIELD    => 'ContentType',
+        OPERATOR => 'IN',
+        VALUE    => ['text/plain', 'text/html'],
+    );
+    $attachments->OrderBy( FIELD => 'id', ORDER => 'asc' );
+    return $attachments;
 }
 
 sub attachment_loop {
     my $subref = shift;
-    my $table = $fts_config->{'Table'};
     $LAST //= 0;
+
+    # --reindex works through an explicit set of ids rather than resuming
+    # from the high-water mark, so walk the whole set in --limit sized
+    # chunks.  Unlike the incremental pass this ignores --all: the caller
+    # named these attachments, so process all of them.
+    if ( $OPT{'reindex'} ) {
+        my @ids = @$REINDEX;
+        while ( my @chunk = splice @ids, 0, $OPT{'limit'} ) {
+            my $attachments = indexable_attachments();
+            # ENTRYAGGREGATOR is defensive: a second Limit on the same
+            # field would otherwise default to OR and widen the search to
+            # every attachment rather than restricting it to the chunk.
+            $attachments->Limit(
+                FIELD           => 'id',
+                OPERATOR        => 'IN',
+                VALUE           => \@chunk,
+                ENTRYAGGREGATOR => 'AND',
+            );
+            $subref->($attachments);
+        }
+        return;
+    }
 
     # Fetch in batches of size --limit
     {
-        # Indexes all text/plain and text/html attachments
-        my $attachments = RT::Attachments->new( RT->SystemUser );
-        my $txn_alias = $attachments->Join(
-            ALIAS1 => 'main',
-            FIELD1 => 'TransactionId',
-            TABLE2 => 'Transactions',
-            FIELD2 => 'id',
-        );
-        $attachments->Limit(
-            ALIAS    => $txn_alias,
-            FIELD    => 'Type',
-            OPERATOR => 'NOT IN',
-            VALUE    => ['EmailRecord', 'CommentEmailRecord'],
-        );
-        $attachments->Limit(
-            FIELD    => 'ContentType',
-            OPERATOR => 'IN',
-            VALUE    => ['text/plain', 'text/html'],
-        );
+        my $attachments = indexable_attachments();
         $attachments->Limit( FIELD => 'id', OPERATOR => '>', VALUE => $LAST );
-        $attachments->OrderBy( FIELD => 'id', ORDER => 'asc' );
         $attachments->RowsPerPage( $OPT{'limit'} );
 
         # Call back to the DB-specific part
@@ -248,13 +327,15 @@ sub process_mysql {
     my $dbh = $RT::Handle->dbh;
     my $table = $fts_config->{'Table'};
 
-    ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM $table");
+    ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM $table")
+        unless $OPT{'reindex'};
 
     process_bulk_insert(
         sub {
             my ($n) = @_;
             return "INSERT INTO $table(Content, id) VALUES "
-                . join(", ", ("(?,?)") x $n);
+                . join(", ", ("(?,?)") x $n)
+                . " ON DUPLICATE KEY UPDATE Content=VALUES(Content)";
         },
         sub {
             my ($id) = @_;
@@ -403,13 +484,15 @@ sub process_pg_insert {
     my $dbh = $RT::Handle->dbh;
     my $table = $fts_config->{'Table'};
     my $column = $fts_config->{'Column'};
-    ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM $table");
+    ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM $table")
+        unless $OPT{'reindex'};
 
     process_bulk_insert(
         sub {
             my ($n) = @_;
             return "INSERT INTO $table($column, id) VALUES "
-                . join(", ", ("(TO_TSVECTOR(?),?)") x $n);
+                . join(", ", ("(TO_TSVECTOR(?),?)") x $n)
+                . " ON CONFLICT (id) DO UPDATE SET $column = EXCLUDED.$column";
         },
         sub {
             my ($id) = @_;
@@ -430,7 +513,8 @@ sub process_pg_update {
     my $dbh = $RT::Handle->dbh;
     my $column = $fts_config->{'Column'};
 
-    ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM Attachments WHERE $column IS NOT NULL");
+    ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM Attachments WHERE $column IS NOT NULL")
+        unless $OPT{'reindex'};
 
     my $sth = $dbh->prepare("UPDATE Attachments SET $column = TO_TSVECTOR(?) WHERE id = ?");
 
