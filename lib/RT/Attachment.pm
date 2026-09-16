@@ -350,7 +350,9 @@ before returning it.
 sub Content {
     my $self = shift;
     return $self->_DecodeLOB(
-        $self->GetHeader('Content-Type'),  # Includes charset, unlike ->ContentType
+        # Includes charset, unlike ->ContentType, but may be missing or
+        # unparseable on attachments not created by RT::Attachment::Create
+        $self->GetHeader('Content-Type') || $self->ContentType,
         $self->ContentEncoding,
         $self->_Value('Content', decode_utf8 => 0),
     );
