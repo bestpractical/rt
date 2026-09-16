@@ -675,7 +675,7 @@ sub GetHeader {
     my $self = shift;
     my $tag = shift;
     foreach my $line ($self->_SplitHeaders) {
-        next unless $line =~ /^\Q$tag\E:\s+(.*)$/si;
+        next unless $line =~ /^\Q$tag\E:\s*(.*)$/si;
 
         #if we find the header, return its value
         return ($1);
@@ -697,7 +697,7 @@ sub GetAllHeaders {
     my $tag = shift;
     my @values = ();
     foreach my $line ($self->_SplitHeaders) {
-        next unless $line =~ /^\Q$tag\E:\s+(.*)$/si;
+        next unless $line =~ /^\Q$tag\E:\s*(.*)$/si;
         push @values, $1;
     }
     return @values;
@@ -715,7 +715,7 @@ sub DelHeader {
 
     my $newheader = '';
     foreach my $line ($self->_SplitHeaders) {
-        next if $line =~ /^\Q$tag\E:\s+/i;
+        next if $line =~ /^\Q$tag\E:\s*/i;
         $newheader .= "$line\n";
     }
     return $self->__Set( Field => 'Headers', Value => $newheader);
@@ -752,7 +752,7 @@ sub SetHeader {
     my $replaced  = 0;
     my $newheader = '';
     foreach my $line ( $self->_SplitHeaders ) {
-        if ( $line =~ /^\Q$tag\E:\s+/i ) {
+        if ( $line =~ /^\Q$tag\E:\s*/i ) {
             # replace first instance, skip all the rest
             unless ($replaced) {
                 $newheader .= "$tag: $value\n";
