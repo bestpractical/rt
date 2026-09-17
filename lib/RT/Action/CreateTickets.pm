@@ -265,6 +265,32 @@ When parsed, field names are converted to lowercase and have hyphens stripped.
 C<Refers-To>, C<RefersTo>, C<refersto>, C<refers-to> and C<r-e-f-er-s-tO> will
 all be treated as the same thing.
 
+=head2 Rights
+
+There are several rights that manage who can create and modify templates
+that can be used with CreateTickets.
+
+It is possible to give a user C<ModifyTemplate> and C<ModifyScrips> at the
+queue level, allowing them to manage their own queue. This configuration is
+most commonly used to allow queue-level admins to create and modify templates
+used for email, but it can allow them to create templates for CreateTickets
+also.
+
+With these queue-level rights, and access to Simple type templates only,
+queue-level admins can configure templates that create and update tickets
+only in that same queue. They also cannot add code as shown in the examples
+above, just static values. This is unlikely to be very useful for most
+scenarios where CreateTickets is used, like automatically creating a ticket
+in another queue based on some event. To get the most out of CreateTickets,
+a user with more rights will typically need to set them up.
+
+A C<SuperUser> or a user with the C<ExecuteCode> right is able to use Perl
+templates and add Perl code directly to the template sections, as shown
+in the examples above. Note that granting C<ExecuteCode> is a powerful right
+that allows users to run any code on the server, including writing code to
+run in scrip conditions and actions. As such, setting up CreateTickets
+actions is usually done by admins with these privileges.
+
 =head1 METHODS
 
 =cut
@@ -666,53 +692,9 @@ sub ParseLines {
 
     my $TicketObj ||= RT::Ticket->new( $self->CurrentUser );
 
-    my %args;
-    my %original_tags;
-    my @lines = ( split( /\n/, $content ) );
-    while ( defined( my $line = shift @lines ) ) {
-        if ( $line =~ /^(.*?):(?:\s+)(.*?)(?:\s*)$/ ) {
-            my $value = $2;
-            my $original_tag = $1;
-            my $tag   = lc($original_tag);
-            $tag =~ s/-//g;
-            $tag =~ s/^(requestor|cc|admincc)s?$/$1/i;
-
-            $original_tags{$tag} = $original_tag;
-
-            if ( ref( $args{$tag} ) )
-            {    #If it's an array, we want to push the value
-                push @{ $args{$tag} }, $value;
-            } elsif ( defined( $args{$tag} ) )
-            {    #if we're about to get a second value, make it an array
-                $args{$tag} = [ $args{$tag}, $value ];
-            } else {    #if there's nothing there, just set the value
-                $args{$tag} = $value;
-            }
-
-            if ( $tag =~ /^content$/i ) {    #just build up the content
-                                          # convert it to an array
-                $args{$tag} = defined($value) ? [ $value . "\n" ] : [];
-                while ( defined( my $l = shift @lines ) ) {
-                    last if ( $l =~ /^ENDOFCONTENT\s*$/ );
-                    push @{ $args{'content'} }, $l . "\n";
-                }
-            } else {
-                # if it's not content, strip leading and trailing spaces
-                if ( $args{$tag} ) {
-                    $args{$tag} =~ s/^\s+//g;
-                    $args{$tag} =~ s/\s+$//g;
-                }
-                if (
-                    ($tag =~ /^(requestor|cc|admincc)(group)?$/i
-                        or $tag =~ /^(customrole|cr)-?(.+)$/i
-                        or grep {lc $_ eq $tag} keys %RT::Link::TYPEMAP)
-                    and $args{$tag} =~ /,/
-                ) {
-                    $args{$tag} = [ split /,\s*/, $args{$tag} ];
-                }
-            }
-        }
-    }
+    my ( $args, $original_tags ) = $self->ParseFields($content);
+    my %args          = %$args;
+    my %original_tags = %$original_tags;
 
     foreach my $date (qw(due starts started resolved)) {
         my $dateobj = RT::Date->new( $self->CurrentUser );
@@ -828,6 +810,75 @@ sub ParseLines {
     return $TicketObj, \%ticketargs;
 }
 
+
+=head2 ParseFields CONTENT
+
+Parses the C<Field: value> lines of a single template block, as produced by
+L</Parse>, into the fields the directive will act on.
+
+Field names are lowercased and have hyphens stripped, so C<Queue>, C<queue>
+and C<QUEUE> are all the C<queue> field. A field named more than once becomes
+an arrayref. A C<Content> field takes every following line up to
+C<ENDOFCONTENT>, so lines in a ticket's body are not fields.
+
+Returns two hashrefs: the fields, and the original name each was written with.
+
+=cut
+
+sub ParseFields {
+    my $self    = shift;
+    my $content = shift;
+
+    my %args;
+    my %original_tags;
+    my @lines = ( split( /\n/, $content ) );
+    while ( defined( my $line = shift @lines ) ) {
+        if ( $line =~ /^(.*?):(?:\s+)(.*?)(?:\s*)$/ ) {
+            my $value = $2;
+            my $original_tag = $1;
+            my $tag   = lc($original_tag);
+            $tag =~ s/-//g;
+            $tag =~ s/^(requestor|cc|admincc)s?$/$1/i;
+
+            $original_tags{$tag} = $original_tag;
+
+            if ( ref( $args{$tag} ) )
+            {    #If it's an array, we want to push the value
+                push @{ $args{$tag} }, $value;
+            } elsif ( defined( $args{$tag} ) )
+            {    #if we're about to get a second value, make it an array
+                $args{$tag} = [ $args{$tag}, $value ];
+            } else {    #if there's nothing there, just set the value
+                $args{$tag} = $value;
+            }
+
+            if ( $tag =~ /^content$/i ) {    #just build up the content
+                                          # convert it to an array
+                $args{$tag} = defined($value) ? [ $value . "\n" ] : [];
+                while ( defined( my $l = shift @lines ) ) {
+                    last if ( $l =~ /^ENDOFCONTENT\s*$/ );
+                    push @{ $args{'content'} }, $l . "\n";
+                }
+            } else {
+                # if it's not content, strip leading and trailing spaces
+                if ( $args{$tag} ) {
+                    $args{$tag} =~ s/^\s+//g;
+                    $args{$tag} =~ s/\s+$//g;
+                }
+                if (
+                    ($tag =~ /^(requestor|cc|admincc)(group)?$/i
+                        or $tag =~ /^(customrole|cr)-?(.+)$/i
+                        or grep {lc $_ eq $tag} keys %RT::Link::TYPEMAP)
+                    and $args{$tag} =~ /,/
+                ) {
+                    $args{$tag} = [ split /,\s*/, $args{$tag} ];
+                }
+            }
+        }
+    }
+
+    return ( \%args, \%original_tags );
+}
 
 =head2 _ParseXSVTemplate
 

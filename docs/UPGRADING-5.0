@@ -930,6 +930,13 @@ C<Origin> nor C<Referer> are now rejected. Change them to use an
 authentication token, which is the supported way for a script to
 authenticate. See F<docs/authentication.pod> for how to create one.
 
+=item Simple templates with CreateTickets directives are limited to their own queue
+
+A Simple template saved in a queue can now only create or update tickets in
+that same queue. Global templates are unaffected, as are users with
+ModifyTemplate granted globally. See the Rights section in
+L<RT::Action::CreateTickets>.
+
 =back
 
 =cut
