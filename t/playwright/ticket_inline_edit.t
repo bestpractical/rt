@@ -82,6 +82,10 @@ is( $dom->at('#li-page-actions-take a')->text, 'Take', 'Got "Take" page menu' );
 diag "Testing basics inline edit";
 {
     $p->{page}->click('div.ticket-info-basics a.inline-edit-toggle');
+
+    ok( $p->dom->at('div.ticket-info-basics form.inline-edit input#Owner[data-autocomplete="Owners"]'),
+        'Owner in basics inline edit is an autocomplete input' );
+
     $p->submit_form_ok(
         {
             form   => 'div.ticket-info-basics form.inline-edit',
