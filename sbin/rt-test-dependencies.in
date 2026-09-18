@@ -126,7 +126,7 @@ if ($args{'install'}) {
             # or if it was failing to load because of bad deps.
             next if test_dep( $module, $deps{$type}{$module} );
 
-            resolve_dep( $module );
+            resolve_dep( $module, $deps{$type}{$module} );
 
             # Delete the module and reload it; if it was previously
             # installed and got upgraded, this means the new version
@@ -286,7 +286,10 @@ sub test_dep {
         }
     }
 
-    return 1 unless @avoid;
+    # The checks above handle only >= and !=
+    my @other = grep { !/^\s*(?:>=|!=)/ } @spec_parts;
+
+    return 1 unless @avoid or @other;
 
     my $version = $module->VERSION;
     if ( grep {$version eq $_} @avoid ) {
@@ -294,6 +297,19 @@ sub test_dep {
         return ( 0,
                  "It's known that there are problems with RT and version '$version' of '$module' module. If it's the latest available version of the module then you have to downgrade manually."
              );
+    }
+
+    if (@other) {
+        unless ( eval { require CPAN::Meta::Requirements; 1 } ) {
+            return 0 unless wantarray;
+            return ( 0, "Install CPAN::Meta::Requirements to check '$version_spec'" );
+        }
+
+        my $req = CPAN::Meta::Requirements->from_string_hash( { $module => $version_spec } );
+        unless ( $req->accepts_module( $module, $version ) ) {
+            return 0 unless wantarray;
+            return ( 0, "Version '$version' does not satisfy '$version_spec'" );
+        }
     }
 
     return 1;
@@ -356,22 +372,41 @@ END
 
 
 sub resolve_dep {
-    my $module  = shift;
+    my $module = shift;
+    my $spec   = shift;
 
-    print "\nInstall module $module\n";
+    # The newest release satisfies any lower bound
+    my $ranged = defined $spec && $spec =~ /(?:<|!=)/;
+
+    print "\nInstall module $module" . ( $ranged ? " ($spec)" : "" ) . "\n";
 
     my $ext = $ENV{'RT_FIX_DEPS_CMD'} || $ENV{'PERL_PREFER_CPAN_CLIENT'};
     unless ($ext) {
         check_cpan();
 
+        print <<END if $ranged;
+
+The CPAN shell ignores version ranges and installs the newest $module.
+If that does not satisfy '$spec', run:
+
+    cpanm '$module~$spec'
+
+END
+
         my $rv = eval { require CPAN; CPAN::Shell->install($module) };
         return $rv unless $@;
     }
 
+    # Only cpanm and cpm accept Module~range
+    my $target = $module;
+    if ( $ranged and $ext =~ m{(?:^|/)(?:cpanm|cpm)(?:\s|$)} ) {
+        $target = "'$module~$spec'";
+    }
+
     if ( $ext =~ /\%s/ ) {
-        $ext =~ s/\%s/$module/g;    # sprintf( $ext, $module );
+        $ext =~ s/\%s/$target/g;    # sprintf( $ext, $target );
     } else {
-        $ext .= " $module";
+        $ext .= " $target";
     }
     print "\t\tcommand: '$ext'\n";
     return scalar `$ext 1>&2`;
@@ -439,6 +474,10 @@ instead of the standard CPAN shell to install any required modules.
 The command will be called with the module to install -- or, if
 C<RT_FIX_DEPS_CMD> contains a C<%s>, will replace the C<%s> with the
 module name before calling the program.
+
+C<cpanm> and C<cpm> receive a dependency with an upper bound or excluded
+version, such as C<DBD::mysql> for MySQL 5 and MariaDB, as a quoted
+C<Module~range>, so write C<%s>, not C<'%s'>.
 
 =head1 OPTIONS
 
