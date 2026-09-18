@@ -475,4 +475,19 @@ after upgrading.
 
 =back
 
+=head1 UPGRADING FROM 6.0.3
+
+=over
+
+=item $EditCustomFieldsSingleColumn removed
+
+This option controlled the column layout of custom fields on the ticket
+Basics page. RT 6 removed that page in favor of inline edit, so the option
+has had no effect since 6.0.0 and is now removed. Custom field placement is
+now controlled by page layouts and
+L<%CustomFieldGroupings|RT_Config/%CustomFieldGroupings>. You can remove
+the setting from your configuration, but leaving it is harmless.
+
+=back
+
 =cut

@@ -1751,9 +1751,6 @@ our %META;
     DropLongAttachments => {
         Widget => '/Widgets/Form/Boolean',
     },
-    EditCustomFieldsSingleColumn => {
-        Widget => '/Widgets/Form/Boolean',
-    },
     EnableReminders => {
         Widget => '/Widgets/Form/Boolean',
     },
