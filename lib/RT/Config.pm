@@ -1681,7 +1681,7 @@ our %META;
             for my $name (keys %$config) {
                 for my $day (keys %{ $config->{$name} }) {
                     next if $day =~ /^[0-6]$/;
-                    my $hint = $day == 7 ? " (Sunday should be specified as day 0)" : "";
+                    my $hint = $day eq '7' ? " (Sunday should be specified as day 0)" : "";
                     push @errors, "Config option %ServiceBusinessHours '$name' specifies invalid day '$day'$hint.";
                 }
             }
@@ -1694,10 +1694,10 @@ our %META;
                 for my $day (keys %{ $config->{$name} }) {
                     next if $day =~ /^[0-6]$/;
                     my $msg;
-                    if ($day == 7 && $config->{$name}{$day}{Name}) {
+                    if ($day eq '7' && $config->{$name}{$day}{Name}) {
                         $msg = "Config option \%ServiceBusinessHours '$name' erroneously specifies '$config->{$name}{$day}{Name}' as day 7; Sunday should be specified as day 0.";
                     } else {
-                        my $hint = $day == 7 ? " (Sunday should be specified as day 0)" : "";
+                        my $hint = $day eq '7' ? " (Sunday should be specified as day 0)" : "";
                         $msg = "Config option \%ServiceBusinessHours '$name' specifies invalid day '$day'$hint.";
                     }
                     RT->Logger->error($msg);
