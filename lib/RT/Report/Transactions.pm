@@ -94,8 +94,10 @@ sub SetupGroupings {
         @_
     );
 
-    # Unlike tickets, UseSQLForACLChecks is not supported in transactions, thus we need to iterate transactions first
-    # to filter by rights, which is implemented in RT::Transactions::AddRecord
+    # UseSQLForACLChecks only covers ShowTicket for transactions; other rights
+    # (ShowTicketComments, ShowOutgoingEmail, CF visibility) are checked per
+    # record in RT::Transactions::AddRecord, which grouped report rows bypass.
+    # So iterate transactions first to collect the ids the user can see.
     if ( $args{'Query'} ) {
         my $txns = RT::Transactions->new( $self->CurrentUser );
         # Currently we only support ticket transaction search.
