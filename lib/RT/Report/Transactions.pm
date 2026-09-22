@@ -102,6 +102,13 @@ sub SetupGroupings {
         $txns->FromSQL( "ObjectType='RT::Ticket' AND TicketType = 'ticket' AND ($args{'Query'})" );
         $txns->Columns('id');
 
+        # Rights checks add joins that make this query SELECT DISTINCT
+        # Drop the default order by (created and id as defined in RT::Transactions::_Init)
+        # otherwise Pg will error out due to Pg requiring ORDER BY expressions to
+        # appear in the select list for SELECT DISTINCT
+        # We only need ids here, so the order is irrelevant
+        $txns->OrderByCols();
+
         my @match = (0);
         while ( my $row = $txns->Next ) {
             push @match, $row->id;
