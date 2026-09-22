@@ -316,4 +316,36 @@ $m->text_contains('first asset search');
 $m->text_contains('first asset chart');
 $m->text_contains('Asset count', 'asset chart content');
 
+diag "Saved Searches portlet lists each privacy object once";
+
+$m->get_ok( $url . "Dashboards/Queries.html?id=$id" );
+push(
+    @{ $content->[0]{Elements}[0] },
+    {   portlet_type => 'component',
+        component    => 'SavedSearches',
+        description  => 'SavedSearches',
+        path         => '/Elements/SavedSearches',
+    }
+);
+
+$res = $m->post(
+    $url . "Dashboards/Queries.html?id=$id",
+    { Update => 1, Content => JSON::encode_json($content) },
+);
+
+is( $res->code, 200, 'add the Saved Searches portlet to body' );
+$m->content_contains( 'Dashboard updated' );
+
+$m->get_ok($url);
+
+# The portlet renders one collection table per privacy object, titled after
+# that object. root is a SuperUser and must still get RT System only once.
+my @titles = map { $_->text }
+    $m->dom->find('table.collection-as-table[data-class="RT::SavedSearch"] thead th span.title')->each;
+
+is( scalar( grep { $_ eq "RT System's saved searches" } @titles ),
+    1, 'system saved searches listed once for a SuperUser' );
+is( scalar( grep { $_ eq 'My saved searches' } @titles ),
+    1, 'personal saved searches listed once' );
+
 done_testing;
