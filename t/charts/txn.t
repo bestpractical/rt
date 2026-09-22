@@ -176,4 +176,43 @@ $expected = {
 %table = $report->FormatTable(%columns);
 is_deeply( \%table, $expected, "TimeTaken table" );
 
+# Charts for non-SuperUsers: RT::Report::Transactions::SetupGroupings runs a
+# helper query to filter transactions by rights. The ACL joins it adds make
+# that query SELECT DISTINCT, so the default sort inherited from
+# RT::Transactions::_Init must be cleared: Pg and Oracle reject ORDER BY
+# columns that are not in the select list of a DISTINCT query.
+my $staff = RT::Test->load_or_create_user( Name => 'staff', Password => 'password' );
+ok( $staff->id, 'created staff user' );
+ok( RT::Test->set_rights(
+        {   Principal => 'Requestor',
+            Object    => RT::Test->load_or_create_queue( Name => 'General' ),
+            Right     => [qw(ShowTicket ShowTicketComments)],
+        },
+    ),
+    'granted ShowTicket/ShowTicketComments to Requestor role'
+);
+
+my $staff_ticket = RT::Test->create_ticket(
+    Queue     => 'General',
+    Subject   => 'staff visible',
+    Requestor => $staff->Name,
+);
+$staff_ticket->Comment( Content => 'staff visible comment', TimeTaken => 10 );
+
+my $staff_user = RT::CurrentUser->new($staff);
+ok( !$staff_user->HasRight( Right => 'SuperUser', Object => RT->System ), 'staff is not a SuperUser' );
+
+$report  = RT::Report::Transactions->new($staff_user);
+%columns = $report->SetupGroupings(
+    Query    => q{Type = 'Create' OR Type = 'Comment'},
+    GroupBy  => ['Creator'],
+    Function => ['COUNT'],
+);
+$report->SortEntries;
+%table = $report->FormatTable(%columns);
+
+is( scalar @{ $table{tbody} }, 1, 'one row for non-SuperUser' );
+is( $table{tbody}[0]{cells}[0]{value}, 'RT_System', 'row is grouped by creator' );
+is( $table{tbody}[0]{cells}[1]{value}, 2, 'only transactions the staff user can see are counted' );
+
 done_testing;
