@@ -410,7 +410,12 @@ if ( $obj && $obj->id ) {
         # or it will fail the 2nd change if we use SetObjectType and
         # SetObjectId sequentially
 
-        if ( $obj->CurrentUserHasRight('update') ) {
+        # __Set skips the ACL as well, so the destination has to be authorized
+        # here: landing the search there takes the rights to have saved it there
+        my $can_move = ( $new_obj_type eq $obj_type && $new_obj_id == $obj_id )
+            || RT::SavedSearch->new( $session{'CurrentUser'} )->CurrentUserCanCreate("$new_obj_type-$new_obj_id");
+
+        if ( $can_move && $obj->CurrentUserHasRight('update') ) {
             if ( $new_obj_type ne $obj_type ) {
                 ( $val, $msg ) = $obj->__Set(
                     Field => 'ObjectType',

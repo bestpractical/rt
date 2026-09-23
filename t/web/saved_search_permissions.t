@@ -71,9 +71,26 @@ $m->content_contains( $message, 'user foo can not delete RT System saved search'
 
 ok($user->PrincipalObj->GrantRight(Object => RT->System, Right =>'EditSavedSearches'),
     'Granted foo EditSavedSearches');
+
+diag('EditSavedSearches does not reach RT System saved searches');
+
+$m->get_ok( $url . '/Search/Build.html?Query=id<10&SavedSearchSave=1'
+        . '&SavedSearchOwner=RT::System-1&SavedSearchDescription=Less+than+10' );
+$m->content_contains( 'Permission Denied', 'user foo can not save an RT System saved search' );
+$m->content_lacks( 'RT::System-1-SavedSearch-', 'no RT System saved search was created' );
+
+$m->get_ok( $url . "/Search/Build.html?SavedSearchLoad=$id" );
+$m->content_lacks('name="SavedSearchSave"', 'Update button still not shown to user foo' );
+$m->content_lacks('name="SavedSearchDelete"', 'Delete button still not shown to user foo' );
+
+$m->get_ok( $url . "/Search/Build.html?SavedSearchDelete=1&SavedSearchId=$id" );
+$message = qq{No permission to delete search};
+$m->content_contains( $message, 'user foo still can not delete RT System saved search' );
+
+ok($user->PrincipalObj->GrantRight(Object => RT->System, Right =>'SuperUser'),
+    'Granted foo SuperUser');
 $m->get_ok( $url . "/Search/Build.html?SavedSearchDelete=1&SavedSearchId=$id" );
 $message = qq{Deleted saved search};
-$m->content_contains( $message, 'user foo deleted RT saved search' );
-
+$m->content_contains( $message, 'user foo deleted RT System saved search' );
 
 done_testing;
