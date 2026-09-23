@@ -116,6 +116,11 @@ sub LookupObjectRight {
         return $right if $right;
     }
 
+    # RT's built-in searches: shown to everyone, shared by everyone
+    if ( ( $args{'Name'} // '' ) =~ /^Search - / ) {
+        return ( $args{'Right'} // '' ) eq 'display' ? 'allow' : 'SuperUser';
+    }
+
     # if it's an attribute on oneself, check the personal acl map
     if (($args{'ObjectType'} eq 'RT::User') && ($args{'ObjectId'} eq $self->CurrentUser->Id)) {
     return('allow') unless ($PERSONAL_ACL_MAP->{$args{'Name'}});
