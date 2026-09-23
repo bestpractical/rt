@@ -1251,6 +1251,8 @@ it to 1 forces all logins to come from the login box, so the
 user is aware that they are being logged in.  The default is off, for
 backwards compatability.
 
+Requires C<$RestrictReferrer> to also be enabled for full coverage.
+
 =cut
 
 Set($RestrictLoginReferrer, 0);

@@ -1118,6 +1118,16 @@ sub AttemptPasswordAuthentication {
     my $ARGS = shift;
     return unless defined $ARGS->{user} && defined $ARGS->{pass};
 
+    # Check RestrictLoginReferrer before authentication happens, so that a
+    # login which is not allowed never creates a session. /Elements/DoAuth
+    # does the same for the passwords external auth validates itself.
+
+    if ( RT->Config->Get('RestrictLoginReferrer') and not IsLoginPageReferer() ) {
+        RT->Logger->error( "REJECTED LOGIN for @{[$ARGS->{user}]} from @{[RequestENV('REMOTE_ADDR')]}: "
+                . "not from RT's login page (Referrer: @{[RequestENV('HTTP_REFERER') || 'none']})" );
+        return (0, HTML::Mason::Commands::loc("Use RT's login page to log in"));
+    }
+
     my $user_obj = RT::CurrentUser->new();
     $user_obj->Load( $ARGS->{user} );
 
@@ -2120,6 +2130,45 @@ sub IsRefererCSRFWhitelisted {
     }
 
     return (0,$referer,$configs);
+}
+
+=head3 IsLoginPageReferer
+
+Returns true if the current request came from RT's login page.
+
+A request qualifies if it supplies a Referrer header, and that Referrer is one of
+the URLs where RT serves the login form, which is the login page itself, or the index
+page, which renders the form inline for a logged-out user.
+
+REST endpoints are exempt. Their clients are not browsers and send no
+Referrer, and with C<$RestrictReferrer> enabled L</IsPossibleCSRF> confines a
+session created by a REST request to REST endpoints, so such a session cannot
+be used to browse RT.
+
+=cut
+
+sub IsLoginPageReferer {
+    return 1 if $HTML::Mason::Commands::r->path_info =~ m{^/+REST/\d+\.\d+(/|$)};
+
+    my $referer = RequestENV('HTTP_REFERER') or return 0;
+    my $uri     = URI->new($referer);
+
+    # A Referrer with no host and port is never a page RT served.
+    # @ReferrerWhitelist can accept one anyway: android-app://com.slack/
+    # matches on authority, and its path of / would read as the index page.
+    return 0 unless $uri->can('host_port');
+
+    # The login form is served by RT itself, so the Referrer has to be a host
+    # RT answers to.
+    my ($host_ok) = IsRefererCSRFWhitelisted($referer);
+    return 0 unless $host_ok;
+
+    my $path    = $uri->path // '';
+    my $webpath = RT->Config->Get('WebPath') || '';
+    return 0 unless $path =~ s{^\Q$webpath\E}{};
+    $path = '/' unless length $path;
+
+    return $path =~ m{^(?:/(?:index\.html)?|/m/?(?:index\.html)?|/NoAuth/Login\.html)$} ? 1 : 0;
 }
 
 =head3 _NormalizeHost
