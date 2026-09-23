@@ -119,6 +119,25 @@ sub URIForObject {
     return $self->LocalURIPrefix . '/' . $obj->Id;
 }
 
+# Object types whose transactions link to a history page: the value is the path
+# (relative to WebURL) that HREF anchors with #txn-<id>. RT::Ticket and RT::Configuration
+# are linkable too but use their own pages, so HREF and _LinkableObjectType special-case
+# them instead of listing them here. Any other type has no page and is rejected in ParseURI.
+my %HistoryPath = (
+    'RT::Asset'   => 'Asset/History.html?id=',
+    'RT::Article' => 'Articles/Article/History.html?id=',
+    'RT::User'    => 'User/History.html?id=',
+    'RT::Group'   => 'Admin/Groups/History.html?id=',
+    'RT::Queue'   => 'Admin/Queues/History.html?id=',
+);
+
+sub _LinkableObjectType {
+    my ( $self, $type ) = @_;
+    return 0 unless $type;
+    return 1 if $type eq 'RT::Ticket' || $type eq 'RT::Configuration';
+    return $HistoryPath{$type} ? 1 : 0;
+}
+
 =head2 ParseURI URI
 
 Primarily used by L<RT::URI> to set internal state.
@@ -126,7 +145,10 @@ Primarily used by L<RT::URI> to set internal state.
 Figures out from a C<transaction:> URI whether it refers to a local transaction
 and the transaction ID.
 
-Returns the transaction ID if local, otherwise returns false.
+Returns the transaction ID if local, otherwise returns false. A transaction on an
+object type L</HREF> can't build a URL for also returns false, so link creation fails
+with a resolve error, the same way a nonexistent id does, instead of storing a link
+whose href goes nowhere.
 
 =cut
 
@@ -164,6 +186,18 @@ sub ParseURI {
             return;
         }
     }
+
+    # Reject types HREF can't build a URL for (see the return-value note above).
+    if ( my $object = $self->{'object'} ) {
+        unless ( $self->_LinkableObjectType( $object->ObjectType ) ) {
+            RT->Logger->info( "Refusing transaction link to unsupported object type "
+                  . $object->ObjectType
+                  . " (transaction #"
+                  . $object->id . ")" );
+            return;
+        }
+    }
+
     return $txn->id;
 }
 
@@ -180,34 +214,33 @@ sub Object {
 
 =head2 HREF
 
-If this is a local transaction, return an HTTP URL pointing at it, anchored at
-the transaction in its object's history (C<...#txn-NN>). A ticket transaction
-uses the dedicated F</Transaction/Display.html> page. For other object types we
-link to that object's dedicated History page, which always renders the
-transaction (object display pages are page-layout driven and may omit history).
+For a local transaction, return an HTTP URL that lands on it, anchored at the
+transaction in its object's history (C<...#txn-NN>); which page depends on the object
+type, see below. Otherwise return the URI unchanged.
 
-Otherwise, return its URI.
+ParseURI only accepts the object types handled here, so a stored transaction link
+always resolves to one of them.
 
 =cut
 
 sub HREF {
     my $self = shift;
     if ( $self->IsLocal and $self->Object ) {
-        my $txn = $self->Object;
+        my $txn  = $self->Object;
+        my $type = $txn->ObjectType;
 
         # A ticket transaction has a dedicated single-transaction display page.
         return RT->Config->Get('WebURL') . 'Transaction/Display.html?id=' . $txn->id
-            if $txn->ObjectType eq 'RT::Ticket';
+            if $type eq 'RT::Ticket';
 
-        # Other object types link to their History page: display pages are page-layout
-        # driven and may omit history (and the only group history page is admin-only).
-        my %display = (
-            'RT::Asset'   => 'Asset/History.html?id=',
-            'RT::Article' => 'Articles/Article/History.html?id=',
-            'RT::User'    => 'User/History.html?id=',
-            'RT::Group'   => 'Admin/Groups/History.html?id=',
-        );
-        if ( my $path = $display{ $txn->ObjectType } ) {
+        # Configuration changes have no per-record page; the shared history page
+        # lists them (paginated), so the #txn anchor lands only when it's on view.
+        return RT->Config->Get('WebURL') . 'Admin/Tools/ConfigHistory.html#txn-' . $txn->id
+            if $type eq 'RT::Configuration';
+
+        # Link to the History page, not the object's Display page: display pages are
+        # page-layout driven and may omit history.
+        if ( my $path = $HistoryPath{$type} ) {
             return RT->Config->Get('WebURL') . $path . $txn->ObjectId . '#txn-' . $txn->id;
         }
     }
