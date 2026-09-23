@@ -87,6 +87,14 @@ our @SHORTENER_SEARCH_FIELDS
     = qw/Class ObjectType BaseQuery Query Format RowsPerPage Order OrderBy ExtraQueryParams ResultPage/;
 our @SHORTENER_CHART_FIELDS = qw/Width Height ChartStyle GroupBy ChartFunction StackedGroupBy ChartOrderBy ChartOrder ChartLimit ChartLimitType/;
 
+# Arguments ExpandShortenerCode can set: the search and chart fields come from
+# the shortener content, the rest from the saved search that content names
+our @SHORTENER_ARGS = (
+    @SHORTENER_SEARCH_FIELDS,
+    @SHORTENER_CHART_FIELDS,
+    qw/SavedSearchId SavedChartSearchId SavedSearchLoad SearchType SearchFields/,
+);
+
 =head2 SquishedCSS $style
 
 =cut
@@ -474,6 +482,8 @@ sub HandleRequest {
             }
         }
     }
+
+    ExpandShortenerCode($ARGS);
 
     MaybeShowInterstitialCSRFPage($ARGS);
 
@@ -922,8 +932,6 @@ sub ShowRequestedPage {
     # Ensure that the cookie that we send is up-to-date, in case the
     # session-id has been modified in any way
     SendSessionCookie();
-
-    ExpandShortenerCode($ARGS);
 
     # precache all system level rights for the current user
     $HTML::Mason::Commands::session{CurrentUser}->PrincipalObj->HasRights( Object => RT->System );
@@ -1966,11 +1974,10 @@ our %IS_WHITELISTED_COMPONENT = (
     # While these can be used for denial-of-service against RT
     # (construct a very inefficient query and trick lots of users into
     # running them against RT) it's incredibly useful to be able to link
-    # to a search result (or chart) or bookmark a result page.
+    # to a search result or bookmark a result page.
     '/Search/Results.html' => 1,
     '/Search/Simple.html'  => 1,
     '/m/tickets/search'    => 1,
-    '/Search/Chart.html'   => 1,
     '/User/Search.html'    => 1,
 
     # This page takes Attachment and Transaction argument to figure
@@ -2003,13 +2010,17 @@ our @GLOBAL_WHITELISTED_ARGS = (
 
     # The Shortener code
     'sc',
+
+    # Pagination, which only says which page of results to show
+    'Page',
+
+    # Search and chart arguments, which only say what to show and how
+    @SHORTENER_ARGS,
 );
 
 our %WHITELISTED_COMPONENT_ARGS = (
-    # SavedSearchLoad - This happens when you middle-(or ⌘ )-click "Edit" for a saved search on
-    # the homepage. It's not going to do any damage
     # NewQuery - This is simply to clear the search query
-    '/Search/Build.html' => ['SavedSearchLoad','NewQuery'],
+    '/Search/Build.html' => ['NewQuery'],
     # Happens if you try and reply to a message in the ticket history or click a number
     # of options on a tickets Action menu
     '/Ticket/Update.html' => ['QuoteTransaction', 'Action', 'DefaultStatus'],
