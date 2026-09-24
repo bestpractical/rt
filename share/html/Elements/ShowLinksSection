@@ -57,13 +57,10 @@
   <table cellspacing="0" class="table <% RT->Config->Get('TableAccent') %> collection collection-as-table">
     <thead>
       <tr class="collection-as-table">
-%     if ( $emit_delete && !$dual ) {
-        <th class="collection-as-table"><span class="title">&nbsp;</span></th>
+%     if ($emit_delete) {
+        <th class="collection-as-table"><span class="title"><% GetSVGImage( Name => 'trash', Title => loc('Remove') ) |n %></span></th>
 %     }
         <th class="collection-as-table"><span class="title"><&|/l&>Web Link</&></span></th>
-%     if ( $emit_delete && $dual ) {
-        <th class="collection-as-table"><span class="title">&nbsp;</span></th>
-%     }
       </tr>
     </thead>
     <tbody>
@@ -72,29 +69,11 @@
 %       my $del_name = ( $mode eq 'Target' )
 %           ? "DeleteLink--${canonical_type}-${url_val}"
 %           : "DeleteLink-${url_val}-${canonical_type}-";
-%       # Build the delete cell once; the widget's trash trails the row, the embedded checkbox leads.
-%       my $del_td = '';
-%       if ($emit_delete) {
-%           if ($dual) {
-%               my $path  = $m->notes('LinkUpdatePath') || RT->Config->Get('WebPath') . '/Helpers/TicketUpdate';
-%               my $vals  = $m->interp->apply_escapes( JSON( { id => $m->notes('LinkParentId'), $del_name => 1 } ), 'h' );
-%               my $label = $m->interp->apply_escapes( loc('Remove link'), 'h' );
-%               my $trash = GetSVGImage( Name => 'trash', Title => loc('Remove link') );
-%               $del_td = qq{<td class="collection-as-table"><div class="collection-as-table"><a href="#" class="delete-link" hx-post="$path" hx-vals="$vals" hx-swap="none" aria-label="$label">$trash</a></div></td>};
-%           }
-%           else {
-%               my $esc = $m->interp->apply_escapes( $del_name, 'h' );
-%               $del_td = qq{<td class="collection-as-table"><div class="collection-as-table"><div class="form-check"><input type="checkbox" name="$esc" id="$esc" value="1" class="checkbox form-check-input delete-link" /><label class="form-check-label" for="$esc"></label></div></div></td>};
-%           }
-%       }
       <tr class="list-item">
-%       if ( $del_td && !$dual ) {
-        <% $del_td |n %>
+%       if ($emit_delete) {
+        <td class="collection-as-table"><div class="collection-as-table"><& /Elements/DeleteCheckBox, Name => $del_name, Label => loc( 'Remove link to [_1]', $url_val ) &></div></td>
 %       }
         <td class="collection-as-table"><div class="collection-as-table"><span class="external-link-icon"><% GetSVGImage(Name => 'link') |n %></span> <& /Elements/ShowLink, URI => $link->$ModeURI &></div></td>
-%       if ( $del_td && $dual ) {
-        <% $del_td |n %>
-%       }
       </tr>
 %     }
     </tbody>
@@ -134,7 +113,6 @@ my @show_urls = @urls;
 # The ticket Children section renders as a recursive tree only when every member is a local
 # ticket; mixed/url members fall back to the flat per-type tables.
 my $emit_delete = $Edit || $DualMode;
-my $dual        = $DualMode;
 
 my $use_tree
     = $Type eq 'Members'

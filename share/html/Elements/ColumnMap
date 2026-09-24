@@ -337,7 +337,7 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
     },
 
     DeleteLinkCheckBox => {
-        title => \'&nbsp;',
+        title => sub { \ GetSVGImage( Name => 'trash', Title => loc('Remove') ) },
         value => sub {
             my $record = $_[0];
             my $type   = $m->notes('LinkDeleteType') or return \'';
@@ -351,20 +351,15 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
                 ? "DeleteLink-$uri-$type-"
                 : "DeleteLink--$type-$uri";
 
-            if ( $m->notes('LinkDeleteDualMode') ) {
-                my $path  = $m->notes('LinkUpdatePath') || RT->Config->Get('WebPath') . '/Helpers/TicketUpdate';
-                my $vals  = $m->interp->apply_escapes( JSON( { id => $m->notes('LinkParentId'), $name => 1 } ), 'h' );
-                my $label = $m->interp->apply_escapes( loc('Remove link'), 'h' );
-                my $trash = GetSVGImage( Name => 'trash', Title => loc('Remove link') );
-                return \qq{<a href="#" class="delete-link" hx-post="$path" hx-vals="$vals" hx-swap="none" aria-label="$label">$trash</a>};
-            }
+            ( my $object_type = ref $record ) =~ s/^RT:://;
 
-            my $escaped = $m->interp->apply_escapes( $name, 'h' );
-            return \qq{
-<div class="form-check">
-  <input type="checkbox" name="$escaped" id="$escaped" value="1" class="checkbox form-check-input delete-link" />
-  <label class="form-check-label" for="$escaped"></label>
-</div>};
+            my $label
+                = $record->isa('RT::User')    ? loc( 'Remove link to [_1] [_2]', loc($object_type), $record->Format )
+                : $record->isa('RT::Group')   ? loc( 'Remove link to [_1] [_2]', loc($object_type), $record->Label )
+                : $record->isa('RT::Article') ? loc( 'Remove link to [_1] [_2]', loc($object_type), $record->Name )
+                :                               loc( 'Remove link to [_1] #[_2]', loc($object_type), $record->id );
+
+            return \ $m->scomp( '/Elements/DeleteCheckBox', Name => $name, Label => $label );
         },
     },
 

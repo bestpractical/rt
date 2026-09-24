@@ -1029,6 +1029,13 @@ jQuery(document).on('click', '[data-bs-toggle="tooltip"]', function (e) {
     jQuery('[data-bs-toggle="tooltip"]').tooltip("hide");
 });
 
+// Delegated on document so rows htmx swaps in need no binding and leave nothing to tear down.
+// The class follows 'change' only: setting .checked directly, as form.reset() does, leaves it stale.
+jQuery(document).on('change', 'input.delete-checkbox', function () {
+    const row = this.closest('tr, li');
+    if (row) row.classList.toggle('pending-delete', this.checked);
+});
+
 jQuery(document).on('click', 'a.delete-attach', function() {
     var parent = jQuery(this).closest('div');
     var name = jQuery(this).attr('data-name');

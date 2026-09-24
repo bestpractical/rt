@@ -384,13 +384,13 @@ JS
     );
     pass('search term and filtering carried from display into edit mode on an asset');
 
-    # Edit affordances are now visible: a trash link is shown under .editing. Check the
-    # delete-link in a *visible* row (the search above leaves only the matching row visible).
+    # Edit affordances are now visible: the delete checkbox column shows under .editing. Check the
+    # checkbox in a *visible* row (the search above leaves only the matching row visible).
     $p->{handle}->await(
         $p->{page}->waitForFunction(
             <<'JS'
 (function() {
-    const boxes = document.querySelectorAll('div.asset-links .links-edit-target .delete-link');
+    const boxes = document.querySelectorAll('div.asset-links .links-edit-target input.delete-checkbox');
     if (!boxes.length) return false;
     return Array.prototype.some.call(boxes, function(box) { return box.offsetParent !== null; });
 })()
@@ -398,7 +398,48 @@ JS
             , {}, { timeout => 10000 }
         )
     );
-    pass('delete trash links are visible in edit mode on an asset');
+    pass('delete checkboxes are visible in edit mode on an asset');
+}
+
+diag 'Asset Links: a checked removal is deleted on Save (AssetUpdate path)';
+{
+    my $catalog = create_catalog( Name => 'Removal Kit' );
+    my $host    = create_asset( Name => 'removal host asset', Catalog => $catalog->id );
+    my $gone    = create_asset( Name => 'removal gone asset', Catalog => $catalog->id );
+    my $kept    = create_asset( Name => 'removal kept asset', Catalog => $catalog->id );
+    ok( $host->AddLink( Type => 'RefersTo', Target => $gone->URI ), 'linked the asset to be removed' );
+    ok( $host->AddLink( Type => 'RefersTo', Target => $kept->URI ), 'linked the asset to be kept' );
+
+    $p->get_ok( '/Asset/Display.html?id=' . $host->id, 'asset display page' );
+
+    my $table    = 'div.asset-links .links-edit-target .links-type-table[data-links-object-type="Asset"]';
+    my $gone_row = qq{$table tbody tr[data-record-id="@{[$gone->id]}"]};
+    my $kept_row = qq{$table tbody tr[data-record-id="@{[$kept->id]}"]};
+    $p->wait_for_element($gone_row);
+
+    $p->{page}->locator('div.asset-links a.inline-edit-toggle.edit')->first()->click();
+    $p->wait_for_element('div.asset-links.editing');
+
+    $p->{page}->check("$gone_row input.delete-checkbox");
+    $p->{handle}->await( $p->{page}->waitForFunction(
+        "document.querySelector('$gone_row').classList.contains('pending-delete')", {}, { timeout => 5000 } ) );
+    pass('checked asset row is pending-delete');
+
+    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+    my $before = RT::Asset->new( RT->SystemUser );
+    $before->Load( $host->id );
+    is( $before->RefersTo->Count, 2, 'checking a box removes nothing before Save' );
+
+    $p->{page}->locator('div.asset-links form.inline-edit .links-edit-save input[type=submit]')->click();
+    $p->wait_for_htmx;
+    $p->wait_for_element( $gone_row, { state => 'detached' } );
+    $p->wait_for_element($kept_row);
+
+    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+    my $after = RT::Asset->new( RT->SystemUser );
+    $after->Load( $host->id );
+    my @target_ids = map { $_->TargetObj->id } @{ $after->RefersTo->ItemsArrayRef };
+    is_deeply( \@target_ids, [ $kept->id ], 'only the checked asset link was removed on Save' );
 }
 
 $p->logout;

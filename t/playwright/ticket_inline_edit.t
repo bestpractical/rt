@@ -319,28 +319,135 @@ diag "Testing links inline edit (new add-form + removal UI)";
     );
     $p->close_jgrowl;
 
-    # --- Remove a link via the per-row trash link (immediate delete) -----------
+    # --- Remove a link: check its box, then Save -----------------------------
     $p->{page}->click('div.ticket-info-links a.inline-edit-toggle.edit');
     $p->wait_for_element('div.ticket-info-links.editing');
-    $p->wait_for_element('div.ticket-info-links .edit-ticket-links a.delete-link');
 
-    my $del_link = $p->{page}->locator(
-        qq{div.ticket-info-links .edit-ticket-links tr[data-record-id="@{[$refers_to->Id]}"] a.delete-link}
-    );
-    $del_link->first->click;
+    my $row_sel = qq{div.ticket-info-links .edit-ticket-links tr[data-record-id="@{[$refers_to->Id]}"]};
+    my $box_sel = "$row_sel input.delete-checkbox";
+    $p->wait_for_element($box_sel);
+
+    my $pending_js = <<"JS";
+(function() {
+    const row = document.querySelector('$row_sel');
+    const icon = row && row.querySelector('.pending-delete-icon');
+    if (!row || !icon) return 'missing';
+    return row.classList.contains('pending-delete') + ':' + getComputedStyle(icon).visibility;
+})()
+JS
+
+    is( $p->{page}->evaluate("return $pending_js"), 'false:hidden',
+        'unchecked row is not pending and its trash icon is hidden' );
+
+    $p->{page}->check($box_sel);
+    $p->{handle}->await( $p->{page}->waitForFunction( "$pending_js === 'true:visible'", {}, { timeout => 5000 } ) );
+    pass('checked row is pending-delete and shows its trash icon');
+
+    $p->{page}->uncheck($box_sel);
+    $p->{handle}->await( $p->{page}->waitForFunction( "$pending_js === 'false:hidden'", {}, { timeout => 5000 } ) );
+    pass('unchecking clears the pending state');
+
+    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+    my $still = RT::Ticket->new( RT->SystemUser );
+    $still->Load($ticket_id);
+    ok( ( grep { $_->TargetObj->Id == $refers_to->Id } @{ $still->RefersTo->ItemsArrayRef } ),
+        'checking a box removes nothing before Save' );
+
+    $p->{page}->check($box_sel);
+    $p->{page}->locator(q{div.ticket-info-links form.inline-edit .links-edit-save input[type=submit]})->click;
     $p->wait_for_htmx;
 
-    $p->wait_for_element(
-        qq{div.ticket-info-links .links-edit-target tr[data-record-id="@{[$refers_to->Id]}"]},
-        { state => 'detached' }
-    );
+    $p->wait_for_element( qq{div.ticket-info-links .links-edit-target tr[data-record-id="@{[$refers_to->Id]}"]},
+        { state => 'detached' } );
 
     DBIx::SearchBuilder::Record::Cachable->FlushCache;
     my $after = RT::Ticket->new( RT->SystemUser );
     $after->Load($ticket_id);
     my @after_ids = map { $_->TargetObj->Id } @{ $after->RefersTo->ItemsArrayRef };
-    ok( !( grep { $_ == $refers_to->Id } @after_ids ),
-        'RefersTo link removed immediately via the per-row trash link' );
+    ok( !( grep { $_ == $refers_to->Id } @after_ids ), 'RefersTo link removed on Save' );
+    $p->close_jgrowl;
+}
+
+diag "Staged delete: trash header, icon click, tooltip, and multi-row Save";
+{
+    my $dep1 = RT::Test->create_ticket( Queue => 'General', Subject => 'staged dep one' );
+    my $dep2 = RT::Test->create_ticket( Queue => 'General', Subject => 'staged dep two' );
+    my $t    = RT::Test->create_ticket( Queue => 'General', Subject => 'staged delete multi' );
+    $t->AddLink( Type => 'DependsOn', Target => $dep1->id );
+    $t->AddLink( Type => 'DependsOn', Target => $dep2->id );
+
+    $p->goto_ticket( $t->id );
+    my $table = 'div.ticket-info-links #links-section-DependsOn .links-type-table[data-links-object-type="Ticket"]';
+    $p->wait_for_element("$table tbody tr");
+
+    my $header_trash = "$table thead th:first-child svg.bi-trash";
+    is( $p->{page}->locator($header_trash)->first->isVisible, 0, 'trash header hidden in display mode' );
+    is( $p->{page}->locator("$table tbody tr td:first-child input.delete-checkbox")->first->isVisible,
+        0, 'delete checkboxes hidden in display mode' );
+
+    $p->{page}->click('div.ticket-info-links a.inline-edit-toggle.edit');
+    $p->wait_for_element('div.ticket-info-links.editing');
+    $p->wait_for_element($header_trash);
+    is( $p->{page}->locator($header_trash)->first->isVisible, 1, 'trash header visible in edit mode' );
+
+    my $row1 = qq{$table tbody tr[data-record-id="@{[$dep1->id]}"]};
+    my $row2 = qq{$table tbody tr[data-record-id="@{[$dep2->id]}"]};
+
+    # The icon is hidden until the row is pending, so force the click; the label still toggles
+    # the box.
+    $p->{page}->click("$row1 td:first-child label.form-check-label", { force => 1 });
+    $p->{handle}->await( $p->{page}->waitForFunction(
+        "document.querySelector('$row1').classList.contains('pending-delete')", {}, { timeout => 5000 } ) );
+    is( $p->{page}->locator("$row1 input.delete-checkbox")->isChecked, 1, 'clicking the label checks the box' );
+
+    $p->{page}->hover("$row1 .pending-delete-icon");
+    $p->wait_for_element('body > div.tooltip .tooltip-inner:has-text("Will be removed")');
+    pass('tooltip reads Will be removed');
+
+    $p->{page}->click("$row1 .pending-delete-icon");
+    $p->{handle}->await( $p->{page}->waitForFunction(
+        "!document.querySelector('$row1').classList.contains('pending-delete')", {}, { timeout => 5000 } ) );
+    is( $p->{page}->locator("$row1 input.delete-checkbox")->isChecked, 0, 'clicking the icon unchecks the box' );
+
+    # Cancel keeps a checked box checked, like every other unsaved field, so re-entering edit mode
+    # recovers it. Display mode shows only saved state: no tint, no trash icon.
+    my $row_look_js = <<"JS";
+(function() {
+    const row = document.querySelector('$row1');
+    const other = document.querySelector('$row2');
+    const tinted = getComputedStyle(row.querySelector('td:nth-child(2)')).backgroundColor
+            !== getComputedStyle(other.querySelector('td:nth-child(2)')).backgroundColor;
+    return (tinted ? 'tinted' : 'plain') + ':' + getComputedStyle(row.querySelector('.pending-delete-icon')).visibility;
+})()
+JS
+
+    $p->{page}->check("$row1 input.delete-checkbox");
+    is( $p->{page}->evaluate("return $row_look_js"), 'tinted:visible',
+        'checked row is tinted and shows its trash icon in edit mode' );
+
+    $p->{page}->click('div.ticket-info-links a.inline-edit-toggle.cancel');
+    $p->wait_for_element('div.ticket-info-links:not(.editing)');
+    is( $p->{page}->evaluate("return $row_look_js"), 'plain:hidden',
+        'after cancel, display mode shows no tint and no trash icon' );
+
+    $p->{page}->click('div.ticket-info-links a.inline-edit-toggle.edit');
+    $p->wait_for_element('div.ticket-info-links.editing');
+    is( $p->{page}->locator("$row1 input.delete-checkbox")->isChecked, 1, 'cancel keeps the box checked' );
+    is( $p->{page}->evaluate("return $row_look_js"), 'tinted:visible',
+        're-entering edit mode shows the recovered removal again' );
+
+    $p->{page}->check("$row1 input.delete-checkbox");
+    $p->{page}->check("$row2 input.delete-checkbox");
+    is( $p->{page}->locator("$table tbody tr.pending-delete")->count, 2, 'two rows pending' );
+    $p->{page}->locator(q{div.ticket-info-links form.inline-edit .links-edit-save input[type=submit]})->click;
+    $p->wait_for_htmx;
+    $p->wait_for_element( $row1, { state => 'detached' } );
+    $p->wait_for_element( $row2, { state => 'detached' } );
+
+    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+    my $after = RT::Ticket->new( RT->SystemUser );
+    $after->Load( $t->id );
+    is( $after->DependsOn->Count, 0, 'both staged links removed on one Save' );
     $p->close_jgrowl;
 }
 
@@ -357,7 +464,6 @@ diag "Testing tom-select createOnBlur: paste a value and click Save without pres
         # The add-form value field is a tom-select autocomplete when the object-type is "Ticket".
         # Set the first add row's link-type to "Depends on", type the target id, and Save without
         # pressing Enter or picking from the dropdown: the typed value must still be committed.
-        # Reload first: the previous block's immediate trash delete leaves the widget in edit mode.
         $p->goto_ticket($ticket_id);
         $p->{page}->click('div.ticket-info-links a.inline-edit-toggle.edit');
         $p->wait_for_element('div.ticket-info-links .edit-ticket-links .add-link-row');
@@ -927,13 +1033,12 @@ diag "merged from links_children_tree_edit.t";
     $reload->Load($grand_id);
     is( $reload->Status, 'resolved', 'grandchild status persisted via inline edit in the tree' );
 
-    # Regression: the delete control is a trash link (a.delete-link) in a separate trailing column
-    # (each tree row's LAST <td>). The whole column is hidden in display mode; only depth-1 rows show
-    # it in edit mode.
+    # The delete control is a checkbox (input.delete-checkbox) in the row's FIRST <td>, ahead of the
+    # id cell. The whole column is hidden in display mode; only depth-1 rows show it in edit mode.
     my $child_id  = $child->id;
     my $child_uri = $child->URI;
     my $child_row = 'div.ticket-info-links .links-tree tr[data-record-id="' . $child_id . '"]';
-    my $child_cb  = "$child_row td:last-child a.delete-link";
+    my $child_cb  = "$child_row td:first-child input.delete-checkbox";
 
     my $is_visible = sub {
         my $sel = shift;
@@ -941,48 +1046,46 @@ diag "merged from links_children_tree_edit.t";
             qq{return (function(){ const el = document.querySelector('$sel'); return el ? (el.offsetParent !== null) : null; })()} );
     };
 
-    # Display mode (default): the trash-link column exists in the DOM but is hidden.
+    # Display mode (default): the delete-checkbox column exists in the DOM but is hidden.
     $p->wait_for_element( qq{${child_row}[data-depth="1"]} );
-    ok( !$is_visible->($child_cb), 'depth-1 child trash link is hidden in display mode' );
+    ok( !$is_visible->($child_cb), 'depth-1 child delete checkbox is hidden in display mode' );
 
-    my $grand_cb = 'div.ticket-info-links .links-tree tr[data-record-id="' . $grand_id . '"] td:last-child a.delete-link';
-    ok( !$is_visible->($grand_cb), 'depth-2 grandchild trash link is hidden in display mode' );
+    my $grand_cb = 'div.ticket-info-links .links-tree tr[data-record-id="' . $grand_id . '"] td:first-child input.delete-checkbox';
+    ok( !$is_visible->($grand_cb), 'depth-2 grandchild delete checkbox is hidden in display mode' );
 
     $p->{page}->click('div.ticket-info-links a.inline-edit-toggle.edit');
     $p->wait_for_element('div.ticket-info-links.editing');
     $p->wait_for_element($child_cb);
-    ok( $is_visible->($child_cb), 'depth-1 child trash link is visible in edit mode' );
+    ok( $is_visible->($child_cb), 'depth-1 child delete checkbox is visible in edit mode' );
 
-    # The trash link sits in the row's LAST <td>, a separate column from the id cell (.links-tree-id
+    # The checkbox sits in the row's FIRST <td>, a separate column ahead of the id cell (.links-tree-id
     # lives on the column's content <div>, so locate its enclosing <td>).
     my $col_layout = $p->{page}->evaluate(<<JS);
 return (function(){
     const row = document.querySelector('$child_row');
     if (!row) return null;
     const cells = Array.from(row.querySelectorAll(':scope > td'));
-    const cb = row.querySelector('a.delete-link');
+    const cb = row.querySelector('input.delete-checkbox');
     const cbTd = cb ? cb.closest('td') : null;
     const idDiv = row.querySelector('.links-tree-id');
     const idTd = idDiv ? idDiv.closest('td') : null;
     return { cbTdIndex: cbTd ? cells.indexOf(cbTd) : -1, idTdIndex: idTd ? cells.indexOf(idTd) : -1 };
 })();
 JS
-    is( $col_layout->{idTdIndex}, 0, 'depth-1 id cell is the leading column (td index 0)' );
-    ok( $col_layout->{cbTdIndex} > $col_layout->{idTdIndex},
-        'depth-1 trash link is a separate, trailing column after the id' );
+    is( $col_layout->{cbTdIndex}, 0, 'depth-1 delete checkbox is the leading column (td index 0)' );
+    is( $col_layout->{idTdIndex}, 1, 'depth-1 id cell follows the delete column (td index 1)' );
 
     # In edit mode the depth-2 grandchild row is hidden entirely (only depth-1 children edit), so its
-    # trash link is not visible even though the column exists.
+    # delete checkbox is not visible even though the column exists.
     ok( !$is_visible->( 'div.ticket-info-links .links-tree tr[data-record-id="' . $grand_id . '"]' ),
         'depth-2 grandchild row is hidden in edit mode' );
-    ok( !$is_visible->($grand_cb), 'depth-2 grandchild trash link is not visible in edit mode' );
+    ok( !$is_visible->($grand_cb), 'depth-2 grandchild delete checkbox is not visible in edit mode' );
 
-    # The depth-1 trash link posts the child's DeleteLink param (the delete rides TicketUpdate).
-    # hx-vals is JSON, which escapes '/' as '\/'; drop backslashes before matching the URI.
-    ( my $hx_vals = $p->{page}->evaluate(
-        qq{return (function(){ const el = document.querySelector('$child_cb'); return el ? el.getAttribute('hx-vals') : ''; })()} ) ) =~ s{\\}{}g;
-    like( $hx_vals, qr/DeleteLink-\Q$child_uri\E-MemberOf-/,
-        'depth-1 trash link hx-vals carries DeleteLink-<childURI>-MemberOf-' );
+    # The name tells ProcessRecordLinks which link to delete: DeleteLink-<baseURI>-MemberOf-.
+    my $cb_name = $p->{page}->evaluate(
+        qq{return (function(){ const el = document.querySelector('$child_cb'); return el ? el.getAttribute('name') : ''; })()} );
+    like( $cb_name, qr/DeleteLink-\Q$child_uri\E-MemberOf-/,
+        'depth-1 delete checkbox name carries DeleteLink-<childURI>-MemberOf-' );
 }
 
 $p->logout;

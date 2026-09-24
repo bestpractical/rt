@@ -316,56 +316,77 @@ div.results .titlebox .titlebox-content {
     margin-bottom: 0.25rem;
 }
 
-/* Default-format link tables line up column-for-column: every per-type table shares one id/type
-   column width (the alignment anchor), and the Ticket table pins its columns to a 2/7/2/3-ish
-   rhythm. Applied in both view and edit modes so flipping the pencil doesn't reflow the table; in
-   edit mode the visible delete column is carved out of the Owner column, leaving id/Subject/Status
-   fixed. A customized %LinksFormat drops .links-default-format (see Elements/ShowLinksTableOfType),
-   so columns size to content as before. */
+/* Link tables line up column for column: every per-type table, in any format, shares one id/type
+   column width, and default-format Ticket tables also pin Subject/Status so entering edit mode
+   doesn't reflow them. A customized %LinksFormat, such as a queue's, drops .links-default-format
+   (see Elements/ShowLinksTableOfType), and its other columns share the remaining width. */
 
 /* The object-type column headers ("Ticket", "Asset", ...) must not wrap. */
-.links-type-table.links-default-format th.collection-as-table {
+.links-type-table th.collection-as-table {
     white-space: nowrap;
 }
 
-/* Shared first (id/type) column -- the alignment anchor across every per-type table. The id is
-   always the first cell here; the widget's delete column, when present, trails the row. */
-.titlebox.links-widget .links-type-table.links-default-format thead th:first-child {
+/* Shared id/type column, the alignment anchor: second when the table has a delete column. Every
+   format's first column is the object's id or name (Elements/ShowLinksTableOfType titles it after
+   the object type), so this applies to customized formats too. */
+.titlebox.links-widget .links-type-table[data-link-delete-type] thead th:nth-child(2),
+.titlebox.links-widget .links-type-table:not([data-link-delete-type]) thead th:first-child {
     width: 16%;
 }
 
-/* Fixed layout + explicit id/Subject/Status/Owner widths (~2/7/2/3) so the Ticket table and the
-   Children tree line up column for column. Only while the widget is wide enough to honor them; a
-   narrow widget falls back to automatic layout (the browser sizes each column, Subject absorbing
-   the squeeze), which avoids the 16% Owner slice wrapping names one letter per line. */
+/* Fixed layout + explicit Subject/Status widths so the Ticket table and the Children tree line up
+   column for column. Only while the widget is wide enough to honor them; a narrow widget falls back
+   to automatic layout, Subject absorbing the squeeze. */
 @container links-widget (min-width: 30rem) {
     .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"] table.collection-as-table,
     .titlebox.links-widget table.links-tree.links-default-format {
         table-layout: fixed;
     }
-    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(2),
-    .titlebox.links-widget .links-tree.links-default-format thead th:nth-child(2) {
+    /* Widths must sum to 100% in each mode: under table-layout: fixed a hidden (display: none) delete
+       column still claims any unassigned width as a phantom column, squeezing Owner. */
+
+    /* Tables with a delete column (dual-mode widget): delete | id | Subject | Status | Owner. */
+    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"][data-link-delete-type] thead th:nth-child(3),
+    .titlebox.links-widget .links-tree.links-default-format[data-link-delete-type] thead th:nth-child(3) {
         width: 47%;
     }
-    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(3),
-    .titlebox.links-widget .links-tree.links-default-format thead th:nth-child(3) {
+    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"][data-link-delete-type] thead th:nth-child(4),
+    .titlebox.links-widget .links-tree.links-default-format[data-link-delete-type] thead th:nth-child(4) {
         width: 15%;
     }
-    /* Owner takes the full 22% in the read view (delete column hidden). In edit mode it yields a
-       slim slice to the now-visible trailing delete column, so id/Subject/Status don't shift on
-       the flip. */
-    .titlebox.links-widget:not(.editing) .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(4),
-    .titlebox.links-widget:not(.editing) .links-tree.links-default-format thead th:nth-child(4) {
+    .titlebox.links-widget:not(.editing) .links-type-table.links-default-format[data-links-object-type="Ticket"][data-link-delete-type] thead th:nth-child(5),
+    .titlebox.links-widget:not(.editing) .links-tree.links-default-format[data-link-delete-type] thead th:nth-child(5) {
         width: 22%;
     }
-    .titlebox.links-widget.editing .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(4),
-    .titlebox.links-widget.editing .links-tree.links-default-format thead th:nth-child(4) {
-        width: 16%;
+    /* Edit mode: 3.5rem fits the checkbox and its trash icon. Subject gives 3% to Owner and Owner
+       gives 3.5rem to the delete column, so id and Status don't move. The delete width applies to
+       every delete table, not only default-format Ticket tables. */
+    .titlebox.links-widget.editing .links-type-table[data-link-delete-type] thead th:first-child {
+        width: 3.5rem;
     }
-    .titlebox.links-widget.editing .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:last-child,
-    .titlebox.links-widget.editing .links-tree.links-default-format thead th:last-child {
-        width: 6%;
+    .titlebox.links-widget.editing .links-type-table.links-default-format[data-links-object-type="Ticket"][data-link-delete-type] thead th:nth-child(3),
+    .titlebox.links-widget.editing .links-tree.links-default-format[data-link-delete-type] thead th:nth-child(3) {
+        width: 44%;
     }
+    .titlebox.links-widget.editing .links-type-table.links-default-format[data-links-object-type="Ticket"][data-link-delete-type] thead th:nth-child(5),
+    .titlebox.links-widget.editing .links-tree.links-default-format[data-link-delete-type] thead th:nth-child(5) {
+        width: calc(25% - 3.5rem);
+    }
+
+    /* Tables without a delete column (display-only widget): id | Subject | Status | Owner. */
+    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"]:not([data-link-delete-type]) thead th:nth-child(2),
+    .titlebox.links-widget .links-tree.links-default-format:not([data-link-delete-type]) thead th:nth-child(2) {
+        width: 47%;
+    }
+    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"]:not([data-link-delete-type]) thead th:nth-child(3),
+    .titlebox.links-widget .links-tree.links-default-format:not([data-link-delete-type]) thead th:nth-child(3) {
+        width: 15%;
+    }
+    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"]:not([data-link-delete-type]) thead th:nth-child(4),
+    .titlebox.links-widget .links-tree.links-default-format:not([data-link-delete-type]) thead th:nth-child(4) {
+        width: 22%;
+    }
+
     /* A deep tree (tagged links-tree-deep, see Elements/ShowLinksTree and fitLinksTree) can't fit
        the cascade in the fixed id column. Give it automatic layout so the id column grows and
        Subject yields; this one section skews while shallow sections stay aligned. */
@@ -376,17 +397,22 @@ div.results .titlebox .titlebox-content {
 /* Narrow widget: let Subject take the slack so it's the column that gives, rather than Status and
    Owner getting squeezed to a word per line. */
 @container links-widget (max-width: 30rem) {
-    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"] thead th:nth-child(2),
-    .titlebox.links-widget .links-tree.links-default-format thead th:nth-child(2) {
+    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"][data-link-delete-type] thead th:nth-child(3),
+    .titlebox.links-widget .links-tree.links-default-format[data-link-delete-type] thead th:nth-child(3) {
+        width: 100%;
+    }
+    .titlebox.links-widget .links-type-table.links-default-format[data-links-object-type="Ticket"]:not([data-link-delete-type]) thead th:nth-child(2),
+    .titlebox.links-widget .links-tree.links-default-format:not([data-link-delete-type]) thead th:nth-child(2) {
         width: 100%;
     }
 }
 
 /* Jumbo (embedded) links list: it isn't a .links-widget, so the read-view alignment above doesn't
    reach it, and its delete-checkbox column is always shown. Line up the id/type column across the
-   per-type tables by pinning the checkbox + id widths; content columns stay natural. */
-.titlebox.ticket-info-links:not(.links-widget) .links-type-table.links-default-format[data-link-delete-type] thead th:first-child {
-    width: 2.5rem;
+   per-type tables by pinning the delete column (checkbox and trash icon) and id widths; content
+   columns stay natural. */
+.titlebox.ticket-info-links:not(.links-widget) .links-type-table[data-link-delete-type] thead th:first-child {
+    width: 3.5rem;
 }
 .titlebox.ticket-info-links:not(.links-widget) .links-type-table.links-default-format[data-link-delete-type] thead th:nth-child(2) {
     width: 16%;
@@ -647,12 +673,15 @@ div.results .titlebox .titlebox-content {
     white-space: nowrap;
 }
 
-/* Left-align the id column (header and values) in every default-format link table, overriding
+/* Left-align the id column (header and values) in every link table, overriding
    Bootstrap's numeric right alignment, so the id is consistent across the tree and the flat
-   per-type tables in both display and edit. */
-.titlebox.links-widget .links-type-table.links-default-format thead th.collection-as-table:first-child,
-.titlebox.links-widget .links-type-table.links-default-format tbody td.collection-as-table:first-child,
-.titlebox.links-widget .links-type-table.links-default-format tbody td.collection-as-table:first-child > div {
+   per-type tables in both display and edit. The id is second when the table has a delete column. */
+.titlebox.links-widget .links-type-table[data-link-delete-type] thead th.collection-as-table:nth-child(2),
+.titlebox.links-widget .links-type-table[data-link-delete-type] tbody td.collection-as-table:nth-child(2),
+.titlebox.links-widget .links-type-table[data-link-delete-type] tbody td.collection-as-table:nth-child(2) > div,
+.titlebox.links-widget .links-type-table:not([data-link-delete-type]) thead th.collection-as-table:first-child,
+.titlebox.links-widget .links-type-table:not([data-link-delete-type]) tbody td.collection-as-table:first-child,
+.titlebox.links-widget .links-type-table:not([data-link-delete-type]) tbody td.collection-as-table:first-child > div {
     text-align: left !important;
 }
 
@@ -662,11 +691,10 @@ div.results .titlebox .titlebox-content {
     display: block;
 }
 
-/* Display state: hide every edit affordance. The widget's delete column (a trash link) trails the
-   row -- the last cell (only when the table advertises data-link-delete-type); hide that column,
-   but spare the tree's "shown above" colspan rows whose only cell is also the last-child. */
-.titlebox.links-widget:not(.editing) .links-type-table[data-link-delete-type] th:last-child,
-.titlebox.links-widget:not(.editing) .links-type-table[data-link-delete-type] tr:not(.links-tree-repeat) td:last-child,
+/* Display state: hide every edit affordance, including the leading delete column. Spare the tree's
+   repeat rows, whose one colspan cell is also a first-child. */
+.titlebox.links-widget:not(.editing) .links-type-table[data-link-delete-type] th:first-child,
+.titlebox.links-widget:not(.editing) .links-type-table[data-link-delete-type] tr:not(.links-tree-repeat) td:first-child,
 .titlebox.links-widget:not(.editing) .add-links-section,
 .titlebox.links-widget:not(.editing) .links-cf-edit,
 .titlebox.links-widget:not(.editing) .links-edit-save {
@@ -678,4 +706,40 @@ div.results .titlebox .titlebox-content {
 .titlebox.links-widget.editing .links-tree tr[data-depth]:not([data-depth="1"]),
 .titlebox.links-widget.editing .links-tree .links-tree-repeat {
     display: none;
+}
+
+/* Rows marked for removal (Elements/DeleteCheckBox); not scoped to Links, so any list can use it.
+   table-danger isn't used because its colors are fixed to the light theme. The dark theme's hover
+   color is opaque and would hide the tint, so hover gets a translucent overlay. The icon uses
+   visibility, not display, so its space stays reserved and the row doesn't shift. */
+tr.pending-delete {
+    --bs-table-bg: var(--bs-danger-bg-subtle);
+    --bs-table-color: var(--bs-body-color);
+    --bs-table-border-color: var(--bs-danger-border-subtle);
+    --bs-table-hover-bg: rgba(var(--bs-emphasis-color-rgb), 0.075);
+}
+li.pending-delete {
+    background-color: var(--bs-danger-bg-subtle);
+}
+.pending-delete-icon {
+    visibility: hidden;
+}
+.pending-delete .pending-delete-icon {
+    visibility: visible;
+}
+
+/* Cancel leaves a checked box checked, like any unsaved field, so reopening the panel restores it;
+   display mode shows only saved state. Limited to link/click panels because an "always" panel is
+   always editing but doesn't necessarily carry .editing. */
+.titlebox:is([data-inline-edit-behavior="link"], [data-inline-edit-behavior="click"]):not(.editing) tr.pending-delete {
+    --bs-table-bg: inherit;
+    --bs-table-color: inherit;
+    --bs-table-border-color: inherit;
+    --bs-table-hover-bg: inherit;
+}
+.titlebox:is([data-inline-edit-behavior="link"], [data-inline-edit-behavior="click"]):not(.editing) li.pending-delete {
+    background-color: transparent;
+}
+.titlebox:is([data-inline-edit-behavior="link"], [data-inline-edit-behavior="click"]):not(.editing) .pending-delete .pending-delete-icon {
+    visibility: hidden;
 }
