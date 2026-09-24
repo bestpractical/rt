@@ -102,6 +102,10 @@ my %squelched = ProcessTransactionSquelching( \%ARGS );
 my $squelched_config = !( RT->Config->Get('SquelchedRecipients', $session{'CurrentUser'}) );
 my %submitted;
 $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
+
+# The PreviewScrips widget renders TxnRecipients when it's on the page
+my $has_preview_scrips = $TicketObj->CurrentUserHasRight('ShowOutgoingEmail')
+    && PageLayoutHasWidget( Object => $TicketObj, Page => 'Update', Widget => 'PreviewScrips' );
 </%init>
 %   if ( scalar(map { keys %{$headers{$_}} } qw(To Cc Bcc)) ) {
 
@@ -190,7 +194,7 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
 </p>
 % }
 
-% if (!$TicketObj->CurrentUserHasRight('ShowOutgoingEmail') || $ARGS{'RenderTxnRecipientsInput'}) {
+% if ( $ARGS{'RenderTxnRecipientsInput'} || !$has_preview_scrips ) {
     <input type="hidden" name="TxnRecipients" value="<% join ",",sort keys %recips %>" />
 % }
 % $m->abort();

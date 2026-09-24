@@ -49,7 +49,7 @@
 
 % if ( RT->Config->Get('SimplifiedRecipients', $session{'CurrentUser'}) ) {
 <&|/Widgets/TitleBox, title => loc('Recipients'), class => 'ticket-info-recipients' &>
-% unless ($TicketObj->CurrentUserHasRight('ShowOutgoingEmail')) {
+% unless ( $has_preview_scrips ) {
 %   for my $address (grep {defined} ref $ARGS{TxnSendMailTo} ? @{$ARGS{TxnSendMailTo}} : $ARGS{TxnSendMailTo}) {
   <input type="hidden" name="TxnSendMailTo" value="<% $address %>" />
 %   }
@@ -63,6 +63,11 @@
 
 % $m->callback( %ARGS, CallbackName => 'AfterWidget' );
 
+<%INIT>
+# The PreviewScrips widget renders TxnRecipients when it's on the page
+my $has_preview_scrips = $TicketObj->CurrentUserHasRight('ShowOutgoingEmail')
+    && PageLayoutHasWidget( Object => $TicketObj, Page => 'Update', Widget => 'PreviewScrips' );
+</%INIT>
 <%ARGS>
 $TicketObj
 </%ARGS>
