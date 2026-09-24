@@ -6684,6 +6684,42 @@ sub GetPageLayout {
     return;
 }
 
+=head2 PageLayoutHasWidget Object => $Object, Page => $Page, Widget => $Widget
+
+Returns true if the page layout for the given C<$Object> and C<$Page>, as
+returned by L</GetPageLayout>, contains the widget named C<$Widget>.
+
+=cut
+
+sub PageLayoutHasWidget {
+    my %args = (
+        Object => '',
+        Page   => 'Display',
+        Widget => '',
+        @_,
+    );
+
+    my $config = GetPageLayout( Object => $args{Object}, Page => $args{Page} ) or return 0;
+    $config = $config->{Content} if ref $config eq 'HASH';
+    return _LayoutItemHasWidget( $config, $args{Widget} ) ? 1 : 0;
+}
+
+sub _LayoutItemHasWidget {
+    my ( $item, $widget ) = @_;
+
+    if ( ref $item eq 'ARRAY' ) {
+        return scalar grep { _LayoutItemHasWidget( $_, $widget ) } @$item;
+    }
+    elsif ( ref $item eq 'HASH' ) {
+        return _LayoutItemHasWidget( $item->{Elements} || $item->{Name}, $widget );
+    }
+    elsif ( defined $item ) {
+        my ($name) = split /:/, $item, 2;
+        return $name eq $widget;
+    }
+    return 0;
+}
+
 =head2 GetAvailableWidgets Class => $Class, Page => $Page
 
 Returns a list of available widgets for the given C<$Class> and C<$Page>.
