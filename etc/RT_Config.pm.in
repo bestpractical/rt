@@ -3394,16 +3394,6 @@ of groups; a value of undef removes the group display entirely.
 
 Set($MoreAboutRequestorGroupsLimit, 0);
 
-=item C<$EditCustomFieldsSingleColumn>
-
-When displaying a list of Ticket Custom Fields for editing, RT
-defaults to a 2 column list.  If you set this to 1, it will instead
-display the Custom Fields in a single column.
-
-=cut
-
-Set($EditCustomFieldsSingleColumn, 0);
-
 =item C<$ShowUnreadMessageNotifications>
 
 If set to 1, RT will prompt users when there are new,
