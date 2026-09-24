@@ -75,11 +75,6 @@
 %   }
 
 <%INIT>
-$m->notes( LinkDeleteDualMode => $DualMode ? 1 : 0 );
-$m->notes( LinkParentId       => $Object->id );
-$m->notes( LinkUpdatePath     => $Object->isa('RT::Asset') ? RT->Config->Get('WebPath') . '/Helpers/AssetUpdate'
-                                                           : RT->Config->Get('WebPath') . '/Helpers/TicketUpdate' );
-
 my @display = qw(DependsOn DependedOnBy MemberOf Members RefersTo ReferredToBy);
 $m->callback( %ARGS, CallbackName => 'ChangeDisplay', display => \@display );
 my %labels  = (

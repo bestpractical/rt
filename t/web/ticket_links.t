@@ -292,7 +292,7 @@ diag "merged from ticket_links_display.t";
     $m->content_contains( 'links-info-modal', 'info modal element present' );
     $m->content_contains( 'About links',      'modal title present' );
     $m->content_contains( 'Depended on by',   'modal lists relationship descriptions' );
-    $m->content_like( qr/This ticket can't be resolved until the linked items are done/,
+    $m->content_like( qr/This ticket can't be resolved until the linked items are completed/,
         'ticket modal uses the resolution-based dependency wording' );
     $m->content_contains( 'asset:',           'modal lists value-field shortcuts' );
 
@@ -412,6 +412,10 @@ diag "merged from ticket_links_edit.t";
         'edit mode renders a DeleteLink checkbox for the dependency'
     );
 
+    my $edit_table = $m->dom->at('.links-type-table[data-links-object-type="Ticket"] table');
+    ok( $edit_table->at('thead th:first-child svg.bi-trash'), 'standalone edit table header leads with the trash icon' );
+    ok( $edit_table->at('tbody tr td:first-child input.delete-checkbox'), 'standalone edit row leads with a delete checkbox' );
+
     my ($inactive_dep) = RT::Test->create_tickets( { Queue => $q->id }, { Subject => 'resolved dep' } );
     $inactive_dep->SetStatus('resolved');
     {
@@ -457,8 +461,8 @@ diag "merged from ticket_links_edit.t";
     $m->content_like( qr/class="[^"]*add-link-row/,                       'has add rows' );
     my $rows = () = ( $m->content =~ /class="[^"]*add-link-row/g );
     ok( $rows >= 2, "renders at least two add rows (got $rows)" );
-    $m->content_lacks( 'links-removal-count', 'no removal counter (removed with trash-link design)' );
-    $m->content_unlike( qr/links-edit-footer/, 'no edit footer (removed with trash-link design)' );
+    $m->content_lacks( 'links-removal-count', 'no removal counter in the links body' );
+    $m->content_unlike( qr/links-edit-footer/, 'no edit footer in the links body' );
 
     my ($url_ticket) = RT::Test->create_tickets( { Queue => $q->id }, { Subject => 'url-links-ticket' } );
     {
@@ -634,7 +638,7 @@ diag "merged from ticket_links_filter.t";
     {
         for my $dep (@deps) {
             my $name = 'DeleteLink--DependsOn-' . $dep->URI;
-            $m->content_like( qr/name="\Q$name\E"[^>]*class="[^"]*delete-link/,
+            $m->content_like( qr/name="\Q$name\E"[^>]*class="[^"]*delete-checkbox/,
                 'removal checkbox present for ' . $dep->Subject )
                 or last;
         }
@@ -895,7 +899,14 @@ diag "merged from ticket_modifyall_links.t";
 
     $m->content_like( qr{class="edit-ticket-links"},      'ModifyAll renders the links editor' );
     $m->content_like( qr{class="[^"]*add-link-row[^"]*"}, 'ModifyAll renders the row-based add UI' );
-    $m->content_like( qr{name="DeleteLink-}, 'ModifyAll renders a DeleteLink checkbox for the existing link' );
+    my $jumbo = $m->dom->at('div.ticket-info-links .links-type-table[data-links-object-type="Ticket"] table');
+    ok( $jumbo, 'ModifyAll renders the linked-ticket table' );
+    ok( $jumbo->at('thead th:first-child svg.bi-trash'), 'ModifyAll table header leads with the trash icon' );
+    my $jumbo_box = $jumbo->at('tbody tr td:first-child input.delete-checkbox');
+    ok( $jumbo_box, 'ModifyAll row leads with a delete checkbox' );
+    like( $jumbo_box->attr('name'), qr/^DeleteLink-/, 'ModifyAll checkbox carries a DeleteLink name' );
+    ok( $jumbo->at('tbody tr td:first-child span.pending-delete-icon[title="Will be removed"]'),
+        'ModifyAll row carries the pending-delete icon' );
 
     # Embedded in the page form, the editor must NOT emit nested <form> elements: they would close
     # TicketModifyAll early and orphan the reply box / Save button.
@@ -1271,7 +1282,7 @@ diag 'Links table row ordering: id asc for tickets, Name asc for users';
         'user rows render in Name-ascending order, not id order' );
 }
 
-diag 'DualMode children tree: depth-1 rows carry a trash delete link';
+diag 'DualMode children tree: rows lead with a delete checkbox, the guide stays in the id cell';
 {
     my $parent = RT::Test->create_ticket( Queue => 'General', Subject => 'tree parent' );
     my $child  = RT::Test->create_ticket( Queue => 'General', Subject => 'tree child' );
@@ -1284,14 +1295,24 @@ diag 'DualMode children tree: depth-1 rows carry a trash delete link';
         'fetched DualMode tree'
     );
 
-    # In DualMode the direct child (depth 1) gets a trash link (hx-post) not a checkbox.
-    $m->content_like(
-        qr{<a[^>]*class="[^"]*delete-link[^"]*"[^>]*hx-post="[^"]*/Helpers/TicketUpdate},
-        'depth-1 child row has a MemberOf trash link in DualMode'
-    );
-    # Display mode renders every depth. Deeper rows carry a CSS-hidden delete cell; their visibility
-    # is CSS-gated and asserted in the Playwright suite, not here.
-    $m->content_like( qr/data-depth="2"/, 'grandchild row rendered at depth 2' );
+    my $tree = $m->dom->at('#links-section-Members table.links-tree');
+    ok( $tree, 'children tree rendered' );
+
+    my $first_th = $tree->at('thead th:first-child');
+    ok( $first_th->at('svg.bi-trash'), 'tree header leads with the trash icon' );
+
+    my $child_row = $tree->at( 'tbody tr[data-record-id="' . $child->id . '"]' );
+    my $box       = $child_row->at('td:first-child input.delete-checkbox');
+    ok( $box, 'depth-1 child row leads with a delete checkbox' );
+    is( $box->attr('name'), 'DeleteLink-' . $child->URI . '-MemberOf-', 'checkbox names the MemberOf link in Base mode' );
+    is( $box->attr('type'), 'checkbox', 'it is a checkbox, not a link' );
+    ok( !$child_row->at('a[hx-post]'), 'no immediate-delete link in the row' );
+
+    my $gchild_row = $tree->at( 'tbody tr[data-depth="2"]' );
+    ok( $gchild_row, 'grandchild row rendered at depth 2' );
+    ok( $gchild_row->at('td:nth-child(2) .links-tree-guide .links-tree-indent'),
+        'tree guide rides the id cell, second after the delete cell' );
+    ok( !$gchild_row->at('td:first-child .links-tree-guide'), 'delete cell carries no guide' );
 }
 
 diag 'DualMode: one render carries read-only + edit affordances';
@@ -1306,13 +1327,13 @@ diag 'DualMode: one render carries read-only + edit affordances';
         . '/Views/Component/ShowLinks?ObjectType=RT::Ticket&ObjectId=' . $parent->id;
 
     $m->get_ok( $base . '&DualMode=1', 'fetched ShowLinks in DualMode' );
-    $m->content_like( qr/delete-link/, 'DualMode emits delete checkboxes' );
+    $m->content_like( qr/delete-checkbox/, 'DualMode emits delete checkboxes' );
     $m->content_like( qr/links-tree/,  'DualMode renders the children tree' );
     $m->content_like( qr/links-cf-display/, 'DualMode renders the read-only CF block' );
     $m->content_like( qr/links-cf-edit/,    'DualMode renders the editable CF block' );
 
     $m->get_ok( $base, 'fetched ShowLinks without DualMode' );
-    $m->content_unlike( qr/delete-link/, 'plain ShowLinks emits no delete checkboxes' );
+    $m->content_unlike( qr/delete-checkbox/, 'plain ShowLinks emits no delete checkboxes' );
     $m->content_unlike( qr/links-cf-edit/, 'plain ShowLinks does not render the editable CF block' );
 }
 
@@ -1343,24 +1364,131 @@ diag 'Ticket Links widget renders one unified body inside the edit form';
 
     $m->content_like( qr/links-edit-container/, 'editable container rendered' );
     $m->content_unlike( qr/links-display-target/, 'no separate display-only list' );
-    $m->content_like( qr/delete-link/, 'delete affordances present in the unified body' );
+    $m->content_like( qr/delete-checkbox/, 'delete affordances present in the unified body' );
     $m->content_like( qr/class="[^"]*\blinks-widget\b/, 'titlebox carries links-widget class' );
 }
 
-diag 'DualMode widget: trash link replaces the delete checkbox';
+diag 'DualMode widget: staged delete checkbox with trash header and pending icon';
 {
     my $q = RT::Test->load_or_create_queue( Name => 'General' );
-    my ($main) = RT::Test->create_tickets( { Queue => $q->id }, { Subject => 'trash link main' } );
-    my ($dep)  = RT::Test->create_tickets( { Queue => $q->id }, { Subject => 'trash link dep' } );
+    my ($main) = RT::Test->create_tickets( { Queue => $q->id }, { Subject => 'staged delete main' } );
+    my ($dep)  = RT::Test->create_tickets( { Queue => $q->id }, { Subject => 'staged delete dep' } );
     $main->AddLink( Type => 'DependsOn', Target => $dep->id );
+    $main->AddLink( Type => 'RefersTo',  Target => 'http://example.com/staged-url' );
 
     $m->get_ok( $baseurl . '/Ticket/Display.html?id=' . $main->id, 'widget display (DualMode)' );
-    $m->content_like(
-        qr{<a[^>]*class="[^"]*delete-link[^"]*"[^>]*hx-post="[^"]*/Helpers/TicketUpdate},
-        'widget renders a trash link that posts to TicketUpdate' );
-    $m->content_like( qr{hx-vals=["'][^"']*DeleteLink-}, 'trash link carries a DeleteLink param' );
-    $m->content_unlike( qr{type="checkbox"[^>]*class="[^"]*delete-link}, 'widget has no delete checkbox' );
-    $m->content_unlike( qr/links-removal-count/, 'no removal counter in the widget' );
+    my $dom = $m->dom;
+
+    my $ticket_table = $dom->at(
+        'div.ticket-info-links #links-section-DependsOn .links-type-table[data-links-object-type="Ticket"] table'
+    );
+    ok( $ticket_table, 'DependsOn ticket table rendered' );
+    ok( $ticket_table->at('thead th:first-child svg.bi-trash'), 'ticket table header leads with the trash icon' );
+
+    my $row = $ticket_table->at( 'tbody tr[data-record-id="' . $dep->id . '"]' );
+    my $box = $row->at('td:first-child .form-check input.delete-checkbox');
+    ok( $box, 'row leads with a delete checkbox' );
+    is( $box->attr('name'),  'DeleteLink--DependsOn-' . $dep->URI, 'checkbox names the DependsOn link' );
+    is( $box->attr('value'), '1', 'checkbox value is 1' );
+    is( $box->attr('aria-label'), 'Remove link to Ticket #' . $dep->id, 'checkbox has a descriptive aria-label' );
+    ok( !$row->at('a[hx-post]'), 'no immediate-delete link' );
+
+    my $label = $row->at( 'td:first-child label.form-check-label[for="' . $box->attr('id') . '"]' );
+    ok( $label, 'label targets the checkbox' );
+    my $icon = $label->at('span.pending-delete-icon');
+    ok( $icon, 'label carries the pending-delete icon' );
+    is( $icon->attr('data-bs-toggle'), 'tooltip',         'icon is a Bootstrap tooltip trigger' );
+    is( $icon->attr('title'),          'Will be removed', 'tooltip reads Will be removed' );
+    ok( $icon->at('svg.bi-trash'), 'icon is the trash SVG' );
+    like( $icon->attr('class'), qr/\btext-danger\b/, 'icon is styled danger' );
+    is( $icon->attr('aria-hidden'), 'true', 'icon is hidden from assistive technology; the checkbox carries the name' );
+
+    my $url_table = $dom->at(
+        'div.ticket-info-links #links-section-RefersTo .links-type-table[data-links-object-type="URL"] table'
+    );
+    ok( $url_table, 'RefersTo URL table rendered' );
+    ok( $url_table->at('thead th:first-child svg.bi-trash'), 'URL table header leads with the trash icon' );
+    my $url_box = $url_table->at('tbody tr td:first-child input.delete-checkbox');
+    ok( $url_box, 'URL row leads with a delete checkbox' );
+    is( $url_box->attr('name'), 'DeleteLink--RefersTo-http://example.com/staged-url', 'URL checkbox names the RefersTo link' );
+    is( $url_box->attr('aria-label'), 'Remove link to http://example.com/staged-url', 'URL checkbox aria-label names the URL' );
+    ok( $url_table->at('tbody tr td:first-child label span.pending-delete-icon[title="Will be removed"]'),
+        'URL row carries the pending-delete icon' );
+    ok( !$url_table->at('a[hx-post]'), 'URL row has no immediate-delete link' );
+
+    ok( $url_table->at( 'tbody tr td:first-child label.form-check-label[for="' . $url_box->attr('id') . '"]' ),
+        'URL row label targets its checkbox' );
+}
+
+diag 'Delete checkbox labels: users, groups and articles by name; others by number';
+{
+    my $main = RT::Test->create_ticket( Queue => 'General', Subject => 'label main' );
+    my $dep  = RT::Test->create_ticket( Queue => 'General', Subject => 'label dep' );
+
+    my $user = RT::User->new( RT->SystemUser );
+    my ( $uid, $umsg ) = $user->Create( Name => 'label-user', RealName => 'Label Person', Privileged => 1 );
+    ok( $uid, "created user: $umsg" );
+
+    my $group = RT::Group->new( RT->SystemUser );
+    my ( $gid, $gmsg ) = $group->CreateUserDefinedGroup( Name => 'label-group' );
+    ok( $gid, "created group: $gmsg" );
+
+    my $class = RT::Class->new( RT->SystemUser );
+    $class->Create( Name => 'Label KB' );
+    my $article = RT::Article->new( RT->SystemUser );
+    my ( $aid, $amsg ) = $article->Create( Name => 'label-article', Class => $class->id, Summary => 's' );
+    ok( $aid, "created article: $amsg" );
+
+    ok( $main->AddLink( Type => 'DependsOn', Target => $dep->id ), 'linked ticket' );
+    ok( $main->AddLink( Type => 'RefersTo', Target => $_->URI ), 'linked ' . ref $_ ) for $user, $group, $article;
+
+    $m->goto_ticket( $main->id );
+    my $dom   = $m->dom;
+    my $label = sub {
+        my ( $section, $type ) = @_;
+        my $box = $dom->at(qq{#links-section-$section .links-type-table[data-links-object-type="$type"] tbody input.delete-checkbox});
+        return $box ? $box->attr('aria-label') : undef;
+    };
+
+    is( $label->( 'DependsOn', 'Ticket' ), 'Remove link to Ticket #' . $dep->id, 'ticket label uses the id' );
+    is( $label->( 'RefersTo', 'User' ), 'Remove link to User label-user (Label Person)',
+        'user label uses the UsernameFormat display name' );
+    is( $label->( 'RefersTo', 'Group' ),   'Remove link to Group label-group',     'group label uses the name' );
+    is( $label->( 'RefersTo', 'Article' ), 'Remove link to Article label-article', 'article label uses the name' );
+}
+
+diag 'Children tree: a direct child also reached as a grandchild keeps its depth-1 row';
+{
+    # parent -> c, parent -> g, c -> g. c sorts first, so the walk reaches g under c before g
+    # gets its own turn as a direct child.
+    my $parent = RT::Test->create_ticket( Queue => 'General', Subject => 'shared parent' );
+    my $c      = RT::Test->create_ticket( Queue => 'General', Subject => 'shared first child' );
+    my $g      = RT::Test->create_ticket( Queue => 'General', Subject => 'shared direct and grandchild' );
+    ok( $parent->AddLink( Type => 'MemberOf', Base => $c->id ), 'c is a child of parent' );
+    ok( $parent->AddLink( Type => 'MemberOf', Base => $g->id ), 'g is a child of parent' );
+    ok( $c->AddLink( Type => 'MemberOf', Base => $g->id ), 'g is also a child of c' );
+
+    $m->get_ok(
+        $baseurl . '/Views/Component/ShowLinks?ObjectType=RT::Ticket&ObjectId=' . $parent->id . '&DualMode=1',
+        'fetched DualMode tree with a shared child'
+    );
+    my $tree = $m->dom->at('#links-section-Members table.links-tree');
+    ok( $tree, 'children tree rendered' );
+
+    my @rows = $tree->find('tbody tr')->each;
+    my @full = grep { ( $_->attr('data-record-id') // '' ) eq $g->id } @rows;
+    is( scalar @full, 1, 'g has exactly one full row' );
+    is( $full[0]->attr('data-depth'), 1, "g's full row is at depth 1, where edit mode shows it" );
+    is( $full[0]->at('td:first-child input.delete-checkbox')->attr('name'),
+        'DeleteLink-' . $g->URI . '-MemberOf-', "g's depth-1 row carries its delete checkbox" );
+
+    my ($repeat) = grep { ( $_->attr('class') // '' ) =~ /\blinks-tree-repeat\b/ } @rows;
+    ok( $repeat, 'g renders a repeat row under c' );
+    is( $repeat->attr('data-depth'), 2, 'the repeat sits at depth 2, under c' );
+    like( $repeat->all_text, qr/Ticket #@{[$g->id]} \(shown below\)/, "the repeat points down to g's own row" );
+
+    my @ids = map { $_->attr('data-record-id') // 'repeat' } @rows;
+    is_deeply( \@ids, [ $c->id, 'repeat', $g->id ], 'rows run c, the repeat under c, then g' );
 }
 
 done_testing;

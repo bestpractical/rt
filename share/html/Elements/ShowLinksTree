@@ -51,7 +51,14 @@
 % for my $node (@nodes) {
 %   if ( $node->{repeat} ) {
     <tr class="list-item links-tree-repeat" data-depth="<% $node->{depth} %>" aria-level="<% $node->{depth} %>">
-      <td class="collection-as-table" colspan="<% $maxitems %>"><& /Elements/LinkTreeGuide, Code => $node->{code} &><span class="text-muted"><&|/l, $node->{id} &>Ticket #[_1] (shown above)</&></span></td>
+      <td class="collection-as-table" colspan="<% $maxitems %>"><& /Elements/LinkTreeGuide, Code => $node->{code} &><span class="text-muted">
+%     if ( $node->{below} ) {
+<&|/l, $node->{id} &>Ticket #[_1] (shown below)</&>
+%     }
+%     else {
+<&|/l, $node->{id} &>Ticket #[_1] (shown above)</&>
+%     }
+</span></td>
     </tr>
 %   } else {
 <& /Elements/CollectionAsTable/Row,
@@ -63,7 +70,7 @@
     InlineEdit        => $inline_edit,
     Classes           => ( $node->{inactive} ? 'record-inactive' : '' ),
     FirstColumnPrefix => $m->scomp('/Elements/LinkTreeGuide', Code => $node->{code}),
-    FirstColumnPrefixIndex => 0,   # the guide rides the id column, which is always first (the trash trails)
+    FirstColumnPrefixIndex => ( $Edit ? 1 : 0 ),   # the guide belongs in the id column, which follows the delete column in edit mode
     RowAttributes     => qq{data-depth="$node->{depth}" data-tree-prefix="$node->{code}" aria-level="$node->{depth}"},
 &>
 %   }
@@ -91,13 +98,12 @@ $type_label =~ s{['"/\\]}{}g;
 # would skip a double-quoted format.
 $format =~ s{(['"])(.*?)\1}{$1 . $2 . "/TITLE:$type_label/CLASS:collection-as-table links-tree-id" . $1}e;
 
-# In edit mode append the trailing delete column (a trash link -- the tree only renders in the
-# DualMode widget or read-only). The DeleteLinkCheckBox ColumnMap reads these notes to build the
-# DeleteLink-<baseURI>-MemberOf- name (children are the Base of a MemberOf link).
+# The DeleteLinkCheckBox column reads these notes to name its field DeleteLink-<baseURI>-MemberOf-
+# (a child is the Base of a MemberOf link). Keep it first: boxes.css finds columns by position.
 if ($Edit) {
     $m->notes( LinkDeleteType => 'MemberOf' );
     $m->notes( LinkDeleteMode => 'Base' );
-    $format = $format . ", '__DeleteLinkCheckBox__'";
+    $format = "'__DeleteLinkCheckBox__', " . $format;
 }
 
 my @parsed_format = $m->comp( '/Elements/CollectionAsTable/ParseFormat', Format => $format );
@@ -128,6 +134,11 @@ my @nodes;
 my %seen = ( $Object->id => 1 );    # guard a descendant linking back to the root
 my $i    = 0;
 
+# Edit mode shows only depth-1 rows, so a direct child's full row, with its delete checkbox, must
+# be at depth 1. Where the walk reaches it earlier under a sibling, it gets a repeat row instead.
+my @direct    = $children_of->($Object);
+my %direct_id = map { $_->id => 1 } @direct;
+
 # RecursiveSub passes the sub itself as the first arg, weakening the self-reference so the
 # closure (and the linked-ticket records it holds in @nodes) doesn't leak until global destruction.
 my $walk = RT::Util::RecursiveSub( sub {
@@ -136,6 +147,10 @@ my $walk = RT::Util::RecursiveSub( sub {
     my $code = $depth > 1 ? $trunk . ( $is_last ? 'L' : 'M' ) : '';
     if ( $seen{ $obj->id } ) {
         push @nodes, { repeat => 1, id => $obj->id, depth => $depth, code => $code };
+        return;
+    }
+    if ( $depth > 1 && $direct_id{ $obj->id } ) {
+        push @nodes, { repeat => 1, below => 1, id => $obj->id, depth => $depth, code => $code };
         return;
     }
     $seen{ $obj->id } = 1;
@@ -152,8 +167,7 @@ my $walk = RT::Util::RecursiveSub( sub {
 } );
 
 # Direct children; the walk recurses to bring each one's whole subtree (capped by $MaxDepth).
-my @direct = $children_of->($Object);
-my @shown  = @direct;
+my @shown = @direct;
 for my $idx ( 0 .. $#shown ) {
     $walk->( $shown[$idx], '', ( $idx == $#shown ), 1 );
 }

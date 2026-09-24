@@ -103,11 +103,8 @@ if ($Edit) {
     $m->notes( LinkDeleteType => $link_delete_type );
     $m->notes( LinkDeleteMode => $link_delete_mode );
 
-    # The widget's trash link trails the row; the embedded (Jumbo) checkbox leads it.
-    $format
-        = $m->notes('LinkDeleteDualMode')
-        ? $format . ", '__DeleteLinkCheckBox__'"
-        : "'__DeleteLinkCheckBox__', " . $format;
+    # Keep the delete column first: boxes.css finds it, and the id column after it, by position.
+    $format = "'__DeleteLinkCheckBox__', " . $format;
 }
 
 if ( $cclass && @$Ids ) {

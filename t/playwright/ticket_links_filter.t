@@ -91,7 +91,7 @@ JS
         $p->{page}->waitForFunction(
             <<'JS'
 (function() {
-    const boxes = document.querySelectorAll('div.ticket-info-links .links-edit-target .delete-link');
+    const boxes = document.querySelectorAll('div.ticket-info-links .links-edit-target input.delete-checkbox');
     if (!boxes.length) return false;
     return Array.prototype.some.call(boxes, function(box) { return box.offsetParent !== null; });
 })()
@@ -99,7 +99,7 @@ JS
             , {}, { timeout => 10000 }
         )
     );
-    pass('delete trash links are visible in edit mode');
+    pass('delete checkboxes are visible in edit mode');
 }
 
 diag "Edit mode: the client filter hides non-matching rows";
