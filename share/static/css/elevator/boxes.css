@@ -306,13 +306,7 @@ div.results .titlebox .titlebox-content {
     display: inline-block;
 }
 
-/* Link-type section headers (Depends on, Children, ...) head each group of per-type tables whose
-   own column headers are blue; make the group label the most prominent line: bold, body-colored,
-   a step larger than the table headers. */
-.links-section > .label {
-    font-weight: 700;
-    font-size: 1.15em;
-    color: var(--bs-body-color);
+.links-section-heading {
     margin-bottom: 0.25rem;
 }
 
@@ -621,6 +615,10 @@ div.results .titlebox .titlebox-content {
     }
 
     .titlebox-inner-heading {
+        color: var(--bs-primary);
+    }
+
+    .links-section-heading {
         color: var(--bs-primary);
     }
 

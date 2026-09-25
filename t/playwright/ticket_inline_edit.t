@@ -827,7 +827,7 @@ diag "merged from ticket_links_click_edit.t";
     $p->goto_ticket( $ticket->id );
 
     # Click a non-link, non-editable area of the portlet body (the relationship section label).
-    $p->{page}->click('div.ticket-info-links .links-edit-target .links-section .label');
+    $p->{page}->click('div.ticket-info-links .links-edit-target .links-section-heading');
 
     # Clicking the body enters edit mode (the portlet is in 'click' behavior) via a pure .editing
     # CSS flip; the add-link form is already in the DOM (no fetch) and becomes visible.
