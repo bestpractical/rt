@@ -648,6 +648,14 @@ $Class => undef
 % }
             </div>
           </div>
+          <& /Widgets/Form/Integer,
+             Name => 'ListCount',
+             Description => loc('Links Per Type'),
+             Tooltip => loc('Number of links to show in each link type section before the "Show all" control'),
+             CurrentValue => ( ref $Widget && $Widget->{ListCount} ) // '',
+             DefaultLabel => ( defined $list_count_default ? loc( 'Default: [_1]', $list_count_default ) : loc('Default: show all') ),
+             LabeledValue => 1
+          &>
         </div>
         <div class="modal-footer">
           <& /Elements/Submit, Label => loc('Update') &>
@@ -677,6 +685,7 @@ my @object_types = (
 my %rel_default = ( ref $Widget && $Widget->{ShowRelationship} ) ? map { $_ => 1 } @{ $Widget->{ShowRelationship} } : ();
 my %obj_default = ( ref $Widget && $Widget->{ShowObjectType} )   ? map { $_ => 1 } @{ $Widget->{ShowObjectType} }   : ();
 my $for = $Index // $Widget;    # per-widget id suffix, matching the modal id
+my $list_count_default = RT->Config->Get('LinksListCount');
 </%INIT>
 <%ARGS>
 $Widget => undef

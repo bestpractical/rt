@@ -2024,6 +2024,9 @@ our %META;
     ExternalStorageCutoffSize => {
         Widget => '/Widgets/Form/Integer',
     },
+    LinksListCount => {
+        Widget => '/Widgets/Form/Integer',
+    },
     LogoutRefresh => {
         Widget => '/Widgets/Form/Integer',
     },

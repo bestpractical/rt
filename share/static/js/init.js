@@ -1337,6 +1337,16 @@ jQuery(document).on('change', 'input.delete-checkbox', function () {
     if (row) row.classList.toggle('pending-delete', this.checked);
 });
 
+// A capped Links section's Show all control swaps in the whole section.
+document.addEventListener('click', function (e) {
+    const button = e.target.closest('.links-show-all');
+    if (!button) return;
+    e.preventDefault();
+    button.disabled = true;
+    linksSwapKeepingDeletes(button.closest('.links-section'), button.dataset.linksShowAllUrl, 'outerHTML')
+        .catch(() => { button.disabled = false; });
+});
+
 jQuery(document).on('click', 'a.delete-attach', function() {
     var parent = jQuery(this).closest('div');
     var name = jQuery(this).attr('data-name');

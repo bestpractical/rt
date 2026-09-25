@@ -131,10 +131,43 @@ diag "Links widget applies a configured default filter (ticket)";
     $m->goto_ticket( $main->id );
     $m->content_contains( 'lw active dep', 'active dependency is shown' );
 
-    # Filtering is now client-side (util.js): the resolved row IS in the server HTML (the client
-    # hides it), and the funnel pre-checks Hide-inactive to reflect the configured default.
-    $m->content_contains( 'lw resolved dep', 'resolved dependency is rendered (hidden client-side)' );
+    # With LinksListCount set, the first render applies the default on the server and marks the
+    # list partial; the client loads the resolved row if the filter is cleared (util.js). The
+    # funnel pre-checks Hide-inactive to reflect the configured default.
+    $m->content_lacks( 'lw resolved dep', 'resolved dependency is held back by the default' );
+    $m->content_like( qr/data-links-partial="1"/, 'links list is marked partial' );
     $m->content_like( qr/name="HideInactive"[^>]*\bchecked/, 'funnel Hide-inactive box reflects the default' );
+}
+
+diag "Links widget ListCount overrides LinksListCount";
+{
+    my $q    = RT::Test->load_or_create_queue( Name => 'General' );
+    my $main = RT::Test->create_ticket( Queue => $q->Name, Subject => 'lw list count main' );
+    for my $n ( 1 .. 4 ) {
+        my $dep = RT::Test->create_ticket( Queue => $q->Name, Subject => "lw list count dep $n" );
+        $main->AddLink( Type => 'DependsOn', Target => $dep->id );
+    }
+
+    my ($ok, $msg) = HTML::Mason::Commands::UpdateConfig(
+        Name  => 'PageLayouts',
+        Value => {
+            'RT::Ticket' => {
+                'Display' => {
+                    Default => [
+                        { Layout => 'col-12', Elements => [ { Name => 'Links', ListCount => 2 } ] },
+                    ],
+                },
+            },
+        },
+        CurrentUser => RT->SystemUser,
+    );
+    ok( $ok, "configured Links ListCount" ) or diag $msg;
+
+    $m->goto_ticket( $main->id );
+    my $section = $m->dom->at('#links-section-DependsOn');
+    is( $section->find('tbody tr')->size, 2, 'the layout ListCount caps the section' );
+    like( $section->at('button.links-show-all')->text, qr/Show all \(4\)/, 'and offers all of them' );
+    $m->content_like( qr{hx-get="[^"]*/Views/Component/ShowLinks\?[^"]*ListCount=2}, 'the refresh URL keeps the cap' );
 }
 
 diag "EditPageLayout renders the Links widget edit modal reflecting config";
@@ -146,7 +179,7 @@ diag "EditPageLayout renders the Links widget edit modal reflecting config";
                 'Display' => {
                     Default => [
                         { Layout => 'col-12',
-                          Elements => [ { Name => 'Links', HideInactive => 1, ShowObjectType => ['Ticket'] } ] },
+                          Elements => [ { Name => 'Links', HideInactive => 1, ShowObjectType => ['Ticket'], ListCount => 7 } ] },
                     ],
                 },
                 'Create' => {
@@ -166,6 +199,9 @@ diag "EditPageLayout renders the Links widget edit modal reflecting config";
     $m->content_like( qr/id="pagelayout-links-hide-inactive-0"[^>]*\bchecked/, 'placed modal Hide-inactive reflects config' );
     $m->content_like( qr/id="pagelayout-links-ot-Ticket-0"[^>]*\bchecked/, 'placed modal Ticket object-type checked' );
     $m->content_unlike( qr/id="pagelayout-links-ot-Asset-0"[^>]*\bchecked/, 'placed modal Asset object-type unchecked' );
+    ok( $m->dom->at('#pagelayout-widget-0-modal input[name="ListCount"][value="7"]'), 'placed modal ListCount reflects config' );
+    ok( $m->dom->at('#pagelayout-widget-Links-modal input[name="ListCount"][value=""][placeholder="Default: 10"]'),
+        'palette modal ListCount is empty, showing the LinksListCount default' );
 
     # The Links item in "Available Widgets" carries the edit pencil so a dragged-in widget is configurable.
     $m->content_like( qr{data-bs-target="#pagelayout-widget-Links-modal"},

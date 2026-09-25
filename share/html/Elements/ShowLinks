@@ -48,16 +48,22 @@
 <div class="ticket-links">
 % for my $type (@render) {
   <& /Elements/ShowLinksSection,
-      Object   => $Object,
-      Type     => $type,
-      Label    => $labels{$type},
-      Formats  => \%formats,
-      Edit     => $Edit,
-      DualMode => $DualMode,
-      Embedded => $Embedded,
+      Object           => $Object,
+      Type             => $type,
+      Label            => $labels{$type},
+      Formats          => \%formats,
+      Edit             => $Edit,
+      DualMode         => $DualMode,
+      Embedded         => $Embedded,
+      ListCount        => $ListCount,
+      ShowAll          => $ShowAll,
+      HideInactive     => $HideInactive,
+      ShowRelationship => \@ShowRelationship,
+      ShowObjectType   => \@ShowObjectType,
+      Partial          => \$partial,
   &>
 % }
-  <span class="links-total d-none" data-links-total="<% $links_total %>"></span>
+  <span class="links-total d-none" data-links-total="<% $links_total %>"<% $partial ? ' data-links-partial="1"' : '' |n %>></span>
 </div>
 % $m->callback( %ARGS );
 % if ($DualMode) {
@@ -91,13 +97,24 @@ my %formats = %{ RT->Config->Get('LinksFormat') || {} };
 my @render = @display;
 
 my $links_total = $Object->Links('Base')->Count + $Object->Links('Target')->Count;
+
+# An empty ListCount (the page layout didn't set one) falls back to $LinksListCount;
+# anything else that isn't a count is ignored rather than trusted from the query string.
+$ListCount = RT->Config->Get('LinksListCount') if !defined $ListCount || $ListCount eq '';
+$ListCount = undef unless defined $ListCount && $ListCount =~ /^\d+$/;
+my $partial = 0;
 </%INIT>
 
 <%ARGS>
 $Object
-$Edit     => 0
-$DualMode => 0
-$Embedded => 0
+$Edit             => 0
+$DualMode         => 0
+$Embedded         => 0
+$ListCount        => undef
+$ShowAll          => 0
+$HideInactive     => 0
+@ShowRelationship => ()
+@ShowObjectType   => ()
 </%ARGS>
 
 <%attr>

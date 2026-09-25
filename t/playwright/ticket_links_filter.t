@@ -511,7 +511,7 @@ JS
     ok( $active_shown, 'the active row stays visible' );
 }
 
-diag "Edit mode: a configured HideInactive default hides resolved rows on load";
+diag "A configured HideInactive default holds resolved rows back until the filter is cleared";
 {
     my $q = RT::Test->load_or_create_queue( Name => 'General' );
     my ($act) = RT::Test->create_tickets( { Queue => $q->id }, { Subject => 'lwp active' } );
@@ -534,6 +534,34 @@ diag "Edit mode: a configured HideInactive default hides resolved rows on load";
 
     $p->goto_ticket( $m2->id );
     $p->wait_for_element('.links-edit-target [data-record-id="' . $act->id . '"]');
+    my $res_rendered = $p->{page}->evaluate(
+        'return !!document.querySelector(".links-edit-target [data-record-id=\'' . $res->id . '\']")'
+    );
+    ok( !$res_rendered, 'the server holds the resolved dependency back under the configured default' );
+    my $partial = $p->{page}->evaluate(
+        'const c = document.querySelector(".links-edit-target .links-total"); return c ? c.getAttribute("data-links-partial") : null'
+    );
+    is( $partial, '1', 'the list is marked partial' );
+
+    # Clearing Hide inactive fetches the held-back rows, which then show.
+    $p->{page}->click('div.ticket-info-links .links-filter-toggle a.links-filter');
+    $p->wait_for_element('div.ticket-info-links .links-filter-dropdown.show');
+    $p->{page}->click('div.ticket-info-links .links-filter-dropdown input[name="HideInactive"]');
+    $p->{page}->click('div.ticket-info-links .links-filter-dropdown button.links-filter-apply');
+    $p->{handle}->await(
+        $p->{page}->waitForFunction(
+            '(function() { const r = document.querySelector(".links-edit-target [data-record-id=\'' . $res->id
+                . '\']"); return r ? !r.classList.contains("d-none") : false; })()',
+            {}, { timeout => 10000 }
+        )
+    );
+    pass('clearing Hide inactive loads and shows the resolved dependency');
+
+    # Checking it again hides the now-loaded row on the client, with no reload.
+    $p->{page}->click('div.ticket-info-links .links-filter-toggle a.links-filter');
+    $p->wait_for_element('div.ticket-info-links .links-filter-dropdown.show');
+    $p->{page}->click('div.ticket-info-links .links-filter-dropdown input[name="HideInactive"]');
+    $p->{page}->click('div.ticket-info-links .links-filter-dropdown button.links-filter-apply');
     $p->{handle}->await(
         $p->{page}->waitForFunction(
             '(function() { const r = document.querySelector(".links-edit-target [data-record-id=\'' . $res->id
@@ -541,36 +569,60 @@ diag "Edit mode: a configured HideInactive default hides resolved rows on load";
             {}, { timeout => 10000 }
         )
     );
-    my $res_hidden_display = $p->{page}->evaluate(
-        'const r = document.querySelector(".links-edit-target [data-record-id=\'' . $res->id
-            . '\']"); return r ? r.classList.contains("d-none") : null'
+    pass('re-checking Hide inactive hides the resolved dependency client-side');
+}
+
+diag "A capped section: Show all, search, and checked deletes";
+{
+    my @capdeps = RT::Test->create_tickets( { Queue => $queue->id }, map { { Subject => "capdep $_" } } 1 .. 13 );
+    my ($capmain) = RT::Test->create_tickets( { Queue => $queue->id }, { Subject => 'cap main' } );
+    $capmain->AddLink( Type => 'DependsOn', Target => $_->id ) for @capdeps;
+
+    $p->goto_ticket( $capmain->id );
+    $p->wait_for_element('.links-edit-target #links-section-DependsOn button.links-show-all');
+    my $rows = $p->{page}->evaluate(
+        'return document.querySelectorAll(".links-edit-target #links-section-DependsOn tbody tr").length'
     );
-    ok( $res_hidden_display, 'resolved dependency stays in the display DOM but is hidden via the configured default' );
+    is( $rows, 10, 'the capped section renders 10 rows' );
 
-    $p->{page}->click('div.ticket-info-links a.inline-edit-toggle.edit');
-    $p->wait_for_element('div.ticket-info-links.editing');
-
+    # A search for a held-back row loads the full list, then filters it.
+    my $search = 'div.ticket-info-links .links-filter-form input[name="Search"]';
+    $p->{page}->fill( $search, 'capdep 13' );
+    $p->{page}->dispatchEvent( $search, 'input' );
     $p->{handle}->await(
         $p->{page}->waitForFunction(
-            <<'JS'
-(function() {
-    const root = document.querySelector('div.ticket-info-links .links-edit-target');
-    if (!root) return false;
-    const rows = root.querySelectorAll('tbody tr');
-    if (!rows.length) return false;
-    // All rows loaded; the record-inactive one must be d-none (clientFilter default applied).
-    const inactiveRows = root.querySelectorAll('tbody tr.record-inactive');
-    return inactiveRows.length > 0 &&
-        Array.prototype.every.call(inactiveRows, function(r) { return r.classList.contains('d-none'); });
-})()
-JS
-            , {}, { timeout => 10000 }
+            '(function() { const r = document.querySelector(".links-edit-target [data-record-id=\'' . $capdeps[12]->id
+                . '\']"); return r && !r.classList.contains("d-none")'
+                . ' && !document.querySelector(".links-edit-target button.links-show-all"); })()',
+            {}, { timeout => 10000 }
         )
     );
-    my $res_hidden = $p->{page}->evaluate(
-        'const r = document.querySelector("div.ticket-info-links .links-edit-target [data-record-id=\'' . $res->id . '\']"); return r ? r.classList.contains("d-none") : null'
+    pass('searching for a held-back row loads the whole list and shows the match');
+
+    $p->{page}->fill( $search, '' );
+    $p->{page}->dispatchEvent( $search, 'input' );
+
+    # Reload the capped list, check a delete box, then Show all: the box stays checked.
+    $p->goto_ticket( $capmain->id );
+    $p->wait_for_element('.links-edit-target #links-section-DependsOn button.links-show-all');
+    $p->{page}->click('div.ticket-info-links a.inline-edit-toggle.edit');
+    $p->wait_for_element('div.ticket-info-links.editing');
+    my $first_box = '.links-edit-target #links-section-DependsOn tr[data-record-id="' . $capdeps[0]->id
+        . '"] input.delete-checkbox';
+    $p->{page}->click($first_box);
+    $p->{page}->click('.links-edit-target #links-section-DependsOn button.links-show-all');
+    $p->{handle}->await(
+        $p->{page}->waitForFunction(
+            '(function() { return document.querySelectorAll(".links-edit-target #links-section-DependsOn tbody tr").length === 13'
+                . ' && !document.querySelector(".links-edit-target #links-section-DependsOn button.links-show-all"); })()',
+            {}, { timeout => 10000 }
+        )
     );
-    ok( $res_hidden, 'edit mode hides the resolved dependency row via the configured default' );
+    pass('Show all loads every row in the section');
+    my $still = $p->{page}->evaluate(
+        'const b = document.querySelector(\'' . $first_box . '\'); return b ? [b.checked ? 1 : 0, b.closest("tr").classList.contains("pending-delete") ? 1 : 0] : null'
+    );
+    is_deeply( $still, [ 1, 1 ], 'a checked delete box stays checked, and its row pending, across Show all' );
 }
 
 diag "Display mode: filtering the children tree keeps a deep match plus its ancestor chain";
