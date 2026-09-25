@@ -72,6 +72,6 @@ $MyArticles->Limit(FIELD => 'Class', OPERATOR => 'IN', VALUE => \@classes)
     if @classes;
 $MyArticles->Limit(FIELD => 'Created', OPERATOR => '!=', VALUE => 'LastUpdated', QUOTEVALUE => 0 );
 $MyArticles->RowsPerPage($rows);
-$MyArticles->OrderBy(FIELD => 'Created', ORDER => 'DESC');
+$MyArticles->OrderBy(FIELD => 'LastUpdated', ORDER => 'DESC');
 
 </%INIT>
