@@ -1869,9 +1869,44 @@ function initLinksFilter(form) {
         return !s.length || ( row._lhay != null ? row._lhay : visibleHaystack(row) ).indexOf(s) >= 0;
     }
 
+    // The server's first render already applies these defaults (see Elements/ShowLinksSection),
+    // so while the form still matches them the rows it held back can stay unloaded.
+    const filterState = () => Array.from(form.querySelectorAll('input[type=checkbox]'))
+        .map(el => el.checked ? 1 : 0).join('');
+    const defaultState = filterState();
+
+    // Rows are held back by the per-section cap (a Show all control) or by a default filter
+    // (data-links-partial). Fetch them all once a search or filter change could reveal them.
+    function loadFullList(target) {
+        if (target.dataset.linksLoadingAll) return true;
+        const carrier = target.querySelector('.links-total');
+        const partial = target.querySelector('.links-show-all')
+                     || (carrier && carrier.getAttribute('data-links-partial') === '1');
+        if (!partial) return false;
+        if (!searchEl.value.trim().length && filterState() === defaultState) return false;
+
+        let url = target.getAttribute('hx-get');
+        if (!url) return false;
+        if (!/[?&]ShowAll=1\b/.test(url)) {
+            // Keep later links-changed refreshes complete too, while this filter is in use.
+            url += '&ShowAll=1';
+            target.setAttribute('hx-get', url);
+            htmx.process(target);
+        }
+        target.dataset.linksLoadingAll = '1';
+        // Refilter here rather than rely on onSettle: htmx may settle while the flag is still set.
+        linksSwapKeepingDeletes(target, url, 'innerHTML')
+            .finally(() => {
+                delete target.dataset.linksLoadingAll;
+                clientFilter();
+            });
+        return true;
+    }
+
     function clientFilter() {
         const target = form.dataset.linksTarget ? document.querySelector(form.dataset.linksTarget) : null;
         if (!target) return;
+        if (loadFullList(target)) return;
         const s = searchEl.value.trim().toLowerCase();
         const rels = selected('ShowRelationship'), objs = selected('ShowObjectType');
         const relAll = rels.length === total('ShowRelationship');
@@ -1957,6 +1992,32 @@ function initLinksFilter(form) {
         onSettle();
     }
 }
+
+// Re-render part of the Links list, keeping any delete checkboxes the user has already checked:
+// the fresh rows come back unchecked, and the rows are in the edit form the user hasn't saved.
+function linksSwapKeepingDeletes(target, url, swap) {
+    const scope = target.closest('.links-edit-target, .links-display-target') || target.parentElement;
+    const checked = Array.from(scope.querySelectorAll('input.delete-checkbox:checked')).map(el => el.name);
+    return htmx.ajax('GET', url, { target: target, swap: swap }).then(() => {
+        checked.forEach(name => {
+            const box = scope.querySelector(`input.delete-checkbox[name="${CSS.escape(name)}"]`);
+            if (box && !box.checked) {
+                box.checked = true;
+                box.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+    });
+}
+
+// A capped Links section's Show all control swaps in the whole section.
+document.addEventListener('click', function (e) {
+    const button = e.target.closest('.links-show-all');
+    if (!button) return;
+    e.preventDefault();
+    button.disabled = true;
+    linksSwapKeepingDeletes(button.closest('.links-section'), button.dataset.linksShowAllUrl, 'outerHTML')
+        .catch(() => { button.disabled = false; });
+});
 
 function initAddLinkRows(section) {
     if (section.dataset.alrInit) return;

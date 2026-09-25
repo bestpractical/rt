@@ -988,10 +988,24 @@ diag "Asset Links widget applies a configured default filter";
     $m->get_ok( "$baseurl/Asset/Display.html?id=" . $a_main->id, 'load asset display' );
     $m->content_contains( 'lw active asset dep',  'active asset dependency is shown' );
 
-    # Filtering is client-side: the inactive row is in the server HTML (the client hides it) and the
-    # funnel pre-checks Hide-inactive to reflect the configured default.
-    $m->content_contains( 'lw retired asset dep', 'inactive asset dependency is rendered (hidden client-side)' );
+    # With LinksListCount set, the first render applies the default on the server: the inactive row
+    # is held back and the list is marked partial, so the client loads it if the filter is cleared.
+    # The funnel pre-checks Hide-inactive to reflect the configured default.
+    $m->content_lacks( 'lw retired asset dep', 'inactive asset dependency is held back by the default' );
+    $m->content_like( qr/data-links-partial="1"/, 'links list is marked partial' );
     $m->content_like( qr/name="HideInactive"[^>]*\bchecked/, 'funnel Hide-inactive box reflects the default' );
+
+    # Without a cap the server renders every row and leaves the default to the client filter.
+    RT::Test->stop_server;
+    RT->Config->Set( LinksListCount => undef );
+    ( $baseurl, $m ) = RT::Test->started_ok;
+    ok( $m->login, 'logged in' );
+    $m->get_ok( "$baseurl/Asset/Display.html?id=" . $a_main->id, 'load asset display without a cap' );
+    $m->content_contains( 'lw retired asset dep', 'inactive asset dependency is rendered (hidden client-side)' );
+    RT::Test->stop_server;
+    RT->Config->Set( LinksListCount => 10 );
+    ( $baseurl, $m ) = RT::Test->started_ok;
+    ok( $m->login, 'logged in' );
 }
 
 diag "clone prefill renders clean values + object types in the add-links rows";
@@ -1489,6 +1503,67 @@ diag 'Children tree: a direct child also reached as a grandchild keeps its depth
 
     my @ids = map { $_->attr('data-record-id') // 'repeat' } @rows;
     is_deeply( \@ids, [ $c->id, 'repeat', $g->id ], 'rows run c, the repeat under c, then g' );
+}
+
+diag 'LinksListCount caps each section and Show all loads the rest';
+{
+    my $main = RT::Test->create_ticket( Queue => 'General', Subject => 'capped links' );
+    my @deps = map { RT::Test->create_ticket( Queue => 'General', Subject => "capped dep $_" ) } 1 .. 12;
+    my @kids = map { RT::Test->create_ticket( Queue => 'General', Subject => "capped child $_" ) } 1 .. 11;
+    my $grandchild = RT::Test->create_ticket( Queue => 'General', Subject => 'capped grandchild' );
+    ok( $main->AddLink( Type => 'DependsOn', Target => $_->id ), 'added dependency ' . $_->id ) for @deps;
+    ok( $main->AddLink( Type => 'RefersTo', Target => "https://example.com/capped/$_" ), "added URL $_" ) for 1 .. 3;
+    ok( $main->AddLink( Type => 'MemberOf', Base => $_->id ), 'added child ' . $_->id ) for @kids;
+    ok( $kids[0]->AddLink( Type => 'MemberOf', Base => $grandchild->id ), 'added a grandchild' );
+
+    $m->get_ok( $baseurl . '/Views/Component/ShowLinks?ObjectType=RT::Ticket&ObjectId=' . $main->id,
+        'fetched capped links' );
+    my $dom = $m->dom;
+
+    my $deps = $dom->at('#links-section-DependsOn');
+    is( $deps->find('tbody tr')->size, 10, 'Depends on renders the first 10 rows' );
+    is_deeply(
+        [ map { $_->attr('data-record-id') } $deps->find('tbody tr')->each ],
+        [ map { $_->id } @deps[ 0 .. 9 ] ],
+        'the rendered rows are the first 10 by id'
+    );
+    my $more = $deps->at('button.links-show-all');
+    ok( $more, 'Depends on has a Show all control' );
+    like( $more->text, qr/Show all \(12\)/, 'Show all counts every row, shown and held back' );
+
+    my $refers = $dom->at('#links-section-RefersTo');
+    is( $refers->find('tbody tr')->size, 3, 'a section under the cap renders every row' );
+    ok( !$refers->at('button.links-show-all'), 'and has no Show all control' );
+
+    my $kids = $dom->at('#links-section-Members table.links-tree');
+    is( $kids->find('tbody tr[data-depth="1"]')->size, 10, 'the children tree renders 10 direct children' );
+    is( $kids->find('tbody tr[data-depth="2"]')->size, 1, 'with the subtree of each one' );
+    like( $dom->at('#links-section-Members button.links-show-all')->text,
+        qr/Show all \(11\)/, 'the tree counts every direct child' );
+    ok( !$dom->at('.links-total[data-links-partial]'), 'no default filter, so the list is not partial' );
+
+    my $url = $more->attr('data-links-show-all-url');
+    like( $url, qr{/Views/Component/ShowLinksSection\?.*ShowAll=1}, 'Show all fetches the whole section' );
+    $m->get_ok( $url, 'fetched the whole section' );
+    my $section = $m->dom->at('#links-section-DependsOn');
+    is( $section->find('tbody tr')->size, 12, 'the whole section has every row' );
+    ok( !$section->at('button.links-show-all'), 'and no Show all control' );
+
+    $m->get_ok( $baseurl . '/Views/Component/ShowLinks?ObjectType=RT::Ticket&ObjectId=' . $main->id . '&ShowAll=1',
+        'fetched all links' );
+    is( $m->dom->find('#links-section-DependsOn tbody tr')->size, 12, 'ShowAll renders every row' );
+    ok( !$m->dom->at('button.links-show-all'), 'ShowAll leaves no Show all control' );
+
+    $m->get_ok( $baseurl . '/Views/Component/ShowLinks?ObjectType=RT::Ticket&ObjectId=' . $main->id . '&ListCount=3',
+        'fetched links with a ListCount override' );
+    is( $m->dom->find('#links-section-DependsOn tbody tr')->size, 3, 'ListCount overrides LinksListCount' );
+
+    $m->get_ok( $baseurl . '/Views/Component/ShowLinksSection?ObjectType=RT::Ticket&ObjectId=' . $main->id . '&Type=Delete',
+        'requested a section for a method that is not a link type' );
+    is( $m->content, '', 'a Type that is not a link type renders nothing' );
+    my $check = RT::Ticket->new( RT->SystemUser );
+    $check->Load( $main->id );
+    ok( $check->id, 'the ticket still exists' );
 }
 
 done_testing;

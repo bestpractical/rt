@@ -61,8 +61,8 @@
   <& /Elements/LinksFilter, Object => $Object, Target => '#links-edit-target-' . $id, Mode => 'edit', ShowRelationship => \@ShowRelationship, ShowObjectType => \@ShowObjectType, HideInactive => $HideInactive &>
 % }
 
-  <div class="links-edit-target" id="links-edit-target-<% $id %>" hx-trigger="<% $links_event %> from:body, <% $cf_event %> from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowLinks?ObjectType=<% ref $Object %>&ObjectId=<% $id %>&Edit=1<% $DualMode ? '&DualMode=1' : '' %><% $Embedded ? '&Embedded=1' : '' %>" hx-swap="innerHTML">
-    <& /Elements/ShowLinks, Object => $Object, Edit => 1, DualMode => $DualMode, Embedded => $Embedded &>
+  <div class="links-edit-target" id="links-edit-target-<% $id %>" hx-trigger="<% $links_event %> from:body, <% $cf_event %> from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowLinks?<% $show_links_qs %>" hx-swap="innerHTML">
+    <& /Elements/ShowLinks, %show_links_args &>
   </div>
 
 </div>
@@ -77,6 +77,20 @@ my %_links_event = ( 'RT::Ticket' => 'ticketLinksChanged',        'RT::Asset' =>
 my %_cf_event    = ( 'RT::Ticket' => 'ticketCustomFieldsChanged', 'RT::Asset' => 'assetCustomFieldsChanged' );
 my $links_event  = $_links_event{ ref $Object } || 'linksChanged';
 my $cf_event     = $_cf_event{ ref $Object }    || 'customFieldsChanged';
+
+# The refresh URL carries the same cap and default filters as the first render, so a links
+# change re-renders the list the way it loaded.
+my %show_links_args = (
+    Edit             => 1,
+    DualMode         => $DualMode,
+    Embedded         => $Embedded,
+    ListCount        => $ListCount,
+    HideInactive     => $HideInactive,
+    ShowRelationship => \@ShowRelationship,
+    ShowObjectType   => \@ShowObjectType,
+);
+my $show_links_qs = $m->comp( '/Elements/QueryString', ObjectType => ref $Object, ObjectId => $id, %show_links_args );
+$show_links_args{Object} = $Object;
 </%init>
 <%args>
 $Object
@@ -85,6 +99,7 @@ $Embedded         => 0
 @ShowRelationship => ()
 @ShowObjectType   => ()
 $HideInactive     => 0
+$ListCount        => undef
 </%args>
 <%attr>
 directly_accessible => 1

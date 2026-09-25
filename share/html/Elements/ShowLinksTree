@@ -136,7 +136,25 @@ my $i    = 0;
 
 # Edit mode shows only depth-1 rows, so a direct child's full row, with its delete checkbox, must
 # be at depth 1. Where the walk reaches it earlier under a sibling, it gets a repeat row instead.
-my @direct    = $children_of->($Object);
+my @direct;
+{
+    # One query for the direct children, not a BaseObj load per link: with a ListCount most are
+    # only counted. The collection applies the same ShowTicket check as $children_of.
+    my @ids;
+    my $links = $Object->Members;
+    while ( my $link = $links->Next ) {
+        my ( $class, $id ) = RT::URI->ParseObjectURI( $link->Base );
+        push @ids, $id if $class && $class eq 'RT::Ticket';
+    }
+    if (@ids) {
+        my $tickets = $m->comp( '/Elements/ShowLinksTableOfType:Collection', Class => 'RT::Ticket', Ids => \@ids );
+        my %readable;
+        while ( my $ticket = $tickets->Next ) {
+            $readable{ $ticket->id } = $ticket;
+        }
+        @direct = map { $readable{$_} || () } @ids;
+    }
+}
 my %direct_id = map { $_->id => 1 } @direct;
 
 # RecursiveSub passes the sub itself as the first arg, weakening the self-reference so the
@@ -167,9 +185,25 @@ my $walk = RT::Util::RecursiveSub( sub {
 } );
 
 # Direct children; the walk recurses to bring each one's whole subtree (capped by $MaxDepth).
-my @shown = @direct;
-for my $idx ( 0 .. $#shown ) {
-    $walk->( $shown[$idx], '', ( $idx == $#shown ), 1 );
+# With a ListCount, stop after that many direct children and report the rest in $Hidden. Under
+# HideInactive a child counts only if its subtree has an active ticket, as the client filter keeps
+# an inactive row that is the ancestor of an active one; a skipped subtree is un-seen so a later
+# repeat row doesn't point at it.
+my $kept = 0;
+for my $idx ( 0 .. $#direct ) {
+    if ( defined $ListCount && $kept >= $ListCount ) {
+        $$Hidden += @direct - $idx if $Hidden;
+        last;
+    }
+    my $start = @nodes;
+    $walk->( $direct[$idx], '', ( $idx == $#direct ), 1 );
+    if ( $HideInactive && !grep { !$_->{repeat} && !$_->{inactive} } @nodes[ $start .. $#nodes ] ) {
+        delete $seen{ $_->{record}->id } for grep { !$_->{repeat} } @nodes[ $start .. $#nodes ];
+        splice @nodes, $start;
+        $$Partial = 1 if $Partial;
+        next;
+    }
+    $kept++;
 }
 
 # No visible nodes: render nothing so the caller drops the Children section, like the flat tables.
@@ -186,7 +220,11 @@ my $deep = $max_depth >= 4 ? 1 : 0;
 </%init>
 <%args>
 $Object
-$Edit       => 0
-$InlineEdit => RT->Config->Get('InlineEdit', $session{CurrentUser})
-$MaxDepth   => 7
+$Edit         => 0
+$InlineEdit   => RT->Config->Get('InlineEdit', $session{CurrentUser})
+$MaxDepth     => 7
+$ListCount    => undef
+$HideInactive => 0
+$Hidden       => undef
+$Partial      => undef
 </%args>

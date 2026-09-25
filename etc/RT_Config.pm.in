@@ -2673,9 +2673,9 @@ default (C<DependsOn>, C<DependedOnBy>, C<MemberOf>, C<Members>, C<RefersTo>,
 C<ReferredToBy>); C<ShowObjectType =E<gt> [...]> limits the object types shown by
 default (C<Ticket>, C<Transaction>, C<Asset>, C<Article>, C<User>, C<Group>,
 C<URL>). Each list is omitted when all (or none) are selected, meaning "show
-all".
+all". C<ListCount =E<gt> N> overrides L</$LinksListCount> for this widget.
 
-    { Name => 'Links', HideInactive => 1, ShowObjectType => ['Ticket', 'Asset'] }
+    { Name => 'Links', HideInactive => 1, ShowObjectType => ['Ticket', 'Asset'], ListCount => 20 }
 
 =cut
 
@@ -3397,6 +3397,19 @@ Set(%LinksFormat,
     'RT::User'        => q{'<a href="__WebPath__/User/Summary.html?id=__id__">__Name__</a>', '__RealName__', '__EmailAddress__'},
     'RT::Group'       => q{'<a href="__WebPath__/Group/Summary.html?id=__id__">__Name__</a>', '__Description__'},
 );
+
+=item C<$LinksListCount>
+
+Sets the number of links to display in each link type section (Depends on,
+Children, and so on) of the ticket and asset Links widgets (default is 10).
+Users can click "Show all" to load additional links. For Children, the count is of
+direct children, each shown with its subtree. Set to C<undef> to always show
+all links. A page layout can override this for its Links widget with
+C<ListCount>; see L</%PageLayouts>.
+
+=cut
+
+Set($LinksListCount, 10);
 
 =item C<$MoreAboutRequestorExtraInfo>
 

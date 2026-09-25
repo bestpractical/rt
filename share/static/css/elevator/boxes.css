@@ -310,6 +310,13 @@ div.results .titlebox .titlebox-content {
     margin-bottom: 0.25rem;
 }
 
+/* Tuck Show all up under the list it extends: take back most of the table's 1rem bottom
+   margin and restore the gap below, before the next section. */
+.links-show-more {
+    margin-top: -0.75rem;
+    margin-bottom: 1rem;
+}
+
 /* Link tables line up column for column: every per-type table, in any format, shares one id/type
    column width, and default-format Ticket tables also pin Subject/Status so entering edit mode
    doesn't reflow them. A customized %LinksFormat, such as a queue's, drops .links-default-format

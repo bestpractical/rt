@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% if ( $total && ( length $content || @show_urls ) ) {
+% if ( $total && ( length $content || @show_urls || $hidden ) ) {
 <div class="links-section" id="links-section-<% $Type %>">
   <h3 class="links-section-heading h6 fw-semibold"><% $Label %></h3>
 <% $content |n %>
@@ -81,12 +81,44 @@
   </div>
   </div>
 %   }
+%   if ($hidden) {
+%# Rows are held back only once the cap is full, so the rows shown number exactly $cap.
+  <div class="links-show-more text-center">
+    <button type="button" class="btn btn-primary btn-sm links-show-all" data-links-show-all-url="<% $show_all_url %>"><% loc( 'Show all ([_1])', $cap + $hidden ) %></button>
+  </div>
+%   }
 </div>
 % }
 <%init>
+# Type names the method called on $Object below, and this component is reachable by URL.
+return unless $RT::Link::TYPEMAP{$Type} && $Object->can($Type);
+
+my %labels = (
+    DependsOn    => loc('Depends on'),
+    DependedOnBy => loc('Depended on by'),
+    MemberOf     => loc('Parents'),
+    Members      => loc('Children'),
+    RefersTo     => loc('Refers to'),
+    ReferredToBy => loc('Referred to by'),
+);
+$Label   //= $labels{$Type} // $Type;
+$Formats //= RT->Config->Get('LinksFormat') || {};
+
 my $links = $Object->$Type;
 my $total = $links->Count;
 return unless $total;
+
+# Without ShowAll, render at most $ListCount rows. That first render also applies the widget's
+# default filters on the server, so the rows it spends the cap on are ones the client filter would
+# show. Rows held back by a default filter set $Partial; the client fetches everything with
+# ShowAll once a search or filter change could reveal them.
+my $cap = ( defined $ListCount && !$ShowAll ) ? $ListCount : undef;
+my %show_type = map { $_ => 1 } @ShowObjectType;
+my $type_hidden = sub { defined $cap && %show_type && !$show_type{ $_[0] } };
+if ( defined $cap && @ShowRelationship && !grep { $_ eq $Type } @ShowRelationship ) {
+    $$Partial = 1 if $Partial;
+    return;
+}
 
 my $mode           = $RT::Link::TYPEMAP{$Type}{Mode};                                           # 'Target' or 'Base'
 my $ModeURI        = "${mode}URI";
@@ -107,8 +139,10 @@ while ( my $link = $links->Next ) {
     }
 }
 
-my %show_ids  = %ids;
+my %show_ids;
 my @show_urls = @urls;
+my $room      = $cap;
+my $hidden    = 0;
 
 # The ticket Children section renders as a recursive tree only when every member is a local
 # ticket; mixed/url members fall back to the flat per-type tables.
@@ -125,11 +159,59 @@ my $use_tree
 # included -- can be skipped when it has no content.
 my $content = '';
 if ($use_tree) {
-    $content = $m->scomp( '/Elements/ShowLinksTree', Object => $Object, Edit => $emit_delete ) // '';
+    if ( $type_hidden->('Ticket') ) {
+        $$Partial = 1 if $Partial;
+    }
+    else {
+        $content = $m->scomp(
+            '/Elements/ShowLinksTree',
+            Object       => $Object,
+            Edit         => $emit_delete,
+            ListCount    => $cap,
+            HideInactive => ( defined $cap && $HideInactive ),
+            Hidden       => \$hidden,
+            Partial      => $Partial,
+        ) // '';
+    }
 }
 else {
     for my $class (@type_order) {
-        next unless $show_ids{$class} && @{ $show_ids{$class} };
+        next unless $ids{$class} && @{ $ids{$class} };
+        ( my $object_type = $class ) =~ s/^RT:://;
+        if ( $type_hidden->($object_type) ) {
+            $$Partial = 1 if $Partial;
+            next;
+        }
+
+        my @show = @{ $ids{$class} };
+        if ( defined $cap ) {
+            # Count through the same collection the table renders, so ACL and the preserved
+            # filters are applied before the cap and the "Show all" count matches what loads.
+            my $collection = $m->comp(
+                '/Elements/ShowLinksTableOfType:Collection',
+                Class            => $class,
+                Ids              => \@show,
+                RelationshipType => $Type,
+            );
+            @show = ();
+            while ( my $record = $collection ? $collection->Next : undef ) {
+                if ( $HideInactive && $record->can('LifecycleObj') ) {
+                    my $lifecycle = $record->LifecycleObj;
+                    if ( $lifecycle && $lifecycle->IsInactive( $record->Status ) ) {
+                        $$Partial = 1 if $Partial;
+                        next;
+                    }
+                }
+                push @show, $record->id;
+            }
+            if ( @show > $room ) {
+                $hidden += @show - $room;
+                splice @show, $room;
+            }
+            $room -= @show;
+        }
+        $show_ids{$class} = \@show;
+        next unless @show;
         $content .= $m->scomp(
             '/Elements/ShowLinksTableOfType',
             Class            => $class,
@@ -141,13 +223,45 @@ else {
         ) // '';
     }
 }
+
+if ( defined $cap && @show_urls ) {
+    if ( $type_hidden->('URL') ) {
+        $$Partial = 1 if $Partial;
+        @show_urls = ();
+    }
+    elsif ( @show_urls > $room ) {
+        $hidden += @show_urls - $room;
+        splice @show_urls, $room;
+    }
+}
+
+my $show_all_url = '';
+$show_all_url = RT->Config->Get('WebPath') . '/Views/Component/ShowLinksSection?' . $m->comp(
+    '/Elements/QueryString',
+    ObjectType => ref $Object,
+    ObjectId   => $Object->id,
+    Type       => $Type,
+    ShowAll    => 1,
+    ( $Edit     ? ( Edit     => 1 ) : () ),
+    ( $DualMode ? ( DualMode => 1 ) : () ),
+    ( $Embedded ? ( Embedded => 1 ) : () ),
+) if $hidden;
 </%init>
 <%args>
 $Object
 $Type
-$Label
-$Formats
-$Edit     => 0
-$DualMode => 0
-$Embedded => 0
+$Label            => undef
+$Formats          => undef
+$Edit             => 0
+$DualMode         => 0
+$Embedded         => 0
+$ListCount        => undef
+$ShowAll          => 0
+$HideInactive     => 0
+@ShowRelationship => ()
+@ShowObjectType   => ()
+$Partial          => undef
 </%args>
+<%attr>
+directly_accessible => 1
+</%attr>

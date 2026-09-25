@@ -54,15 +54,15 @@
 &>
 % if ($modify_behavior eq 'hide') {
   <div class="inline-edit-display">
-    <div class="links-display-target" id="links-display-target-<% $AssetObj->id %>" hx-trigger="assetLinksChanged from:body, assetCustomFieldsChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowLinks?ObjectType=RT::Asset&ObjectId=<% $AssetObj->id %>" hx-swap="innerHTML">
-      <& /Elements/ShowLinks, Object => $AssetObj &>
+    <div class="links-display-target" id="links-display-target-<% $AssetObj->id %>" hx-trigger="assetLinksChanged from:body, assetCustomFieldsChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/ShowLinks?ObjectType=RT::Asset&ObjectId=<% $AssetObj->id %><% $edit_default_qs |n %>" hx-swap="innerHTML">
+      <& /Elements/ShowLinks, Object => $AssetObj, @filter_args, ListCount => $ListCount &>
     </div>
   </div>
 % } else {
   <form class="inline-edit" hx-post="<% RT->Config->Get('WebPath') %>/Helpers/AssetUpdate" hx-swap="none" enctype="multipart/form-data">
     <input type="hidden" class="hidden" name="id" value="<% $AssetObj->id %>" />
     <div class="links-edit-container" hx-trigger="assetLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditLinks?ObjectType=RT::Asset&ObjectId=<% $AssetObj->id %>&DualMode=1<% $edit_default_qs |n %>" hx-swap="innerHTML">
-      <& /Elements/EditLinks, Object => $AssetObj, DualMode => 1, @filter_args &>
+      <& /Elements/EditLinks, Object => $AssetObj, DualMode => 1, @filter_args, ListCount => $ListCount &>
     </div>
     <& /Widgets/Spinner &>
   </form>
@@ -103,6 +103,7 @@ if ($default_active) {
     push @parts, "ShowObjectType=$_"   for @obj_default;
     $edit_default_qs = '&' . join '&', @parts;
 }
+$edit_default_qs .= '&ListCount=' . $m->interp->apply_escapes( $ListCount, 'u' ) if defined $ListCount;
 
 # Search + filter live in the title bar (like History) to save vertical space. It targets whichever
 # body the current mode renders: the edit body in editable modes, else the read-only display body.
@@ -126,4 +127,5 @@ $AssetObj
 @ShowRelationship => ()
 @ShowObjectType   => ()
 $HideInactive     => 0
+$ListCount        => undef
 </%ARGS>

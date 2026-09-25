@@ -257,6 +257,10 @@ pageLayout = {
             const objs = collect('ShowObjectType');
             if ( rels ) value.ShowRelationship = rels;
             if ( objs ) value.ShowObjectType = objs;
+            const listCount = form.querySelector('input[name=ListCount]').value.trim();
+            if ( /^\d+$/.test(listCount) ) {
+                value.ListCount = parseInt(listCount, 10);
+            }
 
             widget.setAttribute('data-value', JSON.stringify(value));
         }
