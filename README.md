@@ -88,7 +88,7 @@ RT is commercially-supported software. To purchase hosting, support, training, c
 
 1. **Unpack this distribution other than where you want to install RT.** Your home directory or `/usr/local/src` are both fine choices. Change to that directory and run the following command:
    ```
-   tar xzvf rt.tar.gz
+   tar xvf rt.tar.gz
    ```
 
 2. **Run the `configure` script.** To see the list of options, run:
