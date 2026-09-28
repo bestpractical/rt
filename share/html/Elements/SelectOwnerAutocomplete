@@ -49,6 +49,8 @@
 $Name           => undef
 $Objects        => []
 $Default        => 0
+$DefaultValue   => 1
+$DefaultLabel   => ''
 $ValueAttribute => 'Name'
 $TicketObj      => undef
 </%ARGS>
@@ -56,11 +58,17 @@ $TicketObj      => undef
 $ValueAttribute = 'Name' unless $ValueAttribute =~ /^(?:id|Name)$/;
 
 my $value = '';
+my $placeholder = '';
 
 if ( $Default ) {
     my $user = RT::User->new( $session{'CurrentUser'} );
     $user->Load($Default);
     $value = $user->$ValueAttribute;
+} elsif ( $DefaultValue ) {
+    # Like the empty "unchanged" option in SelectOwnerDropdown: submit
+    # nothing unless the user picks someone, so a form rendered before the
+    # owner changed does not reset it on submit.
+    $placeholder = $DefaultLabel;
 } elsif (defined $TicketObj) {
     $value = $TicketObj->OwnerObj->$ValueAttribute;
 }
@@ -69,4 +77,4 @@ if ( $Default ) {
 my $limit = join '|', map { join '-', ref($_), ($_->id || '') } @$Objects;
 </%INIT>
 
-<input id="<%$Name%>" type="text" name="<%$Name%>" value="<% $value %>" data-autocomplete="Owners" data-autocomplete-return="<% $ValueAttribute %>" data-autocomplete-limit="<% $limit %>" class="form-control" />
+<input id="<%$Name%>" type="text" name="<%$Name%>" value="<% $value %>" <% $placeholder ? 'placeholder="' . $m->interp->apply_escapes($placeholder, 'h') . '"' : '' |n %> data-autocomplete="Owners" data-autocomplete-return="<% $ValueAttribute %>" data-autocomplete-limit="<% $limit %>" class="form-control" />
