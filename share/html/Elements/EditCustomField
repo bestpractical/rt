@@ -99,9 +99,18 @@ if ( (!$Object || !$Object->id) && ( !defined $Default || !length $Default ) && 
 
 my $FormText;
 if ( $Type eq 'Date' || $Type eq 'DateTime' ) {
+    my $Value    = $Default;
+    my $Timezone = 'utc';
+
+    # Editing an existing object, show its current value, which is stored in UTC
+    if ( ( !defined $Value || !length $Value ) && $Object && $Object->Id ) {
+        $Value = $Object->FirstCustomFieldValue( $CustomField->Id );
+        $Timezone = 'user' if $Type eq 'DateTime';
+    }
+
     my $DateObj = RT::Date->new ( $session{'CurrentUser'} );
-    $DateObj->Set( Format => 'unknown', Value => $Default, Timezone => 'utc' );
-    $FormText = $DateObj->AsString(Time => $Type eq 'Date' ? 0 : 1, Timezone => 'utc');
+    $DateObj->Set( Format => 'unknown', Value => $Value, Timezone => 'utc' );
+    $FormText = $DateObj->AsString(Time => $Type eq 'Date' ? 0 : 1, Timezone => $Timezone);
 }
 
 </%INIT>
