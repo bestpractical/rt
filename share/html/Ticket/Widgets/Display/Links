@@ -108,7 +108,8 @@ if ($default_active) {
 $edit_default_qs .= '&ListCount=' . $m->interp->apply_escapes( $ListCount, 'u' ) if defined $ListCount;
 
 my @extra;
-my $links_graph = '<span class="rt-inline-icon border rounded"><a href="' . RT->Config->Get('WebPath') . '/Ticket/Graphs/index.html?id=' . $TicketObj->id . '">' . GetSVGImage( Name => 'diagram', Title => loc('Graph ticket links') ) . '</a></span>';
+my $graph_label = $m->interp->apply_escapes( loc('Graph ticket links'), 'h' );
+my $links_graph = '<span class="rt-inline-icon border rounded"><a class="menu-item" href="' . RT->Config->Get('WebPath') . '/Ticket/Graphs/index.html?id=' . $TicketObj->id . qq{" aria-label="$graph_label" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="$graph_label">} . GetSVGImage( Name => 'diagram' ) . '</a></span>';
 
 my $links_info = $m->scomp('/Elements/LinksInfoIcon');
 
