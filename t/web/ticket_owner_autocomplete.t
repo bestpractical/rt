@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 43;
+use RT::Test nodata => 1, tests => undef;
 use JSON qw(from_json);
 
 my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
@@ -107,7 +107,7 @@ diag "user A can not change owner after create";
     $test_cb->($agent_b);
 }
 
-diag "on reply correct owner is selected";
+diag "on reply owner field is empty and shows current owner as unchanged";
 {
     my $ticket = RT::Ticket->new( $user_a );
     my ($id, $txn, $msg) = $ticket->Create(
@@ -121,15 +121,53 @@ diag "on reply correct owner is selected";
     $agent_a->goto_ticket( $id );
     $agent_a->follow_link_ok( { id => 'page-actions-reply' }, 'Reply' );
 
-    my $form = $agent_a->form_number(3);
-    is $form->value('Owner'), 'user_b', 'current user selected';
-    $agent_a->submit;
+    my $form = $agent_a->form_name('TicketUpdate');
+    is $form->value('Owner'), '', 'owner field is empty';
+    is $form->find_input('Owner')->{placeholder}, $user_b->Format . ' (Unchanged)',
+        'placeholder shows current owner as unchanged';
+    $agent_a->click('SubmitTicket');
 
     $ticket = RT::Ticket->new( RT->SystemUser );
     $ticket->Load( $id );
     ok $ticket->id, 'loaded the ticket';
     is $ticket->Owner, $user_b->id, 'correct owner';
 }
+
+ok( RT::Test->set_rights(
+    { Principal => $user_a, Right => [qw(SeeQueue ShowTicket CreateTicket ReplyToTicket ReassignTicket)] },
+    { Principal => $user_b, Right => [qw(SeeQueue ShowTicket OwnTicket)] },
+), 'user a can now reassign tickets');
+
+diag "stale reply form does not reset the owner";
+{
+    my $ticket = RT::Ticket->new( $user_a );
+    my ($id, $txn, $msg) = $ticket->Create(
+        Queue => $queue->id,
+        Subject => 'test',
+    );
+    ok $id, 'created a ticket #'. $id or diag "error: $msg";
+    is $ticket->Owner, RT->Nobody->id, 'ticket is unowned';
+
+    $agent_a->goto_ticket( $id );
+    $agent_a->follow_link_ok( { id => 'page-actions-reply' }, 'Reply' );
+    my $form = $agent_a->form_name('TicketUpdate');
+    is $form->value('Owner'), '', 'owner field is empty';
+
+    # someone else takes the ticket while the reply page is open
+    my $taken = RT::Ticket->new( RT->SystemUser );
+    $taken->Load( $id );
+    my ($ok, $set_msg) = $taken->SetOwner( $user_b->id );
+    ok $ok, "user b took the ticket: $set_msg";
+
+    $agent_a->click('SubmitTicket');
+    $agent_a->content_lacks( 'Owner changed', 'no owner change reported' );
+
+    $ticket = RT::Ticket->new( RT->SystemUser );
+    $ticket->Load( $id );
+    is $ticket->Owner, $user_b->id, 'stale form did not reset the owner';
+}
+
+done_testing;
 
 sub autocomplete {
     my $limit = shift;
