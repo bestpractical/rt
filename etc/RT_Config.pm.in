@@ -3390,9 +3390,9 @@ class's ColumnMap.
 =cut
 
 Set(%LinksFormat,
-    'RT::Ticket'      => q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>', '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>', '__Status__', '__OwnerName__'},
+    'RT::Ticket'      => q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>', '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>', '__Status__', '__OwnerNameEdit__'},
     'RT::Transaction' => "'__LinkedId__', '__ObjectLink__', '__Description__', '__Created__'",
-    'RT::Asset'       => q{'<a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a>', '<a href="__WebPath__/Asset/Display.html?id=__id__">__Name__</a>', '__Status__', '__HeldBy__'},
+    'RT::Asset'       => q{'<a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a>', '<a href="__WebPath__/Asset/Display.html?id=__id__">__Name__</a>', '__Status__', '__HeldBy.Name__/TITLE:Held By'},
     'RT::Article'     => q{'<a href="__WebPath__/Articles/Article/Display.html?id=__id__">__id__</a>', '<a href="__WebPath__/Articles/Article/Display.html?id=__id__">__Name__</a>'},
     'RT::User'        => q{'<a href="__WebPath__/User/Summary.html?id=__id__">__Name__</a>', '__RealName__', '__EmailAddress__'},
     'RT::Group'       => q{'<a href="__WebPath__/Group/Summary.html?id=__id__">__Name__</a>', '__Description__'},

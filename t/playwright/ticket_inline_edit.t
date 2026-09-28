@@ -1088,6 +1088,37 @@ JS
         'depth-1 delete checkbox name carries DeleteLink-<childURI>-MemberOf-' );
 }
 
+diag "Truncated linked subject tooltip hides after an inline edit refreshes the row";
+{
+    my $target = RT::Test->create_ticket( Queue => 'General', Subject => 'tooltip target' );
+    my $ticket = RT::Test->create_ticket(
+        Queue    => 'General',
+        Subject  => 'tooltip links main',
+        RefersTo => $target->id,
+    );
+    my $long_subject = 'tooltip target ' . join ' ', ('with a subject long enough to be cut off') x 5;
+
+    $p->goto_ticket( $ticket->id );
+    my $row  = qq{div.ticket-info-links .links-edit-target tr[data-record-id="@{[$target->id]}"]};
+    my $cell = $p->{page}->locator("$row div.editable:has(form.editor input[name=Subject])");
+    $cell->hover();
+    $cell->locator('.edit-icon')->click();
+    $p->wait_for_element("$row div.editable.editing form.editor");
+
+    # Leave the pointer over the input, so the refreshed row's cut-off subject lands under it and
+    # gets its tooltip while htmx is still settling the swap.
+    my $input = $cell->locator('input[name=Subject]');
+    $input->hover();
+    $input->fill($long_subject);
+    $input->press('Enter');
+    $p->wait_for_element('body > div.tooltip .tooltip-inner:has-text("long enough to be cut off")');
+    $p->wait_for_element( "$row.refreshing", { state => 'detached' } );
+
+    $p->{page}->mouse->move( 0, 0 );
+    $p->wait_for_element( 'body > div.tooltip', { state => 'detached' } );
+    pass('subject tooltip is removed once the pointer leaves');
+}
+
 $p->logout;
 
 done_testing;
