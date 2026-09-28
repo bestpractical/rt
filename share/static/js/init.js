@@ -897,8 +897,10 @@ document.addEventListener('htmx:load', function(evt) {
     });
 
     // enable bootstrap tooltips
+    // Some tooltips are created on first hover (e.g. linksTruncatedTooltip), which can land between
+    // the swap and this load. A second instance would replace it and orphan its visible tip.
     elt.querySelectorAll('[data-bs-toggle=tooltip]').forEach(elt => {
-        new bootstrap.Tooltip(elt, {
+        bootstrap.Tooltip.getOrCreateInstance(elt, {
             trigger: 'hover focus'
         });
     });
@@ -1708,6 +1710,9 @@ jQuery(function () {
             fitLinksTree(document);
         }, 150);
     });
+
+    document.addEventListener('mouseover', linksTruncatedTooltip);
+    document.addEventListener('focusin', linksTruncatedTooltip);
 
     const html = document.querySelector('html');
     if ( html.getAttribute('data-bs-theme') === 'auto' ) {

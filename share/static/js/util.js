@@ -1749,6 +1749,8 @@ function registerLoadListener(func, key) {
 
 function clipContent(elt) {
     jQuery(elt).find('td.collection-as-table').each( function() {
+        // The Links widget truncates with an ellipsis instead (see linksTruncatedTooltip).
+        if ( jQuery(this).closest('.links-widget').length ) return;
         if ( jQuery(this).children() ) {
             var max_height = jQuery(this).css('line-height').replace('px', '') * 5;
             var height     = '' + max_height + 'px';
@@ -2114,6 +2116,26 @@ function linksSwapKeepingDeletes(target, url, swap) {
             }
         });
     });
+}
+
+// Links widget: a value cut off by its ellipsis shows its full text in a tooltip on hover or
+// focus. The tooltip is created on first use and carries data-bs-toggle, so init.js's
+// beforeCleanupElement hook disposes it when the row is swapped out.
+function linksTruncatedTooltip(e) {
+    const cell = e.target.closest && e.target.closest('.titlebox.links-widget .links-type-table td.collection-as-table');
+    if (!cell || cell.querySelector(':scope > .links-tree-id')) return;
+    const clip = cell.querySelector(':scope > div.editable > .value > span') || cell.querySelector(':scope > div:not(.editable)');
+    // Only from the value itself, so the tooltip's own mouseleave (from the value) hides it.
+    if (!clip || !clip.contains(e.target) || bootstrap.Tooltip.getInstance(clip)) return;
+    if (clip.scrollWidth <= clip.clientWidth) return;
+
+    clip.setAttribute('data-bs-toggle', 'tooltip');
+    clip.setAttribute('data-bs-title', clip.textContent.replace(/\s+/g, ' ').trim());
+    // A resize can leave the value no longer cut off; don't repeat what's already visible.
+    clip.addEventListener('show.bs.tooltip', function (ev) {
+        if (clip.scrollWidth <= clip.clientWidth) ev.preventDefault();
+    });
+    new bootstrap.Tooltip(clip, { trigger: 'hover focus' }).show();
 }
 
 function initAddLinkRows(section) {
