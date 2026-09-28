@@ -270,6 +270,16 @@ diag 'retain values when adding attachments';
     $m->form_name("TicketModifyAll");
     is( $m->value( "Object-RT::Transaction--CustomField-$txn_cfid-Values" ),
         "2015-12-16", "txn date value still on form" );
+
+    # Load the page fresh so the hint can't come from submitted form values
+    $m->get_ok( $baseurl . "/Ticket/ModifyAll.html?id=$id" );
+    my $dom = $m->dom;
+    my $input = $dom->at(qq{input[name="Object-RT::Ticket-$id-CustomField-$cfid-Values"]});
+    ok( $input, 'found cf date input' );
+    is( $input->attr('value'), '2015-06-04', 'cf date input has current value' );
+    my $form_text = $input->ancestors('div.rt-value')->first->parent->at('div.form-text');
+    ok( $form_text, 'found form text for cf date input' );
+    is( $form_text->text, 'Thu Jun 04 2015', 'form text shows current value' );
 }
 
 done_testing;

@@ -182,6 +182,16 @@ diag 'check ticket edit page';
     );
     # no matter if localizing $ENV{TZ} works or not, the old value is always "2010-05-06 15:00:01" to user
     $m->text_contains("$cf_name Thu May 06 15:00:01 2010 changed to Mon Jun 07 15:05:10 2021");
+
+    # Load the page fresh so the hint can't come from submitted form values
+    $m->get_ok( $baseurl . "/Ticket/ModifyAll.html?id=$id" );
+    my $dom = $m->dom;
+    my $input = $dom->at(qq{input[name="Object-RT::Ticket-$id-CustomField-$cfid-Values"]});
+    ok( $input, 'found cf datetime input' );
+    is( $input->attr('value'), '2021-06-07 15:05:10', 'cf datetime input has current value' );
+    my $form_text = $input->ancestors('div.rt-value')->first->parent->at('div.form-text');
+    ok( $form_text, 'found form text for cf datetime input' );
+    is( $form_text->text, 'Mon Jun 07 15:05:10 2021', 'form text shows current value in user timezone' );
 }
 
 diag 'check search build page';
