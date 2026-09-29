@@ -299,6 +299,15 @@ diag 'Test methods that return all links recursively';
 
 }
 
+{
+    my ($status, $msg) = $child->SetStatus('resolved');
+    ok($status, "resolved the child: $msg");
+
+    my ($active, $inactive) = RT::Links->SortByActivityType($child, $parent);
+    is_deeply([map { $_->id } @$active],   [$parent->id], 'parent is active');
+    is_deeply([map { $_->id } @$inactive], [$child->id],  'child is inactive');
+}
+
 done_testing();
 
 sub clean_links {

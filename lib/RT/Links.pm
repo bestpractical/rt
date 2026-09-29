@@ -170,6 +170,40 @@ sub IsValidLink {
     return 1;
 }
 
+=head2 SortByActivityType RECORDS
+
+Takes a list of linked records, such as tickets or assets. Returns two
+array references, not one sorted list: the active records first, then the
+inactive ones, each keeping the order given.
+
+    my ( $active, $inactive ) = RT::Links->SortByActivityType(@records);
+    my @active_first = ( @$active, @$inactive );
+
+A record is inactive when its lifecycle lists its status as inactive; a
+record without a lifecycle counts as active. It doesn't need an RT::Links
+object, so call it on the class as above.
+
+=cut
+
+sub SortByActivityType {
+    my $self    = shift;
+    my @records = @_;
+
+    # Inactive statuses vary by lifecycle, so ask each record's own lifecycle rather than
+    # matching one list of statuses (or an ORDER BY Status) across all records.
+    my ( @active, @inactive );
+    for my $record (@records) {
+        my $lifecycle = $record->can('LifecycleObj') ? $record->LifecycleObj : undef;
+        if ( $lifecycle && $lifecycle->IsInactive( $record->Status ) ) {
+            push @inactive, $record;
+        }
+        else {
+            push @active, $record;
+        }
+    }
+    return ( \@active, \@inactive );
+}
+
 RT::Base->_ImportOverlays();
 
 1;

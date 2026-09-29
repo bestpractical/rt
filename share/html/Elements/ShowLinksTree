@@ -124,7 +124,8 @@ my $children_of = sub {
         next unless $child && $child->isa('RT::Ticket') && $child->CurrentUserHasRight('ShowTicket');
         push @kids, $child;
     }
-    return @kids;
+    my ( $active, $inactive ) = RT::Links->SortByActivityType(@kids);
+    return ( @$active, @$inactive );
 };
 
 # Depth-first pre-order walk. $trunk is the ancestor code (I/B chars, no connector yet); each
@@ -152,7 +153,8 @@ my @direct;
         while ( my $ticket = $tickets->Next ) {
             $readable{ $ticket->id } = $ticket;
         }
-        @direct = map { $readable{$_} || () } @ids;
+        my ( $active, $inactive ) = RT::Links->SortByActivityType( map { $readable{$_} || () } @ids );
+        @direct = ( @$active, @$inactive );
     }
 }
 my %direct_id = map { $_->id => 1 } @direct;
