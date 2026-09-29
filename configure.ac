@@ -354,6 +354,20 @@ else
 fi
 AC_SUBST(RT_DASHBOARD_CHART_EMAILS)
 
+dnl Dependencies for auditing installed modules for security advisories
+AC_ARG_WITH(cpan-audit,[],RT_CPAN_AUDIT=$withval,RT_CPAN_AUDIT="0")
+AC_ARG_ENABLE(cpan-audit,
+            AS_HELP_STRING([--enable-cpan-audit],
+                           [Add dependencies needed to audit installed modules for security advisories]),
+            RT_CPAN_AUDIT=$enableval,
+            RT_CPAN_AUDIT=$RT_CPAN_AUDIT)
+if test "$RT_CPAN_AUDIT" = yes; then
+        RT_CPAN_AUDIT="1"
+else
+        RT_CPAN_AUDIT="0"
+fi
+AC_SUBST(RT_CPAN_AUDIT)
+
 dnl ExternalStorage
 AC_ARG_WITH(attachment-store,
 	    AS_HELP_STRING([--with-attachment-store=TYPE],

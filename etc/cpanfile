@@ -224,6 +224,10 @@ feature 'dashboard-chart-emails' => sub {
     requires 'File::Which';
 };
 
+feature 'cpan-audit' => sub {
+    requires 'CPAN::Audit', '>= 20241208.001';
+};
+
 # External attachment storage
 feature 's3' => sub {
     requires 'Amazon::S3';

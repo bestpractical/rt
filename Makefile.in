@@ -281,6 +281,12 @@ depends: fixdeps
 fixdeps:
 	$(PERL) ./sbin/rt-test-dependencies --install
 
+auditdeps:
+	$(PERL) ./sbin/rt-test-dependencies --audit
+
+fixauditdeps:
+	$(PERL) ./sbin/rt-test-dependencies --audit --install
+
 #}}}
 
 fixperms:

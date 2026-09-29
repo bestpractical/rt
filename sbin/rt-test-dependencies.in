@@ -61,6 +61,10 @@ my %args;
 GetOptions(
     \%args,
     'install!',
+    'audit',
+    'self-update!',
+    'ignore-perl',
+    'exclude=s@',
     'with-MYSQL', 'with-MYSQL5', 'with-MARIADB', 'with-PG', 'with-SQLITE', 'with-ORACLE',
     'with-FASTCGI', 'with-MODPERL2', 'with-STANDALONE',
 
@@ -72,6 +76,7 @@ GetOptions(
 
     'with-S3', 'with-DROPBOX',
     'with-DASHBOARD-CHART-EMAILS',
+    'with-CPAN-AUDIT',
 
     'help|h',
 
@@ -84,6 +89,11 @@ if ( $args{help} ) {
     Pod::Usage::pod2usage( { verbose => 2 } );
     exit;
 }
+
+$args{'self-update'} = 1 unless exists $args{'self-update'};
+
+# Keep in sync with the cpan-audit feature in etc/cpanfile
+my $cpan_audit_spec = '>= 20241208.001';
 
 # Set up defaults
 my %default = (
@@ -98,6 +108,7 @@ my %default = (
     'with-S3'           => (uc(q{@ATTACHMENT_STORE@}) eq 'S3'),
     'with-DROPBOX'      => (uc(q{@ATTACHMENT_STORE@}) eq 'DROPBOX'),
     'with-DASHBOARD-CHART-EMAILS' => @RT_DASHBOARD_CHART_EMAILS@,
+    'with-CPAN-AUDIT'   => @RT_CPAN_AUDIT@,
 );
 
 $default{"with-".uc("@DB_TYPE@")} = 1 unless grep {$args{"with-$_"}} qw/MYSQL MYSQL5 MARIADB PG SQLITE ORACLE/;
@@ -113,6 +124,8 @@ $args{'with-EXTERNALAUTH-TESTS'}
 
 my %deps = read_deps();
 check_perl_version();
+
+audit_deps() if $args{'audit'};
 
 check_users_groups();
 
@@ -373,13 +386,34 @@ END
 sub resolve_dep {
     my $module = shift;
     my $spec   = shift;
+    my $strict = shift;    # Refuse installs that could exceed an upper bound in $spec
 
     # The newest release satisfies any lower bound
     my $ranged = defined $spec && $spec =~ /(?:<|!=)/;
 
+    # ... and, in practice, any != exclusion of an old release
+    my $bounded = defined $spec && $spec =~ /</;
+
     print "\nInstall module $module" . ( $ranged ? " ($spec)" : "" ) . "\n";
 
     my $ext = $ENV{'RT_FIX_DEPS_CMD'} || $ENV{'PERL_PREFER_CPAN_CLIENT'};
+
+    # Only cpanm and cpm accept Module~range
+    my $range_ok = $ext && $ext =~ m{(?:^|/)(?:cpanm|cpm)(?:\s|$)};
+
+    if ( $bounded and $strict and !$range_ok ) {
+        my $installer = $ext ? "'$ext'" : "The CPAN shell";
+        print <<END;
+
+$installer ignores version ranges, so $module was not installed.
+To install a version that satisfies '$spec', run:
+
+    cpanm '$module~$spec'
+
+END
+        return;
+    }
+
     unless ($ext) {
         check_cpan();
 
@@ -396,9 +430,8 @@ END
         return $rv unless $@;
     }
 
-    # Only cpanm and cpm accept Module~range
     my $target = $module;
-    if ( $ranged and $ext =~ m{(?:^|/)(?:cpanm|cpm)(?:\s|$)} ) {
+    if ( $ranged and $range_ok ) {
         $target = "$module~$spec";
 
         # A range contains spaces and '<', so quote it unless $ext already does
@@ -412,6 +445,196 @@ END
     }
     print "\t\tcommand: '$ext'\n";
     return scalar `$ext 1>&2`;
+}
+
+sub audit_deps {
+    load_cpan_audit();
+
+    my $audit = CPAN::Audit->new(
+        quiet        => 1,
+        include_perl => 1,
+        exclude      => $args{'exclude'} || [],
+    );
+    my $db = CPANSA::DB->db;
+    my $rt = rt_modules_by_dist($db);
+
+    my ( $dists, $perl ) = run_audit($audit);
+    unless ( keys %$dists or $perl ) {
+        print bright_green("No known security advisories for installed modules.\n\n");
+        exit 0;
+    }
+
+    report_audit( $dists, $perl, $rt, "Security advisories" );
+
+    my ( $upgrade, $no_fix ) = plan_upgrades( $dists, $db, $rt );
+    if (@$no_fix) {
+        section("No fixed version published");
+        print "    $_\n" for @$no_fix;
+        print "\n";
+    }
+
+    unless ( $args{'install'} and @$upgrade ) {
+        print "Run with --install to upgrade " . scalar(@$upgrade) . " distribution(s).\n\n"
+            if @$upgrade;
+        exit 1;
+    }
+
+    my @results;
+    for my $item (@$upgrade) {
+        my $module = $item->{targets}[0][0];
+        my $before = installed_version($module);
+        resolve_dep( @$_, 1 ) for @{ $item->{targets} };
+        push @results, [ $item->{dist}, $before, installed_version($module) ];
+    }
+
+    print "\n";
+    section("Upgrade results");
+    for my $result (@results) {
+        my ( $dist, $before, $after ) = @$result;
+        if ( defined $after and ( !defined $before or $after ne $before ) ) {
+            print "    $dist " . green( ( $before // '?' ) . " -> $after" ) . "\n";
+        }
+        else {
+            print "    $dist " . bright_red("not upgraded (install failed, or no newer allowed version on CPAN)") . "\n";
+        }
+    }
+    print "\n";
+
+    # Reuse $audit so --exclude applies to the recheck too
+    ( $dists, $perl ) = run_audit($audit);
+    unless ( keys %$dists or $perl ) {
+        print bright_green("No known security advisories remain.\n\n");
+        exit 0;
+    }
+
+    report_audit( $dists, $perl, $rt, "Remaining advisories" );
+    exit 1;
+}
+
+sub installed_version {
+    my $module = shift;
+    require Module::Metadata;
+    my $meta = Module::Metadata->new_from_module($module) or return undef;
+    my $version = $meta->version;
+    return defined $version ? "$version" : undef;
+}
+
+sub load_cpan_audit {
+    if ( $args{'self-update'} ) {
+        section("Updating CPAN::Audit and CPANSA::DB");
+        resolve_dep( 'CPAN::Audit', $cpan_audit_spec );
+        resolve_dep('CPANSA::DB');
+        print "\n";
+    }
+
+    my ( $ok, $error ) = test_dep( 'CPAN::Audit', $cpan_audit_spec );
+    unless ( $ok and eval { require CPANSA::DB; 1 } ) {
+        print bright_red("CPAN::Audit $cpan_audit_spec and CPANSA::DB are required to audit modules.\n");
+        print "    $error\n" if $error;
+        if ( $args{'self-update'} ) {
+            print "Installing them failed; see the installer output above.\n";
+        }
+        else {
+            print "Re-run without --no-self-update to install them, or configure\n"
+                . "RT with --enable-cpan-audit and run 'make fixdeps'.\n";
+        }
+        exit 1;
+    }
+
+    no warnings 'once';
+    section("Security audit");
+    print "    CPAN::Audit $CPAN::Audit::VERSION, CPANSA::DB $CPANSA::DB::VERSION\n\n";
+}
+
+sub run_audit {
+    my $audit  = shift;
+    my $report = $audit->command('installed');
+
+    my @errors = grep { defined && length } @{ $report->{errors} || [] };
+    die "CPAN::Audit reported errors:\n" . join( "\n", @errors ) . "\n" if @errors;
+
+    # Perl can't be upgraded from CPAN, so keep it off the upgrade list
+    my $dists = $report->{dists};
+    my $perl  = delete $dists->{perl};
+    undef $perl if $args{'ignore-perl'};
+    return ( $dists, $perl );
+}
+
+sub report_audit {
+    my ( $dists, $perl, $rt, $title ) = @_;
+    if ($perl) {
+        section("Perl advisories (upgrade perl itself, or skip with --ignore-perl)");
+        report_advisories( { perl => $perl }, {} );
+    }
+    if ( keys %$dists ) {
+        section($title);
+        report_advisories( $dists, $rt );
+    }
+}
+
+# Map each dist to the cpanfile modules it provides and their specs
+sub rt_modules_by_dist {
+    my $db = shift;
+    my %by_dist;
+    for my $type ( keys %deps ) {
+        for my $module ( keys %{ $deps{$type} } ) {
+            my $dist = $db->{module2dist}{$module} or next;
+            $by_dist{$dist}{$module} = $deps{$type}{$module};
+        }
+    }
+    return \%by_dist;
+}
+
+sub rt_specs {
+    my ( $rt, $dist ) = @_;
+    my $modules = $rt->{$dist} or return;
+    return map { [ $_, $modules->{$_} ] }
+        grep { defined $modules->{$_} and length $modules->{$_} } sort keys %$modules;
+}
+
+sub dist_version {
+    my $version = shift->{version};
+    $version =~ s/^==//;
+    return $version;
+}
+
+sub report_advisories {
+    my ( $dists, $rt ) = @_;
+    for my $dist ( sort keys %$dists ) {
+        my $info = $dists->{$dist};
+        print "    " . bright_red( "$dist " . dist_version($info) ) . "\n";
+        for my $advisory ( @{ $info->{advisories} } ) {
+            my @cves  = @{ $advisory->{cves}           || [] };
+            my @fixed = @{ $advisory->{fixed_versions} || [] };
+            print "        $advisory->{id}"
+                . ( @cves ? " (" . join( ', ', @cves ) . ")" : "" ) . ": "
+                . ( @fixed ? "fixed in " . join( ' or ', @fixed ) : "no fix published" ) . "\n";
+        }
+        my @specs = rt_specs( $rt, $dist );
+        print "        RT requires " . join( ', ', map {"$_->[0] $_->[1]"} @specs ) . "\n"
+            if @specs;
+    }
+    print "\n";
+}
+
+sub plan_upgrades {
+    my ( $dists, $db, $rt ) = @_;
+    my ( @upgrade, @no_fix );
+    for my $dist ( sort keys %$dists ) {
+        my $info = $dists->{$dist};
+        unless ( grep { @{ $_->{fixed_versions} || [] } } @{ $info->{advisories} } ) {
+            push @no_fix, "$dist " . dist_version($info);
+            next;
+        }
+
+        # Install RT's modules by name with their own specs, so each spec
+        # is checked against the module it was written for
+        my @targets = rt_specs( $rt, $dist );
+        @targets = ( [ $db->{dists}{$dist}{main_module} || ( $dist =~ s/-/::/gr ), undef ] )
+            unless @targets;
+        push @upgrade, { dist => $dist, targets => \@targets };
+    }
+    return ( \@upgrade, \@no_fix );
 }
 
 sub check_perl_version {
@@ -463,6 +686,8 @@ rt-test-dependencies - test RT's dependencies
 
     rt-test-dependencies
     rt-test-dependencies --install
+    rt-test-dependencies --audit
+    rt-test-dependencies --audit --install
     rt-test-dependencies --with-mysql --with-fastcgi
 
 =head1 DESCRIPTION
@@ -477,6 +702,12 @@ The command will be called with the module to install -- or, if
 C<RT_FIX_DEPS_CMD> contains a C<%s>, will replace the C<%s> with the
 module name before calling the program.
 
+With B<--audit>, it instead checks every installed Perl module against
+the CPAN Security Advisory database using L<CPAN::Audit>, and exits
+non-zero if any module has a known advisory. Add B<--install> to
+upgrade flagged modules to the newest version RT's F<etc/cpanfile>
+allows.
+
 =head1 OPTIONS
 
 =head2 General options
@@ -485,7 +716,28 @@ module name before calling the program.
 
 =item B<--install>
 
-Attempt to install missing modules
+Attempt to install missing modules. With B<--audit>, upgrade modules
+that have security advisories instead, within the versions RT's
+F<etc/cpanfile> allows.
+
+=item B<--audit>
+
+Report installed modules with known security advisories. First
+installs or updates L<CPAN::Audit> and L<CPANSA::DB> unless
+B<--no-self-update> is given.
+
+=item B<--no-self-update>
+
+With B<--audit>, use the installed CPAN::Audit and CPANSA::DB as is.
+
+=item B<--ignore-perl>
+
+With B<--audit>, ignore advisories against perl itself. Otherwise they
+are reported and cause a non-zero exit, though never upgraded.
+
+=item B<--exclude> I<ID>
+
+With B<--audit>, ignore the advisory or CVE I<ID>. May be repeated.
 
 =back
 
@@ -547,6 +799,11 @@ Add dependencies for storing large attachments in Amazon S3.
 =item B<--with-dropbox>
 
 Add dependencies for storing large attachments in Dropbox.
+
+=item B<--with-cpan-audit>
+
+Add dependencies for auditing installed modules for security
+advisories with B<--audit>.
 
 =back
 
