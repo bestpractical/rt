@@ -290,6 +290,21 @@ diag "StealTicket+OwnTicket work";
     $ticket->Load( $id );
     ok $ticket->id, 'loaded the ticket';
     is $ticket->Owner, $user_a->id, 'correct owner';
+
+    my $txns = $ticket->Transactions;
+    $txns->Limit( FIELD => 'Type',  VALUE => 'Set' );
+    $txns->Limit( FIELD => 'Field', VALUE => 'Owner' );
+    my $steal_txn = $txns->First;
+    ok $steal_txn, 'found owner change transaction';
+    like $steal_txn->BriefDescriptionAsHTML,
+        qr{^Stolen from <span class="user" data-replace="user" data-user-id="@{[ $user_b->id ]}">},
+        'previous owner is a user placeholder in the description';
+
+    # The history JS replaces user placeholders with this helper's _html
+    $agent_a->get_ok( '/Helpers/UserInfo?id=' . $user_b->id );
+    my $info = JSON::decode_json( $agent_a->content );
+    like $info->{ $user_b->id }{_html}, qr{user_b}, 'helper HTML has previous owner name';
+    unlike $info->{ $user_b->id }{_html}, qr{rt-user-avatar}, 'helper HTML has no avatar';
 }
 
 diag "StealTicket+OwnTicket don't work when owner is nobody";
