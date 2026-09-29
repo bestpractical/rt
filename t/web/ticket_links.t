@@ -1566,4 +1566,17 @@ diag 'LinksListCount caps each section and Show all loads the rest';
     ok( $check->id, 'the ticket still exists' );
 }
 
+diag 'a link type whose only links are filtered out renders without error';
+{
+    my $main     = RT::Test->create_ticket( Queue => 'General', Subject => 'reminder only main' );
+    my $reminder = RT::Test->create_ticket( Queue => 'General', Subject => 'lw only reminder', Type => 'reminder' );
+    ok( $reminder->AddLink( Type => 'RefersTo', Target => $main->id ), 'the reminder refers to the ticket' );
+
+    # ReferredToBy drops reminders, so its ticket collection finds nothing, and RT::Tickets
+    # returns undef rather than an empty list for that.
+    $m->get_ok( $baseurl . '/Views/Component/ShowLinks?ObjectType=RT::Ticket&ObjectId=' . $main->id,
+        'fetched the links' );
+    $m->content_lacks( 'lw only reminder', 'the reminder is not listed' );
+}
+
 done_testing;

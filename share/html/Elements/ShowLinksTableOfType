@@ -146,6 +146,22 @@ else {
     $collection->OrderBy( FIELD => 'id', ORDER => 'ASC' );
 }
 
+# Active first, so a ListCount cap can't hide an active link behind inactive ones. Order in SQL:
+# a re-sort in Perl wouldn't last, as CollectionList re-runs the search.
+if ( $Class eq 'RT::Ticket' || $Class eq 'RT::Asset' ) {
+    my ( $active, $inactive ) = RT::Links->SortByActivityType( @{ $collection->ItemsArrayRef || [] } );
+    if ( @$active && @$inactive ) {
+        $collection->OrderByCols(
+            {   ALIAS    => '',
+                FIELD    => 'id',
+                FUNCTION => 'CASE WHEN main.id IN (' . join( ',', map { int $_->id } @$inactive ) . ') THEN 1 ELSE 0 END',
+                ORDER    => 'ASC',
+            },
+            { FIELD => 'id', ORDER => 'ASC' },
+        );
+    }
+}
+
 return $collection;
 </%init>
 <%args>
