@@ -68,7 +68,7 @@ for my $uid (@$id) {
                    qw(id Name EmailAddress RealName);
     $user{Privileged} = $user->Privileged ? JSON::true : JSON::false;
     $user{_formatted} = $user->Format;
-    $user{_html}      = $m->scomp('/Elements/ShowUser', User => $user);
+    $user{_html}      = $m->scomp('/Elements/ShowUser', User => $user, ShowUserAvatar => 0);
     $users{$uid} = \%user;
 }
 $r->content_type('application/json; charset=utf-8');
