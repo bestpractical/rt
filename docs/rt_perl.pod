@@ -169,6 +169,12 @@ might also need to use sudo. You can do both of these with your C<cpanm> line:
 
     export RT_FIX_DEPS_CMD="PERL5LIB='.' /opt/perl/bin/cpanm --sudo"
 
+Unlike the CPAN shell, C<cpanm> honors version ranges such as
+C<< < 5.001 >>. The CPAN shell always installs the newest release, so
+C<make fixauditdeps> skips modules whose RT version range has an upper
+bound and prints the C<cpanm> command to install them instead. Use
+C<cpanm> (or C<cpm>) to upgrade those modules automatically.
+
 =head2 Permission Problems with Installed Perl Modules
 
 After running C<make fixdeps> using one of the configurations above, you might see

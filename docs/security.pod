@@ -83,6 +83,30 @@ Use groups to organize RT permissions.  Granting permissions per-user
 makes them, in general, more easily over-granted and forgotten, and more
 likely to diverge from each other, forming a maintenance hassle.
 
+=item *
+
+Check RT's Perl modules for known security advisories regularly.  From
+your RT source directory, run:
+
+    make auditdeps
+
+This checks every installed module against the CPAN Security Advisory
+database using L<CPAN::Audit>, and exits non-zero if any module has a
+known advisory, so it can also run from cron or a monitoring system.
+To upgrade flagged modules to the newest versions RT's F<etc/cpanfile>
+allows, run:
+
+    make fixauditdeps
+
+Both commands first install or update L<CPAN::Audit> and L<CPANSA::DB>,
+so run them as a user who has permission to install Perl modules.  To
+use the installed copies as is, or to skip advisories you have reviewed,
+run L<rt-test-dependencies> directly with C<--no-self-update> or
+C<--exclude>; see its documentation for all options.
+
+Advisories against Perl itself are reported but never upgraded; upgrade
+Perl separately, or pass C<--ignore-perl> to skip them.
+
 =back
 
 =cut

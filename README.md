@@ -163,6 +163,19 @@ RT is commercially-supported software. To purchase hosting, support, training, c
    It might sometimes be necessary to run "make fixdeps" several times
    to install all necessary perl modules.
 
+   To check installed perl modules for known security advisories, run:
+   ```
+   make auditdeps
+   ```
+   To upgrade flagged modules to the newest versions RT supports, run:
+   ```
+   make fixauditdeps
+   ```
+   Both commands first install or update CPAN::Audit and its advisory
+   database, so run them as a user who has permission to install perl
+   modules. See [docs/security.pod](https://docs.bestpractical.com/rt/latest/security.html)
+   for details.
+
 6a. If you are installing RT for the first time
 
    As a user with permission to install RT in your chosen directory, type:
