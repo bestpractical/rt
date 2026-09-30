@@ -2967,7 +2967,8 @@ sub MaybeRedirectToApproval {
         my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
         $ticket->Load($id);
 
-        if ($ticket and $ticket->id and lc($ticket->Type) eq 'approval') {
+        # Type is undef for a ticket the current user cannot see
+        if ($ticket and $ticket->id and lc($ticket->Type // '') eq 'approval') {
             MaybeRedirectForResults(
                 Path      => "/Approvals/Display.html",
                 Force     => 1,

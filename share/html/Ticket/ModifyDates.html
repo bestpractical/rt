@@ -76,6 +76,14 @@ $TicketObj->Atomic(sub{
     push @results, ProcessObjectCustomFieldUpdates(Object => $TicketObj, ARGSRef => \%ARGS);
 });
 
+unless ( $TicketObj->CurrentUserHasRight('ShowTicket') ) {
+    Abort(
+        loc("No permission to view ticket"),
+        Actions => \@results,
+        Code    => HTTP::Status::HTTP_FORBIDDEN,
+    );
+}
+
 $TicketObj->CurrentUser->AddRecentlyViewedTicket($TicketObj);
 
 </%INIT>

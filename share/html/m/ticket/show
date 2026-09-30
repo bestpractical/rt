@@ -111,11 +111,11 @@ if ($ARGS{'id'} eq 'new') {
     });
 
     unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
-        if (@Actions) {
-            Abort("A change was applied successfully, but you no longer have permissions to view the ticket", Actions => \@Actions);
-        } else {
-            Abort("No permission to view ticket");
-        }
+        Abort(
+            loc("No permission to view ticket"),
+            Actions => \@Actions,
+            Code    => HTTP::Status::HTTP_FORBIDDEN,
+        );
     }
     if ( $ARGS{'MarkAsSeen'} ) {
         $Ticket->SetAttribute(

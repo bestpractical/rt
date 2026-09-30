@@ -89,6 +89,14 @@ MaybeRedirectForResults(
     Arguments   => { id => $id },
 );
 
+unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
+    Abort(
+        loc("No permission to view ticket"),
+        Actions => \@results,
+        Code    => HTTP::Status::HTTP_FORBIDDEN,
+    );
+}
+
 $Ticket->CurrentUser->AddRecentlyViewedTicket($Ticket);
 
 </%INIT>
