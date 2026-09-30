@@ -137,6 +137,25 @@ sub LimitToTicket {
 
 }
 
+=head2 SingleTicketSearch [BOOLEAN]
+
+Gets or sets whether the caller limits this search to a single ticket's
+history. Set it before calling L</FromSQL>.
+
+With MySQL full text indexing, a C<Content> search normally runs C<MATCH>,
+which InnoDB evaluates against the whole index. When this is true, the
+search instead scans the ticket's own indexed content, which is much faster
+for one ticket. Single words then match as substrings and phrases match
+across any whitespace, rather than following C<MATCH> boolean mode rules.
+
+=cut
+
+sub SingleTicketSearch {
+    my $self = shift;
+    $self->{_single_ticket_search} = shift if @_;
+    return $self->{_single_ticket_search};
+}
+
 
 sub AddRecord {
     my $self = shift;
@@ -804,15 +823,52 @@ sub _AttachContentLimit {
         }
         elsif ( $db_type eq 'mysql' ) {
             my $dbh = $RT::Handle->dbh;
-            # Wrap multi-word phrases in double quotes for exact phrase matching
-            my $search_value = $value =~ /\s/ && $value !~ /^".+"$/s ? qq{"$value"} : $value;
-            $self->Limit(
-                %rest,
-                FUNCTION    => "MATCH($alias.Content)",
-                OPERATOR    => 'AGAINST',
-                VALUE       => "(". $dbh->quote($search_value) ." IN BOOLEAN MODE)",
-                QUOTEVALUE  => 0,
-            );
+            if ( $self->SingleTicketSearch && $alias ne $self->{_sql_aliases}{attach} ) {
+                # InnoDB runs a MATCH against the whole FULLTEXT index, however
+                # few rows the rest of the query allows, so searching one
+                # ticket's history costs as much as searching every ticket.
+                # One ticket's attachments are few enough to scan directly.
+                # The index table holds decoded text in a case-insensitive
+                # column, so LIKE and REGEXP find the same content without
+                # the index.
+                ( my $search_value = $value ) =~ s/^"(.+)"$/$1/s;
+                my @words = split ' ', $search_value;
+                if ( @words > 1 ) {
+                    # A MATCH phrase ignores the whitespace between words, and
+                    # wrapped email text often breaks a phrase across lines,
+                    # so match any run of whitespace between the words.
+                    s/([\\.^\$|?*+()\[\]{}])/\\$1/g for @words;
+                    my $regexp = join '[[:space:]]+', @words;
+                    $self->Limit(
+                        %rest,
+                        FUNCTION   => "($alias.Content REGEXP " . $dbh->quote($regexp) . ")",
+                        OPERATOR   => '=',
+                        VALUE      => $op =~ /NOT/i ? 0 : 1,
+                        QUOTEVALUE => 0,
+                    );
+                }
+                else {
+                    $self->Limit(
+                        %rest,
+                        ALIAS         => $alias,
+                        FIELD         => 'Content',
+                        OPERATOR      => $op,
+                        VALUE         => $search_value,
+                        CASESENSITIVE => 0,
+                    );
+                }
+            }
+            else {
+                # Wrap multi-word phrases in double quotes for exact phrase matching
+                my $search_value = $value =~ /\s/ && $value !~ /^".+"$/s ? qq{"$value"} : $value;
+                $self->Limit(
+                    %rest,
+                    FUNCTION    => "MATCH($alias.Content)",
+                    OPERATOR    => 'AGAINST',
+                    VALUE       => "(". $dbh->quote($search_value) ." IN BOOLEAN MODE)",
+                    QUOTEVALUE  => 0,
+                );
+            }
             # As with Oracle, above, this forces the LEFT JOINs into
             # JOINS, which allows the FULLTEXT index to be used.
             # Orthogonally, the IS NOT NULL clause also helps the

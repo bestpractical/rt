@@ -86,6 +86,7 @@ if (defined $ReverseTxns) {
 # If we have a search term, create a new collection with FromSQL
 if ($SearchHistory && $SearchHistory =~ /\S/) {
     $transactions = RT::Transactions->new($session{'CurrentUser'});
+    $transactions->SingleTicketSearch(1);
 
     $SearchHistory =~ s/(['\\])/\\$1/g;
     # Build the search query with ticket constraint
