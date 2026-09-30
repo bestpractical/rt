@@ -308,6 +308,37 @@ diag 'Test methods that return all links recursively';
     is_deeply([map { $_->id } @$inactive], [$child->id],  'child is inactive');
 }
 
+{
+    diag "Link messages name local non-ticket objects by type and id";
+    clean_links();
+
+    my $catalog = RT::Catalog->new( RT->SystemUser );
+    my ( $ok, $msg ) = $catalog->Create( Name => 'Link messages' );
+    ok( $ok, "created a catalog: $msg" );
+    my $asset = RT::Asset->new( RT->SystemUser );
+    ( $ok, $msg ) = $asset->Create( Name => 'LT-057', Catalog => $catalog->id );
+    ok( $ok, "created an asset: $msg" );
+    my $user = RT::Test->load_or_create_user( Name => 'link-message-user' );
+
+    my ( $status, $text ) = $parent->AddLink( Type => 'RefersTo', Base => 'asset:' . $asset->id );
+    ok( $status, 'linked an asset' );
+    is( $text, 'Asset ' . $asset->id . ' refers to Ticket ' . $parent->id . '.', 'add message names the asset' );
+
+    ( $status, $text ) = $parent->AddLink( Type => 'RefersTo', Target => 'user:' . $user->id );
+    ok( $status, 'linked a user' );
+    is( $text, 'Ticket ' . $parent->id . ' refers to User ' . $user->id . '.', 'add message names the user' );
+
+    ( $status, $text ) = $parent->DeleteLink( Type => 'RefersTo', Base => 'asset:' . $asset->id );
+    ok( $status, 'removed the asset link' );
+    is( $text, 'Asset ' . $asset->id . ' no longer refers to Ticket ' . $parent->id . '.', 'delete message names the asset' );
+
+    ( $status, $text ) = $parent->AddLink( Type => 'RefersTo', Target => 'https://example.com/doc' );
+    ok( $status, 'linked an external URL' );
+    is( $text, 'Ticket ' . $parent->id . ' refers to URI https://example.com/doc.', 'external links keep the URI' );
+
+    clean_links();
+}
+
 done_testing();
 
 sub clean_links {

@@ -1379,8 +1379,8 @@ sub FormatLink {
                  @_
                );
     my $text = "URI " . $args{FallBack};
-    if ($args{Object} && $args{Object}->isa("RT::Ticket")) {
-        $text = "Ticket " . $args{Object}->id;
+    if ( $args{Object} && $args{Object}->isa('RT::Record') && $args{Object}->id ) {
+        $text = $args{Object}->RecordType . " " . $args{Object}->id;
     }
     return $text;
 }
