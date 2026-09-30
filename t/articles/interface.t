@@ -179,8 +179,8 @@ $m->submit_form(form_name => 'EditArticle',
                             'RefersTo-'.$article3->Id => $a1uri }
                 );
 
-$m->content_like(qr/Ticket.*$ticket_id/, "Ticket linkto was created");
-$m->content_like(qr/URI.*$a1uri/, "Article linkfrom was created");
+$m->content_contains("Article " . $article3->Id . " refers to Ticket $ticket_id.", "Ticket linkto was created");
+$m->content_contains("Article " . $article1->Id . " refers to Article " . $article3->Id . ".", "Article linkfrom was created");
 }
 
 # Now try to extract an article from a link.
