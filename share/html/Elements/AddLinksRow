@@ -49,7 +49,7 @@
   <div class="col-auto">
     <select class="form-select link-type-select selectpicker mw-100" aria-label="<&|/l&>Link type</&>">
 % for my $opt (@link_types) {
-      <option value="<% $opt->{field} %>" data-mode="<% $opt->{mode} %>" data-type="<% $opt->{type} %>" data-short="<% $opt->{short} %>"<% $opt->{field} eq ( $InitField || $default_type ) ? ' selected' : '' %>><% $opt->{label} %></option>
+      <option value="<% $opt->{field} %>" data-mode="<% $opt->{mode} %>" data-type="<% $opt->{type} %>" data-short="<% $opt->{short} %>"<% $opt->{field} eq $default_type ? ' data-default="1"' : '' |n %><% $opt->{field} eq ( $InitField || $default_type ) ? ' selected' : '' %>><% $opt->{label} %></option>
 % }
     </select>
   </div>
@@ -76,14 +76,15 @@
 # short: the abbreviated label the select shows while the add-links block is narrow (the add-links
 # container query in boxes.css); the open dropdown always lists the full label.
 my @link_types = (
-    { label => loc('Depends on'),     short => loc('Dep on'), field => $id . '-DependsOn', type => 'DependsOn', mode => 'Target' },
-    { label => loc('Depended on by'), short => loc('Dep by'), field => 'DependsOn-' . $id, type => 'DependsOn', mode => 'Base' },
-    { label => loc('Parent of'),      short => loc('Parent'),  field => 'MemberOf-' . $id,  type => 'MemberOf',  mode => 'Base' },
-    { label => loc('Child of'),       short => loc('Child'),   field => $id . '-MemberOf',  type => 'MemberOf',  mode => 'Target' },
-    { label => loc('Refers to'),      short => loc('Refers'),  field => $id . '-RefersTo',  type => 'RefersTo',  mode => 'Target' },
-    { label => loc('Referred to by'), short => loc('Ref by'), field => 'RefersTo-' . $id,  type => 'RefersTo',  mode => 'Base' },
+    { label => loc('Depends on'),     short => loc('Dep on'), relation => 'DependsOn',    field => $id . '-DependsOn', type => 'DependsOn', mode => 'Target' },
+    { label => loc('Depended on by'), short => loc('Dep by'), relation => 'DependedOnBy', field => 'DependsOn-' . $id, type => 'DependsOn', mode => 'Base' },
+    { label => loc('Parent of'),      short => loc('Parent'), relation => 'Members',      field => 'MemberOf-' . $id,  type => 'MemberOf',  mode => 'Base' },
+    { label => loc('Child of'),       short => loc('Child'),  relation => 'MemberOf',     field => $id . '-MemberOf',  type => 'MemberOf',  mode => 'Target' },
+    { label => loc('Refers to'),      short => loc('Refers'), relation => 'RefersTo',     field => $id . '-RefersTo',  type => 'RefersTo',  mode => 'Target' },
+    { label => loc('Referred to by'), short => loc('Ref by'), relation => 'ReferredToBy', field => 'RefersTo-' . $id,  type => 'RefersTo',  mode => 'Base' },
 );
-my $default_type = $id . '-RefersTo';
+my ($default) = grep { $_->{relation} eq ( $DefaultType // '' ) } @link_types;
+my $default_type = $default ? $default->{field} : $id . '-RefersTo';
 
 # The caller may classify the value explicitly (e.g. clone prefill); otherwise infer the type
 # from a shorthand prefix or a URL in the value.
@@ -181,4 +182,5 @@ $InitField      => ''
 $InitValue      => ''
 $InitObjectType => ''
 $InitId         => ''
+$DefaultType    => undef
 </%args>

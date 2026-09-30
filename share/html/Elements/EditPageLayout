@@ -656,6 +656,17 @@ $Class => undef
              DefaultLabel => ( defined $list_count_default ? loc( 'Default: [_1]', $list_count_default ) : loc('Default: show all') ),
              LabeledValue => 1
           &>
+          <& /Widgets/Form/Select,
+             Name => 'DefaultType',
+             %{ $default_type_meta->{WidgetArguments} || {} },
+             Description => loc('Default Link Type'),
+             Tooltip => loc('Link type first selected when adding links. A user preference takes precedence.'),
+             Hints => '',
+             CurrentValue => ( ref $Widget && $Widget->{DefaultType} ) // '',
+             DefaultLabel => loc( 'Default: [_1]', $default_type_label ),
+             LabeledValue => 1,
+             $Index ? () : ( InputClass => 'form-select' ),
+          &>
         </div>
         <div class="modal-footer">
           <& /Elements/Submit, Label => loc('Update') &>
@@ -686,6 +697,9 @@ my %rel_default = ( ref $Widget && $Widget->{ShowRelationship} ) ? map { $_ => 1
 my %obj_default = ( ref $Widget && $Widget->{ShowObjectType} )   ? map { $_ => 1 } @{ $Widget->{ShowObjectType} }   : ();
 my $for = $Index // $Widget;    # per-widget id suffix, matching the modal id
 my $list_count_default = RT->Config->Get('LinksListCount');
+my $default_type_meta  = RT->Config->Meta('LinksDefaultType') || {};
+my $default_type       = RT->Config->Get('LinksDefaultType') // 'RefersTo';
+my $default_type_label = loc( $default_type_meta->{WidgetArguments}{ValuesLabel}{$default_type} // $default_type );
 </%INIT>
 <%ARGS>
 $Widget => undef

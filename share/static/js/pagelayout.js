@@ -261,6 +261,10 @@ pageLayout = {
             if ( /^\d+$/.test(listCount) ) {
                 value.ListCount = parseInt(listCount, 10);
             }
+            const defaultType = form.querySelector('[name=DefaultType]').value;
+            if ( defaultType && defaultType !== '__empty_value__' ) {
+                value.DefaultType = defaultType;
+            }
 
             widget.setAttribute('data-value', JSON.stringify(value));
         }

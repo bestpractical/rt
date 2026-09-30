@@ -61,8 +61,8 @@
 % } else {
   <form class="inline-edit" hx-post="<% RT->Config->Get('WebPath') %>/Helpers/AssetUpdate" hx-swap="none" enctype="multipart/form-data">
     <input type="hidden" class="hidden" name="id" value="<% $AssetObj->id %>" />
-    <div class="links-edit-container" hx-trigger="assetLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditLinks?ObjectType=RT::Asset&ObjectId=<% $AssetObj->id %>&DualMode=1<% $edit_default_qs |n %>" hx-swap="innerHTML">
-      <& /Elements/EditLinks, Object => $AssetObj, DualMode => 1, @filter_args, ListCount => $ListCount &>
+    <div class="links-edit-container" hx-trigger="assetLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditLinks?ObjectType=RT::Asset&ObjectId=<% $AssetObj->id %>&DualMode=1<% $edit_default_qs |n %><% $add_default_qs |n %>" hx-swap="innerHTML">
+      <& /Elements/EditLinks, Object => $AssetObj, DualMode => 1, @filter_args, ListCount => $ListCount, DefaultType => $DefaultType &>
     </div>
     <& /Widgets/Spinner &>
   </form>
@@ -104,6 +104,7 @@ if ($default_active) {
     $edit_default_qs = '&' . join '&', @parts;
 }
 $edit_default_qs .= '&ListCount=' . $m->interp->apply_escapes( $ListCount, 'u' ) if defined $ListCount;
+my $add_default_qs = ( defined $DefaultType && length $DefaultType ) ? '&DefaultType=' . $m->interp->apply_escapes( $DefaultType, 'u' ) : '';
 
 # Search + filter live in the title bar (like History) to save vertical space. It targets whichever
 # body the current mode renders: the edit body in editable modes, else the read-only display body.
@@ -128,4 +129,5 @@ $AssetObj
 @ShowObjectType   => ()
 $HideInactive     => 0
 $ListCount        => undef
+$DefaultType      => undef
 </%ARGS>

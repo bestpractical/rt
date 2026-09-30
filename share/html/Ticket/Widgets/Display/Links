@@ -62,13 +62,13 @@
 % } else {
   <form class="inline-edit" hx-post="<% RT->Config->Get('WebPath') %>/Helpers/TicketUpdate" hx-swap="none" enctype="multipart/form-data">
     <input type="hidden" class="hidden" name="id" value="<% $TicketObj->id %>" />
-    <div class="links-edit-container" hx-trigger="ticketLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditLinks?ObjectType=RT::Ticket&ObjectId=<% $TicketObj->id %>&DualMode=1<% $edit_default_qs |n %>" hx-swap="innerHTML">
-      <& /Elements/EditLinks, Object => $TicketObj, DualMode => 1, @filter_args, ListCount => $ListCount &>
+    <div class="links-edit-container" hx-trigger="ticketLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditLinks?ObjectType=RT::Ticket&ObjectId=<% $TicketObj->id %>&DualMode=1<% $edit_default_qs |n %><% $add_default_qs |n %>" hx-swap="innerHTML">
+      <& /Elements/EditLinks, Object => $TicketObj, DualMode => 1, @filter_args, ListCount => $ListCount, DefaultType => $DefaultType &>
     </div>
     <& /Widgets/Spinner &>
   </form>
 %# Its native-submit <form> must sit OUTSIDE the inline-edit <form> above (a nested <form> is dropped).
-  <& /Elements/CreateLinkedTicket, Object => $TicketObj &>
+  <& /Elements/CreateLinkedTicket, Object => $TicketObj, DefaultType => $DefaultType &>
 % }
 </&>
 <& /Elements/LinksInfoModal, Object => $TicketObj &>
@@ -106,6 +106,7 @@ if ($default_active) {
     $edit_default_qs = '&' . join '&', @parts;
 }
 $edit_default_qs .= '&ListCount=' . $m->interp->apply_escapes( $ListCount, 'u' ) if defined $ListCount;
+my $add_default_qs = ( defined $DefaultType && length $DefaultType ) ? '&DefaultType=' . $m->interp->apply_escapes( $DefaultType, 'u' ) : '';
 
 my @extra;
 my $graph_label = $m->interp->apply_escapes( loc('Graph ticket links'), 'h' );
@@ -138,4 +139,5 @@ $TicketObj
 @ShowObjectType   => ()
 $HideInactive     => 0
 $ListCount        => undef
+$DefaultType      => undef
 </%ARGS>

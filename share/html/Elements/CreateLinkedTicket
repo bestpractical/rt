@@ -56,12 +56,9 @@
     </div>
     <div class="col-auto">
       <select id="link-type" name="LinkType" class="form-select selectpicker">
-        <option value="DependsOn-new"><% loc('Depends on') %></option>
-        <option value="new-DependsOn"><% loc('Depended on by') %></option>
-        <option value="MemberOf-new"><% loc('Parents') %></option>
-        <option value="new-MemberOf"><% loc('Children') %></option>
-        <option value="RefersTo-new"><% loc('Refers to') %></option>
-        <option value="new-RefersTo"><% loc('Referred to by') %></option>
+% for my $option (@link_types) {
+        <option value="<% $option->{value} %>"<% $option->{relation} eq $default_type ? ' selected' : '' |n %>><% $option->{label} %></option>
+% }
       </select>
     </div>
     <div class="col-auto label">
@@ -76,6 +73,20 @@
   </div>
   </form>
 </div>
+<%init>
+# Keyed by the relationship this ticket gets, as in the "Add links" rows, so both start on the
+# same default. The values name the new ticket's side for Ticket/Create.html.
+my @link_types = (
+    { relation => 'DependsOn',    value => 'DependsOn-new', label => loc('Depends on') },
+    { relation => 'DependedOnBy', value => 'new-DependsOn', label => loc('Depended on by') },
+    { relation => 'MemberOf',     value => 'MemberOf-new',  label => loc('Parents') },
+    { relation => 'Members',      value => 'new-MemberOf',  label => loc('Children') },
+    { relation => 'RefersTo',     value => 'RefersTo-new',  label => loc('Refers to') },
+    { relation => 'ReferredToBy', value => 'new-RefersTo',  label => loc('Referred to by') },
+);
+my $default_type = RT::Links->DefaultLinkType( CurrentUser => $session{CurrentUser}, Default => $DefaultType ) // '';
+</%init>
 <%args>
 $Object
+$DefaultType => undef
 </%args>

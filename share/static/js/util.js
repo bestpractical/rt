@@ -2245,10 +2245,11 @@ function initAddLinkRows(section) {
             clone.removeAttribute('data-prefill-id');
             clone.removeAttribute('data-prefill-name');
             // ...nor its non-default type/object selection: reset both dropdowns to the default
-            // (Refers to / Ticket) before initializeSelectElement so the rebuilt tom-selects pick it up.
+            // (the default link type, marked data-default by AddLinksRow, and Ticket) before
+            // initializeSelectElement so the rebuilt tom-selects pick it up.
             const typeSel = clone.querySelector('.link-type-select');
             typeSel.querySelectorAll('option').forEach(o => { o.selected = false; });
-            typeSel.querySelector('option[data-type="RefersTo"][data-mode="Target"]').selected = true;
+            typeSel.querySelector('option[data-default]').selected = true;
             const otSel = clone.querySelector('.link-object-type-select');
             otSel.querySelectorAll('option').forEach(o => { o.selected = false; });
             otSel.querySelector('option[value="ticket"]').selected = true;
