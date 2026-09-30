@@ -170,6 +170,70 @@ diag "Links widget ListCount overrides LinksListCount";
     $m->content_like( qr{hx-get="[^"]*/Views/Component/ShowLinks\?[^"]*ListCount=2}, 'the refresh URL keeps the cap' );
 }
 
+diag "Add links default type: user preference, then page layout, then LinksDefaultType";
+{
+    my $main = RT::Test->create_ticket( Queue => 'General', Subject => 'lw default type main' );
+    my $selected = sub {
+        [ map { $_->attr('value') } $m->dom->find('.add-link-row .link-type-select option[selected]')->each ];
+    };
+    my $create_selected = sub {
+        my $option = $m->dom->at('#create-linked-ticket select[name="LinkType"] option[selected]');
+        return $option ? $option->attr('value') : '';
+    };
+    my $id = $main->id;
+
+    $m->goto_ticket($id);
+    is_deeply( $selected->(), [ "$id-RefersTo", "$id-RefersTo" ], 'both add rows default to Refers to' );
+    is( $create_selected->(), 'RefersTo-new', 'Create new defaults to Refers to too' );
+    is( $m->dom->find('.add-link-row .link-type-select option[data-default]')->map( attr => 'value' )->join(',')->to_string,
+        "$id-RefersTo,$id-RefersTo", 'each row marks the default for rows added in the browser' );
+
+    my ($ok, $msg) = HTML::Mason::Commands::UpdateConfig(
+        Name  => 'PageLayouts',
+        Value => {
+            'RT::Ticket' => {
+                'Display' => {
+                    Default => [
+                        { Layout => 'col-12', Elements => [ { Name => 'Links', DefaultType => 'DependsOn' } ] },
+                    ],
+                },
+            },
+        },
+        CurrentUser => RT->SystemUser,
+    );
+    ok( $ok, "configured Links DefaultType" ) or diag $msg;
+
+    $m->goto_ticket($id);
+    is_deeply( $selected->(), [ "$id-DependsOn", "$id-DependsOn" ], 'the page layout DefaultType selects Depends on' );
+    is( $create_selected->(), 'DependsOn-new', 'Create new follows the page layout DefaultType' );
+    $m->content_like( qr{hx-get="[^"]*/Views/Component/EditLinks\?[^"]*DefaultType=DependsOn}, 'the refresh URL keeps the default' );
+
+    $m->get_ok( "$baseurl/Prefs/Other.html", 'load preferences' );
+    $m->submit_form_ok( { form_name => 'ModifyPreferences', fields => { LinksDefaultType => 'MemberOf' }, button => 'Update' },
+        'set a Child of preference' );
+
+    $m->goto_ticket($id);
+    is_deeply( $selected->(), [ "$id-MemberOf", "$id-MemberOf" ], 'the user preference wins over the page layout' );
+    is( $create_selected->(), 'MemberOf-new', 'Create new follows the preference: the new ticket is the parent' );
+    $m->submit_form_ok( { form_name => 'SpawnLinkedTicket', button => 'SpawnLinkedTicket' }, 'create a linked ticket with the default' );
+    $m->submit_form_ok( { form_name => 'TicketCreate', fields => { Subject => 'lw default type parent' }, button => 'SubmitTicket' },
+        'create the new ticket' );
+    my $parents = $main->MemberOf;
+    my $parent  = $parents->First;
+    is( $parent && $parent->TargetObj->Subject, 'lw default type parent', 'the new ticket is the parent, matching a Child of default' );
+
+    $m->get_ok( "$baseurl/Ticket/ModifyAll.html?id=$id", 'load the Jumbo page' );
+    is_deeply( $selected->(), [ "$id-MemberOf", "$id-MemberOf" ], 'the preference applies outside the page layout too' );
+
+    $m->get_ok( "$baseurl/Prefs/Other.html", 'load preferences' );
+    $m->submit_form_ok( { form_name => 'ModifyPreferences', fields => { LinksDefaultType => '__empty_value__' }, button => 'Update' },
+        'clear the preference' );
+
+    $m->goto_ticket($id);
+    is_deeply( $selected->(), [ "$id-DependsOn", "$id-DependsOn" ], 'without a preference the page layout applies again' );
+    is( $create_selected->(), 'DependsOn-new', 'Create new follows the page layout again' );
+}
+
 diag "EditPageLayout renders the Links widget edit modal reflecting config";
 {
     my ($ok, $msg) = HTML::Mason::Commands::UpdateConfig(
@@ -179,7 +243,7 @@ diag "EditPageLayout renders the Links widget edit modal reflecting config";
                 'Display' => {
                     Default => [
                         { Layout => 'col-12',
-                          Elements => [ { Name => 'Links', HideInactive => 1, ShowObjectType => ['Ticket'], ListCount => 7 } ] },
+                          Elements => [ { Name => 'Links', HideInactive => 1, ShowObjectType => ['Ticket'], ListCount => 7, DefaultType => 'ReferredToBy' } ] },
                     ],
                 },
                 'Create' => {
@@ -202,6 +266,12 @@ diag "EditPageLayout renders the Links widget edit modal reflecting config";
     ok( $m->dom->at('#pagelayout-widget-0-modal input[name="ListCount"][value="7"]'), 'placed modal ListCount reflects config' );
     ok( $m->dom->at('#pagelayout-widget-Links-modal input[name="ListCount"][value=""][placeholder="Default: 10"]'),
         'palette modal ListCount is empty, showing the LinksListCount default' );
+    ok( $m->dom->at('#pagelayout-widget-0-modal select[name="DefaultType"] option[value="ReferredToBy"][selected]'),
+        'placed modal DefaultType reflects config' );
+    ok( $m->dom->at('#pagelayout-widget-Links-modal select[name="DefaultType"] option[value="__empty_value__"][selected]'),
+        'palette modal DefaultType uses the default' );
+    like( $m->dom->at('#pagelayout-widget-Links-modal select[name="DefaultType"] option[value="__empty_value__"]')->text,
+        qr/Default: Refers to/, 'and names the LinksDefaultType default' );
 
     # The Links item in "Available Widgets" carries the edit pencil so a dragged-in widget is configurable.
     $m->content_like( qr{data-bs-target="#pagelayout-widget-Links-modal"},

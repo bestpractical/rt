@@ -170,6 +170,40 @@ sub IsValidLink {
     return 1;
 }
 
+=head2 DefaultLinkType PARAMHASH
+
+Returns the relationship first selected when a user adds a link: one of
+DependsOn, DependedOnBy, MemberOf, Members, RefersTo or ReferredToBy, as
+seen from the object being linked from.
+
+    my $type = RT::Links->DefaultLinkType(
+        CurrentUser => $current_user,
+        Default     => $page_layout_default,
+    );
+
+Takes C<CurrentUser>, required, and C<Default>, the optional default from
+the Links widget's page layout. The user's C<LinksDefaultType> preference
+comes first, then C<Default>, then the C<$LinksDefaultType> setting.
+
+=cut
+
+sub DefaultLinkType {
+    my $self = shift;
+    my %args = (
+        CurrentUser => undef,
+        Default     => undef,
+        @_,
+    );
+
+    # RT->Config->Get can't give that order: with no preference set it returns $LinksDefaultType,
+    # which looks the same as a preference set to that value. Read the stored preference directly
+    # so an unset preference falls through to the page layout.
+    my $prefs = $args{CurrentUser} ? ( $args{CurrentUser}->UserObj->Preferences( RT->System ) || {} ) : {};
+    my ($type) = grep { defined && length } $prefs->{LinksDefaultType}, $args{Default},
+        RT->Config->Get('LinksDefaultType');
+    return $type;
+}
+
 =head2 SortByActivityType RECORDS
 
 Takes a list of linked records, such as tickets or assets. Returns two

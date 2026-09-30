@@ -48,7 +48,7 @@
 %# .edit-ticket-links is the shared editor hook; the name predates assets but is reused as-is
 %# so both portlets share one code path.
 <div class="edit-ticket-links" data-object-id="<% $id %>">
-  <& /Elements/AddLinks, Object => $Object &>
+  <& /Elements/AddLinks, Object => $Object, DefaultType => $DefaultType &>
 
 % if ( !$Embedded ) {
 %# The Save for the add-links rows, shown even when the object has no links yet.
@@ -100,6 +100,7 @@ $Embedded         => 0
 @ShowObjectType   => ()
 $HideInactive     => 0
 $ListCount        => undef
+$DefaultType      => undef
 </%args>
 <%attr>
 directly_accessible => 1

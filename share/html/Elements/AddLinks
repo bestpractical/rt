@@ -49,9 +49,12 @@
 $Object         => undef
 $CustomFields   => undef
 $ARGSRef        => $DECODED_ARGS
+$DefaultType    => undef
 </%args>
 <%init>
 my $id = ( $Object and $Object->id ) ? $Object->id : "new";
+
+my $default_type = RT::Links->DefaultLinkType( CurrentUser => $session{CurrentUser}, Default => $DefaultType );
 
 # Pre-fill rows from link GET/POST params (e.g. CloneTicket, "Create linked ticket"
 # shortcuts). A local-object URI is split into the object type (selects the row's
@@ -142,10 +145,10 @@ my $link_excludes_json = JSON( \%link_excludes );
   <div class="label mb-1"><&|/l&>Add links</&></div>
   <div class="add-links-rows">
 % for my $pf (@prefill) {
-    <& /Elements/AddLinksRow, id => $id, First => 0, InitField => $pf->{field}, InitValue => $pf->{value}, InitObjectType => $pf->{object_type}, InitId => $pf->{init_id} &>
+    <& /Elements/AddLinksRow, id => $id, First => 0, InitField => $pf->{field}, InitValue => $pf->{value}, InitObjectType => $pf->{object_type}, InitId => $pf->{init_id}, DefaultType => $default_type &>
 % }
-    <& /Elements/AddLinksRow, id => $id, First => 1 &>
-    <& /Elements/AddLinksRow, id => $id, First => 0 &>
+    <& /Elements/AddLinksRow, id => $id, First => 1, DefaultType => $default_type &>
+    <& /Elements/AddLinksRow, id => $id, First => 0, DefaultType => $default_type &>
   </div>
 
 %# Link custom fields: only on the create page, where there is no ShowLinks listing. For an
