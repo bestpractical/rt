@@ -79,8 +79,8 @@
 my @link_types = (
     { relation => 'DependsOn',    value => 'DependsOn-new', label => loc('Depends on') },
     { relation => 'DependedOnBy', value => 'new-DependsOn', label => loc('Depended on by') },
-    { relation => 'MemberOf',     value => 'MemberOf-new',  label => loc('Parents') },
-    { relation => 'Members',      value => 'new-MemberOf',  label => loc('Children') },
+    { relation => 'MemberOf',     value => 'MemberOf-new',  label => loc('Parent') },
+    { relation => 'Members',      value => 'new-MemberOf',  label => loc('Child') },
     { relation => 'RefersTo',     value => 'RefersTo-new',  label => loc('Refers to') },
     { relation => 'ReferredToBy', value => 'new-RefersTo',  label => loc('Referred to by') },
 );
