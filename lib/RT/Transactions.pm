@@ -137,6 +137,30 @@ sub LimitToTicket {
 
 }
 
+=head2 SingleTicketSearch [BOOLEAN]
+
+Gets or sets whether the caller limits this search to a single ticket's
+history. It only applies to MySQL and MariaDB full text indexing, where a
+C<Content> search normally runs C<MATCH>, which InnoDB evaluates against
+the whole index. When this is true, the search instead scans the ticket's
+own indexed content, which is much faster for one ticket. Unlike C<MATCH>,
+boolean mode operators other than a trailing C<*> match literally, and
+stopwords and short words are not ignored. On MySQL this requires
+C<regexp_time_limit> to be 0.
+
+=cut
+
+sub SingleTicketSearch {
+    my $self = shift;
+    $self->{_single_ticket_search} = shift if @_;
+    return $self->{_single_ticket_search};
+}
+
+sub _CanRegexpContent {
+    return 1 if RT->DatabaseHandle->_IsMariaDB;
+    return ( RT->DatabaseHandle->FetchResult('SELECT @@regexp_time_limit') // '' ) eq '0';
+}
+
 
 sub AddRecord {
     my $self = shift;
@@ -804,15 +828,39 @@ sub _AttachContentLimit {
         }
         elsif ( $db_type eq 'mysql' ) {
             my $dbh = $RT::Handle->dbh;
-            # Wrap multi-word phrases in double quotes for exact phrase matching
-            my $search_value = $value =~ /\s/ && $value !~ /^".+"$/s ? qq{"$value"} : $value;
-            $self->Limit(
-                %rest,
-                FUNCTION    => "MATCH($alias.Content)",
-                OPERATOR    => 'AGAINST',
-                VALUE       => "(". $dbh->quote($search_value) ." IN BOOLEAN MODE)",
-                QUOTEVALUE  => 0,
-            );
+            if ( $self->SingleTicketSearch && $self->_CanRegexpContent ) {
+                ( my $search_value = $value ) =~ s/^"(.+)"$/$1/s;
+                if ( $search_value !~ /\w/ ) {
+                    $self->Limit( %rest, FIELD => 'id', VALUE => 0 );
+                }
+                else {
+                    my @words = split ' ', $search_value;
+
+                    # As in general search, * works only on a lone unquoted word
+                    my $prefix = @words == 1 && $search_value eq $value && $words[0] =~ s/(\w)\*$/$1/;
+                    s/([\\.^\$|?*+()\[\]{}])/\\$1/g for @words;
+
+                    my $regexp = '(?<!\w)' . join( '\W+', @words ) . ( $prefix ? '' : '(?!\w)' );
+                    $self->Limit(
+                        %rest,
+                        FUNCTION   => "($alias.Content REGEXP " . $dbh->quote($regexp) . ")",
+                        OPERATOR   => '=',
+                        VALUE      => 1,
+                        QUOTEVALUE => 0,
+                    );
+                }
+            }
+            else {
+                # Wrap multi-word phrases in double quotes for exact phrase matching
+                my $search_value = $value =~ /\s/ && $value !~ /^".+"$/s ? qq{"$value"} : $value;
+                $self->Limit(
+                    %rest,
+                    FUNCTION    => "MATCH($alias.Content)",
+                    OPERATOR    => 'AGAINST',
+                    VALUE       => "(". $dbh->quote($search_value) ." IN BOOLEAN MODE)",
+                    QUOTEVALUE  => 0,
+                );
+            }
             # As with Oracle, above, this forces the LEFT JOINs into
             # JOINS, which allows the FULLTEXT index to be used.
             # Orthogonally, the IS NOT NULL clause also helps the
