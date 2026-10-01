@@ -1579,4 +1579,46 @@ diag 'a link type whose only links are filtered out renders without error';
     $m->content_lacks( 'lw only reminder', 'the reminder is not listed' );
 }
 
+diag 'Links widget with nothing to show tells the user to click the pencil';
+{
+    my $hint = 'Click the pencil to add links';
+
+    my $empty = RT::Test->create_ticket( Queue => 'General', Subject => 'hint empty ticket' );
+    $m->get_ok( $baseurl . '/Ticket/Display.html?id=' . $empty->id, 'display a ticket with no links' );
+    $m->content_contains( $hint, 'hint shown for a ticket with no links' );
+
+    # A reminder links to its ticket, but the widget doesn't list reminders.
+    my $with_reminder = RT::Test->create_ticket( Queue => 'General', Subject => 'hint reminder ticket' );
+    my $reminder      = RT::Test->create_ticket( Queue => 'General', Subject => 'hint reminder', Type => 'reminder' );
+    ok( $reminder->AddLink( Type => 'RefersTo', Target => $with_reminder->id ), 'the reminder refers to the ticket' );
+    $m->get_ok( $baseurl . '/Ticket/Display.html?id=' . $with_reminder->id, 'display a ticket with only a reminder' );
+    $m->content_contains( $hint, 'hint shown when the only link is a reminder' );
+
+    my $target = RT::Test->create_ticket( Queue => 'General', Subject => 'hint link target' );
+    my $linked = RT::Test->create_ticket( Queue => 'General', Subject => 'hint linked ticket' );
+    ok( $linked->AddLink( Type => 'RefersTo', Target => $target->id ), 'linked a ticket' );
+    $m->get_ok( $baseurl . '/Ticket/Display.html?id=' . $linked->id, 'display a ticket with a link' );
+    $m->content_lacks( $hint, 'no hint once the ticket has a link' );
+
+    # The refresh after a save goes through EditLinks and then ShowLinks, so both carry the flag.
+    $m->get_ok( $baseurl . '/Views/Component/EditLinks?ObjectType=RT::Ticket&ObjectId=' . $empty->id
+            . '&DualMode=1&EmptyHint=1', 'fetch the editor as the widget refreshes it' );
+    $m->content_contains( $hint, 'refreshed editor keeps the hint' );
+    $m->content_like( qr{Views/Component/ShowLinks\?[^"]*EmptyHint=1}, 'the listing refresh carries the hint flag' );
+
+    # Without ModifyTicket there is no pencil, so no hint.
+    my $viewer = RT::Test->load_or_create_user( Name => 'hint-viewer', Password => 'password', Privileged => 1 );
+    my $general = RT::Test->load_or_create_queue( Name => 'General' );
+    RT::Test->add_rights( { Principal => $viewer, Right => [qw/ShowTicket SeeQueue/], Object => $general } );
+    my $vm = RT::Test::Web->new;
+    ok( $vm->login( 'hint-viewer', 'password' ), 'read-only user logged in' );
+    $vm->get_ok( $baseurl . '/Ticket/Display.html?id=' . $empty->id, 'read-only user displays the empty ticket' );
+    $vm->content_lacks( $hint, 'no hint without the right to add links' );
+
+    my $catalog = create_catalog( Name => 'Hint kit' );
+    my $asset   = create_asset( Catalog => $catalog->id, Name => 'hint empty asset' );
+    $m->get_ok( $baseurl . '/Asset/Display.html?id=' . $asset->id, 'display an asset with no links' );
+    $m->content_contains( $hint, 'hint shown for an asset with no links' );
+}
+
 done_testing;

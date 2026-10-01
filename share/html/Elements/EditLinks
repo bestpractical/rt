@@ -88,6 +88,7 @@ my %show_links_args = (
     HideInactive     => $HideInactive,
     ShowRelationship => \@ShowRelationship,
     ShowObjectType   => \@ShowObjectType,
+    EmptyHint        => $EmptyHint,
 );
 my $show_links_qs = $m->comp( '/Elements/QueryString', ObjectType => ref $Object, ObjectId => $id, %show_links_args );
 $show_links_args{Object} = $Object;
@@ -101,6 +102,7 @@ $Embedded         => 0
 $HideInactive     => 0
 $ListCount        => undef
 $DefaultType      => undef
+$EmptyHint        => 0
 </%args>
 <%attr>
 directly_accessible => 1

@@ -46,22 +46,11 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="ticket-links">
-% for my $type (@render) {
-  <& /Elements/ShowLinksSection,
-      Object           => $Object,
-      Type             => $type,
-      Label            => $labels{$type},
-      Formats          => \%formats,
-      Edit             => $Edit,
-      DualMode         => $DualMode,
-      Embedded         => $Embedded,
-      ListCount        => $ListCount,
-      ShowAll          => $ShowAll,
-      HideInactive     => $HideInactive,
-      ShowRelationship => \@ShowRelationship,
-      ShowObjectType   => \@ShowObjectType,
-      Partial          => \$partial,
-  &>
+% if ( $EmptyHint && !@sections && !$partial ) {
+  <p class="links-empty-hint text-center fst-italic"><&|/l&>Click the pencil to add links</&></p>
+% }
+% for my $section (@sections) {
+<% $section |n %>
 % }
   <span class="links-total d-none" data-links-total="<% $links_total %>"<% $partial ? ' data-links-partial="1"' : '' |n %>></span>
 </div>
@@ -103,6 +92,25 @@ my $links_total = $Object->Links('Base')->Count + $Object->Links('Target')->Coun
 $ListCount = RT->Config->Get('LinksListCount') if !defined $ListCount || $ListCount eq '';
 $ListCount = undef unless defined $ListCount && $ListCount =~ /^\d+$/;
 my $partial = 0;
+
+my @sections = grep { defined && /\S/ } map {
+    $m->scomp(
+        '/Elements/ShowLinksSection',
+        Object           => $Object,
+        Type             => $_,
+        Label            => $labels{$_},
+        Formats          => \%formats,
+        Edit             => $Edit,
+        DualMode         => $DualMode,
+        Embedded         => $Embedded,
+        ListCount        => $ListCount,
+        ShowAll          => $ShowAll,
+        HideInactive     => $HideInactive,
+        ShowRelationship => \@ShowRelationship,
+        ShowObjectType   => \@ShowObjectType,
+        Partial          => \$partial,
+    )
+} @render;
 </%INIT>
 
 <%ARGS>
@@ -115,6 +123,7 @@ $ShowAll          => 0
 $HideInactive     => 0
 @ShowRelationship => ()
 @ShowObjectType   => ()
+$EmptyHint        => 0
 </%ARGS>
 
 <%attr>

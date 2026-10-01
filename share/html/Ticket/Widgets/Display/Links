@@ -62,8 +62,8 @@
 % } else {
   <form class="inline-edit" hx-post="<% RT->Config->Get('WebPath') %>/Helpers/TicketUpdate" hx-swap="none" enctype="multipart/form-data">
     <input type="hidden" class="hidden" name="id" value="<% $TicketObj->id %>" />
-    <div class="links-edit-container" hx-trigger="ticketLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditLinks?ObjectType=RT::Ticket&ObjectId=<% $TicketObj->id %>&DualMode=1<% $edit_default_qs |n %><% $add_default_qs |n %>" hx-swap="innerHTML">
-      <& /Elements/EditLinks, Object => $TicketObj, DualMode => 1, @filter_args, ListCount => $ListCount, DefaultType => $DefaultType &>
+    <div class="links-edit-container" hx-trigger="ticketLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditLinks?ObjectType=RT::Ticket&ObjectId=<% $TicketObj->id %>&DualMode=1<% $edit_default_qs |n %><% $add_default_qs |n %><% $empty_hint ? '&EmptyHint=1' : '' %>" hx-swap="innerHTML">
+      <& /Elements/EditLinks, Object => $TicketObj, DualMode => 1, @filter_args, ListCount => $ListCount, DefaultType => $DefaultType, EmptyHint => $empty_hint &>
     </div>
     <& /Widgets/Spinner &>
   </form>
@@ -83,6 +83,9 @@ if ( RT->Config->Get('InlineEditPanelBehavior') ) {
 my $modify_behavior
     = RT->Config->Get( 'InlineEdit', $session{CurrentUser} ) ? ( $inline_edit_behavior{Links} || $inline_edit_behavior{_default} || 'link' ) : 'hide';
 my $can_modify = $TicketObj->CurrentUserHasRight('ModifyTicket');
+
+# The hint points at the pencil, so show it only when the pencil is there and can add links.
+my $empty_hint = ( $can_modify && $modify_behavior =~ /^(link|click)$/ ) ? 1 : 0;
 
 my $has_links = $TicketObj->Links('Base')->Count || $TicketObj->Links('Target')->Count;
 

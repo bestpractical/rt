@@ -770,7 +770,8 @@ div.results .titlebox .titlebox-content {
     display: none;
 }
 
-/* Edit state: hide read-only CFs and the recursive descendants (only direct children edit). */
+/* Edit state: hide read-only CFs, the empty-links hint, and the recursive descendants (only direct children edit). */
+.titlebox.links-widget.editing .links-empty-hint,
 .titlebox.links-widget.editing .links-cf-display,
 .titlebox.links-widget.editing .links-tree tr[data-depth]:not([data-depth="1"]),
 .titlebox.links-widget.editing .links-tree .links-tree-repeat {
