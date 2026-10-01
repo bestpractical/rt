@@ -203,6 +203,11 @@ div.results .titlebox .titlebox-content {
     line-height: 1;
 }
 
+.links-filter-form:not(.links-filter-active) .links-filter .bi-funnel-fill,
+.links-filter-form.links-filter-active .links-filter .bi-funnel {
+    display: none;
+}
+
 .links-filter-header {
     color: var(--bs-primary);
     font-weight: 600;

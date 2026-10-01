@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<form class="links-filter-form d-inline-flex align-items-center gap-1<% $Class ? " $Class" : '' %>" hx-boost="false" data-links-target="<% $Target %>">
+<form class="links-filter-form d-inline-flex align-items-center gap-1<% $active ? ' links-filter-active' : '' %><% $Class ? " $Class" : '' %>" hx-boost="false" data-links-target="<% $Target %>">
   <span class="input-group d-inline-flex links-search-input">
     <span class="input-group-text"><% GetSVGImage(Name => 'search') |n %></span>
     <input type="text" name="Search" class="form-control" placeholder="<&|/l&>Search links...</&>" aria-label="<&|/l&>Search links</&>">
   </span>
-  <span class="rt-inline-icon dropdown border rounded links-filter-toggle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<&|/l&>Filter</&>">
-    <a class="links-filter menu-item" href="#" aria-label="<&|/l&>Filter</&>" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-boundary="viewport" aria-haspopup="true" aria-expanded="false"><% GetSVGImage(Name => 'funnel') |n %></a>
+  <span class="rt-inline-icon dropdown border rounded links-filter-toggle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<% $active ? $label_active : $label %>" data-label="<% $label %>" data-label-active="<% $label_active %>">
+    <a class="links-filter menu-item" href="#" aria-label="<% $active ? $label_active : $label %>" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-boundary="viewport" aria-haspopup="true" aria-expanded="false"><% GetSVGImage(Name => 'funnel') |n %><% GetSVGImage(Name => 'funnel-fill') |n %></a>
     <ul class="dropdown-menu dropdown-menu-end links-filter-dropdown" data-bs-boundary="viewport">
       <li><div class="dropdown-submenu">
         <div class="form-check ms-3 me-3 mt-2 mb-2"><input class="form-check-input" type="checkbox" name="HideInactive" id="lf-hide-inactive-<% $Object->id %>-<% $Mode %>"<% $HideInactive ? ' checked' : '' |n %>><label class="form-check-label" for="lf-hide-inactive-<% $Object->id %>-<% $Mode %>"><&|/l&>Hide inactive tickets/assets</&></label></div>
@@ -107,6 +107,14 @@ my @object_types = (
 
 my %rel_default = map { $_ => 1 } @ShowRelationship;
 my %obj_default = map { $_ => 1 } @ShowObjectType;
+
+# The filled funnel marks a filter that hides something, as a filtered search results column does.
+# util.js keeps it in step as the filter changes.
+my $active = ( $HideInactive
+        || ( %rel_default && grep { !$rel_default{ $_->{type} } } @link_types )
+        || ( %obj_default && grep { !$obj_default{ $_->{value} } } @object_types ) ) ? 1 : 0;
+my $label        = loc('Filter');
+my $label_active = loc('Filter (active)');
 </%init>
 <%args>
 $Object

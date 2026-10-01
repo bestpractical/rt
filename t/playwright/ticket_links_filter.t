@@ -424,6 +424,9 @@ diag "Display mode: Hide inactive hides the record-inactive row client-side";
     $p->goto_ticket( $host->id );
     $p->wait_for_element('.links-filter-form input[name="Search"]');
 
+    my $funnel_fill = '.links-filter-form .links-filter .bi-funnel-fill';
+    is( $p->{page}->locator($funnel_fill)->isVisible, 0, 'plain funnel before any filter' );
+
     $p->{page}->click('.links-filter-form .links-filter-toggle .links-filter');
     $p->wait_for_element('.links-filter-form input[name="HideInactive"]');
     $p->{page}->check('.links-filter-form input[name="HideInactive"]');
@@ -459,6 +462,16 @@ JS
         'return Array.prototype.some.call(document.querySelectorAll(".links-edit-target tbody tr"), function(r){ return /hideinactive resolved dep/.test(r.textContent) && r.classList.contains("d-none"); })'
     );
     ok( $inactive_hidden, 'resolved dependency stays in the DOM but is hidden with d-none' );
+    is( $p->{page}->locator($funnel_fill)->isVisible, 1, 'filled funnel while inactive links are hidden' );
+    is( $p->{page}->getAttribute( '.links-filter-form a.links-filter', 'aria-label' ), 'Filter (active)',
+        'label says the filter is active' );
+
+    $p->{page}->click('.links-filter-form .links-filter-toggle .links-filter');
+    $p->{page}->uncheck('.links-filter-form input[name="HideInactive"]');
+    $p->{page}->click('.links-filter-form .links-filter-apply');
+    $p->wait_for_element( $funnel_fill, { state => 'hidden' } );
+    pass('plain funnel again once the filter is cleared');
+    is( $p->{page}->getAttribute( '.links-filter-form a.links-filter', 'aria-label' ), 'Filter', 'plain label again' );
 }
 
 diag "Edit mode: Hide inactive hides the record-inactive row client-side";

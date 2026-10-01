@@ -1914,6 +1914,16 @@ function initLinksFilter(form) {
         const relAll = rels.length === total('ShowRelationship');
         const objAll = objs.length === total('ShowObjectType');
         const hideInactive = hideInactiveEl && hideInactiveEl.checked;
+        // Search text shows in its own box, so the funnel marks only what the funnel itself hides.
+        const active = !relAll || !objAll || !!hideInactive;
+        form.classList.toggle('links-filter-active', active);
+        const label = toggle.dataset[active ? 'labelActive' : 'label'];
+        if (label) {
+            toggle.querySelector('.links-filter').setAttribute('aria-label', label);
+            toggle.setAttribute('data-bs-title', label);
+            // Bootstrap reads the title once, when it creates the tooltip.
+            bootstrap.Tooltip.getInstance(toggle)?.setContent({ '.tooltip-inner': label });
+        }
 
         target.querySelectorAll('.links-section').forEach(section => {
             const relType = (section.id || '').replace('links-section-', '');

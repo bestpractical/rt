@@ -1654,4 +1654,28 @@ diag 'Links widget hides search and filter with nothing to show, and says when n
     $m->content_lacks( 'Click the pencil to add links', 'no hint to add links when links exist' );
 }
 
+diag 'Links filter marks a default filter that hides something with a filled funnel';
+{
+    my $ticket = RT::Test->create_ticket( Queue => 'General', Subject => 'funnel ticket' );
+    my $filter_url = $baseurl . '/Views/Component/LinksFilter?ObjectType=RT::Ticket&ObjectId=' . $ticket->id;
+    my $active = sub { $m->dom->at('form.links-filter-form')->attr('class') =~ /\blinks-filter-active\b/ ? 1 : 0 };
+
+    $m->get_ok( $filter_url, 'render the filter with no defaults' );
+    is( $active->(), 0, 'no defaults: plain funnel' );
+    is( $m->dom->at('a.links-filter')->attr('aria-label'), 'Filter', 'plain label without a filter' );
+    ok( $m->dom->at('.links-filter .bi-funnel-fill'), 'the filled funnel is there to switch to' );
+
+    $m->get_ok( "$filter_url&HideInactive=1", 'render the filter hiding inactive links' );
+    is( $active->(), 1, 'hiding inactive links fills the funnel' );
+    is( $m->dom->at('.links-filter-toggle')->attr('data-bs-title'), 'Filter (active)', 'tooltip says the filter is active' );
+    is( $m->dom->at('a.links-filter')->attr('aria-label'), 'Filter (active)', 'label says the filter is active' );
+
+    $m->get_ok( "$filter_url&ShowRelationship=DependsOn", 'render the filter showing one link type' );
+    is( $active->(), 1, 'showing only some link types fills the funnel' );
+
+    $m->get_ok( $filter_url . join( '', map {"&ShowObjectType=$_"} qw(Ticket Transaction Asset Article User Group URL) ),
+        'render the filter listing every object type' );
+    is( $active->(), 0, 'listing every object type hides nothing' );
+}
+
 done_testing;
