@@ -1956,6 +1956,13 @@ function initLinksFilter(form) {
             const visibleCount = section.querySelectorAll('tbody tr:not(.d-none)').length;
             section.classList.toggle('d-none', !relOk || visibleCount === 0);
         });
+
+        // Rendered only when the listing has links; the server shows it when its default filters
+        // leave nothing to render, and from here on it follows what the filter leaves visible.
+        const noMatch = target.querySelector('.links-no-match');
+        if (noMatch) {
+            noMatch.classList.toggle('d-none', !!target.querySelector('.links-section:not(.d-none) tbody tr:not(.d-none)'));
+        }
     }
 
     searchEl.addEventListener('input', () => {
@@ -1985,10 +1992,7 @@ function initLinksFilter(form) {
             clientFilter();
             const carrier = target.querySelector('.links-total');
             const totalLinks = carrier ? parseInt(carrier.getAttribute('data-links-total'), 10) || 0 : 0;
-            const hasLinks = totalLinks > 0
-                          || target.querySelectorAll('[data-record-id]').length > 0
-                          || target.querySelectorAll('.links-type-table tbody tr').length > 0;
-            form.classList.toggle('d-none', !hasLinks);
+            form.classList.toggle('d-none', totalLinks === 0);
         };
         scope.addEventListener('htmx:afterSettle', onSettle);
         onSettle();

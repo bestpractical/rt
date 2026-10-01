@@ -46,8 +46,12 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="ticket-links">
-% if ( $EmptyHint && !@sections && !$partial ) {
+% if ( $EmptyHint && !$links_total ) {
   <p class="links-empty-hint text-center fst-italic"><&|/l&>Click the pencil to add links</&></p>
+% }
+% if ($links_total) {
+%# Shown when the default filters leave nothing to render; the client filter toggles it after.
+  <p class="links-no-match text-center fst-italic<% @sections ? ' d-none' : '' %>"><&|/l&>No links match</&></p>
 % }
 % for my $section (@sections) {
 <% $section |n %>
@@ -85,7 +89,11 @@ my %formats = %{ RT->Config->Get('LinksFormat') || {} };
 
 my @render = @display;
 
-my $links_total = $Object->Links('Base')->Count + $Object->Links('Target')->Count;
+my $links_total = RT::Links->LinkListingCount(
+    CurrentUser => $session{CurrentUser},
+    Object      => $Object,
+    Types       => \@display,
+);
 
 # An empty ListCount (the page layout didn't set one) falls back to $LinksListCount;
 # anything else that isn't a count is ignored rather than trusted from the query string.

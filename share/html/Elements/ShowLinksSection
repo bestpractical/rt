@@ -185,10 +185,10 @@ else {
 
         my @show = @{ $ids{$class} };
         if ( defined $cap ) {
-            # Count through the same collection the table renders, so ACL and the preserved
+            # Count through the same collection the table renders, so ACL and the listing's
             # filters are applied before the cap and the "Show all" count matches what loads.
-            my $collection = $m->comp(
-                '/Elements/ShowLinksTableOfType:Collection',
+            my $collection = RT::Links->FilterLinkListing(
+                CurrentUser      => $session{CurrentUser},
                 Class            => $class,
                 Ids              => \@show,
                 RelationshipType => $Type,

@@ -238,6 +238,174 @@ sub SortByActivityType {
     return ( \@active, \@inactive );
 }
 
+=head2 FilterLinkListing PARAMHASH
+
+Takes the linked records of one class and returns a collection of them,
+filtered and ordered the way a links listing such as the Links widget
+shows them. Returns undef for a class with no collection, or with no ids.
+
+    my $tickets = RT::Links->FilterLinkListing(
+        CurrentUser      => $current_user,
+        Class            => 'RT::Ticket',
+        Ids              => \@ticket_ids,
+        RelationshipType => 'ReferredToBy',
+    );
+
+=over
+
+=item CurrentUser
+
+Required. The collection is searched as this user, so records the user
+can't see are left out.
+
+=item Class
+
+The record class, one of RT::Ticket, RT::Transaction, RT::Asset,
+RT::Article, RT::User or RT::Group.
+
+=item Ids
+
+An array reference of record ids.
+
+=item RelationshipType
+
+The relationship the records were found through, as named by the method
+that lists them, such as DependsOn or ReferredToBy. A ReferredToBy
+listing leaves out reminders, which refer to the ticket they belong to.
+
+=back
+
+The search's own defaults also apply: tickets don't include deleted
+tickets, for example. Disabled articles are left out. Users and groups are
+ordered by name, and everything else by id, with active tickets and
+assets ahead of inactive ones.
+
+=cut
+
+sub FilterLinkListing {
+    my $self = shift;
+    my %args = (
+        CurrentUser      => undef,
+        Class            => '',
+        Ids              => [],
+        RelationshipType => '',
+        @_,
+    );
+
+    my %collection_class = (
+        'RT::Ticket'      => 'RT::Tickets',
+        'RT::Transaction' => 'RT::Transactions',
+        'RT::Asset'       => 'RT::Assets',
+        'RT::Article'     => 'RT::Articles',
+        'RT::User'        => 'RT::Users',
+        'RT::Group'       => 'RT::Groups',
+    );
+
+    my $cclass = $collection_class{ $args{Class} };
+    return undef unless $cclass && @{ $args{Ids} };
+
+    my $collection = $cclass->new( $args{CurrentUser} );
+    $collection->Limit(
+        FIELD           => 'id',
+        OPERATOR        => '=',
+        VALUE           => $_,
+        ENTRYAGGREGATOR => 'OR',
+    ) for @{ $args{Ids} };
+
+    if ( $args{Class} eq 'RT::Ticket' && $args{RelationshipType} eq 'ReferredToBy' ) {
+        $collection->Limit( FIELD => 'Type', OPERATOR => '!=', VALUE => 'reminder' );
+    }
+    if ( $args{Class} eq 'RT::Article' ) {
+        $collection->Limit( FIELD => 'Disabled', OPERATOR => '=', VALUE => 0 );
+    }
+
+    # Users and groups read better alphabetically (also their collection default).
+    if ( $args{Class} eq 'RT::User' || $args{Class} eq 'RT::Group' ) {
+        $collection->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
+    }
+    else {
+        $collection->OrderBy( FIELD => 'id', ORDER => 'ASC' );
+    }
+
+    # Active first, so a listing capped to a few rows can't hide an active link behind inactive
+    # ones. Order in SQL: a re-sort in Perl wouldn't last, as CollectionList re-runs the search.
+    if ( $args{Class} eq 'RT::Ticket' || $args{Class} eq 'RT::Asset' ) {
+        my ( $active, $inactive ) = $self->SortByActivityType( @{ $collection->ItemsArrayRef || [] } );
+        if ( @$active && @$inactive ) {
+            $collection->OrderByCols(
+                {   ALIAS    => '',
+                    FIELD    => 'id',
+                    FUNCTION => 'CASE WHEN main.id IN (' . join( ',', map { int $_->id } @$inactive ) . ') THEN 1 ELSE 0 END',
+                    ORDER    => 'ASC',
+                },
+                { FIELD => 'id', ORDER => 'ASC' },
+            );
+        }
+    }
+
+    return $collection;
+}
+
+=head2 LinkListingCount PARAMHASH
+
+Returns how many links of an object a links listing shows: the records
+L</FilterLinkListing> keeps, plus links to URLs. Use it to tell whether a
+listing has anything to show at all, before any cap on rows or default
+filter is applied.
+
+    my $total = RT::Links->LinkListingCount(
+        CurrentUser => $current_user,
+        Object      => $ticket,
+    );
+
+Takes C<CurrentUser> and C<Object>, required, and C<Types>, an optional
+array reference of relationship methods to count. It defaults to all of
+DependsOn, DependedOnBy, MemberOf, Members, RefersTo and ReferredToBy.
+
+=cut
+
+sub LinkListingCount {
+    my $self = shift;
+    my %args = (
+        CurrentUser => undef,
+        Object      => undef,
+        Types       => [qw(DependsOn DependedOnBy MemberOf Members RefersTo ReferredToBy)],
+        @_,
+    );
+    my $object = $args{Object};
+    return 0 unless $object;
+
+    my $total = 0;
+    for my $type ( @{ $args{Types} } ) {
+        next unless $RT::Link::TYPEMAP{$type} && $object->can($type);
+        my $mode = $RT::Link::TYPEMAP{$type}{Mode};
+
+        my %ids;
+        my $links = $object->$type;
+        $links->GotoFirstItem;
+        while ( my $link = $links->Next ) {
+            my ( $class, $id ) = RT::URI->ParseObjectURI( $link->$mode );
+            if ($class) {
+                push @{ $ids{$class} ||= [] }, $id;
+            }
+            else {
+                $total++;
+            }
+        }
+
+        for my $class ( sort keys %ids ) {
+            my $collection = $self->FilterLinkListing(
+                CurrentUser      => $args{CurrentUser},
+                Class            => $class,
+                Ids              => $ids{$class},
+                RelationshipType => $type,
+            );
+            $total += $collection->Count if $collection;
+        }
+    }
+    return $total;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

@@ -96,7 +96,12 @@ if ($Edit) {
     $format = "'__DeleteLinkCheckBox__', " . $format;
 }
 
-my $collection = $m->comp( 'SELF:Collection', Class => $Class, Ids => $Ids, RelationshipType => $RelationshipType );
+my $collection = RT::Links->FilterLinkListing(
+    CurrentUser      => $session{CurrentUser},
+    Class            => $Class,
+    Ids              => $Ids,
+    RelationshipType => $RelationshipType,
+);
 </%init>
 <%args>
 $Class
@@ -106,67 +111,3 @@ $Format           => undef
 $Edit             => 0
 $Embedded         => 0
 </%args>
-<%METHOD Collection>
-<%init>
-my %collection_class = (
-    'RT::Ticket'      => 'RT::Tickets',
-    'RT::Transaction' => 'RT::Transactions',
-    'RT::Asset'       => 'RT::Assets',
-    'RT::Article'     => 'RT::Articles',
-    'RT::User'        => 'RT::Users',
-    'RT::Group'       => 'RT::Groups',
-);
-
-my $cclass = $collection_class{$Class};
-return undef unless $cclass && @$Ids;
-
-my $collection = $cclass->new( $session{CurrentUser} );
-$collection->Limit(
-    FIELD           => 'id',
-    OPERATOR        => '=',
-    VALUE           => $_,
-    ENTRYAGGREGATOR => 'OR',
-    )
-    for @$Ids;
-
-# Preserved filters: keep reminders out of ReferredToBy, hide disabled articles.
-if ( $Class eq 'RT::Ticket' && $RelationshipType eq 'ReferredToBy' ) {
-    $collection->Limit( FIELD => 'Type', OPERATOR => '!=', VALUE => 'reminder' );
-}
-if ( $Class eq 'RT::Article' ) {
-    $collection->Limit( FIELD => 'Disabled', OPERATOR => '=', VALUE => 0 );
-}
-
-# Deterministic row order: by id for most types; users and groups read better
-# alphabetically (also their collection default), so order those by Name.
-if ( $Class eq 'RT::User' || $Class eq 'RT::Group' ) {
-    $collection->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
-}
-else {
-    $collection->OrderBy( FIELD => 'id', ORDER => 'ASC' );
-}
-
-# Active first, so a ListCount cap can't hide an active link behind inactive ones. Order in SQL:
-# a re-sort in Perl wouldn't last, as CollectionList re-runs the search.
-if ( $Class eq 'RT::Ticket' || $Class eq 'RT::Asset' ) {
-    my ( $active, $inactive ) = RT::Links->SortByActivityType( @{ $collection->ItemsArrayRef || [] } );
-    if ( @$active && @$inactive ) {
-        $collection->OrderByCols(
-            {   ALIAS    => '',
-                FIELD    => 'id',
-                FUNCTION => 'CASE WHEN main.id IN (' . join( ',', map { int $_->id } @$inactive ) . ') THEN 1 ELSE 0 END',
-                ORDER    => 'ASC',
-            },
-            { FIELD => 'id', ORDER => 'ASC' },
-        );
-    }
-}
-
-return $collection;
-</%init>
-<%args>
-$Class
-$Ids              => []
-$RelationshipType => ''
-</%args>
-</%METHOD>

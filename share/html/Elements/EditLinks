@@ -69,7 +69,10 @@
 <%init>
 my $id = $Object->id;
 
-my $has_links = $Object->Links('Base')->Count || $Object->Links('Target')->Count;
+# The count runs a search per linked class, so skip it where the filter below isn't rendered.
+my $has_links = ( !$Embedded && !$DualMode )
+    ? RT::Links->LinkListingCount( CurrentUser => $session{CurrentUser}, Object => $Object )
+    : 0;
 
 # Refresh the embedded listing on the object-type-specific links event after a save, and on
 # the custom-field event too since it renders the Links-grouping CFs (which change independently).

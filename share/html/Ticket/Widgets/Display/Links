@@ -87,7 +87,7 @@ my $can_modify = $TicketObj->CurrentUserHasRight('ModifyTicket');
 # The hint points at the pencil, so show it only when the pencil is there and can add links.
 my $empty_hint = ( $can_modify && $modify_behavior =~ /^(link|click)$/ ) ? 1 : 0;
 
-my $has_links = $TicketObj->Links('Base')->Count || $TicketObj->Links('Target')->Count;
+my $has_links = RT::Links->LinkListingCount( CurrentUser => $session{CurrentUser}, Object => $TicketObj );
 
 my @all_rels = qw(DependsOn DependedOnBy MemberOf Members RefersTo ReferredToBy);
 my @all_objs = qw(Ticket Transaction Asset Article User Group URL);

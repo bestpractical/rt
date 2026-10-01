@@ -309,6 +309,53 @@ diag 'Test methods that return all links recursively';
 }
 
 {
+    diag "Link listings leave out reminders, deleted tickets and records the user can't see";
+
+    my $ticket   = RT::Test->create_ticket( Queue => 'General', Subject => 'listing ticket' );
+    my $reminder = RT::Test->create_ticket( Queue => 'General', Subject => 'listing reminder', Type => 'reminder' );
+    ok( $reminder->AddLink( Type => 'RefersTo', Target => $ticket->id ), 'the reminder refers to the ticket' );
+
+    my $count = sub {
+        my $user = shift || RT->SystemUser;
+        my $object = RT::Ticket->new($user);
+        $object->Load( $ticket->id );
+        return RT::Links->LinkListingCount( CurrentUser => $user, Object => $object );
+    };
+    is( $ticket->ReferredToBy->Count, 1, 'the reminder link is in the raw links' );
+    is( $count->(), 0, 'a reminder is not counted' );
+
+    my $referrer = RT::Test->create_ticket( Queue => 'General', Subject => 'listing referrer' );
+    ok( $referrer->AddLink( Type => 'RefersTo', Target => $ticket->id ), 'another ticket refers to the ticket' );
+    my $listing = RT::Links->FilterLinkListing(
+        CurrentUser      => RT->SystemUser,
+        Class            => 'RT::Ticket',
+        Ids              => [ $reminder->id, $referrer->id ],
+        RelationshipType => 'ReferredToBy',
+    );
+    is_deeply( [ map { $_->id } @{ $listing->ItemsArrayRef } ], [ $referrer->id ], 'ReferredToBy listing leaves out the reminder' );
+    is( $count->(), 1, 'a referring ticket is counted' );
+
+    ok( $ticket->AddLink( Type => 'RefersTo', Target => 'https://example.com/listing' ), 'linked a URL' );
+    is( $count->(), 2, 'a URL is counted' );
+
+    my $deleted = RT::Test->create_ticket( Queue => 'General', Subject => 'listing deleted' );
+    ok( $ticket->AddLink( Type => 'DependsOn', Target => $deleted->id ), 'linked a ticket to delete' );
+    is( $count->(), 3, 'the dependency is counted' );
+    my ( $ok, $msg ) = $deleted->SetStatus('deleted');
+    ok( $ok, "deleted the dependency: $msg" );
+    is( $count->(), 2, 'a deleted ticket is not counted' );
+
+    my $hidden_queue = RT::Test->load_or_create_queue( Name => 'Listing hidden' );
+    my $hidden = RT::Test->create_ticket( Queue => $hidden_queue->id, Subject => 'listing hidden' );
+    ok( $ticket->AddLink( Type => 'DependsOn', Target => $hidden->id ), 'linked a ticket in another queue' );
+    my $viewer = RT::Test->load_or_create_user( Name => 'listing-viewer' );
+    ok( RT::Test->add_rights( { Principal => $viewer, Right => [qw(ShowTicket SeeQueue)], Object => $queue } ),
+        'viewer can see General only' );
+    is( $count->(), 3, 'the other queue ticket is counted for the system user' );
+    is( $count->( RT::CurrentUser->new($viewer) ), 2, 'a ticket the viewer cannot see is not counted for the viewer' );
+}
+
+{
     diag "Link messages name local non-ticket objects by type and id";
     clean_links();
 
