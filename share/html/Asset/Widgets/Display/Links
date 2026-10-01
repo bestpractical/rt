@@ -61,8 +61,8 @@
 % } else {
   <form class="inline-edit" hx-post="<% RT->Config->Get('WebPath') %>/Helpers/AssetUpdate" hx-swap="none" enctype="multipart/form-data">
     <input type="hidden" class="hidden" name="id" value="<% $AssetObj->id %>" />
-    <div class="links-edit-container" hx-trigger="assetLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditLinks?ObjectType=RT::Asset&ObjectId=<% $AssetObj->id %>&DualMode=1<% $edit_default_qs |n %><% $add_default_qs |n %>" hx-swap="innerHTML">
-      <& /Elements/EditLinks, Object => $AssetObj, DualMode => 1, @filter_args, ListCount => $ListCount, DefaultType => $DefaultType &>
+    <div class="links-edit-container" hx-trigger="assetLinksChanged from:body" hx-get="<% RT->Config->Get('WebPath') %>/Views/Component/EditLinks?ObjectType=RT::Asset&ObjectId=<% $AssetObj->id %>&DualMode=1<% $edit_default_qs |n %><% $add_default_qs |n %><% $empty_hint ? '&EmptyHint=1' : '' %>" hx-swap="innerHTML">
+      <& /Elements/EditLinks, Object => $AssetObj, DualMode => 1, @filter_args, ListCount => $ListCount, DefaultType => $DefaultType, EmptyHint => $empty_hint &>
     </div>
     <& /Widgets/Spinner &>
   </form>
@@ -81,6 +81,9 @@ my $modify_behavior
     = RT->Config->Get( 'InlineEdit', $session{CurrentUser} ) ? ( $inline_edit_behavior{Links} || $inline_edit_behavior{_default} || 'link' ) : 'hide';
 my $can_modify = $AssetObj->CurrentUserHasRight('ModifyAsset');
 my $can_modify_cf = $AssetObj->CurrentUserHasRight('ModifyCustomField');
+
+# The hint points at the pencil, so show it only when the pencil is there and can add links.
+my $empty_hint = ( $can_modify && $modify_behavior =~ /^(link|click)$/ ) ? 1 : 0;
 
 my $has_links = $AssetObj->Links('Base')->Count || $AssetObj->Links('Target')->Count;
 
