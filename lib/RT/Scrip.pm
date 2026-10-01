@@ -847,7 +847,7 @@ sub ACLEquivalenceObjects {
 
     # Get rid of LookupType acl check when retrieving equivalence objects.
     my $system_object = RT::Scrip->new( RT->SystemUser );
-    $self->Load( $self->id );
+    $system_object->Load( $self->id );
     return @{ $system_object->AddedTo->ItemsArrayRef };
 }
 
