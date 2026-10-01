@@ -148,7 +148,11 @@ my @direct;
         push @ids, $id if $class && $class eq 'RT::Ticket';
     }
     if (@ids) {
-        my $tickets = $m->comp( '/Elements/ShowLinksTableOfType:Collection', Class => 'RT::Ticket', Ids => \@ids );
+        my $tickets = RT::Links->FilterLinkListing(
+            CurrentUser => $session{CurrentUser},
+            Class       => 'RT::Ticket',
+            Ids         => \@ids,
+        );
         my %readable;
         while ( my $ticket = $tickets->Next ) {
             $readable{ $ticket->id } = $ticket;

@@ -52,8 +52,18 @@ JS
     );
     pass('display search leaves the single matching dependency visible and hides the rest with d-none');
 
+    my $no_match = 'div.ticket-info-links .links-edit-target .links-no-match';
+    is( $p->{page}->locator($no_match)->isVisible, 0, '"No links match" hidden while a row matches' );
+
+    $p->{page}->fill( $search, 'nothing links to this' );
+    $p->{page}->dispatchEvent( $search, 'input' );
+    $p->wait_for_element($no_match);
+    pass('"No links match" shows when the search hides every row');
+
     $p->{page}->fill( $search, '' );
     $p->{page}->dispatchEvent( $search, 'input' );
+    $p->wait_for_element( $no_match, { state => 'hidden' } );
+    pass('"No links match" goes away once the search is cleared');
 }
 
 diag 'Filter/search state set in display mode persists into edit mode';

@@ -1621,4 +1621,37 @@ diag 'Links widget with nothing to show tells the user to click the pencil';
     $m->content_contains( $hint, 'hint shown for an asset with no links' );
 }
 
+diag 'Links widget hides search and filter with nothing to show, and says when nothing matches';
+{
+    my $no_match = 'No links match';
+    my $filter_hidden = sub {
+        my $form = $m->dom->at('form.links-filter-form');
+        return $form && $form->attr('class') =~ /\bd-none\b/ ? 1 : 0;
+    };
+    my $total = sub { $m->dom->at('.links-total')->attr('data-links-total') };
+
+    my $ticket   = RT::Test->create_ticket( Queue => 'General', Subject => 'no match reminder ticket' );
+    my $reminder = RT::Test->create_ticket( Queue => 'General', Subject => 'no match reminder', Type => 'reminder' );
+    ok( $reminder->AddLink( Type => 'RefersTo', Target => $ticket->id ), 'the reminder refers to the ticket' );
+    $m->get_ok( $baseurl . '/Ticket/Display.html?id=' . $ticket->id, 'display a ticket with only a reminder' );
+    is( $total->(), 0, 'the reminder is not in the total' );
+    ok( $filter_hidden->(), 'search and filter hidden when the only link is a reminder' );
+    $m->content_lacks( $no_match, 'no "No links match" without links' );
+
+    my $done = RT::Test->create_ticket( Queue => 'General', Subject => 'no match resolved', Status => 'resolved' );
+    ok( $ticket->AddLink( Type => 'DependsOn', Target => $done->id ), 'the ticket depends on a resolved ticket' );
+    $m->get_ok( $baseurl . '/Ticket/Display.html?id=' . $ticket->id, 'display the ticket with a link' );
+    is( $total->(), 1, 'the dependency is in the total' );
+    ok( !$filter_hidden->(), 'search and filter shown once there is a link' );
+    my $message = $m->dom->at('.links-no-match');
+    ok( $message && $message->attr('class') =~ /\bd-none\b/, '"No links match" is hidden while links show' );
+
+    # A default filter that hides every link leaves search and filter to widen it, and says so.
+    $m->get_ok( $baseurl . '/Views/Component/ShowLinks?ObjectType=RT::Ticket&ObjectId=' . $ticket->id
+            . '&HideInactive=1', 'render the listing with inactive links hidden' );
+    $message = $m->dom->at('.links-no-match');
+    ok( $message && $message->attr('class') !~ /\bd-none\b/, '"No links match" shows when the default filter hides every link' );
+    $m->content_lacks( 'Click the pencil to add links', 'no hint to add links when links exist' );
+}
+
 done_testing;
