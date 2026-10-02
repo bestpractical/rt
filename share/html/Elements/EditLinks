@@ -52,9 +52,7 @@
 
 % if ( !$Embedded ) {
 %# The Save for the add-links rows, shown even when the object has no links yet.
-  <div class="row mt-2 mb-3 links-edit-save">
-    <div class="col-12 text-end"><input type="submit" class="btn btn-primary" value="<&|/l&>Save</&>" /></div>
-  </div>
+  <div class="links-edit-save mb-3"><& /Elements/Submit, Label => loc('Save'), FullWidth => 1 &></div>
 % }
 % if ( !$Embedded && !$DualMode && $has_links ) {
 %# The DualMode widget renders the filter in its title bar; other callers keep it in the body.

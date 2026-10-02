@@ -62,6 +62,11 @@
 % if ($DualMode) {
   <div class="links-cf-display"><& /Elements/ShowCustomFields, Object => $Object, Grouping => 'Links', Table => 0 &></div>
   <div class="links-cf-edit"><& /Elements/EditCustomFields, Object => $Object, Grouping => 'Links', InTable => 0 &></div>
+%#  A second Save after the tables, so it's clear Save also commits the removals staged in them.
+%#  Rendered here rather than in EditLinks so the listing refresh keeps it in step with the links.
+%   if ( $Edit && $links_total ) {
+  <div class="links-edit-save-end"><& /Elements/Submit, Label => loc('Save'), FullWidth => 1 &></div>
+%   }
 % } elsif ($Edit) {
   <& /Elements/EditCustomFields, Object => $Object, Grouping => 'Links', InTable => 0 &>
 % } else {
