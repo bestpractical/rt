@@ -499,6 +499,34 @@ function textToHTML(value) {
 };
 
 
+// Open a TomSelect dropdown upward, or align it to the control's right edge, when it would run past
+// the viewport or page. Every TomSelect calls it on open, and autocompletes again when results
+// load, since they resize the open dropdown.
+function positionTomSelectDropdown(dropdown) {
+    // Hide the dropdown temporarily to avoid the possible flash when dropdown becomes dropup.
+    dropdown.style.visibility = 'hidden';
+    setTimeout(function() {
+        // Measure from the default position: a dropdown already flipped would measure as fitting.
+        dropdown.classList.remove('dropup', 'dropdown-end');
+        let bounding = dropdown.getBoundingClientRect();
+        // Use dropup if there's room above and dropdown extends below viewport or document bottom
+        // dropup shows above the control element (.ts-control), so we need to subtract its height
+        const top = bounding.top - dropdown.previousElementSibling.offsetHeight;
+        if ((top > bounding.height && bounding.bottom > window.innerHeight) ||
+            (top + window.scrollY > bounding.height && bounding.bottom + window.scrollY > document.documentElement.scrollHeight)) {
+            dropdown.classList.add('dropup');
+        }
+        // The dropdown grows to fit its options (see tom-select-rt.css), so in a right-hand table
+        // column or a right-aligned modal it can run past the viewport. Align it to the control's
+        // right edge instead, if that leaves it fully on screen.
+        if ( bounding.right > document.documentElement.clientWidth
+            && dropdown.parentElement.getBoundingClientRect().right - bounding.width >= 0 ) {
+            dropdown.classList.add('dropdown-end');
+        }
+        dropdown.style.visibility = 'visible';
+    }, 0);
+}
+
 // Initialize the tom-select library
 function initializeSelectElement(elt) {
     let settings = {
@@ -522,26 +550,12 @@ function initializeSelectElement(elt) {
         };
     }
 
-    settings.onDropdownOpen = function (dropdown) {
-        // Hide the dropdown temporarily to avoid the possible flash when dropdown becomes dropup.
-        dropdown.style.visibility = 'hidden';
-        setTimeout(function() {
-            let bounding = dropdown.getBoundingClientRect();
-            // Use dropup if there's room above and dropdown extends below viewport or document bottom
-            // dropup shows above the control element (.ts-control), so we need to subtract its height
-            const top = bounding.top - dropdown.previousElementSibling.offsetHeight;
-            if ((top > bounding.height && bounding.bottom > window.innerHeight) ||
-                (top + window.scrollY > bounding.height && bounding.bottom + window.scrollY > document.documentElement.scrollHeight)) {
-                dropdown.classList.add('dropup');
-            }
-            dropdown.style.visibility = 'visible';
-        }, 0);
-    };
+    settings.onDropdownOpen = positionTomSelectDropdown;
 
     settings.onDropdownClose = function (dropdown) {
         // Remove focus after a value is selected
         this.blur();
-        dropdown.classList.remove('dropup');
+        dropdown.classList.remove('dropup', 'dropdown-end');
         // If dropdown was closed by Tab, move focus to the next/previous element
         if (this._closingByTab) {
             const shiftKey = this._closingByTabShift;
@@ -1093,13 +1107,6 @@ function fixupSearchFilterModal(elt,evt) {
             left = jQuery('body').width() - modal.width() - 10;
         }
         modal.css('left', left);
-        // Mark modal as left or right based on position, so we can apply different styles on tomselect dropdowns.
-        if ( left + 0.5 * modal.width() <= 0.5 * jQuery('body').width() ) {
-            modal.addClass('modal-left').removeClass('modal-right');
-        }
-        else {
-            modal.addClass('modal-right').removeClass('modal-left');
-        }
 
         if ( modal.find('[data-autocomplete], .selectpicker').length ) {
             modal.find('.modal-dialog-scrollable').removeClass('modal-dialog-scrollable');
@@ -1354,6 +1361,10 @@ function loadOwnerDropdownDelay(owner_dropdown_delay) {
             owner_dropdown_delay.addClass('loaded');
             initializeSelectElements(owner_dropdown_delay.get(0));
             RT.Autocomplete.bind(owner_dropdown_delay);
+            const editor = owner_dropdown_delay.closest('div.editable.editing form.editor');
+            if ( editor.length ) {
+                keepInlineEditorOnScreen(editor);
+            }
         });
     }
 }
@@ -1710,6 +1721,18 @@ function inlineEditEscapeKeyHandler (e) {
     }
 };
 
+// Shift an open inline editor left if its contents, such as a TomSelect control and the check and
+// cancel icons after it, run past the viewport. Measure the shown editor rather than predict its
+// width: a delayed Owner dropdown can load after the editor opens.
+function keepInlineEditorOnScreen(editor) {
+    const right = Math.max(...[...editor.get(0).children].map(child => child.getBoundingClientRect().right));
+    // Never past the left edge, which would hide the start of the control instead.
+    const shift = Math.min(right + 10 - document.documentElement.clientWidth, editor.get(0).getBoundingClientRect().left);
+    if ( shift > 0 ) {
+        editor.css('left', parseFloat(editor.css('left')) - shift);
+    }
+}
+
 function beginInlineEdit(cell) {
     var editor = cell.find('.editor');
 
@@ -1737,19 +1760,10 @@ function beginInlineEdit(cell) {
         // Here we hardcoded min-width and remove .items-placeholder to avoid layout shift.
         editor.find('.ts-control').css('min-width', 100 );
         editor.find('.ts-control .items-placeholder').remove();
-
-        // tomselected inputs need more space, 40 is to make sure close/check images are visible
-        if ( left + editor.width() + 40 > jQuery('body').width() ) {
-            left = jQuery('body').width() - editor.width() - 40;
-        }
     }
 
     editor.css('top', top);
     editor.css('left', left);
-
-    if ( left > 0.5 * jQuery('body').width() ) {
-        editor.addClass('inline-edit-right');
-    }
 
     if ( !editor.find('.tomselected').length ) {
         editor.css('width', cell.width() > 100 ? cell.width() : 100 );
@@ -1758,6 +1772,7 @@ function beginInlineEdit(cell) {
 
     // Editor's height is bigger than viewer. Here we lift it up so editor can better take the viewer's position
     editor.css('margin-top', (cell.height() - editor.height())/2);
+    keepInlineEditorOnScreen(editor);
 
     editor.find(':input:visible:enabled:first').focus();
     editor.find('select.selectpicker')[0]?.tomselect.open();

@@ -114,6 +114,10 @@ window.RT.Autocomplete.bind = function(from) {
                     selectOnTab: true,
                     createOnBlur: true,
                     placeholder: input.attr('placeholder'),
+                    onDropdownOpen: positionTomSelectDropdown,
+                    onLoad: function() {
+                        if ( this.isOpen ) positionTomSelectDropdown(this.dropdown);
+                    },
                     render: {
                         option_create: function(data, escape) {
                             return '<div class="create"><strong>' + escape(data.input) + '</strong></div>';
@@ -250,6 +254,10 @@ window.RT.Autocomplete.bind = function(from) {
                 selectOnTab: true,
                 createOnBlur: true,
                 placeholder: input.attr('placeholder'),
+                onDropdownOpen: positionTomSelectDropdown,
+                onLoad: function() {
+                    if ( this.isOpen ) positionTomSelectDropdown(this.dropdown);
+                },
                 render: {
                     loading: function(data,escape) {
                         return '<div class="spinner-border spinner-border-sm ms-3"></div>';
