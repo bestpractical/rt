@@ -826,8 +826,11 @@ diag "merged from ticket_links_click_edit.t";
     # Reload to reset, then verify clicking a non-editable area still enters links-edit mode.
     $p->goto_ticket( $ticket->id );
 
-    # Click a non-link, non-editable area of the portlet body (the relationship section label).
-    $p->{page}->click('div.ticket-info-links .links-edit-target .links-section-heading');
+    # Click a non-link, non-editable area of the portlet body: the right end of a section heading,
+    # past its label, which links to a search.
+    my $heading = $p->{page}->locator('div.ticket-info-links .links-edit-target .links-section-heading')->first;
+    my $box     = $heading->boundingBox;
+    $heading->click( { position => { x => $box->{width} - 5, y => $box->{height} / 2 } } );
 
     # Clicking the body enters edit mode (the portlet is in 'click' behavior) via a pure .editing
     # CSS flip; the add-link form is already in the DOM (no fetch) and becomes visible.

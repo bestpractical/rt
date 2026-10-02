@@ -1680,4 +1680,32 @@ diag 'Links filter marks a default filter that hides something with a filled fun
     is( $active->(), 0, 'listing every object type hides nothing' );
 }
 
+diag 'Ticket link type headings link to a search for those links';
+{
+    my $ticket = RT::Test->create_ticket( Queue => 'General', Subject => 'heading search ticket' );
+    my $dep    = RT::Test->create_ticket( Queue => 'General', Subject => 'heading search dependency' );
+    ok( $ticket->AddLink( Type => 'DependsOn', Target => $dep->id ), 'the ticket depends on another' );
+
+    $m->get_ok( $baseurl . '/Views/Component/ShowLinks?ObjectType=RT::Ticket&ObjectId=' . $ticket->id,
+        'render the ticket listing' );
+    my $link = $m->dom->at('#links-section-DependsOn .links-section-heading a');
+    ok( $link, 'the Depends on heading is a link' );
+    is( $link && $link->text, 'Depends on', 'the link shows the label' );
+    my $uri = URI->new( $link ? $link->attr('href') : '' );
+    like( $uri->path, qr{/Search/Results\.html\z}, 'the heading links to search results' );
+    my %query = $uri->query_form;
+    is( $query{Query}, 'DependedOnBy = ' . $ticket->id, 'the search finds what the ticket depends on' );
+
+    $m->follow_link_ok( { url => $link->attr('href') }, 'follow the heading link' );
+    $m->content_contains( 'heading search dependency', 'the search lists the dependency' );
+
+    my $catalog = create_catalog( Name => 'Heading Kit' );
+    my $asset   = create_asset( Name => 'heading asset', Catalog => $catalog->id );
+    ok( $asset->AddLink( Type => 'RefersTo', Target => 't:' . $ticket->id ), 'the asset refers to the ticket' );
+    $m->get_ok( $baseurl . '/Views/Component/ShowLinks?ObjectType=RT::Asset&ObjectId=' . $asset->id,
+        'render the asset listing' );
+    ok( $m->dom->at('#links-section-RefersTo .links-section-heading'), 'the asset has a Refers to heading' );
+    ok( !$m->dom->at('#links-section-RefersTo .links-section-heading a'), 'asset headings are plain text, since the search is for tickets' );
+}
+
 done_testing;

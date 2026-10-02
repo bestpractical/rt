@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 % if ( $total && ( length $content || @show_urls || $hidden ) ) {
 <div class="links-section" id="links-section-<% $Type %>">
-  <h3 class="links-section-heading h6 fw-semibold"><% $Label %></h3>
+  <h3 class="links-section-heading h6 fw-semibold"><& /Elements/ShowRelationLabel, Object => $Object, Label => $Label, Relation => $Type &></h3>
 <% $content |n %>
 %   if (@show_urls) {
 %# URLs are external, not RT records, so they can't go through CollectionList; render a matching

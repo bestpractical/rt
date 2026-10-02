@@ -315,6 +315,12 @@ div.results .titlebox .titlebox-content {
     margin-bottom: 0.25rem;
 }
 
+/* The label links to a search (Elements/ShowRelationLabel); keep the heading color rather than
+   RT's black link color. */
+.links-section-heading a {
+    color: inherit;
+}
+
 /* Tuck Show all up under the list it extends: take back most of the table's 1rem bottom
    margin and restore the gap below, before the next section. */
 .links-show-more {
