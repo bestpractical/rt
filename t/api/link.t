@@ -356,6 +356,56 @@ diag 'Test methods that return all links recursively';
 }
 
 {
+    diag "Link listing formats come from the ticket's queue, then Default";
+
+    my %orig     = %{ RT->Config->Get('LinksFormat') };
+    my $defaults = $orig{Default};
+    RT->Config->Set(
+        LinksFormat => %orig,
+        General     => { 'RT::Ticket' => "'__id__', '__QueueName__'" },
+        'Listing hidden' => "'__id__'",    # not a hash, so ignored
+    );
+
+    my $format = sub { scalar RT::Links->LinkListingFormat(@_) };
+    my $general = RT::Test->create_ticket( Queue => 'General', Subject => 'format general' );
+    my $other   = RT::Test->create_ticket( Queue => 'Listing hidden', Subject => 'format other' );
+
+    is( $format->( Object => $general, Class => 'RT::Ticket' ), "'__id__', '__QueueName__'", 'a queue entry sets its format' );
+    is( $format->( Object => $general, Class => 'RT::Asset' ), $defaults->{'RT::Asset'},
+        'a class the queue entry leaves out falls back to Default' );
+    is( $format->( Object => $other, Class => 'RT::Ticket' ), $defaults->{'RT::Ticket'}, 'an entry that is not a hash is skipped' );
+    is( $format->( Class => 'RT::Ticket' ), $defaults->{'RT::Ticket'}, 'no object uses Default' );
+
+    my $catalog = RT::Catalog->new( RT->SystemUser );
+    my ( $ok, $msg ) = $catalog->Create( Name => 'Listing formats' );
+    ok( $ok, "created a catalog: $msg" );
+    my $asset = RT::Asset->new( RT->SystemUser );
+    ( $ok, $msg ) = $asset->Create( Name => 'format asset', Catalog => $catalog->id );
+    ok( $ok, "created an asset: $msg" );
+    is( $format->( Object => $asset, Class => 'RT::Ticket' ), $defaults->{'RT::Ticket'}, 'an asset uses Default' );
+
+    is( $format->( Object => $general, Class => 'RT::Nothing' ), undef, 'a class with no format returns undef' );
+
+    is_deeply( [ RT::Links->LinkListingFormat( Object => $general, Class => 'RT::Ticket' ) ],
+        [ "'__id__', '__QueueName__'", $queue->id ], 'list context also names the queue entry by id' );
+    is( ( RT::Links->LinkListingFormat( Object => $general, Class => 'RT::Asset' ) )[1], 'Default',
+        'a fallback names Default' );
+    is_deeply( [ RT::Links->LinkListingFormat( Object => $general, Class => 'RT::Nothing' ) ], [],
+        'list context returns nothing for a class with no format' );
+
+    my $no_see_queue = RT::Test->load_or_create_user( Name => 'format-viewer' );
+    ok( RT::Test->add_rights( { Principal => $no_see_queue, Right => ['ShowTicket'], Object => $queue } ),
+        'viewer can see General tickets but not the queue' );
+    my $as_viewer = RT::Ticket->new( RT::CurrentUser->new($no_see_queue) );
+    $as_viewer->Load( $general->id );
+    ok( $as_viewer->id, 'the viewer loads the ticket' );
+    is_deeply( [ RT::Links->LinkListingFormat( Object => $as_viewer, Class => 'RT::Ticket' ) ],
+        [ "'__id__', '__QueueName__'", $queue->id ], 'without SeeQueue the queue entry is still named by id' );
+
+    RT->Config->Set( LinksFormat => %orig );
+}
+
+{
     diag "Link messages name local non-ticket objects by type and id";
     clean_links();
 

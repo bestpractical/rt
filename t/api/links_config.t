@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use RT::Test nodb => 1, tests => undef;
 
-my %format = %{ RT->Config->Get('LinksFormat') || {} };
+my %format = %{ ( RT->Config->Get('LinksFormat') || {} )->{Default} || {} };
 ok( $format{'RT::Ticket'},  'LinksFormat has an RT::Ticket entry' );
 ok( $format{'RT::Asset'},   'LinksFormat has an RT::Asset entry' );
 ok( $format{'RT::Article'}, 'LinksFormat has an RT::Article entry' );

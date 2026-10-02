@@ -3384,19 +3384,47 @@ Set($MoreAboutRequestorTicketListFormat, q{
 
 =item C<%LinksFormat>
 
-Columns shown for each linked object type in the ticket Links portlet, keyed by
-class name. Each value is a standard RT Format string resolved through that
-class's ColumnMap.
+Columns shown for each linked object type in the ticket and asset Links widgets.
+The keys are queue names or C<Default>, and each value is a hash keyed by the
+class of the linked objects. Each format is a standard RT Format string resolved
+through that class's ColumnMap.
+
+A ticket's Links widget uses the entry for the ticket's own queue, falling back
+to C<Default> for any class that entry leaves out, so a queue lists only the
+formats it changes. Assets, and tickets in queues with no entry, use
+C<Default>. For example, to add the Queue column to linked tickets on tickets
+in the General queue:
+
+    Set(%LinksFormat,
+        General => {
+            'RT::Ticket' => q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>', '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>', '__QueueName__', '__Status__', '__OwnerNameEdit__'},
+        },
+    );
+
+Your settings are merged with the defaults below, so you only need to list
+the formats you change, including any under C<Default>.
+
+To adjust a format's columns with CSS, each Links table names the entry it
+uses in a C<data-links-format> attribute: C<Default>, or the queue's id for a
+queue's entry. Each column's header is marked with a class named after its
+field, such as C<rt-collection-column-subject>. For example, in a stylesheet
+added with C<@CSSFiles>, to widen Subject in the format of the queue with id 1:
+
+    .links-type-table[data-links-format="1"] th.rt-collection-column-subject {
+        width: 40%;
+    }
 
 =cut
 
 Set(%LinksFormat,
-    'RT::Ticket'      => q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>', '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>', '__Status__', '__OwnerNameEdit__'},
-    'RT::Transaction' => "'__LinkedId__', '__ObjectLink__', '__Description__', '__Created__'",
-    'RT::Asset'       => q{'<a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a>', '<a href="__WebPath__/Asset/Display.html?id=__id__">__Name__</a>', '__Status__', '__HeldBy.Name__/TITLE:Held By'},
-    'RT::Article'     => q{'<a href="__WebPath__/Articles/Article/Display.html?id=__id__">__id__</a>', '<a href="__WebPath__/Articles/Article/Display.html?id=__id__">__Name__</a>'},
-    'RT::User'        => q{'<a href="__WebPath__/User/Summary.html?id=__id__">__Name__</a>', '__RealName__', '__EmailAddress__'},
-    'RT::Group'       => q{'<a href="__WebPath__/Group/Summary.html?id=__id__">__Name__</a>', '__Description__'},
+    Default => {
+        'RT::Ticket'      => q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>', '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>', '__Status__', '__OwnerNameEdit__'},
+        'RT::Transaction' => "'__LinkedId__', '__ObjectLink__', '__Description__', '__Created__'",
+        'RT::Asset'       => q{'<a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a>', '<a href="__WebPath__/Asset/Display.html?id=__id__">__Name__</a>', '__Status__', '__HeldBy.Name__/TITLE:Held By'},
+        'RT::Article'     => q{'<a href="__WebPath__/Articles/Article/Display.html?id=__id__">__id__</a>', '<a href="__WebPath__/Articles/Article/Display.html?id=__id__">__Name__</a>'},
+        'RT::User'        => q{'<a href="__WebPath__/User/Summary.html?id=__id__">__Name__</a>', '__RealName__', '__EmailAddress__'},
+        'RT::Group'       => q{'<a href="__WebPath__/Group/Summary.html?id=__id__">__Name__</a>', '__Description__'},
+    },
 );
 
 =item C<$LinksListCount>

@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( $collection && $collection->Count ) {
-<div class="links-type-table<% $default_format ? ' links-default-format' : '' %>" data-links-object-type="<% $object_type %>"<% $Edit ? qq{ data-link-delete-type="$link_delete_type" data-link-delete-mode="$link_delete_mode"} : '' |n %>>
+<div class="links-type-table<% $default_format ? ' links-default-format' : '' %>" data-links-object-type="<% $object_type %>"<% defined $FormatName ? ' data-links-format="' . $m->interp->apply_escapes( $FormatName, 'h' ) . '"' : '' |n %><% $Edit ? qq{ data-link-delete-type="$link_delete_type" data-link-delete-mode="$link_delete_mode"} : '' |n %>>
 <& /Elements/CollectionList,
     Collection     => $collection,
     Format         => $format,
@@ -60,13 +60,14 @@
 </div>
 % }
 <%init>
-my $format = $Format || ( RT->Config->Get('LinksFormat') || {} )->{$Class} || "'__id__'";
+( $Format, $FormatName ) = RT::Links->LinkListingFormat( Class => $Class ) unless $Format;
+my $format = $Format || "'__id__'";
 
 ( my $object_type = $Class ) =~ s/^RT:://;
 
 my $meta    = RT->Config->Meta('LinksFormat') || {};
 my ($core)  = grep { !$_->{SiteConfig} && !$_->{Database} } @{ $meta->{Sources} || [] };
-my $shipped = $core ? $core->{Value} : {};
+my $shipped = ( $core ? $core->{Value}{Default} : undef ) || {};
 my $norm    = sub { ( my $s = shift // '' ) =~ s/\s+//g; $s };
 my $default_format
     = length $norm->( $shipped->{$Class} ) && $norm->($Format) eq $norm->( $shipped->{$Class} ) ? 1 : 0;
@@ -108,6 +109,7 @@ $Class
 $Ids              => []
 $RelationshipType => ''
 $Format           => undef
+$FormatName       => undef
 $Edit             => 0
 $Embedded         => 0
 </%args>

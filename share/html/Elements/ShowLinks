@@ -90,8 +90,6 @@ my %labels  = (
     ReferredToBy    => loc('Referred to by'),
 );
 
-my %formats = %{ RT->Config->Get('LinksFormat') || {} };
-
 my @render = @display;
 
 my $links_total = RT::Links->LinkListingCount(
@@ -112,7 +110,6 @@ my @sections = grep { defined && /\S/ } map {
         Object           => $Object,
         Type             => $_,
         Label            => $labels{$_},
-        Formats          => \%formats,
         Edit             => $Edit,
         DualMode         => $DualMode,
         Embedded         => $Embedded,

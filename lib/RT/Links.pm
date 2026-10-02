@@ -406,6 +406,58 @@ sub LinkListingCount {
     return $total;
 }
 
+=head2 LinkListingFormat PARAMHASH
+
+Returns the C<%LinksFormat> format for linked records of one class, as an
+object's links listing shows them, or undef if none is configured. In list
+context, also returns which C<%LinksFormat> entry the format came from: the
+queue's id for a queue entry, or C<Default>.
+
+    my ( $format, $entry ) = RT::Links->LinkListingFormat(
+        Object => $ticket,
+        Class  => 'RT::Asset',
+    );
+
+C<Object> is the object whose links are listed. For a ticket, the entry for
+its queue applies, falling back to C<Default> for a class that entry leaves
+out. Any other object, or none, uses C<Default>. C<Class> is the class of the
+linked records, such as RT::Ticket or RT::Asset.
+
+The entry goes in the page, as a C<data-links-format> attribute that site CSS
+can target. It names a queue by id, which every user can be shown, so the
+attribute and the layout it selects are the same for everyone, including
+users who can't see the queue's name.
+
+=cut
+
+sub LinkListingFormat {
+    my $self = shift;
+    my %args = (
+        Object => undef,
+        Class  => '',
+        @_,
+    );
+
+    my $config = RT->Config->Get('LinksFormat') || {};
+    # Pairs of %LinksFormat key and the entry to report for it
+    my @entries = ( [ 'Default', 'Default' ] );
+    if ( $args{Object} && $args{Object}->isa('RT::Ticket') ) {
+        # Skip ACL check: the config is keyed by name, but only the queue's id reaches the page.
+        my $queue = $args{Object}->QueueObj;
+        my $name  = $queue->__Value('Name');
+        unshift @entries, [ $name, $queue->id ] if defined $name && length $name;
+    }
+
+    for my $entry (@entries) {
+        my ( $key, $reported ) = @$entry;
+        next unless ref $config->{$key} eq 'HASH';
+        my $format = $config->{$key}{ $args{Class} };
+        next unless defined $format && length $format;
+        return wantarray ? ( $format, $reported ) : $format;
+    }
+    return wantarray ? () : undef;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
