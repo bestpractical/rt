@@ -393,6 +393,14 @@ div.results .titlebox .titlebox-content {
 .titlebox.links-widget .links-type-table div.editable:hover > .value .edit-icon {
     display: inline;
 }
+.titlebox.links-widget .links-type-table div.editable .editor .ts-wrapper.single {
+    width: 12rem;
+}
+.titlebox.links-widget .links-type-table div.editable .editor .ts-wrapper.single .ts-control > .item {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 /* Fixed layout + explicit Subject/Status/Owner widths so the Ticket table and the Children tree
    line up column for column, and a long value can't widen its column. */
