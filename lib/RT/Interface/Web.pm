@@ -4913,6 +4913,24 @@ sub ProcessColumnMapValue {
     }
 }
 
+=head2 CollectionColumnClass ATTRIBUTE
+
+Returns the CSS class that marks a collection table column showing
+ATTRIBUTE, a column's field such as C<Subject> or
+C<CustomField.{Serial Number}>, or an empty string for a column with
+no field. The class is ATTRIBUTE lowercased with anything other than
+letters and digits turned into dashes, after C<rt-collection-column->:
+C<rt-collection-column-subject>, C<rt-collection-column-customfield-serial-number>.
+
+=cut
+
+sub CollectionColumnClass {
+    my $attribute = shift // '';
+    ( my $name = lc $attribute ) =~ s/[^a-z0-9]+/-/g;
+    $name =~ s/^-+|-+$//g;
+    return length $name ? "rt-collection-column-$name" : '';
+}
+
 sub ProcessQuickCreate {
     my %params = @_;
     my %ARGS = %{ $params{ARGSRef} };

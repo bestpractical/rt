@@ -277,9 +277,11 @@ Sets the column header text.
 
 #### /CLASS:CssClass
 
-Adds CSS class(es) to the table cell's inner `<div>` element.
+Adds CSS class(es) to the table cell's inner `<div>` element, after its default `collection-as-table` class. Headers don't get them.
 
 **Syntax**: `/CLASS:class-name` or `/CLASS:class1 class2`
+
+Every column's header `<th>` and cell `<div>` are also marked with a class named after the column's field, with or without `/CLASS:`. The class is `rt-collection-column-` followed by the field lowercased, with other characters turned into dashes: `rt-collection-column-subject`, `rt-collection-column-queuename`, `rt-collection-column-customfield-serial-number`. Site CSS can use it to style or size one column, for example `th.rt-collection-column-subject { width: 40%; }`.
 
 **RT 6 uses Bootstrap 5**, which provides extensive utility classes for styling without custom CSS.
 

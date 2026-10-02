@@ -150,7 +150,7 @@ foreach my $col ( @Format ) {
     my $span = $col->{'span'};
     $item += ($span || 1);
 
-    my $class = 'collection-as-table';
+    my $class = join ' ', grep { length } 'collection-as-table', CollectionColumnClass($attr);
     $class .= ' allow-sorting' if $AllowSorting;
     $class .= ' allow-filtering' if $AllowFiltering;
 
