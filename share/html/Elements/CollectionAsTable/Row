@@ -91,7 +91,9 @@ foreach my $column (@Format) {
         next;
     }
 
-    my $class = $column->{class} ? $m->interp->apply_escapes($column->{class}, 'h') : 'collection-as-table';
+    my $class = join ' ', grep { length } 'collection-as-table',
+        CollectionColumnClass( $column->{attribute} || $column->{last_attribute} ),
+        $column->{class} ? $m->interp->apply_escapes( $column->{class}, 'h' ) : ();
 
     my %attrs;
     my @possible_attrs = qw(style align);
