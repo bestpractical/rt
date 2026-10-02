@@ -813,7 +813,7 @@ diag "merged from links_children_tree.t";
     # Given a node's tree decoration, the row-refresh helper returns a row that keeps its guide and
     # depth, so an inline-edited tree row slots back in place.
     my $row_url = $baseurl . '/Helpers/CollectionListRow';
-    my $fmt     = RT->Config->Get('LinksFormat')->{'RT::Ticket'};
+    my $fmt     = RT->Config->Get('LinksFormat')->{Default}{'RT::Ticket'};
     $m->post(
         $row_url,
         {   DisplayFormat => $fmt,
@@ -1706,6 +1706,53 @@ diag 'Ticket link type headings link to a search for those links';
         'render the asset listing' );
     ok( $m->dom->at('#links-section-RefersTo .links-section-heading'), 'the asset has a Refers to heading' );
     ok( !$m->dom->at('#links-section-RefersTo .links-section-heading a'), 'asset headings are plain text, since the search is for tickets' );
+}
+
+diag "A queue's LinksFormat entry sets the columns on its tickets' Links";
+{
+    my $other_queue = RT::Test->load_or_create_queue( Name => 'Links format other' );
+    my $general = RT::Test->create_ticket( Queue => 'General', Subject => 'queue format general' );
+    my $other   = RT::Test->create_ticket( Queue => $other_queue->id, Subject => 'queue format other' );
+    for my $ticket ( $general, $other ) {
+        my $dep = RT::Test->create_ticket( Queue => $other_queue->id, Subject => 'queue format dependency' );
+        ok( $ticket->AddLink( Type => 'DependsOn', Target => $dep->id ), 'the ticket depends on another' );
+        my $child = RT::Test->create_ticket( Queue => $other_queue->id, Subject => 'queue format child' );
+        ok( $child->AddLink( Type => 'MemberOf', Target => $ticket->id ), 'the ticket has a child' );
+    }
+
+    my %orig = %{ RT->Config->Get('LinksFormat') };
+    RT::Test->stop_server;
+    RT->Config->Set(
+        LinksFormat => %orig,
+        General     => { 'RT::Ticket' => "'__id__', '__Subject__', '__QueueName__'" },
+    );
+    ( $baseurl, $m ) = RT::Test->started_ok;
+    ok( $m->login, 'logged in' );
+
+    my $queue_cells = sub {
+        my $section = shift;
+        return [ map { $_->all_text } $m->dom->find("#links-section-$section td")->each ];
+    };
+
+    $m->get_ok( $baseurl . '/Views/Component/ShowLinks?ObjectType=RT::Ticket&ObjectId=' . $general->id,
+        'render the General ticket listing' );
+    ok( ( grep { /Links format other/ } @{ $queue_cells->('DependsOn') } ), 'the General ticket lists the dependency\'s queue' );
+    ok( ( grep { /Links format other/ } @{ $queue_cells->('Members') } ), 'the General ticket\'s children tree lists the queue' );
+    ok( !$m->dom->at('#links-section-DependsOn .links-default-format'), 'a queue format is not the shipped default' );
+    ok( $m->dom->at('#links-section-DependsOn .links-type-table[data-links-format="' . $general->Queue . '"]'), 'the table names the General format by queue id' );
+    ok( $m->dom->at('#links-section-Members table.links-tree[data-links-format="' . $general->Queue . '"]'), 'the children tree names the General format by queue id' );
+    ok( $m->dom->at('#links-section-DependsOn th.rt-collection-column-queuename'), 'the Queue column is marked for CSS' );
+
+    $m->get_ok( $baseurl . '/Views/Component/ShowLinks?ObjectType=RT::Ticket&ObjectId=' . $other->id,
+        'render the other ticket listing' );
+    ok( !( grep { /Links format other/ } @{ $queue_cells->('DependsOn') } ), 'a ticket in another queue uses Default, without the queue' );
+    ok( $m->dom->at('#links-section-DependsOn .links-default-format'), 'Default keeps the shipped default format' );
+    ok( $m->dom->at('#links-section-DependsOn .links-type-table[data-links-format="Default"]'), 'the table names the Default format' );
+
+    RT::Test->stop_server;
+    RT->Config->Set( LinksFormat => %orig );
+    ( $baseurl, $m ) = RT::Test->started_ok;
+    ok( $m->login, 'logged in' );
 }
 
 done_testing;

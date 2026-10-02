@@ -711,7 +711,8 @@ our %META;
         },
     },
     LinksFormat => {
-        Type => 'HASH',
+        Type      => 'HASH',
+        MergeMode => 'recursive',
     },
     # User overridable locale options
     DateTimeFormat => {

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table class="table <% RT->Config->Get('TableAccent') %> ticket-list links-type-table links-tree<% $default_format ? ' links-default-format' : '' %><% $deep ? ' links-tree-deep' : '' %> collection-as-table<% $inline_edit ? ' inline-edit' : '' %>" data-class="RT::Ticket" data-max-items="<% $maxitems %>" data-mark-inactive="1" data-display-format="<% $format |h %>"<% $Edit ? ' data-link-delete-type="MemberOf" data-link-delete-mode="Base"' : '' |n %> role="treegrid">
+<table class="table <% RT->Config->Get('TableAccent') %> ticket-list links-type-table links-tree<% $default_format ? ' links-default-format' : '' %><% $deep ? ' links-tree-deep' : '' %> collection-as-table<% $inline_edit ? ' inline-edit' : '' %>" data-class="RT::Ticket"<% defined $format_name ? ' data-links-format="' . $m->interp->apply_escapes( $format_name, 'h' ) . '"' : '' |n %> data-max-items="<% $maxitems %>" data-mark-inactive="1" data-display-format="<% $format |h %>"<% $Edit ? ' data-link-delete-type="MemberOf" data-link-delete-mode="Base"' : '' |n %> role="treegrid">
   <& /Elements/CollectionAsTable/Header, Class => 'RT::Tickets', Format => \@parsed_format, maxitems => $maxitems, AllowSorting => 0 &>
   <tbody>
 % for my $node (@nodes) {
@@ -78,13 +78,14 @@
   </tbody>
 </table>
 <%init>
-my $format = ( RT->Config->Get('LinksFormat') || {} )->{'RT::Ticket'} || "'__id__'";
+my ( $format, $format_name ) = RT::Links->LinkListingFormat( Object => $Object, Class => 'RT::Ticket' );
+$format ||= "'__id__'";
 
 # Detect the shipped default format (as ShowLinksTableOfType does) so the tree shares the flat
 # Ticket tables' fixed column widths in edit mode, and drops them for a customized %LinksFormat.
 my $meta    = RT->Config->Meta('LinksFormat') || {};
 my ($core)  = grep { !$_->{SiteConfig} && !$_->{Database} } @{ $meta->{Sources} || [] };
-my $shipped = $core ? $core->{Value} : {};
+my $shipped = ( $core ? $core->{Value}{Default} : undef ) || {};
 my $norm    = sub { ( my $s = shift // '' ) =~ s/\s+//g; $s };
 my $default_format
     = length $norm->( $shipped->{'RT::Ticket'} ) && $norm->($format) eq $norm->( $shipped->{'RT::Ticket'} ) ? 1 : 0;
@@ -96,7 +97,7 @@ $type_label =~ s{['"/\\]}{}g;
 # Tag the id column so CSS can left-align it. A custom format may quote the first column
 # with either ' or " (both valid, see CollectionAsTable/ParseFormat); matching only '
 # would skip a double-quoted format.
-$format =~ s{(['"])(.*?)\1}{$1 . $2 . "/TITLE:$type_label/CLASS:collection-as-table links-tree-id" . $1}e;
+$format =~ s{(['"])(.*?)\1}{$1 . $2 . "/TITLE:$type_label/CLASS:links-tree-id" . $1}e;
 
 # The DeleteLinkCheckBox column reads these notes to name its field DeleteLink-<baseURI>-MemberOf-
 # (a child is the Base of a MemberOf link). Keep it first: boxes.css finds columns by position.

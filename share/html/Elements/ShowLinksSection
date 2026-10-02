@@ -102,7 +102,6 @@ my %labels = (
     ReferredToBy => loc('Referred to by'),
 );
 $Label   //= $labels{$Type} // $Type;
-$Formats //= RT->Config->Get('LinksFormat') || {};
 
 my $links = $Object->$Type;
 my $total = $links->Count;
@@ -212,12 +211,14 @@ else {
         }
         $show_ids{$class} = \@show;
         next unless @show;
+        my ( $format, $format_name ) = RT::Links->LinkListingFormat( Object => $Object, Class => $class );
         $content .= $m->scomp(
             '/Elements/ShowLinksTableOfType',
             Class            => $class,
             Ids              => $show_ids{$class},
             RelationshipType => $Type,
-            Format           => $Formats->{$class},
+            Format           => $format,
+            FormatName       => $format_name,
             Edit             => $emit_delete,
             Embedded         => $Embedded,
         ) // '';
@@ -251,7 +252,6 @@ $show_all_url = RT->Config->Get('WebPath') . '/Views/Component/ShowLinksSection?
 $Object
 $Type
 $Label            => undef
-$Formats          => undef
 $Edit             => 0
 $DualMode         => 0
 $Embedded         => 0
