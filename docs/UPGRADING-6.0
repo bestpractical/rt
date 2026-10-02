@@ -475,4 +475,34 @@ after upgrading.
 
 =back
 
+=head1 UPGRADING FROM 6.0.3
+
+=over
+
+=item Significant upgrade to Links widgets
+
+The Links widget for tickets and assets is significantly upgraded. Linked
+items are now displayed as a listing with full inline edit support. The
+interface for adding new links and deleting links is also updated. Many new
+features are also available including search and filtering.
+
+The values shown in the listing can be configured in the new C<%LinksFormat>
+option, where you set the format using the standard Format syntax from the
+query builder. The behavior of the Links widget can also be managed in
+Page Layouts, so you can configure the Links widget to show different things
+by default in different queues.
+
+Queue name is removed from the default listing to create a more compact
+display. It can be added back or switched with existing columns using the
+C<%LinksFormat> option noted above.
+
+Messages for links to RT objects other than tickets now name the object
+instead of showing its URI. REST 2 returns these messages, so automation
+that checks these response messages may need updates. For example:
+
+      Old: URI asset:1 refers to Ticket 5.
+      New: Asset 1 refers to Ticket 5.
+
+=back
+
 =cut
