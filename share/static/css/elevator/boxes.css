@@ -771,7 +771,8 @@ div.results .titlebox .titlebox-content {
 .titlebox.links-widget:not(.editing) .links-type-table[data-link-delete-type] tr:not(.links-tree-repeat) td:first-child,
 .titlebox.links-widget:not(.editing) .add-links-section,
 .titlebox.links-widget:not(.editing) .links-cf-edit,
-.titlebox.links-widget:not(.editing) .links-edit-save {
+.titlebox.links-widget:not(.editing) .links-edit-save,
+.titlebox.links-widget:not(.editing) .links-edit-save-end {
     display: none;
 }
 

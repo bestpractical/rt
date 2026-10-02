@@ -1637,6 +1637,7 @@ diag 'Links widget hides search and filter with nothing to show, and says when n
     is( $total->(), 0, 'the reminder is not in the total' );
     ok( $filter_hidden->(), 'search and filter hidden when the only link is a reminder' );
     $m->content_lacks( $no_match, 'no "No links match" without links' );
+    ok( !$m->dom->at('.links-edit-save-end'), 'no Save after the tables without links' );
 
     my $done = RT::Test->create_ticket( Queue => 'General', Subject => 'no match resolved', Status => 'resolved' );
     ok( $ticket->AddLink( Type => 'DependsOn', Target => $done->id ), 'the ticket depends on a resolved ticket' );
@@ -1645,6 +1646,7 @@ diag 'Links widget hides search and filter with nothing to show, and says when n
     ok( !$filter_hidden->(), 'search and filter shown once there is a link' );
     my $message = $m->dom->at('.links-no-match');
     ok( $message && $message->attr('class') =~ /\bd-none\b/, '"No links match" is hidden while links show' );
+    ok( $m->dom->at('.links-edit-save-end input[type=submit]'), 'a second Save follows the tables once there is a link' );
 
     # A default filter that hides every link leaves search and filter to widen it, and says so.
     $m->get_ok( $baseurl . '/Views/Component/ShowLinks?ObjectType=RT::Ticket&ObjectId=' . $ticket->id
