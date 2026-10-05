@@ -2224,6 +2224,11 @@ show EmailAddress, and the first of RealName or Name which is defined.
 The default, 'role', uses 'verbose' for unprivileged users, and the Name
 followed by the RealName for privileged users.
 
+Users are shown with an avatar (their initials or uploaded image) by
+default. Append '-noavatar' to any format, e.g. 'concise-noavatar', to
+hide avatars, or '-privilegedavatar', e.g. 'role-privilegedavatar', to
+show avatars only for privileged users.
+
 =cut
 
 Set($UsernameFormat, "role");

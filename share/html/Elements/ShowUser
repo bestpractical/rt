@@ -48,12 +48,17 @@
 <%INIT>
 my $class;
 
+# Without an explicit ShowUserAvatar, the avatar mode in the current
+# user's UsernameFormat decides
+my ( undef, $avatar_mode ) = RT::User->ParseUsernameFormat(
+    RT->Config->Get( 'UsernameFormat', $session{CurrentUser} )
+);
+$avatar_mode = 'all' if defined $ShowUserAvatar;
+$ShowUserAvatar //= $avatar_mode ne 'none';
+
 if ( $m->notes('render-text-only') || $m->notes('render-dashboard-email') ) {
     $ShowUserAvatar = 0;
 }
-
-# Can show only the avatar if we're not showing the avatar
-$ShowOnlyUserAvatar = 0 if !$ShowUserAvatar;
 
 # $User is an RT::User object
 # $Address is Email::Address object
@@ -73,12 +78,17 @@ if ($Address and not $User) {
     undef $User unless $User->id;
 }
 
-$ShowUserAvatar = 0 unless $User;
-
 my %system_user = (
     RT->Nobody->id      => 1,
     RT->SystemUser->id  => 1,
 );
+
+$ShowUserAvatar = 0 unless $User;
+$ShowUserAvatar = 0
+    if $ShowUserAvatar && $avatar_mode eq 'privileged' && !$User->Privileged && !$system_user{ $User->id };
+
+# Without an avatar, show the name instead of an empty "avatar only" display
+$ShowOnlyUserAvatar = 0 if !$ShowUserAvatar;
 
 my $avatar_template = 'ShowUserAvatar';
 $avatar_template = 'ShowUserImage'
@@ -101,7 +111,7 @@ $Address => undef
 $style => undef
 $Link => 1
 $LinkTarget => ''
-$ShowUserAvatar => 1
+$ShowUserAvatar => undef
 $ShowOnlyUserAvatar => 0
 $ShowPopover => 1
 $ShowDisabledLabel => 0

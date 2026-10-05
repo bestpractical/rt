@@ -1987,6 +1987,7 @@ sub Format {
     }
 
     $args{Format} ||= RT->Config->Get("UsernameFormat", $args{CurrentUser});
+    ( $args{Format} ) = $self->ParseUsernameFormat( $args{Format} );
     $args{Format} =~ s/[^A-Za-z0-9_]+//g;
 
     my $method    = "_FormatUser" . ucfirst lc $args{Format};
@@ -2000,6 +2001,27 @@ sub Format {
         $formatter = $self->can("_FormatUserRole");
     }
     return $formatter->( $self, map { $_ => $args{$_} } qw(User Address) );
+}
+
+=head2 ParseUsernameFormat FORMAT
+
+Splits a L<RT_Config/$UsernameFormat> value into its base format and avatar
+mode. Returns a list of the base format (e.g. C<concise>) and one of C<all>,
+C<none> or C<privileged>, depending on whether FORMAT ends in no suffix,
+C<-noavatar> or C<-privilegedavatar>.
+
+=cut
+
+sub ParseUsernameFormat {
+    my $self   = shift;
+    my $format = shift // '';
+
+    my %avatar_mode = (
+        noavatar         => 'none',
+        privilegedavatar => 'privileged',
+    );
+    return ( $1, $avatar_mode{$2} ) if $format =~ /^(.*)-(noavatar|privilegedavatar)$/;
+    return ( $format, 'all' );
 }
 
 sub _FormatUserRole {

@@ -284,11 +284,23 @@ our %META;
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Username format', # loc
-            Values      => [qw(role concise verbose)],
+            Values      => [
+                qw(
+                    role    role-privilegedavatar    role-noavatar
+                    concise concise-privilegedavatar concise-noavatar
+                    verbose verbose-privilegedavatar verbose-noavatar
+                )
+            ],
             ValuesLabel => {
-                role    => 'Privileged: usernames; Unprivileged: names and email addresses', # loc
-                concise => 'Short usernames', # loc
-                verbose => 'Name and email address', # loc
+                'role'                     => 'Privileged: usernames and avatars; Unprivileged: names, email addresses, and avatars', # loc
+                'role-privilegedavatar'    => 'Privileged: usernames and avatars; Unprivileged: names and email addresses', # loc
+                'role-noavatar'            => 'Privileged: usernames; Unprivileged: names and email addresses', # loc
+                'concise'                  => 'Short usernames and avatars', # loc
+                'concise-privilegedavatar' => 'Short usernames; avatars for privileged', # loc
+                'concise-noavatar'         => 'Short usernames', # loc
+                'verbose'                  => 'Name, email address, and avatar', # loc
+                'verbose-privilegedavatar' => 'Name and email address; avatar for privileged', # loc
+                'verbose-noavatar'         => 'Name and email address', # loc
             },
         },
     },
