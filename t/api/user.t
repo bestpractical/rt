@@ -465,4 +465,31 @@ diag 'Test lazy-load columns';
     }
 }
 
+diag "UsernameFormat avatar suffixes";
+{
+    is_deeply( [ RT::User->ParseUsernameFormat($_->[0]) ], $_->[1], "ParseUsernameFormat('$_->[0]')" ) for
+        [ 'role'                       => [ 'role',    'all' ] ],
+        [ 'concise'                    => [ 'concise', 'all' ] ],
+        [ 'verbose'                    => [ 'verbose', 'all' ] ],
+        [ 'role-noavatar'              => [ 'role',    'none' ] ],
+        [ 'concise-noavatar'           => [ 'concise', 'none' ] ],
+        [ 'verbose-noavatar'           => [ 'verbose', 'none' ] ],
+        [ 'role-privilegedavatar'      => [ 'role',    'privileged' ] ],
+        [ 'concise-privilegedavatar'   => [ 'concise', 'privileged' ] ],
+        [ 'verbose-privilegedavatar'   => [ 'verbose', 'privileged' ] ];
+
+    my $user = RT::Test->load_or_create_user(
+        Name         => 'format-avatar',
+        RealName     => 'Format Avatar',
+        EmailAddress => 'format-avatar@example.com',
+    );
+    for my $base (qw(role concise verbose)) {
+        my $expected = RT::User->Format( User => $user, Format => $base );
+        for my $suffix (qw(noavatar privilegedavatar)) {
+            is( RT::User->Format( User => $user, Format => "$base-$suffix" ),
+                $expected, "Format $base-$suffix renders the same text as $base" );
+        }
+    }
+}
+
 done_testing();
