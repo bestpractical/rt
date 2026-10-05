@@ -247,6 +247,76 @@ This is the original forwarded email
 </div></blockquote></div><hr class="clear"></div></div>
 EOF
 
+$m->goto_create_ticket( $qid );
+$m->submit_form_ok(
+    {
+        form_name => 'TicketCreate',
+        fields    => {
+            Subject     => 'outlook plain quotes in pre nested in div',
+            ContentType => 'text/html',
+            Content     => <<'EOF',
+<div>
+<p>Thanks!</p><pre style="white-space:pre-wrap">Quoted:
+________
+From: root</pre>
+</div>
+EOF
+        },
+        button    => 'SubmitTicket',
+    },
+    'submit TicketCreate form'
+);
+$m->text_like( qr/Ticket \d+ created in queue/, 'ticket is created' );
+$m->content_contains( qq{<pre>\nQuoted:\n</pre>}, 'former part is closed' );
+$m->content_contains( qq{<div class="message-stanza closed"><pre>________\nFrom: root</pre>},
+    'latter part is reopened' );
+
+$m->goto_create_ticket( $qid );
+$m->submit_form_ok(
+    {
+        form_name => 'TicketCreate',
+        fields    => {
+            Subject     => 'outlook plain quotes in div with attributes',
+            ContentType => 'text/html',
+            Content     => <<'EOF',
+<div dir="ltr">Thanks!
+-----Original Message-----
+From: root</div>
+EOF
+        },
+        button    => 'SubmitTicket',
+    },
+    'submit TicketCreate form'
+);
+$m->text_like( qr/Ticket \d+ created in queue/, 'ticket is created' );
+$m->content_contains( qq{<div class="message-stanza"><div dir="ltr">Thanks!\n</div>}, 'former part is closed' );
+$m->content_contains(
+    qq{<div class="message-stanza closed"><div dir="ltr">-----Original Message-----\nFrom: root</div>},
+    'latter part is reopened'
+);
+
+$m->goto_create_ticket( $qid );
+$m->submit_form_ok(
+    {
+        form_name => 'TicketCreate',
+        fields    => {
+            Subject     => 'outlook plain quotes after html quotes',
+            ContentType => 'text/html',
+            Content     => <<'EOF',
+<div>This is what they typed
+<blockquote>This is what they replied to</blockquote>
+________
+From: root</div>
+EOF
+        },
+        button    => 'SubmitTicket',
+    },
+    'submit TicketCreate form'
+);
+$m->text_like( qr/Ticket \d+ created in queue/, 'ticket is created' );
+$m->content_contains( qq{<div class="message-stanza closed">________\nFrom: root</div>},
+    'no extra div for the element opened in a previous stanza' );
+
 diag "multipart/related with a text/plain root (no text/html) must still display the body";
 {
     my $path
