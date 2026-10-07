@@ -46,6 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%perl>
+use RT::Util 'CanonicalizeContentType';
+
 $m->comp('/Elements/HttpResponseHeaders', MaxAgeSeconds => 24 * 3600 * 30);
 my $user_id;
 my $arg = $m->dhandler_arg;    # get rest of path
@@ -70,7 +72,7 @@ Abort( "User image could not be loaded", Code => HTTP::Status::HTTP_NOT_FOUND )
     unless $sig eq ( $UserObj->ImageSignature // '' );
 
 my $content = $UserObj->Image;
-my $content_type = $UserObj->ImageContentType;
+my $content_type = CanonicalizeContentType( $UserObj->ImageContentType );
 
 if ( $content_type =~ m{^(image/svg\+xml|application/pdf)}i ) {
     RT::Interface::Web::RedirectBoostedRequest();
