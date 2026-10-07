@@ -185,6 +185,26 @@ sub SetName {
     }
 }
 
+=head2 Label
+
+Returns the dashboard name suitable for displaying to end users. Falls back to
+the description L<RT::URI::dashboard> gives it, C<Dashboard #17>, when the
+current user may not see the name.
+
+=cut
+
+sub Label {
+    my $self = shift;
+
+    my $name = $self->Name;
+    return $name if defined $name && length $name;
+
+    require RT::URI::dashboard;
+    my $uri = RT::URI::dashboard->new( $self->CurrentUser );
+    $uri->ParseURI( $self->URI );
+    return $uri->AsString;
+}
+
 =head2 Portlets
 
 Returns the list of this dashboard's portlets, each a hashref with key
@@ -294,6 +314,18 @@ sub _Set {
     return (0, $self->loc("Permission Denied")) unless $self->CurrentUserCanModify;
 
     return $self->SUPER::_Set(@_);
+}
+
+=head2 _Value
+
+Checks L</CurrentUserCanSee> before calling C<SUPER::_Value>.
+
+=cut
+
+sub _Value {
+    my $self = shift;
+    return undef if $self->id && !$self->CurrentUserCanSee(@_);
+    return $self->SUPER::_Value(@_);
 }
 
 sub _CurrentUserCan {
