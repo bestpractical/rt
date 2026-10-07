@@ -129,10 +129,13 @@ $m->comp(
 %         }
 %     }
 %     elsif ( $Transaction->ObjectType eq 'RT::Ticket' && $Transaction->Field eq 'Description' ) {
+%         my $permissive = $Transaction->Object->_ContentIsPermissive;
 %         $old = $Transaction->OldValue;
-%         $old = loc('(no value)') unless defined $old && length $old;
+%         $old = defined $old && length $old ? ScrubHTML( Content => $old, Permissive => $permissive ) : '';
+%         $old = loc('(no value)') unless length $old;
 %         $new = $Transaction->NewValue;
-%         $new = loc('(no value)') unless defined $new && length $new;
+%         $new = defined $new && length $new ? ScrubHTML( Content => $new, Permissive => $permissive ) : '';
+%         $new = loc('(no value)') unless length $new;
 %     }
 %     if ( $old || $new ) {
 <div class="details hidden" id="txn-<% $Transaction->Id %>-details">
