@@ -55,12 +55,15 @@ use base 'Plack::Middleware';
 
 use Plack::Response;
 use RT::REST2::Util 'error_as_json';
+use JSON ();
 
 our @auth_priority = qw(
     login_from_cookie
     login_from_authtoken
     login_from_basicauth
 );
+
+our %SAFE_METHODS = map { $_ => 1 } qw(GET HEAD OPTIONS);
 
 sub call {
     my ($self, $env) = @_;
@@ -73,6 +76,9 @@ sub call {
     if ($env->{'rt.current_user'}) {
         return $self->app->($env);
     }
+    elsif ($env->{'rt.csrf'}) {
+        return $self->forbidden($env);
+    }
     else {
         return $self->unauthorized($env);
     }
@@ -84,6 +90,11 @@ sub login_from_cookie {
     # allow reusing authentication from the ordinary web UI so that
     # among other things our JS can use REST2
     if ($env->{HTTP_COOKIE}) {
+        unless ($self->request_origin_allowed($env)) {
+            $env->{'rt.csrf'} = 1;
+            return;
+        }
+
         no warnings 'redefine';
 
         # this is foul but LoadSessionFromCookie doesn't have a hook for
@@ -184,6 +195,39 @@ sub login_from_basicauth {
     }
 
     return;
+}
+
+sub request_origin_allowed {
+    my $self = shift;
+    my $env = shift;
+
+    return 1 if $SAFE_METHODS{ $env->{REQUEST_METHOD} || '' };
+    return 1 unless RT->Config->Get('RestrictReferrer');
+
+    my $origin = $env->{HTTP_ORIGIN} || $env->{HTTP_REFERER};
+    return 0 unless $origin and $origin ne 'null';
+
+    my ($allowed) = RT::Interface::Web::IsRefererCSRFWhitelisted($origin);
+    return $allowed ? 1 : 0;
+}
+
+sub forbidden {
+    my $self = shift;
+    my $env = shift;
+
+    RT->Logger->notice(
+        "Possible CSRF: REST2 " . ($env->{REQUEST_METHOD} || '') . " request from origin "
+        . ($env->{HTTP_ORIGIN} || $env->{HTTP_REFERER} || '(none supplied)')
+        . " is not allowed by RT's configured hostname or whitelisted hosts"
+    );
+
+    my $body = JSON::to_json( { message => 'Cross-site request forgery protection refused this request' } );
+    return [
+        403,
+        [ 'Content-Type'   => 'application/json; charset=utf-8',
+          'Content-Length' => length $body ],
+        [ $body ],
+    ];
 }
 
 sub _looks_like_browser {

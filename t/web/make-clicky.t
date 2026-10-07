@@ -71,7 +71,7 @@ diag "Found in other attribute";
 diag "Do not double encode &amp test";
 {
     my $url = 'http://bestpractical.com/search?q=me&amp;irene;token=foo';
-    my $string = qq[<span class="clickylink"><a target="_blank" href="http://bestpractical.com/search?q=me&amp;irene;token=foo">http://bestpractical.com/search?q=me&amp;irene;token=foo</a></span>];
+    my $string = qq[<span class="clickylink"><a target="_blank" href="http://bestpractical.com/search?q=me&#38;irene;token=foo">http://bestpractical.com/search?q=me&#38;irene;token=foo</a></span>];
     is_string( make_clicky($m,$url, 1), $string, "URL with &amp; should not rencode" );
 
 }

@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <select id="<%$Name%>" name="<%$Name%>" class="selectpicker form-select <%$Name%>" <% $Size ? qq{data-size="$Size"} : '' |n %>>
 %if ($DefaultValue) {
-<option value=""<% !$Default ? qq[ selected="selected"] : '' |n %>><%$DefaultLabel |n%></option>
+<option value=""<% !$Default ? qq[ selected="selected"] : '' |n %>><% $DefaultLabel %></option>
 %}
 %foreach my $UserRef ( @formatednames)  {
 %my $User = $UserRef->[0];

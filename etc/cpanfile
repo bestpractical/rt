@@ -13,6 +13,7 @@ requires 'Clone';
 requires 'Convert::Color';
 requires 'Imager';
 requires 'Crypt::Eksblowfish';
+requires 'Crypt::URandom', '>= 0.55';
 requires 'CSS::Minifier::XS';
 requires 'CSS::Squish', '>= 0.06';
 requires 'CSS::Inliner', '>= 4027';

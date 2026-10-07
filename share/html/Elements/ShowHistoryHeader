@@ -143,7 +143,13 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
         my $reverse_value = $reverse_txns eq 'ASC' ? 'ASC' : 'DESC';
 
         # For pages without helpers (admin pages), use traditional link
-        my $href = $ARGS{ReverseHistoryOrderLink} || do {
+        my $link = $ARGS{ReverseHistoryOrderLink};
+        if ( !RT::Interface::Web->LinkPathIsSafe($link) ) {
+            RT->Logger->warning("Ignoring ReverseHistoryOrderLink that is not an internal path: $link");
+            undef $link;
+        }
+
+        my $href = $link || do {
             my $reverse_txns = $ARGS{'ReverseTxns'} // $DECODED_ARGS->{ReverseTxns};
             if ($reverse_txns) {
                 # If we got something, reverse it for the link
@@ -161,6 +167,7 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
             push @elements, qq{<a hx-boost="false" class="dropdown-item history-reverse-order" href="#">} . loc("Reverse history order") . qq{</a>};
         }
         else {
+            $href = $m->interp->apply_escapes( $href, 'h' );
             push @elements, qq{<a class="dropdown-item" href="$href#$histid">} . loc("Reverse history order") . qq{</a>};
         }
     }

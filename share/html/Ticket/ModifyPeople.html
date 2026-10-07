@@ -127,6 +127,14 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup) {
     });
 }
 
+unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
+    Abort(
+        loc("No permission to view ticket"),
+        Actions => \@results,
+        Code    => HTTP::Status::HTTP_FORBIDDEN,
+    );
+}
+
 # Use the ticket's scrips to figure out the new list of recipients.
 my $notify_actor = RT->Config->Get( 'NotifyActor', $session{CurrentUser} );
 

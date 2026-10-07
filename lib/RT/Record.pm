@@ -1401,6 +1401,10 @@ If Silent is true then no transactions will be recorded.  You can individually
 control transactions on both base and target and with SilentBase and
 SilentTarget respectively. By default both transactions are created.
 
+Schemes whose resolver reports L<RT::URI::base/IsInternalOnly> are refused,
+since they name records RT keeps for its own bookkeeping rather than records a
+caller links to. Pass AllowInternal to create such a link anyway.
+
 If the link destination is a local object and does the
 L<RT::Record::Role::Status> role, this method ensures object Status is not
 "deleted".  Linking to deleted objects is forbidden.
@@ -1426,6 +1430,7 @@ sub _AddLink {
         Silent       => undef,
         SilentBase   => undef,
         SilentTarget => undef,
+        AllowInternal => 0,
         @_
     );
 
@@ -1453,6 +1458,9 @@ sub _AddLink {
 
     my $remote_uri = RT::URI->new( $self->CurrentUser );
     if ($remote_uri->FromURI( $remote_link )) {
+        return ( 0, $self->loc( "Can't link to '[_1]'", $remote_link ) )
+            if $remote_uri->Resolver->IsInternalOnly && !$args{'AllowInternal'};
+
         my $remote_obj = $remote_uri->IsLocal ? $remote_uri->Object : undef;
         if ($remote_obj and $remote_obj->id) {
             # Enforce the remote end of StrictLinkACL

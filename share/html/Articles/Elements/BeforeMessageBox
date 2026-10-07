@@ -60,8 +60,7 @@
     <select name="<% $name_prefix %>Articles-Include-Topic" onchange="<% $ArticleAutoSubmitAction  %>" class="form-select selectpicker">
       <option value="" selected>-</option>
 % for ( @$topics ) {
-        <option value="<% $_->{id} %>"><%'&nbsp;' x $_->{depth} . ($_->{name}|| loc('(no name)')) |n%>
-        </option>
+        <option value="<% $_->{id} %>"><% '&nbsp;' x $_->{depth} |n %><% $_->{name} || loc('(no name)') %></option>
 % }
     </select>
   </&>

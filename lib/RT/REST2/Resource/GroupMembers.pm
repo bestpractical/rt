@@ -52,6 +52,7 @@ use warnings;
 
 use Moose;
 use namespace::autoclean;
+use RT::REST2::Util qw(error_as_json);
 
 extends 'RT::REST2::Resource::Collection';
 with 'RT::REST2::Resource::Role::RequestBodyIsJSON' =>
@@ -68,7 +69,7 @@ sub dispatch_rules {
             my ($match, $req) = @_;
             my $group_id = $match->pos(1);
             my $group = RT::Group->new($req->env->{"rt.current_user"});
-            $group->Load($group_id);
+            $group->LoadUserDefinedGroup($group_id);
             my $collection;
 
             my $recursively = $req->parameters->{recursively} // 0;
@@ -104,12 +105,17 @@ sub dispatch_rules {
             my $group_id = $match->pos(1);
             my $member_id = $match->pos(2) || '';
             my $group = RT::Group->new($req->env->{"rt.current_user"});
-            $group->Load($group_id);
+            $group->LoadUserDefinedGroup($group_id);
             my $collection = $group->MembersObj;
             $collection->Limit(FIELD => 'MemberId', VALUE => $member_id);
             return {group => $group, collection => $collection};
         },
     ),
+}
+
+sub resource_exists {
+    my $self = shift;
+    return $self->group->id;
 }
 
 sub forbidden {
@@ -174,6 +180,11 @@ sub delete_resource {
 
 sub from_json {
     my $self   = shift;
+
+    # Web::Machine sends PUT to a missing resource down its create path, so
+    # resource_exists must be checked here too, as Record::Writable does.
+    return error_as_json( $self->response, \404, "Not Found" ) unless $self->resource_exists;
+
     my $params = JSON::decode_json($self->request->content);
     my $group = $self->group;
 
@@ -182,6 +193,16 @@ sub from_json {
     if ($method eq 'PUT') {
         for my $param (@$params) {
             if ($param =~ /^\d+$/) {
+                my $principal = RT::Principal->new( $self->current_user );
+                $principal->Load($param);
+                if (   $principal->id
+                    && $principal->IsGroup
+                    && ( $principal->Object->Domain // '' ) ne 'UserDefined' )
+                {
+                    push @results, $self->current_user->loc( "Group [_1] not found", $param );
+                    next;
+                }
+
                 my ($ret, $msg) = $group->AddMember($param);
                 push @results, $msg;
             } else {

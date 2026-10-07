@@ -69,6 +69,12 @@ after 'limit_collection' => sub {
     return 1;
 };
 
+sub searchable_fields {
+    my $self     = shift;
+    my %excluded = map { ; $_ => 1 } qw(Domain Instance);
+    return grep { !$excluded{$_} } $self->collection->RecordClass->ReadableAttributes;
+}
+
 RT::Base->_ImportOverlays();
 
 __PACKAGE__->meta->make_immutable;

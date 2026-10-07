@@ -107,7 +107,7 @@ ok $m->login( 'user', 'password' ), 'logged in as user';
     $m->get_ok( $baseurl . '/Admin/Queues/Modify.html?id=' . $queue->id );
     my $form = $m->form_name( 'ModifyQueue' );
     $m->untick( 'SLAEnabled', 1 );
-    $m->submit;
+    $m->click('Submit');
     $m->text_contains( q{SLADisabled changed from (no value) to "1"} );
 }
 

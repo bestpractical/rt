@@ -1324,6 +1324,11 @@ checked to ensure that requests come from RT's own domain.  As RT allows
 for GET requests to alter state, disabling this opens RT up to
 cross-site request forgery (CSRF) attacks.
 
+This also governs REST 2.0, where the C<Origin> header is checked in
+preference to C<Referer> on requests that are authenticated by a session
+cookie and change state. Requests that supply credentials explicitly,
+with an C<Authorization> header, are not subject to this check.
+
 =cut
 
 Set($RestrictReferrer, 1);
@@ -1335,6 +1340,8 @@ or request, merely by passing in C<user> and C<pass> parameters; setting
 it to 1 forces all logins to come from the login box, so the
 user is aware that they are being logged in.  The default is off, for
 backwards compatability.
+
+Requires C<$RestrictReferrer> to also be enabled for full coverage.
 
 =cut
 

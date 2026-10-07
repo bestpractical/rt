@@ -165,6 +165,12 @@ sub _CanRegexpContent {
 sub AddRecord {
     my $self = shift;
     my ($record) = @_;
+
+    # CurrentUserCanSee says no for these, but the checks below are skipped
+    # for most types when UseSQLForACLChecks is on, and no SQL limit expresses
+    # this. Grouped report rows are not transactions and have nothing to hide.
+    return if $record->isa('RT::Transaction') && $record->IsHiddenTimeFieldChange;
+
     return $self->SUPER::AddRecord($record) if $self->{_current_user_can_see_all};
 
     if ( $self->{_is_ticket_only_search} && RT->Config->Get('UseSQLForACLChecks') ) {
@@ -350,6 +356,8 @@ Meta Data:
 sub _EnumLimit {
     my ( $sb, $field, $op, $value, @rest ) = @_;
 
+    return if $sb->IsHiddenTimeField($field);
+
     # SQL::Statement changes != to <>.  (Can we remove this now?)
     $op = "!=" if $op eq "<>";
 
@@ -386,6 +394,31 @@ sub _EnumLimit {
     );
 }
 
+=head2 IsHiddenTimeField FIELD
+
+Returns true if FIELD is one of the time columns and the current user may not
+see it, per L<RT::Ticket/CurrentUserCanSeeTime>.
+
+=cut
+
+sub IsHiddenTimeField {
+    my $self  = shift;
+    my $field = shift;
+
+    return 0 unless defined $field;
+
+    # TimeTaken is ours; _TicketLimit drops the Ticket prefix before it asks about the ticket's own columns
+    return 0 unless RT::Transaction->IsTimeField($field) || RT::Ticket->IsTimeField($field);
+
+    my $ticket = RT::Ticket->new( $self->CurrentUser );
+    return $ticket->CurrentUserCanSeeTime ? 0 : 1;
+}
+
+sub OrderByCols {
+    my $self = shift;
+    return $self->SUPER::OrderByCols( grep { !$self->IsHiddenTimeField( $_->{FIELD} ) } @_ );
+}
+
 =head2 _IntLimit
 
 Handle fields where the values are limited to integers.  (id)
@@ -397,6 +430,8 @@ Meta Data:
 
 sub _IntLimit {
     my ( $sb, $field, $op, $value, @rest ) = @_;
+
+    return if $sb->IsHiddenTimeField($field);
 
     my $is_a_like = $op =~ /MATCHES|ENDSWITH|STARTSWITH|LIKE/i;
 
@@ -431,6 +466,8 @@ Meta Data:
 
 sub _DateLimit {
     my ( $sb, $field, $op, $value, %rest ) = @_;
+
+    return if $sb->IsHiddenTimeField($field);
 
     die "Invalid Date Op: $op"
         unless $op =~ /^(=|>|<|>=|<=|IS(\s+NOT)?)$/i;
@@ -908,6 +945,8 @@ sub _AttachContentLimit {
 sub _TicketLimit {
     my ( $self, $field, $op, $value, %rest ) = @_;
     $field =~ s!^Ticket!!;
+
+    return if $self->IsHiddenTimeField($field);
 
     if ( $field eq 'Queue' && $value =~ /\D/ ) {
         if ( ref $value eq 'ARRAY' ) {

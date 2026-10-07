@@ -55,8 +55,9 @@ use RT::Queues;
 
 my $queues = RT::Queues->new($session{CurrentUser});
 $queues->Limit(FIELD => 'Name', OPERATOR => '=', VALUE => $id, CASESENSITIVE => 0 );
-if ($queues->Count == 0) {
+my $queue = $queues->Next;
+if ( !$queue ) {
     return (0, "No queue named $id exists.");
 }
-return $queues->Next->Id;
+return $queue->Id;
 </%perl>

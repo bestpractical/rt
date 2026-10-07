@@ -90,6 +90,14 @@ our @SHORTENER_SEARCH_FIELDS
     = qw/Class ObjectType BaseQuery Query Format RowsPerPage Order OrderBy ExtraQueryParams ResultPage/;
 our @SHORTENER_CHART_FIELDS = qw/Width Height ChartStyle GroupBy ChartFunction StackedGroupBy ChartOrderBy ChartOrder ChartLimit ChartLimitType/;
 
+# Arguments ExpandShortenerCode can set: the search and chart fields come from
+# the shortener content, the rest from the saved search that content names
+our @SHORTENER_ARGS = (
+    @SHORTENER_SEARCH_FIELDS,
+    @SHORTENER_CHART_FIELDS,
+    qw/SavedSearchId SavedChartSearchId SavedSearchLoad SearchType SearchFields/,
+);
+
 # Valid display modes for search results. CollectionList is the default table view.
 # These correspond to Mason components in /Search/Elements/.
 our @SEARCH_DISPLAY_MODES = qw/CollectionList Calendar/;
@@ -499,6 +507,8 @@ sub HandleRequest {
     }
 
     $HTML::Mason::Commands::m->notes( 'SystemWarnings', [] );
+    ExpandShortenerCode($ARGS);
+
     MaybeShowInterstitialCSRFPage($ARGS);
 
     # Process per-page global callbacks
@@ -976,8 +986,6 @@ sub ShowRequestedPage {
     # session-id has been modified in any way
     SendSessionCookie();
 
-    ExpandShortenerCode($ARGS);
-
     # precache all system level rights for the current user
     $HTML::Mason::Commands::session{CurrentUser}->PrincipalObj->HasRights( Object => RT->System );
 
@@ -1186,6 +1194,16 @@ sub AbortExternalAuth {
 sub AttemptPasswordAuthentication {
     my $ARGS = shift;
     return unless defined $ARGS->{user} && defined $ARGS->{pass};
+
+    # Check RestrictLoginReferrer before authentication happens, so that a
+    # login which is not allowed never creates a session. /Elements/DoAuth
+    # does the same for the passwords external auth validates itself.
+
+    if ( RT->Config->Get('RestrictLoginReferrer') and not IsLoginPageReferer() ) {
+        RT->Logger->error( "REJECTED LOGIN for @{[$ARGS->{user}]} from @{[RequestENV('REMOTE_ADDR')]}: "
+                . "not from RT's login page (Referrer: @{[RequestENV('HTTP_REFERER') || 'none']})" );
+        return (0, HTML::Mason::Commands::loc("Use RT's login page to log in"));
+    }
 
     my $user_obj = RT::CurrentUser->new();
     $user_obj->Load( $ARGS->{user} );
@@ -1673,6 +1691,41 @@ sub ComponentPathIsSafe {
     return($path !~ m{(?:^|/)\.} and $path !~ m{\0});
 }
 
+=head2 LinkPathIsSafe PATH
+
+Takes C<PATH>, a link target handed to a component to build its links from,
+and returns a boolean indicating whether it is an internal path that is safe
+to render into an C<href> or C<src> attribute.
+
+Safe means the path is internal: it carries no URI scheme, is not protocol
+relative, and holds nothing that could end the attribute it lands in. An
+undefined or empty path is safe, since components give those their own
+meaning.
+
+Components that take such a path from their arguments must run it through
+this and discard whatever fails.
+
+=cut
+
+sub LinkPathIsSafe {
+    my $self = shift;
+    my $path = shift;
+
+    return 1 unless defined $path and length $path;
+
+    # A scheme of any kind makes this someone else's URL rather than ours
+    return 0 if $path =~ m{^[a-z][a-z0-9.+-]*:}i;
+
+    # Protocol relative, including the backslash form browsers accept
+    return 0 if $path =~ m{^[/\\]{2}};
+
+    # Anything that could end the attribute we land in, and anything a
+    # browser might strip before it looks for a scheme
+    return 0 if $path =~ m{['"<>\s]|[^[:print:]]};
+
+    return 1;
+}
+
 =head2 PathIsSafe
 
 Takes a C<< Path => path >> and returns a boolean indicating that
@@ -2049,6 +2102,40 @@ sub StaticRoots {
     return grep { $_ and -d $_ } @static;
 }
 
+=head2 Themes
+
+Returns the names of the themes this instance of RT provides, i.e. the
+directories with a F<main.css> under F<css> in any of the L</StaticRoots>.
+C<$WebDefaultStylesheet> and the per-user theme preference name one of these.
+
+The list is cached for the life of the process, so a theme added on disk is
+not offered until RT is restarted.
+
+=cut
+
+sub Themes {
+    my $self = shift;
+
+    state @themes;
+    return @themes if @themes;
+
+    my %seen;
+    for my $root ( $self->StaticRoots ) {
+        my $path = "$root/css";
+        next unless -d $path;
+
+        if ( opendir my $dh, $path ) {
+            push @themes, grep { !/^\./ && -e "$path/$_/main.css" && !$seen{$_}++ } readdir $dh;
+            closedir $dh;
+        }
+        else {
+            RT->Logger->error("Can't read $path: $!");
+        }
+    }
+    @themes = sort { lc $a cmp lc $b } @themes;
+    return @themes;
+}
+
 our %IS_WHITELISTED_COMPONENT = (
     # The RSS feed embeds an auth token in the path, but query
     # information for the search.  Because it's a straight-up read, in
@@ -2058,11 +2145,10 @@ our %IS_WHITELISTED_COMPONENT = (
     # While these can be used for denial-of-service against RT
     # (construct a very inefficient query and trick lots of users into
     # running them against RT) it's incredibly useful to be able to link
-    # to a search result (or chart) or bookmark a result page.
+    # to a search result or bookmark a result page.
     '/Search/Results.html' => 1,
     '/Search/Simple.html'  => 1,
     '/m/tickets/search'    => 1,
-    '/Search/Chart.html'   => 1,
     '/User/Search.html'    => 1,
 
     # This page takes Attachment and Transaction argument to figure
@@ -2090,13 +2176,17 @@ our @GLOBAL_WHITELISTED_ARGS = (
 
     # The Shortener code
     'sc',
+
+    # Pagination, which only says which page of results to show
+    'Page',
+
+    # Search and chart arguments, which only say what to show and how
+    @SHORTENER_ARGS,
 );
 
 our %WHITELISTED_COMPONENT_ARGS = (
-    # SavedSearchLoad - This happens when you middle-(or ⌘ )-click "Edit" for a saved search on
-    # the homepage. It's not going to do any damage
     # NewQuery - This is simply to clear the search query
-    '/Search/Build.html' => ['SavedSearchLoad','NewQuery'],
+    '/Search/Build.html' => ['NewQuery'],
     # Happens if you try and reply to a message in the ticket history or click a number
     # of options on a tickets Action menu
     '/Ticket/Update.html' => ['QuoteTransaction', 'Action', 'DefaultStatus'],
@@ -2114,6 +2204,9 @@ our %WHITELISTED_COMPONENT_ARGS = (
 our %IS_BLACKLISTED_COMPONENT = (
     # Takes only id and toggles bookmark state
     '/Helpers/Toggle/TicketBookmark' => 1,
+
+    # Takes only id and revokes the named right
+    '/Helpers/RightsInspector/Revoke' => 1,
 );
 
 sub IsCompCSRFWhitelisted {
@@ -2214,6 +2307,45 @@ sub IsRefererCSRFWhitelisted {
     }
 
     return (0,$referer,$configs);
+}
+
+=head3 IsLoginPageReferer
+
+Returns true if the current request came from RT's login page.
+
+A request qualifies if it supplies a Referrer header, and that Referrer is one of
+the URLs where RT serves the login form, which is the login page itself, or the index
+page, which renders the form inline for a logged-out user.
+
+REST endpoints are exempt. Their clients are not browsers and send no
+Referrer, and with C<$RestrictReferrer> enabled L</IsPossibleCSRF> confines a
+session created by a REST request to REST endpoints, so such a session cannot
+be used to browse RT.
+
+=cut
+
+sub IsLoginPageReferer {
+    return 1 if $HTML::Mason::Commands::r->path_info =~ m{^/+REST/\d+\.\d+(/|$)};
+
+    my $referer = RequestENV('HTTP_REFERER') or return 0;
+    my $uri     = URI->new($referer);
+
+    # A Referrer with no host and port is never a page RT served.
+    # @ReferrerWhitelist can accept one anyway: android-app://com.slack/
+    # matches on authority, and its path of / would read as the index page.
+    return 0 unless $uri->can('host_port');
+
+    # The login form is served by RT itself, so the Referrer has to be a host
+    # RT answers to.
+    my ($host_ok) = IsRefererCSRFWhitelisted($referer);
+    return 0 unless $host_ok;
+
+    my $path    = $uri->path // '';
+    my $webpath = RT->Config->Get('WebPath') || '';
+    return 0 unless $path =~ s{^\Q$webpath\E}{};
+    $path = '/' unless length $path;
+
+    return $path =~ m{^(?:/(?:index\.html)?|/m/?(?:index\.html)?|/NoAuth/Login\.html)$} ? 1 : 0;
 }
 
 =head3 _NormalizeHost
@@ -2352,10 +2484,21 @@ sub StoreRequestToken {
     my $ARGS = shift;
 
     my $now   = time;
-    my $token = Digest::MD5::md5_hex($now . {} . $$ . rand(1024));
-    my $user  = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
-    my $data  = {
-        auth    => $user->GenerateAuthString( $token ),
+    my $token = RT::Util::random_hex(32);
+    unless ( defined $token ) {
+        RT->Logger->error("Couldn't generate a request token");
+        return;
+    }
+
+    my $user = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
+    my $auth = $user->GenerateAuthString( $token );
+    unless ( defined $auth ) {
+        RT->Logger->error("Couldn't sign a request token for user " . $user->id);
+        return;
+    }
+
+    my $data = {
+        auth    => $auth,
         path    => $HTML::Mason::Commands::r->path_info,
         args    => $ARGS,
         created => $now,
@@ -2460,6 +2603,16 @@ sub MaybeShowInterstitialCSRFPage {
         $original_url
             = RT->Config->Get('WebBaseURL') . RT->Config->Get('WebPath') . $HTML::Mason::Commands::r->path_info;
         $token = StoreRequestToken($ARGS);
+
+        unless ( defined $token ) {
+            # The interstitial is what lets the user confirm this request, and it
+            # needs a token. Without one, refuse rather than wave the request
+            # through the check the interstitial exists to perform.
+            HTML::Mason::Commands::Abort(
+                HTML::Mason::Commands::loc("Your request could not be verified. Please try again, and contact your administrator if the problem persists."),
+                Code => HTTP::Status::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     $HTML::Mason::Commands::m->comp(
@@ -3169,7 +3322,8 @@ sub MaybeRedirectToApproval {
         my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
         $ticket->Load($id);
 
-        if ($ticket and $ticket->id and lc($ticket->Type) eq 'approval') {
+        # Type is undef for a ticket the current user cannot see
+        if ($ticket and $ticket->id and lc($ticket->Type // '') eq 'approval') {
             MaybeRedirectForResults(
                 Path      => "/Approvals/Display.html",
                 Force     => 1,
@@ -4532,7 +4686,9 @@ sub ProcessObjectCustomFieldUpdates {
         foreach my $id ( keys %{ $custom_fields_to_mod{$class} } ) {
             my $Object = $args{'Object'};
             $Object = $class->new( $session{'CurrentUser'} )
-                unless $Object && ref $Object eq $class;
+                unless $Object
+                    && ref $Object eq $class
+                    && ( !$id || ( $Object->id || 0 ) == $id );
 
             # skip if we have no object to update
             next unless $id || $Object->id;
@@ -5991,37 +6147,6 @@ sub GetObjectSessionCacheKey {
         $args{'ShowAll'};
 
     return $cache_key;
-}
-
-=head2 _load_container_object ( $type, $id );
-
-Instantiate container object for saving searches.
-
-=cut
-
-sub _load_container_object {
-    my ( $obj_type, $obj_id ) = @_;
-    return RT::SavedSearch->new( $session{'CurrentUser'} )->_load_privacy_object( $obj_type, $obj_id );
-}
-
-=head2 _parse_saved_search ( $arg );
-
-Given a serialization string for saved search, and returns the
-container object and the search id.
-
-=cut
-
-sub _parse_saved_search {
-    my $spec = shift;
-    return unless $spec;
-    if ( $spec !~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
-        return;
-    }
-    my $obj_type  = $1;
-    my $obj_id    = $2;
-    my $search_id = $3;
-
-    return ( _load_container_object( $obj_type, $obj_id ), $search_id );
 }
 
 =head2 ScrubHTML Content => CONTENT, Permissive => 1|0, Restrictive => 1|0, SkipStructureCheck => 1|0

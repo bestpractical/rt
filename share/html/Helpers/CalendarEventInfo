@@ -61,6 +61,8 @@ my ($object_type, $ticket_id) = split /-/, $event;
 
 my $Object = RT::Ticket->new($session{'CurrentUser'});
 $Object->Load($ticket_id);
+Abort( loc('Permission Denied'), SuppressHeader => 1, Code => HTTP::Status::HTTP_FORBIDDEN )
+    unless $Object->Id && $Object->CurrentUserCanSee;
 
 my $status;
 my $TicketId;
@@ -70,7 +72,7 @@ if ($Object->Type eq 'reminder') {
     if ($Object->RefersTo->First) {
         my $ticket   = $Object->RefersTo->First->TargetObj;
         $TicketId = $ticket->Id;
-        $subject = $Object->Subject . " (" . $ticket->Subject . ")";
+        $subject = $Object->Subject . " (" . ( $ticket->CurrentUserCanSee ? $ticket->Subject : "#$TicketId" ) . ")";
         $status = $Object->Status;
     }
 } else {

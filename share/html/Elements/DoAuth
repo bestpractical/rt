@@ -50,6 +50,10 @@
 return if $session{CurrentUser} && $session{'CurrentUser'}->id;
 return if $m->notes('ExternalAuthMFARejected');
 
+return if defined $user and defined $pass
+    and RT->Config->Get('RestrictLoginReferrer')
+    and not RT::Interface::Web::IsLoginPageReferer();
+
 # It's important to nab the next page from the session before we
 # potentially blow the session away below.
 my $next = $session{'NextPage'}->{ $ARGS{'next'} || "" };

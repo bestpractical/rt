@@ -540,6 +540,10 @@ sub SetClass {
     }
     $value = $class->Id;    # normalize a class name to its id
 
+    if ( $value != $self->__Value('Class') ) {
+        return ( 0, $self->loc("Permission Denied") ) unless $class->CurrentUserHasRight('CreateArticle');
+    }
+
     # Confirm the name isn't already used in the destination class
     if ( $self->ValidateName( $self->Name, $value ) ) {
         return ( $self->_Set( Field => 'Class', Value => $value ) );

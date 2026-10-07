@@ -54,6 +54,7 @@ use warnings;
 use base 'RT::Record';
 
 use RT::Interface::Web;
+use RT::Util 'CanonicalizeContentType';
 use Regexp::Common qw(RE_net_IPv4);
 use Regexp::IPv6 qw($IPv6_re);
 use Regexp::Common::net::CIDR;
@@ -82,6 +83,8 @@ sub Create {
         ContentEncoding => '',
         @_,
     );
+
+    $args{'ContentType'} = CanonicalizeContentType( $args{'ContentType'} );
 
     my $cf = RT::CustomField->new( $self->CurrentUser );
     $cf->Load( $args{CustomField} );
@@ -375,18 +378,10 @@ sub _FillInTemplateURL {
     return undef unless defined $url && length $url;
 
     # special case, whole value should be an URL
-    if ( $url =~ /^__CustomField__/ ) {
+    my $value_is_url = $url =~ /^__CustomField__/ ? 1 : 0;
+    if ( $value_is_url ) {
         my $value = $self->Content;
         $value //= '';
-        # protect from potentially malicious URLs
-        if ( $value =~ /^\s*(?:javascript|data):/i ) {
-            my $object = $self->Object;
-            $RT::Logger->error(
-                "Potentially dangerous URL type in custom field '". $self->CustomFieldObj->Name ."'"
-                ." on ". ref($object) ." #". $object->id
-            );
-            return undef;
-        }
         $url =~ s/^__CustomField__/$value/;
     }
 
@@ -400,8 +395,36 @@ sub _FillInTemplateURL {
         }gxe;
     }
 
+    # protect from potentially malicious URLs
+    if ( $value_is_url && $self->_IsDangerousURL($url) ) {
+        my $object = $self->Object;
+        $RT::Logger->error(
+            "Potentially dangerous URL type in custom field '". $self->CustomFieldObj->Name ."'"
+            ." on ". ref($object) ." #". $object->id
+        );
+        return undef;
+    }
+
     return $url;
 } }
+
+=head2 _IsDangerousURL URL
+
+Returns true if the given URL uses a scheme that browsers can execute as
+code. Characters that browsers ignore when they parse the scheme are removed
+before the check.
+
+=cut
+
+sub _IsDangerousURL {
+    my $self = shift;
+    my $url  = shift;
+
+    $url =~ s/[\x09\x0a\x0d]//g;
+    $url =~ s/^[\x00-\x20]+//;
+
+    return $url =~ /^(?:javascript|data):/i ? 1 : 0;
+}
 
 
 =head2 ValueLinkURL
@@ -816,15 +839,24 @@ sub ExternalStoreDigest {
 
 =head2 CurrentUserCanSee
 
-Returns true if user has "SeeCustomField" on the associated CustomField
-object, otherwise false.
+Returns true if the user has "SeeCustomField" on the associated CustomField
+object and can see the object the value is attached to, otherwise false.
 
 =cut
 
 sub CurrentUserCanSee {
     my $self = shift;
     return undef unless $self->Id;
-    return $self->CustomFieldObj->CurrentUserHasRight('SeeCustomField');
+
+    return 1 if $self->CurrentUser->Id == RT->SystemUser->Id;
+
+    return 0 unless $self->CustomFieldObj->CurrentUserHasRight('SeeCustomField');
+
+    my $object = $self->Object;
+    return 0 unless $object && $object->id;
+    return 1 if $object->isa('RT::User');
+    return 1 unless $object->can('CurrentUserCanSee');
+    return $object->CurrentUserCanSee ? 1 : 0;
 }
 
 sub _Value {
@@ -834,7 +866,8 @@ sub _Value {
     unless ( $self->CurrentUserCanSee ) {
         $RT::Logger->debug(
             "Permission denied. User #". $self->CurrentUser->id
-            ." has no SeeCustomField right on CF #". $self->__Value('CustomField')
+            ." can not see value #". $self->id ." of CF #". $self->__Value('CustomField')
+            ." on ". $self->__Value('ObjectType') ." #". $self->__Value('ObjectId')
         );
         return undef;
     }

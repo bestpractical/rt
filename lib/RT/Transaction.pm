@@ -1920,6 +1920,8 @@ sub _Value {
         return undef;
     }
 
+    return undef if $self->IsTimeField($field) && !$self->CurrentUserCanSeeTime;
+
     return $self->SUPER::_Value( $field );
 }
 
@@ -1950,6 +1952,9 @@ sub CurrentUserCanSee {
         return 0 unless $cf->CurrentUserCanSee;
     }
 
+    # A transaction that only records a change to a hidden time field has nothing else to show
+    return 0 if $self->IsHiddenTimeFieldChange;
+
     # Attachment management transactions are only as visible as the
     # transaction the attachment came from, e.g. a comment
     if ( $type =~ /^(?:Delete|Rename|Pin|Unpin)Attachment$/ ) {
@@ -1963,6 +1968,53 @@ sub CurrentUserCanSee {
 
     # Defer to the object in question
     return $self->Object->CurrentUserCanSee("Transaction", $self);
+}
+
+=head2 CurrentUserCanSeeTime
+
+Returns true if the current user can see the time values recorded on this
+transaction, deferring to L<RT::Ticket/CurrentUserCanSeeTime> for ticket
+transactions.
+
+=cut
+
+sub CurrentUserCanSeeTime {
+    my $self = shift;
+
+    return 1 unless RT->Config->Get('HideTimeFieldsFromUnprivilegedUsers');
+
+    my $object = $self->Object;
+    return 1 unless $object && $object->can('CurrentUserCanSeeTime');
+    return $object->CurrentUserCanSeeTime;
+}
+
+=head2 IsTimeField FIELD
+
+Returns true if FIELD is one of the transaction time columns governed by
+C<$HideTimeFieldsFromUnprivilegedUsers>. Callable as a class method.
+
+=cut
+
+sub IsTimeField {
+    my $self  = shift;
+    my $field = shift;
+
+    return 0 unless defined $field;
+    return $field =~ /^(?:TimeTaken|TimeWorker|TimeWorkedDate)$/ ? 1 : 0;
+}
+
+=head2 IsHiddenTimeFieldChange
+
+Returns true if this transaction records a change to one of the time fields
+the current user is not allowed to see.
+
+=cut
+
+sub IsHiddenTimeFieldChange {
+    my $self = shift;
+
+    return 0 unless RT::Ticket->IsTimeField( $self->__Value('Field') );
+    return $self->CurrentUserCanSeeTime ? 0 : 1;
 }
 
 sub _AttachmentSourceVisible {
@@ -2773,8 +2825,13 @@ sub Serialize {
         $store{NewValue} = \( join '-', 'RT::Ticket', $RT::Organization, $store{NewValue} );
     }
 
-    if ( $store{TimeWorker} && $store{TimeWorker} != $store{Creator} ) {
-        $store{TimeWorker} = \$args{serializer}{_uid}{user}{ $store{TimeWorker} };
+    if ( $self->CurrentUserCanSeeTime ) {
+        if ( $store{TimeWorker} && $store{TimeWorker} != $store{Creator} ) {
+            $store{TimeWorker} = \$args{serializer}{_uid}{user}{ $store{TimeWorker} };
+        }
+    }
+    else {
+        delete $store{$_} for qw/TimeTaken TimeWorker TimeWorkedDate/;
     }
 
     return %store;
@@ -2811,7 +2868,7 @@ Returns an RT::User object with the RT account of the TimeWorker of this row
 sub TimeWorkerObj {
     my $self = shift;
     unless ( exists $self->{'TimeWorkerObj'} ) {
-        if ( $self->TimeTaken == 0 ) {
+        unless ( $self->TimeTaken ) {
             $self->{'TimeWorkerObj'} = undef;
         }
         else {

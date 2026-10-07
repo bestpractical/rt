@@ -60,6 +60,11 @@ elsif ( $LookupType eq RT::Article->CustomFieldLookupType ) {
 else {
     $title = loc("Modify scrips which apply to all queues");
 }
+
+if ( $ARGS{MoveScripUp} || $ARGS{MoveScripDown} ) {
+    Abort( loc("Permission Denied"), Code => HTTP::Status::HTTP_FORBIDDEN )
+        unless $session{CurrentUser}->HasRight( Object => RT->System, Right => 'ModifyScrips' );
+}
 </%init>
 <%ARGS>
 $LookupType => RT::Ticket->CustomFieldLookupType
