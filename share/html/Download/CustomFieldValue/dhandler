@@ -46,6 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%perl>
+use RT::Util 'CanonicalizeContentType';
+
 my $id;
 my $arg = $m->dhandler_arg;                # get rest of path
 if ($arg =~ /^(\d+)\//) {
@@ -63,8 +65,8 @@ unless ($OCFV->id) {
 
 Abort( loc('Permission Denied'), Code => HTTP::Status::HTTP_FORBIDDEN ) unless $OCFV->CurrentUserCanSee;
 
-my $content_type = $OCFV->ContentType || 'text/plain; charset=utf-8';
-    
+my $content_type = CanonicalizeContentType( $OCFV->ContentType ) || 'text/plain; charset=utf-8';
+
 if (RT->Config->Get('AlwaysDownloadAttachments') || $content_type =~ m{^(image/svg\+xml|application/pdf)}i) {
     RT::Interface::Web::RedirectBoostedRequest();
     $r->headers_out->{'Content-Disposition'} = "attachment";

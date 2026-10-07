@@ -53,6 +53,7 @@ use warnings;
 use Moose;
 use namespace::autoclean;
 use RT::REST2::Util qw( error_as_json );
+use RT::Util 'CanonicalizeContentType';
 
 extends 'RT::REST2::Resource::Record';
 with 'RT::REST2::Resource::Record::WithETag';
@@ -68,7 +69,12 @@ sub allowed_methods { ['GET', 'HEAD'] }
 
 sub content_types_provided {
     my $self = shift;
-    { [ {$self->record->ContentType || 'text/plain; charset=utf-8' => 'to_binary'} ] };
+    { [ { $self->_ContentType => 'to_binary' } ] };
+}
+
+sub _ContentType {
+    my $self = shift;
+    return CanonicalizeContentType( $self->record->ContentType ) || 'text/plain; charset=utf-8';
 }
 
 sub to_binary {
@@ -79,7 +85,7 @@ sub to_binary {
             \400, "Only Image and Binary CustomFields can be downloaded");
     }
 
-    my $content_type = $self->record->ContentType || 'text/plain; charset=utf-8';
+    my $content_type = $self->_ContentType;
     if (RT->Config->Get('AlwaysDownloadAttachments') || $content_type =~ m{^(image/svg\+xml|application/pdf)}i) {
         $self->response->header('Content-Disposition' => 'attachment');
     }

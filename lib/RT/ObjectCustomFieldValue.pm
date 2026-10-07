@@ -54,6 +54,7 @@ use warnings;
 use base 'RT::Record';
 
 use RT::Interface::Web;
+use RT::Util 'CanonicalizeContentType';
 use Regexp::Common qw(RE_net_IPv4);
 use Regexp::IPv6 qw($IPv6_re);
 use Regexp::Common::net::CIDR;
@@ -82,6 +83,8 @@ sub Create {
         ContentEncoding => '',
         @_,
     );
+
+    $args{'ContentType'} = CanonicalizeContentType( $args{'ContentType'} );
 
     my $cf = RT::CustomField->new( $self->CurrentUser );
     $cf->Load( $args{CustomField} );
