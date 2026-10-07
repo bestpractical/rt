@@ -104,6 +104,40 @@ sub Backends {
     };
 }
 
+=head3 Directory
+
+Returns the directory session files are stored in, or undef when the
+session class keeps sessions in the database. Unlike L</Attributes> this
+needs no database connection, so it is safe to call before the web
+server forks.
+
+=cut
+
+sub Directory {
+    my $self = shift;
+    if ( my %props = RT->Config->Get('WebSessionProperties') ) {
+        return $props{Directory};
+    }
+    return $self->Class->isa('Apache::Session::File') ? $RT::MasonSessionDir : undef;
+}
+
+=head3 ProtectSessionFiles
+
+L<Apache::Session::File> creates session and lock files with whatever
+the process umask is. Returns a guard that sets the umask to 0077 for
+as long as it stays in scope and restores the previous value when it
+goes away, including when the caller dies. Keep it alive until after
+the session is untied, which is when the file is written. Returns
+nothing when sessions are not stored in files.
+
+=cut
+
+sub ProtectSessionFiles {
+    my $self = shift;
+    return unless $self->Directory;
+    return RT::Interface::Web::Session::UmaskGuard->new;
+}
+
 =head3 Attributes
 
 Returns hash reference with attributes that are used to create
@@ -217,6 +251,7 @@ sub _ClearOldDir {
     my $now = time;
     my $class = $self->Class;
     my $attrs = $self->Attributes;
+    my $umask_guard = $self->ProtectSessionFiles;
 
     foreach my $id( @{ $self->Ids } ) {
         if( int $older_than ) {
@@ -293,6 +328,7 @@ sub ClearByUser {
     my $self = shift || __PACKAGE__;
     my $class = $self->Class;
     my $attrs = $self->Attributes;
+    my $umask_guard = $self->ProtectSessionFiles;
 
     my $deleted;
     my %seen = ();
@@ -339,6 +375,7 @@ sub Load {
         @_
     );
 
+    my $umask_guard = RT::Interface::Web::Session->ProtectSessionFiles;
     my %local_session;
     tie %local_session, 'RT::Interface::Web::Session', $args{'Id'};
 
@@ -384,9 +421,11 @@ sub Set {
     my $session_id = $args{'Ref'}->{'_session_id'};
 
     my %local_session;
+    my $umask_guard;
     my $target;
 
     if ($session_id) {
+        $umask_guard = RT::Interface::Web::Session->ProtectSessionFiles;
         tie %local_session, 'RT::Interface::Web::Session', $session_id;
         $target = \%local_session;
     }
@@ -452,10 +491,11 @@ sub Delete {
 
     my $session_id = $args{'Ref'}->{'_session_id'};
     my %local_session;
-
+    my $umask_guard;
     my $target;
 
     if ($session_id) {
+        $umask_guard = RT::Interface::Web::Session->ProtectSessionFiles;
         tie %local_session, 'RT::Interface::Web::Session', $session_id;
         $target = \%local_session;
     }
@@ -521,5 +561,17 @@ sub TIEHASH {
 
 require RT::Base;
 RT::Base->_ImportOverlays();
+
+package RT::Interface::Web::Session::UmaskGuard;
+
+sub new {
+    my $class = shift;
+    my $previous = umask(0077);
+    return bless \$previous, $class;
+}
+
+sub DESTROY {
+    umask( ${ $_[0] } );
+}
 
 1;

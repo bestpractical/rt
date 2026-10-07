@@ -84,27 +84,21 @@ sub DefaultHandlerArgs  { (
 ) };
 
 sub InitSessionDir {
-    # Activate the following if running httpd as root (the normal case).
-    # Resets ownership of all files created by Mason at startup.
-    # Note that mysql uses DB for sessions, so there's no need to do this.
-    unless ( RT->Config->Get('DatabaseType') =~ /(?:mysql|Pg)/ ) {
-
-        # Clean up our umask to protect session files
-        umask(0077);
+    # Session files are made private by ProtectSessionFiles while they are
+    # open; a process-wide umask would also apply to everything Mason writes.
+    if ( my $dir = RT::Interface::Web::Session->Directory ) {
 
         if ($CGI::MOD_PERL and $CGI::MOD_PERL < 1.9908 ) {
 
-            chown( Apache->server->uid, Apache->server->gid,
-                $RT::MasonSessionDir )
+            chown( Apache->server->uid, Apache->server->gid, $dir )
             if Apache->server->can('uid');
         }
 
-        # Die if WebSessionDir doesn't exist or we can't write to it
-        stat($RT::MasonSessionDir);
-        die "Can't read and write $RT::MasonSessionDir"
+        # Die if the session directory doesn't exist or we can't write to it
+        stat($dir);
+        die "Can't read and write $dir"
         unless ( ( -d _ ) and ( -r _ ) and ( -w _ ) );
     }
-
 }
 
 
