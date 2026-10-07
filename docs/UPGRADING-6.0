@@ -488,6 +488,33 @@ now controlled by page layouts and
 L<%CustomFieldGroupings|RT_Config/%CustomFieldGroupings>. You can remove
 the setting from your configuration, but leaving it is harmless.
 
+=item Significant upgrade to the ticket Attachments widget
+
+The Attachments widget on ticket display is rebuilt. It now lists all
+attachments in a scrollable list with search, filtering, and sorting.
+Users with the ModifyTicket right can now add, delete, rename, and pin
+attachments, and can download, delete, or copy several attachments to a
+new ticket at once.
+
+Similar to deleted tickets, a copy of a deleted attachment is retained
+in the database in the transaction history. Shred the DeleteAttachment
+transaction to completely remove it from the database.
+
+Downloading several attachments builds a zip file in memory. The new
+C<$MaxBulkAttachmentCount> and C<$MaxBulkAttachmentTotalSize> options
+limit how many files and how many total bytes one zip can include.
+
+C<$AttachmentListCount> is deprecated and can be removed from your
+configuration.
+
+=item New attachment transaction types in History filters
+
+Adding, deleting, renaming, pinning, and unpinning attachments now
+create new history transactions. If you saved a History widget in Page
+Layouts, its transaction type filter keeps the list of types that
+existed when you saved it, so the new types are hidden. To show them,
+edit the History widget in each saved layout and check the new types.
+
 =back
 
 =cut
