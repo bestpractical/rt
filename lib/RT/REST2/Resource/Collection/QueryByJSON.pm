@@ -54,6 +54,7 @@ use Moose::Role;
 use namespace::autoclean;
 
 use JSON ();
+use RT::REST2::Util qw( error_as_json );
 
 with (
     'RT::REST2::Resource::Collection::ProcessPOSTasGET',
@@ -70,14 +71,37 @@ has 'query_json' => (
     lazy_build  => 1,
 );
 
-sub _build_query_json {
+sub query_json_content {
     my $self = shift;
     my $content = $self->request->method eq 'GET'
                 ? $self->request->param('query')
                 : $self->request->content;
-    return [] unless $content && $content =~ /\s*\[/;
+    return unless $content && $content =~ /^\s*\[/;
+    return $content;
+}
+
+sub _build_query_json {
+    my $self = shift;
+    my $content = $self->query_json_content;
+    return [] unless $content;
     return JSON::decode_json($content);
 }
+
+around 'malformed_request' => sub {
+    my $orig = shift;
+    my $self = shift;
+    my $malformed = $self->$orig(@_);
+    return $malformed if $malformed;
+
+    my $content = $self->query_json_content;
+    return 0 unless $content;
+    return 0 if eval { JSON::decode_json($content); 1 };
+
+    my $error = $@;
+    $error =~ s/ at \S+? line \d+\.?$//;
+    error_as_json($self->response, undef, "JSON parse error: $error");
+    return 1;
+};
 
 sub allowed_methods {
     [ 'GET', 'POST' ]
