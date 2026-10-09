@@ -98,7 +98,7 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
     my @elements;
     if ( $ScrollShowHistory ) {
         push( @elements, qq{<span id="LoadAllHistoryContainer">} .
-                         qq{<a href="#" id="LoadAllHistory">} .
+                         qq{<a href="#" id="LoadAllHistory" class="dropdown-item">} .
                          loc('Load all history') .
                          qq{</a>} .
                          qq{</span>} );
@@ -109,7 +109,7 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
             my $open_all  = $m->interp->apply_escapes( loc("Show all quoted text"), 'j' );
             my $open_html = $m->interp->apply_escapes( loc("Show all quoted text"), 'h' );
             my $close_all = $m->interp->apply_escapes( loc("Hide all quoted text"), 'j' );
-            push( @elements, qq{<a href="#" class="toggle-quoted-text" data-direction="open" } .
+            push( @elements, qq{<a href="#" class="dropdown-item toggle-quoted-text" data-direction="open" } .
                              qq{onclick="return toggle_all_folds(this, $open_all, $close_all);"} .
                              qq{>$open_html</a>} );
         }
@@ -119,7 +119,7 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
             my $brief_text = $m->interp->apply_escapes( loc("Show brief headers") );
             my $full_text  = $m->interp->apply_escapes( loc("Show full headers") );
             push @elements,
-                qq{<a href="#" hx-boost="false" class="history-show-headers" data-history-headers-brief="$brief_text" data-history-headers-full="$full_text" data-history-headers="}
+                qq{<a href="#" hx-boost="false" class="dropdown-item history-show-headers" data-history-headers-brief="$brief_text" data-history-headers-full="$full_text" data-history-headers="}
                 . ( $ShowHeaders ? 0           : 1 ) . q{">}
                 . ( $ShowHeaders ? $brief_text : $full_text )
                 . qq{</a>};
@@ -158,16 +158,16 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
             qq{?ForceShowHistory=1;ReverseTxns=$reverse_txns;id=} . $Object->id;
         };
         if ( $load_with_helper ) {
-            push @elements, qq{<a hx-boost="false" class="history-reverse-order" href="#">} . loc("Reverse history order") . qq{</a>};
+            push @elements, qq{<a hx-boost="false" class="dropdown-item history-reverse-order" href="#">} . loc("Reverse history order") . qq{</a>};
         }
         else {
-            push @elements, qq{<a href="$href#$histid">} . loc("Reverse history order") . qq{</a>};
+            push @elements, qq{<a class="dropdown-item" href="$href#$histid">} . loc("Reverse history order") . qq{</a>};
         }
     }
 
     # page layout changes can only be seen on the config history page
     push @elements,
-          '<a href="'
+          '<a class="dropdown-item" href="'
         . RT->Config->Get('WebPath')
         . '/Admin/Tools/ConfigHistory.html">'
         . loc('Page layout history') . '</a>'
@@ -239,7 +239,7 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
 
         # foreach of the elements, build a new <li>$element</li> and append to the output.
         foreach my $element ( @elements ) {
-            $titleright .= qq{<li class="dropdown-item">$element</li>};
+            $titleright .= qq{<li>$element</li>};
         }
 
         $titleright .= q{</ul></span>};

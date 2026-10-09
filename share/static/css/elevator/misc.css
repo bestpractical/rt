@@ -268,15 +268,12 @@ a:hover.close {
         background-color: rgba(242, 242, 242);
     }
 
-    /* Do not change background color on click of dropdown items like "Show
-     * full headers" in ticket history */
-    .btn-group.dropdown .dropdown-item:active {
-        background-color: transparent;
-    }
-
-    /* Same for dropdowns in titleboxes */
-    span.right-icon .dropdown-item:active {
-        background-color: transparent;
+    /* Restyle only the press: .active marks a selected item, and restyling
+       it too made selected options invisible. Dark mode needs no rule, as
+       nav.css's dark hover rule already outranks Bootstrap's :active. */
+    .dropdown-menu .dropdown-item:active:not(.active) {
+        background-color: var(--bs-dropdown-link-hover-bg);
+        color: var(--bs-dropdown-link-hover-color);
     }
 }
 
@@ -306,4 +303,9 @@ a:hover.close {
 /* Alert links with underline */
 .alert a {
     text-decoration: underline;
+}
+
+/* Don't underline links in a dropdown */
+.dropdown-menu a:hover {
+    text-decoration: none;
 }
