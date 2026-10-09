@@ -285,4 +285,59 @@ is $broken_ticket->Priority, 0, 'nothing ran, so the ticket was left alone';
 is $broken_process->SubValue('Counter'), 0,
     'Counter did not advance for a run that never started';
 
+# Disable it so the process below is exercised in isolation
+my ( $broken_off_ok, $broken_off_msg ) = $broken_process->SetSubValues( Disabled => 1 );
+ok $broken_off_ok, "disabled the unstartable process: $broken_off_msg";
+
+diag 'An rt-crontool killed by a signal must not be read as a successful run';
+
+# rt-crontool loads this action from PERL5LIB, and it kills rt-crontool with
+# SIGKILL when it is committed.
+my $action_dir = File::Spec->catdir( $patch_lib, 'RT', 'Action' );
+mkpath($action_dir);
+
+my $action_path = File::Spec->catfile( $action_dir, 'KillCrontool.pm' );
+open my $action_fh, '>', $action_path or die "Couldn't write $action_path: $!";
+print $action_fh <<'ACTION' or die "Couldn't write $action_path: $!";
+package RT::Action::KillCrontool;
+use strict;
+use warnings;
+use base 'RT::Action';
+sub Prepare { return 1 }
+sub Commit  { kill 'KILL', $$ }
+1;
+ACTION
+close $action_fh or die "Couldn't close $action_path: $!";
+
+my $killed_ticket = RT::Test->create_ticket(
+    Queue    => $queue->id,
+    Subject  => 'Killed scheduled process target',
+    Priority => 0,
+);
+ok $killed_ticket && $killed_ticket->id, 'created ticket for the killed process';
+
+my $killed_process = create_scheduled_process(
+    Description     => 'Kill rt-crontool every day',
+    SearchModuleArg => 'id = ' . $killed_ticket->id,
+    ActionModule    => 'KillCrontool',
+    ActionModuleArg => '',
+    Frequency       => 'daily',
+);
+
+is $killed_process->SubValue('Counter'), 0, 'Counter starts at 0';
+
+my $killed_output;
+{
+    local $ENV{PERL5LIB} = join $Config{path_sep}, grep { defined && length }
+        $patch_lib, $ENV{PERL5LIB};
+
+    $killed_output = run_scheduled_processes($day1);
+}
+reload( $killed_ticket, $killed_process );
+
+like $killed_output, qr/rt-crontool was killed by signal 9\b/,
+    'the signal that killed rt-crontool was logged';
+is $killed_process->SubValue('Counter'), 0,
+    'Counter did not advance for a run killed by a signal';
+
 done_testing;
