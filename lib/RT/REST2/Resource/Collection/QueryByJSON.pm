@@ -141,7 +141,10 @@ sub limit_collection_from_json {
                 next;
             }
 
-            $collection->LimitCustomField(
+            # Bypass the LimitCustomField overrides: RT::Tickets' legacy version
+            # drops limits added earlier, and RT::Articles' ignores CUSTOMFIELD
+            # and matches the value in any custom field.
+            $collection->_LimitCustomField(
               VALUE       => $limit->{'value'},
               CUSTOMFIELD => $custom_field_object->Id,
               ( $limit->{operator}
