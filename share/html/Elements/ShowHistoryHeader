@@ -414,6 +414,9 @@ jQuery(function(){
     jQuery('.new-messages-buttons > a').on('click', function (e) {
         var link = jQuery(this);
         if ( link[0].hash ) {
+            const txnId = link[0].hash.replace('#txn-', '');
+            if (document.querySelector(`.history-container div.transaction[data-transaction-id="${txnId}"]`)) return true;
+
             hash = link[0].hash;
             loadHistoryPage();
         }
