@@ -83,6 +83,27 @@ ok $m->login( 'user', 'password' ), 'logged in as user';
 }
 
 {
+    my $ticket = RT::Test->create_ticket( Queue => $queue->id, Subject => 'sla update', SLA => 4 );
+    is( $ticket->SLA, 4, 'ticket has SLA 4, differing from the queue default 2' );
+
+    for my $action (qw/Comment Respond/) {
+        $m->get_ok( $baseurl . "/Ticket/Update.html?id=" . $ticket->id . "&Action=$action" );
+        my $form = $m->form_name('TicketUpdate');
+        is( $form->find_input('SLA')->value,
+            4, "$action form defaults SLA to the ticket current SLA, not the queue default" );
+    }
+
+    $ticket->_Set( Field => 'SLA', Value => '', RecordTransaction => 0 );
+    is( $ticket->SLA, '', 'ticket has no SLA set' );
+
+    for my $action (qw/Comment Respond/) {
+        $m->get_ok( $baseurl . "/Ticket/Update.html?id=" . $ticket->id . "&Action=$action" );
+        my $form = $m->form_name('TicketUpdate');
+        is( $form->find_input('SLA')->value, '', "$action form leaves SLA unset when the ticket has none" );
+    }
+}
+
+{
     $m->get_ok( $baseurl . '/Admin/Queues/Modify.html?id=' . $queue->id );
     my $form = $m->form_name( 'ModifyQueue' );
     $m->untick( 'SLAEnabled', 1 );

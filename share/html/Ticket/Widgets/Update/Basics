@@ -125,7 +125,7 @@
                 comp => '/Elements/SelectSLA',
                 args => {
                     Name         => "SLA",
-                    Default      => $ARGS{SLA} || RT::SLA->GetDefaultServiceLevel( Queue => $TicketObj->QueueObj ),
+                    Default      => $ARGS{SLA},
                     DefaultFromArgs => 0,
                     TicketObj     => $TicketObj,
                 },
