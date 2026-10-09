@@ -167,6 +167,12 @@ $transactions->OrderByCols(
     { FIELD => 'id',        ORDER => $order },
 );
 
+# The focused transaction is already loaded if the cursor has passed it
+undef $focusTransactionId
+    if $focusTransactionId
+    && $lastTransactionId
+    && ( $oldestTransactionsFirst ? $lastTransactionId >= $focusTransactionId : $lastTransactionId <= $focusTransactionId );
+
 # Handle pagination parameters
 my $total_transactions_count;
 my $total_pages;
