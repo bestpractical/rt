@@ -331,6 +331,8 @@ jQuery(function(){
                 hashTransactionId = matches[1];
                 queryString += '&focusTransactionId=' + hashTransactionId;
             }
+            // Only need to focus once
+            hash = null;
         }
 
         let transactions = container.querySelectorAll('.history-container div.transaction');
@@ -358,8 +360,8 @@ jQuery(function(){
                 }
 
                 if (hashTransactionId) { // focus transaction if we are following a link to it
+                    location.href = '#txn-' + hashTransactionId;
                     hashTransactionId = null;
-                    location.href = hash;
                 }
             }
             else {
