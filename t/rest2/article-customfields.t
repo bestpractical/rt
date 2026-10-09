@@ -386,4 +386,23 @@ for my $value ( 'scalar', ['array reference'], [ 'multiple', 'values' ], ) {
     modify_multi_ok( [ 'bar', 'bar', 'bar' ], [ undef, undef ], ['bar'], 'multiple values with the same name' );
 }
 
+# Article Search by custom field
+{
+    my $res = $mech->post_json( "$rest_base_path/articles",
+        [ { field => 'CF.{Multi}', value => 'bar' } ],
+        'Authorization' => $auth,
+    );
+    is( $res->code, 200 );
+    my $content = $mech->json_response;
+    is( $content->{count},        1 );
+    is( $content->{items}[0]{id}, $article_id );
+
+    $res = $mech->post_json( "$rest_base_path/articles",
+        [ { field => 'CF.{Multi}', value => 'Hello world!' } ],
+        'Authorization' => $auth,
+    );
+    is( $res->code,                    200 );
+    is( $mech->json_response->{count}, 0, 'value in a different custom field does not match' );
+}
+
 done_testing;
