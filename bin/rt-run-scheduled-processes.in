@@ -256,13 +256,19 @@ sub RunCrontoolJob {
         return 0;
     }
 
-    my $exit = $? >> 8;
+    my $exit   = $? >> 8;
+    my $signal = $? & 127;
 
     $RT::Logger->debug( "scheduled process rt-crontool exit: $exit" );
     $RT::Logger->debug( "scheduled process rt-crontool output: $stdout" )
         if $stdout;
     $RT::Logger->error( "scheduled process rt-crontool error: $stderr" )
         if $stderr;
+
+    if ( $signal ) {
+        $RT::Logger->error( "scheduled process rt-crontool was killed by signal $signal" );
+        return 0;
+    }
 
     return $exit ? 0 : 1;
 }
