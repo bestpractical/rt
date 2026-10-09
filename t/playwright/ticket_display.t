@@ -87,6 +87,33 @@ diag "Linked queue portlet pagination";
     is( $page->locator($rows)->count, 1, 'page 2 of linked-queue portlet shows 1 child' );
 }
 
+diag "Scroll history with a transaction link";
+{
+    $root->SetPreferences( RT->System, { %{ $root->Preferences( RT->System ) || {} }, ShowHistory => 'scroll' } );
+
+    my $ticket = RT::Test->create_ticket( Queue => 'General', Subject => 'Test scroll history with txn link' );
+    $ticket->Comment( Content => "Comment $_" ) for 1 .. 60;
+    my @txn_ids = map { $_->Id } @{ $ticket->Transactions->ItemsArrayRef };
+
+    my $page = $p->{page};
+    $p->get_ok( '/Ticket/Display.html?id=' . $ticket->Id . "#txn-$txn_ids[30]" );
+    $p->wait_for_element(qq{div.transaction[data-transaction-id="$txn_ids[30]"]});
+
+    my $done = 'return document.querySelector(".history-container").hasAttribute("data-disable-scroll-loading")';
+    for ( 1 .. 20 ) {
+        last if $page->evaluate($done);
+        $page->evaluate('window.scrollTo(0, document.body.scrollHeight)');
+        $p->wait_for_htmx;
+    }
+    ok( $page->evaluate($done), 'Scroll loading is finished' );
+    is( $page->evaluate(
+            'return [...document.querySelectorAll(".history-container > div.transaction")].pop().dataset.transactionId'
+        ),
+        $txn_ids[0],
+        'Transactions older than the linked one are loaded'
+      );
+}
+
 $p->logout;
 
 done_testing;
