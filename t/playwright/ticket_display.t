@@ -114,6 +114,45 @@ diag "Scroll history with a transaction link";
       );
 }
 
+diag "Scroll history after jumping to a loaded unread message";
+{
+    $root->SetPreferences( RT->System,
+        { %{ $root->Preferences( RT->System ) || {} }, ShowUnreadMessageNotifications => 1 } );
+
+    my $ticket = RT::Ticket->new( RT::CurrentUser->new($root) );
+    $ticket->Create( Queue => 'General', Subject => 'Test scroll history with unread message' );
+    $ticket->Comment( Content => "Comment $_" ) for 1 .. 60;
+
+    my $system_ticket = RT::Ticket->new( RT->SystemUser );
+    $system_ticket->Load( $ticket->Id );
+    my ($unread_txn_id) = $system_ticket->Comment( Content => 'Unread comment' );
+    my @txn_ids = map { $_->Id } @{ $ticket->Transactions->ItemsArrayRef };
+
+    my $page = $p->{page};
+    $p->get_ok( '/Ticket/Display.html?id=' . $ticket->Id );
+    $p->wait_for_element(qq{div.transaction[data-transaction-id="$unread_txn_id"]});
+    $p->wait_for_htmx;
+
+    my $done = 'return document.querySelector(".history-container").hasAttribute("data-disable-scroll-loading")';
+    ok( !$page->evaluate($done), 'Scroll loading is not finished yet' );
+
+    $page->locator('.new-messages-buttons a.jump-to-unread')->click;
+    $p->wait_for_htmx;
+
+    for ( 1 .. 20 ) {
+        last if $page->evaluate($done);
+        $page->evaluate('window.scrollTo(0, document.body.scrollHeight)');
+        $p->wait_for_htmx;
+    }
+    ok( $page->evaluate($done), 'Scroll loading is finished' );
+    is( $page->evaluate(
+            'return [...document.querySelectorAll(".history-container > div.transaction")].pop().dataset.transactionId'
+        ),
+        $txn_ids[0],
+        'All transactions are loaded'
+      );
+}
+
 $p->logout;
 
 done_testing;
