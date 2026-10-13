@@ -114,6 +114,10 @@ window.RT.Autocomplete.bind = function(from) {
                     selectOnTab: true,
                     createOnBlur: true,
                     placeholder: input.attr('placeholder'),
+                    onDropdownOpen: positionTomSelectDropdown,
+                    onLoad: function() {
+                        if ( this.isOpen ) positionTomSelectDropdown(this.dropdown);
+                    },
                     render: {
                         option_create: function(data, escape) {
                             return '<div class="create"><strong>' + escape(data.input) + '</strong></div>';
@@ -250,6 +254,10 @@ window.RT.Autocomplete.bind = function(from) {
                 selectOnTab: true,
                 createOnBlur: true,
                 placeholder: input.attr('placeholder'),
+                onDropdownOpen: positionTomSelectDropdown,
+                onLoad: function() {
+                    if ( this.isOpen ) positionTomSelectDropdown(this.dropdown);
+                },
                 render: {
                     loading: function(data,escape) {
                         return '<div class="spinner-border spinner-border-sm ms-3"></div>';
@@ -258,6 +266,7 @@ window.RT.Autocomplete.bind = function(from) {
                 load: function(query, callback) {
                     if (!query.length) return callback();
                     queryargs.term = query;
+                    const ts = this;
                     jQuery.ajax({
                         url: source,
                         type: 'GET',
@@ -267,7 +276,12 @@ window.RT.Autocomplete.bind = function(from) {
                             callback();
                         },
                         success: function(res) {
-                            input[0].tomselect.clearOptions();
+                            // The widget may have been destroyed while this request was in
+                            // flight (e.g. the Links add-row rebinds its value box when a
+                            // typed prefix switches the object type), possibly with a new widget
+                            // bound in its place. Nothing left to update.
+                            if (input[0].tomselect !== ts) return;
+                            ts.clearOptions();
                             callback(res);
                         }
                     });

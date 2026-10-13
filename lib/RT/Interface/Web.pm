@@ -4861,10 +4861,17 @@ sub ProcessLinksForCreate {
     foreach my $type ( keys %RT::Link::DIRMAP ) {
         for ([Base => "new-$type"], [Target => "$type-new"]) {
             my ($direction, $key) = @$_;
-            next unless $args{ARGSRef}->{$key};
-            $links{ $RT::Link::DIRMAP{$type}->{$direction} } = [
-                grep $_, split ' ', $args{ARGSRef}->{$key}
-            ];
+            my $val = $args{ARGSRef}->{$key};
+            next unless defined $val && ( ref $val ? @$val : length $val );
+
+            # The row-based Add-links UI posts one field per row, so repeated link
+            # types arrive as an arrayref; the legacy inputs post a space-separated
+            # scalar. Normalize both to a flat list of non-empty targets.
+            my @values = grep { defined && length } ( ref $val ? @$val : ($val) );
+            my @targets = grep { length } map { split ' ', $_ } @values;
+            next unless @targets;
+
+            $links{ $RT::Link::DIRMAP{$type}->{$direction} } = \@targets;
         }
     }
     return wantarray ? %links : \%links;
@@ -5051,6 +5058,24 @@ sub ProcessColumnMapValue {
         }
         return $value;
     }
+}
+
+=head2 CollectionColumnClass ATTRIBUTE
+
+Returns the CSS class that marks a collection table column showing
+ATTRIBUTE, a column's field such as C<Subject> or
+C<CustomField.{Serial Number}>, or an empty string for a column with
+no field. The class is ATTRIBUTE lowercased with anything other than
+letters and digits turned into dashes, after C<rt-collection-column->:
+C<rt-collection-column-subject>, C<rt-collection-column-customfield-serial-number>.
+
+=cut
+
+sub CollectionColumnClass {
+    my $attribute = shift // '';
+    ( my $name = lc $attribute ) =~ s/[^a-z0-9]+/-/g;
+    $name =~ s/^-+|-+$//g;
+    return length $name ? "rt-collection-column-$name" : '';
 }
 
 sub ProcessQuickCreate {

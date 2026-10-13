@@ -27,6 +27,34 @@ function transactionFilterSelectNone(clickedLink, event) {
     return false;
 }
 
+/* Links Filter Functions */
+
+function linksFilterSelectAll(link, group, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    linksFilterSetGroup(link, group, true);
+    return false;
+}
+
+function linksFilterSelectNone(link, group, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    linksFilterSetGroup(link, group, false);
+    return false;
+}
+
+function linksFilterSetGroup(link, group, checked) {
+    const form = link.closest('.links-filter-form');
+    if (!form) return;
+    const boxes = form.querySelectorAll(`input[name="${group}"][type="checkbox"]`);
+    boxes.forEach(box => { box.checked = checked; });
+    if (boxes[0]) boxes[0].dispatchEvent(new Event('change', { bubbles: true }));
+}
+
 /* Calendar Status Filter Functions */
 
 function calendarStatusFilterSelectAll(clickedLink, event) {
@@ -564,6 +592,34 @@ function textToHTML(value) {
 };
 
 
+// Open a TomSelect dropdown upward, or align it to the control's right edge, when it would run past
+// the viewport or page. Every TomSelect calls it on open, and autocompletes again when results
+// load, since they resize the open dropdown.
+function positionTomSelectDropdown(dropdown) {
+    // Hide the dropdown temporarily to avoid the possible flash when dropdown becomes dropup.
+    dropdown.style.visibility = 'hidden';
+    setTimeout(function() {
+        // Measure from the default position: a dropdown already flipped would measure as fitting.
+        dropdown.classList.remove('dropup', 'dropdown-end');
+        let bounding = dropdown.getBoundingClientRect();
+        // Use dropup if there's room above and dropdown extends below viewport or document bottom
+        // dropup shows above the control element (.ts-control), so we need to subtract its height
+        const top = bounding.top - dropdown.previousElementSibling.offsetHeight;
+        if ((top > bounding.height && bounding.bottom > window.innerHeight) ||
+            (top + window.scrollY > bounding.height && bounding.bottom + window.scrollY > document.documentElement.scrollHeight)) {
+            dropdown.classList.add('dropup');
+        }
+        // The dropdown grows to fit its options (see tom-select-rt.css), so in a right-hand table
+        // column or a right-aligned modal it can run past the viewport. Align it to the control's
+        // right edge instead, if that leaves it fully on screen.
+        if ( bounding.right > document.documentElement.clientWidth
+            && dropdown.parentElement.getBoundingClientRect().right - bounding.width >= 0 ) {
+            dropdown.classList.add('dropdown-end');
+        }
+        dropdown.style.visibility = 'visible';
+    }, 0);
+}
+
 // Initialize the tom-select library
 function initializeSelectElement(elt) {
     let settings = {
@@ -577,26 +633,22 @@ function initializeSelectElement(elt) {
         }
     };
 
-    settings.onDropdownOpen = function (dropdown) {
-        // Hide the dropdown temporarily to avoid the possible flash when dropdown becomes dropup.
-        dropdown.style.visibility = 'hidden';
-        setTimeout(function() {
-            let bounding = dropdown.getBoundingClientRect();
-            // Use dropup if there's room above and dropdown extends below viewport or document bottom
-            // dropup shows above the control element (.ts-control), so we need to subtract its height
-            const top = bounding.top - dropdown.previousElementSibling.offsetHeight;
-            if ((top > bounding.height && bounding.bottom > window.innerHeight) ||
-                (top + window.scrollY > bounding.height && bounding.bottom + window.scrollY > document.documentElement.scrollHeight)) {
-                dropdown.classList.add('dropup');
-            }
-            dropdown.style.visibility = 'visible';
-        }, 0);
-    };
+    // Options may carry a short alternative label (data-short, e.g. the Links add-row selects).
+    // Render the selected item with both forms so CSS can swap to the short one where the control
+    // is narrow (see .ts-label-short in boxes.css); the open dropdown keeps the full labels.
+    if ( elt.querySelector && elt.querySelector('option[data-short]') ) {
+        settings.render.item = function(data, escape) {
+            return '<div><span class="ts-label-full">' + escape(data.text) + '</span>'
+                 + '<span class="ts-label-short">' + escape(data.short || data.text) + '</span></div>';
+        };
+    }
+
+    settings.onDropdownOpen = positionTomSelectDropdown;
 
     settings.onDropdownClose = function (dropdown) {
         // Remove focus after a value is selected
         this.blur();
-        dropdown.classList.remove('dropup');
+        dropdown.classList.remove('dropup', 'dropdown-end');
         // If dropdown was closed by Tab, move focus to the next/previous element
         if (this._closingByTab) {
             const shiftKey = this._closingByTabShift;
@@ -1148,13 +1200,6 @@ function fixupSearchFilterModal(elt,evt) {
             left = jQuery('body').width() - modal.width() - 10;
         }
         modal.css('left', left);
-        // Mark modal as left or right based on position, so we can apply different styles on tomselect dropdowns.
-        if ( left + 0.5 * modal.width() <= 0.5 * jQuery('body').width() ) {
-            modal.addClass('modal-left').removeClass('modal-right');
-        }
-        else {
-            modal.addClass('modal-right').removeClass('modal-left');
-        }
 
         if ( modal.find('[data-autocomplete], .selectpicker').length ) {
             modal.find('.modal-dialog-scrollable').removeClass('modal-dialog-scrollable');
@@ -1409,6 +1454,10 @@ function loadOwnerDropdownDelay(owner_dropdown_delay) {
             owner_dropdown_delay.addClass('loaded');
             initializeSelectElements(owner_dropdown_delay.get(0));
             RT.Autocomplete.bind(owner_dropdown_delay);
+            const editor = owner_dropdown_delay.closest('div.editable.editing form.editor');
+            if ( editor.length ) {
+                keepInlineEditorOnScreen(editor);
+            }
         });
     }
 }
@@ -1711,6 +1760,8 @@ function registerLoadListener(func, key) {
 
 function clipContent(elt) {
     jQuery(elt).find('td.collection-as-table').each( function() {
+        // The Links widget truncates with an ellipsis instead (see linksTruncatedTooltip).
+        if ( jQuery(this).closest('.links-widget').length ) return;
         if ( jQuery(this).children() ) {
             var max_height = jQuery(this).css('line-height').replace('px', '') * 5;
             var height     = '' + max_height + 'px';
@@ -1777,6 +1828,18 @@ function inlineEditEscapeKeyHandler (e) {
     }
 };
 
+// Shift an open inline editor left if its contents, such as a TomSelect control and the check and
+// cancel icons after it, run past the viewport. Measure the shown editor rather than predict its
+// width: a delayed Owner dropdown can load after the editor opens.
+function keepInlineEditorOnScreen(editor) {
+    const right = Math.max(...[...editor.get(0).children].map(child => child.getBoundingClientRect().right));
+    // Never past the left edge, which would hide the start of the control instead.
+    const shift = Math.min(right + 10 - document.documentElement.clientWidth, editor.get(0).getBoundingClientRect().left);
+    if ( shift > 0 ) {
+        editor.css('left', parseFloat(editor.css('left')) - shift);
+    }
+}
+
 function beginInlineEdit(cell) {
     var editor = cell.find('.editor');
 
@@ -1804,19 +1867,10 @@ function beginInlineEdit(cell) {
         // Here we hardcoded min-width and remove .items-placeholder to avoid layout shift.
         editor.find('.ts-control').css('min-width', 100 );
         editor.find('.ts-control .items-placeholder').remove();
-
-        // tomselected inputs need more space, 40 is to make sure close/check images are visible
-        if ( left + editor.width() + 40 > jQuery('body').width() ) {
-            left = jQuery('body').width() - editor.width() - 40;
-        }
     }
 
     editor.css('top', top);
     editor.css('left', left);
-
-    if ( left > 0.5 * jQuery('body').width() ) {
-        editor.addClass('inline-edit-right');
-    }
 
     if ( !editor.find('.tomselected').length ) {
         editor.css('width', cell.width() > 100 ? cell.width() : 100 );
@@ -1825,6 +1879,7 @@ function beginInlineEdit(cell) {
 
     // Editor's height is bigger than viewer. Here we lift it up so editor can better take the viewer's position
     editor.css('margin-top', (cell.height() - editor.height())/2);
+    keepInlineEditorOnScreen(editor);
 
     editor.find(':input:visible:enabled:first').focus();
     editor.find('select.selectpicker')[0]?.tomselect.open();
@@ -1903,3 +1958,481 @@ jQuery.fn.combobox.Constructor.prototype.clearElement = function () {
 
 htmx.config.includeIndicatorStyles = false;
 htmx.config.scrollBehavior = 'smooth';
+
+function initLinksFilter(form) {
+    if (form.dataset.lfInit) return;
+    form.dataset.lfInit = '1';
+
+    const toggle   = form.querySelector('.links-filter-toggle');
+    const searchEl = form.querySelector('input[name="Search"]');
+    const hideInactiveEl = form.querySelector('input[name="HideInactive"]');
+    let debounce;
+
+    function selected(group) {
+        return Array.from(form.querySelectorAll(`input[name="${group}"]:checked`)).map(el => el.value);
+    }
+    function total(group) {
+        return form.querySelectorAll(`input[name="${group}"]`).length;
+    }
+
+    function apply() {
+        clientFilter();
+    }
+
+    // Search haystack of visible text only, skipping DOM that's hidden -- chiefly the inline-edit
+    // form (rendered hidden beneath each editable cell, carrying every <select> option). Cached
+    // per render on the row as _lhay since visibility doesn't change with the search term.
+    function visibleHaystack(row) {
+        const clone = row.cloneNode(true);
+        clone.querySelectorAll('.editor, [hidden], [aria-hidden="true"], .d-none').forEach(el => el.remove());
+        return `${row.getAttribute('data-record-id') || ''} ${clone.textContent}`.toLowerCase();
+    }
+
+    // s is already lowercased by clientFilter.
+    function textMatch(row, s) {
+        return !s.length || ( row._lhay != null ? row._lhay : visibleHaystack(row) ).indexOf(s) >= 0;
+    }
+
+    // The server's first render already applies these defaults (see Elements/ShowLinksSection),
+    // so while the form still matches them the rows it held back can stay unloaded.
+    const filterState = () => Array.from(form.querySelectorAll('input[type=checkbox]'))
+        .map(el => el.checked ? 1 : 0).join('');
+    const defaultState = filterState();
+
+    // Rows are held back by the per-section cap (a Show all control) or by a default filter
+    // (data-links-partial). Fetch them all once a search or filter change could reveal them.
+    function loadFullList(target) {
+        if (target.dataset.linksLoadingAll) return true;
+        const carrier = target.querySelector('.links-total');
+        const partial = target.querySelector('.links-show-all')
+                     || (carrier && carrier.getAttribute('data-links-partial') === '1');
+        if (!partial) return false;
+        if (!searchEl.value.trim().length && filterState() === defaultState) return false;
+
+        let url = target.getAttribute('hx-get');
+        if (!url) return false;
+        if (!/[?&]ShowAll=1\b/.test(url)) {
+            // Keep later links-changed refreshes complete too, while this filter is in use.
+            url += '&ShowAll=1';
+            target.setAttribute('hx-get', url);
+            htmx.process(target);
+        }
+        target.dataset.linksLoadingAll = '1';
+        // Refilter here rather than rely on onSettle: htmx may settle while the flag is still set.
+        linksSwapKeepingDeletes(target, url, 'innerHTML')
+            .finally(() => {
+                delete target.dataset.linksLoadingAll;
+                clientFilter();
+            });
+        return true;
+    }
+
+    function clientFilter() {
+        const target = form.dataset.linksTarget ? document.querySelector(form.dataset.linksTarget) : null;
+        if (!target) return;
+        if (loadFullList(target)) return;
+        const s = searchEl.value.trim().toLowerCase();
+        const rels = selected('ShowRelationship'), objs = selected('ShowObjectType');
+        const relAll = rels.length === total('ShowRelationship');
+        const objAll = objs.length === total('ShowObjectType');
+        const hideInactive = hideInactiveEl && hideInactiveEl.checked;
+        // Search text shows in its own box, so the funnel marks only what the funnel itself hides.
+        const active = !relAll || !objAll || !!hideInactive;
+        form.classList.toggle('links-filter-active', active);
+        const label = toggle.dataset[active ? 'labelActive' : 'label'];
+        if (label) {
+            toggle.querySelector('.links-filter').setAttribute('aria-label', label);
+            toggle.setAttribute('data-bs-title', label);
+            // Bootstrap reads the title once, when it creates the tooltip.
+            bootstrap.Tooltip.getInstance(toggle)?.setContent({ '.tooltip-inner': label });
+        }
+
+        target.querySelectorAll('.links-section').forEach(section => {
+            const relType = (section.id || '').replace('links-section-', '');
+            const relOk   = relAll || rels.includes(relType);
+
+            section.querySelectorAll('.links-type-table').forEach(table => {
+                if (table.classList.contains('links-tree')) {
+                    // Children tree: keep each match plus its ancestor chain (by data-depth),
+                    // so the hierarchy/context is retained. The tree is all tickets in Children.
+                    const typeOk = objAll || objs.includes('Ticket');
+                    const rows = Array.from(table.querySelectorAll('tbody tr'));
+                    const keep = new Array(rows.length).fill(false);
+                    const ancestorAt = [];   // ancestorAt[depth] = index of current ancestor row
+                    rows.forEach((row, i) => {
+                        const depth = parseInt(row.getAttribute('data-depth'), 10) || 1;
+                        ancestorAt[depth] = i;
+                        ancestorAt.length = depth + 1;   // forget deeper, now-stale ancestors
+                        const inactiveOk = !hideInactive || !row.classList.contains('record-inactive');
+                        if (relOk && typeOk && textMatch(row, s) && inactiveOk) {
+                            for (let d = 1; d <= depth; d++) {
+                                if (ancestorAt[d] != null) keep[ancestorAt[d]] = true;
+                            }
+                        }
+                    });
+                    rows.forEach((row, i) => row.classList.toggle('d-none', !keep[i]));
+                    table.classList.toggle('d-none', !keep.some(Boolean));
+                }
+                else {
+                    const ot     = table.dataset.linksObjectType;
+                    const typeOk = objAll || objs.includes(ot);
+                    table.querySelectorAll('tbody tr').forEach(row => {
+                        const inactiveOk = !hideInactive || !row.classList.contains('record-inactive');
+                        const show = relOk && typeOk && textMatch(row, s) && inactiveOk;
+                        row.classList.toggle('d-none', !show);
+                    });
+                    table.classList.toggle('d-none', table.querySelectorAll('tbody tr:not(.d-none)').length === 0);
+                }
+            });
+
+            const visibleCount = section.querySelectorAll('tbody tr:not(.d-none)').length;
+            section.classList.toggle('d-none', !relOk || visibleCount === 0);
+        });
+
+        // Rendered only when the listing has links; the server shows it when its default filters
+        // leave nothing to render, and from here on it follows what the filter leaves visible.
+        const noMatch = target.querySelector('.links-no-match');
+        if (noMatch) {
+            noMatch.classList.toggle('d-none', !!target.querySelector('.links-section:not(.d-none) tbody tr:not(.d-none)'));
+        }
+    }
+
+    searchEl.addEventListener('input', () => {
+        clearTimeout(debounce);
+        debounce = setTimeout(apply, 300);
+    });
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        apply();
+        const dropdown = bootstrap.Dropdown.getInstance(toggle.querySelector('.links-filter'));
+        if (dropdown) dropdown.hide();
+    });
+
+    // Refilter on init and after every *LinksChanged re-render. The bar lives outside the target it
+    // refreshes, and a links change re-fetches the whole EditLinks container -- replacing the target
+    // node -- so bind to the stable titlebox and re-resolve the target each time (a listener on the
+    // target itself would be orphaned by that first swap, freezing the bar's shown/hidden state).
+    if (form.dataset.linksTarget) {
+        const scope = form.closest('.titlebox') || document;
+        const onSettle = () => {
+            const target = document.querySelector(form.dataset.linksTarget);
+            if (!target) return;
+            // Rebuild the per-row haystack cache: rows are fresh DOM after every re-render.
+            target.querySelectorAll('.links-type-table tbody tr').forEach(row => {
+                row._lhay = visibleHaystack(row);
+            });
+            clientFilter();
+            const carrier = target.querySelector('.links-total');
+            const totalLinks = carrier ? parseInt(carrier.getAttribute('data-links-total'), 10) || 0 : 0;
+            form.classList.toggle('d-none', totalLinks === 0);
+        };
+        scope.addEventListener('htmx:afterSettle', onSettle);
+        onSettle();
+    }
+}
+
+// Re-render part of the Links list, keeping any delete checkboxes the user has already checked:
+// the fresh rows come back unchecked, and the rows are in the edit form the user hasn't saved.
+function linksSwapKeepingDeletes(target, url, swap) {
+    const scope = target.closest('.links-edit-target, .links-display-target') || target.parentElement;
+    const checked = Array.from(scope.querySelectorAll('input.delete-checkbox:checked')).map(el => el.name);
+    return htmx.ajax('GET', url, { target: target, swap: swap }).then(() => {
+        checked.forEach(name => {
+            const box = scope.querySelector(`input.delete-checkbox[name="${CSS.escape(name)}"]`);
+            if (box && !box.checked) {
+                box.checked = true;
+                box.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+    });
+}
+
+// Links widget: a value cut off by its ellipsis shows its full text in a tooltip on hover or
+// focus. The tooltip is created on first use and carries data-bs-toggle, so init.js's
+// beforeCleanupElement hook disposes it when the row is swapped out.
+function linksTruncatedTooltip(e) {
+    const cell = e.target.closest && e.target.closest('.titlebox.links-widget .links-type-table td.collection-as-table');
+    if (!cell || cell.querySelector(':scope > .links-tree-id')) return;
+    const clip = cell.querySelector(':scope > div.editable > .value > span') || cell.querySelector(':scope > div:not(.editable)');
+    // Only from the value itself, so the tooltip's own mouseleave (from the value) hides it.
+    if (!clip || !clip.contains(e.target) || bootstrap.Tooltip.getInstance(clip)) return;
+    if (clip.scrollWidth <= clip.clientWidth) return;
+
+    clip.setAttribute('data-bs-toggle', 'tooltip');
+    clip.setAttribute('data-bs-title', clip.textContent.replace(/\s+/g, ' ').trim());
+    // A resize can leave the value no longer cut off; don't repeat what's already visible.
+    clip.addEventListener('show.bs.tooltip', function (ev) {
+        if (clip.scrollWidth <= clip.clientWidth) ev.preventDefault();
+    });
+    new bootstrap.Tooltip(clip, { trigger: 'hover focus' }).show();
+}
+
+function initAddLinkRows(section) {
+    if (section.dataset.alrInit) return;
+    section.dataset.alrInit = '1';
+
+    // Already-linked exclusions, keyed by canonical link Type (DependsOn/MemberOf/RefersTo) then
+    // object type, pre-joined with each endpoint's exclude delimiter (see Elements/AddLinks).
+    let linkExcludes = {};
+    try { linkExcludes = JSON.parse(section.dataset.linkExcludes || '{}'); } catch (e) { linkExcludes = {}; }
+
+    // Set (or clear) the row value's data-autocomplete-exclude for its currently-selected
+    // relationship family + object type. The exclude list is baked into the autocompleter at
+    // bind time, so callers must run this BEFORE (re)binding for it to take effect.
+    function applyExcludes(row) {
+        const typeSel = row.querySelector('.link-type-select');
+        const typeOpt = typeSel.options[typeSel.selectedIndex] || null;
+        const family  = typeOpt ? typeOpt.dataset.type : '';
+        const ot      = row.querySelector('.link-object-type-select').value;
+        const input   = row.querySelector('.link-value');
+        const ex      = (family && linkExcludes[family] && linkExcludes[family][ot]) || '';
+        if (ex) input.setAttribute('data-autocomplete-exclude', ex);
+        else input.removeAttribute('data-autocomplete-exclude');
+    }
+
+    const prefixMap = { 'a:': 'article', 'asset:': 'asset', 'txn:': 'transaction', 'user:': 'user', 'group:': 'group' };
+    const txnUrlRe = /[?&]id=(\d+)[^#]*#txn-(\d+)/;
+
+    // It's a TomSelect, so setting .value alone won't update the widget; use the TomSelect API
+    // (which also fires the change event).
+    function setObjectType(ot, value) {
+        if (ot && ot.tomselect) ot.tomselect.setValue(value);
+        else { ot.value = value; ot.dispatchEvent(new Event('change', { bubbles: true })); }
+    }
+
+    function applyObjectType(row) {
+        const ot    = row.querySelector('.link-object-type-select');
+        const opt   = ot.options[ot.selectedIndex] || null;
+        const input = row.querySelector('.link-value');
+        input.setAttribute('placeholder', (opt && opt.dataset.placeholder) || '');
+        // (Re)bind autocomplete for the chosen type; plain text for txn/url.
+        const ac = opt && opt.dataset.autocomplete;
+        if (input.tomselect) input.tomselect.destroy();
+        applyExcludes(row);
+        if (ac) {
+            input.setAttribute('data-autocomplete', ac);
+            input.setAttribute('data-autocomplete-return', (opt && opt.dataset.return) || 'id');
+            RT.Autocomplete.bind(row);
+            // Typing in a TomSelect goes to its own search box, not .link-value, so the plain
+            // 'input' handler never sees it. Watch the 'type' event for a shorthand prefix and
+            // switch object types. Defer so we don't tear this TomSelect down inside its own event.
+            const ts = input.tomselect;
+            if (ts) ts.on('type', (str) => {
+                if (prefixIn(str)) setTimeout(() => handleTypedPrefix(row, str), 0);
+            });
+        } else {
+            input.removeAttribute('data-autocomplete');
+        }
+        assignName(row);
+    }
+
+    function assignName(row) {
+        // The hidden field is what submits; its name is the relationship type. The visible box is
+        // display-only (never named) so only the prefixed value reaches the server.
+        const field = row.querySelector('.link-type-select').value;
+        row.querySelector('.link-value-submit').setAttribute('name', field);
+        syncSubmit(row);
+    }
+
+    // Keep the hidden submit field in sync with the bare box + selected object type.
+    function syncSubmit(row) {
+        row.querySelector('.link-value-submit').value = valueWithPrefix(row);
+    }
+
+    // Users and groups are linked by a (unique) name that may contain spaces; the server
+    // splits link values on spaces, so submit the numeric id whenever we know it -- from an
+    // autocomplete pick (the loaded option carries an id) or a prefilled row (data-prefill-id).
+    function selectedId(row) {
+        const input = row.querySelector('.link-value');
+        if (!input) return null;
+        const ts = input.tomselect;
+        if (ts) {
+            const opt = ts.options[ts.getValue()];
+            if (opt && opt.id != null && String(opt.id).length) return opt.id;
+        }
+        // The prefilled id applies until the user changes the value away from its paired name.
+        const pid = row.getAttribute('data-prefill-id');
+        if (pid != null && String(pid).length
+            && input.value.trim() === (row.getAttribute('data-prefill-name') || '')) {
+            return pid;
+        }
+        return null;
+    }
+
+    // Compose the value the server resolves: the object type's shorthand prefix + the bare
+    // id/name shown in the box (e.g. asset 4 -> asset:4, user jdoe -> user:jdoe). For users and
+    // groups, submit the id (see selectedId) so a name with spaces survives parsing. Idempotent.
+    function valueWithPrefix(row) {
+        const ot     = row.querySelector('.link-object-type-select');
+        const opt    = ot.options[ot.selectedIndex] || null;
+        const prefix = (opt && opt.dataset.prefix) || '';
+        let v = row.querySelector('.link-value').value.trim();
+        if (!v) return '';
+        if (ot.value === 'user' || ot.value === 'group') {
+            const id = selectedId(row);
+            if (id != null && String(id).length) v = String(id);
+        }
+        if (prefix && v.indexOf(prefix) !== 0) return prefix + v;
+        return v;
+    }
+
+    // The reverse: keep the box clean by dropping the selected type's prefix if the user typed
+    // it. The object-type dropdown already conveys the type, so the prefix is redundant on screen.
+    function stripPrefix(row) {
+        const ot     = row.querySelector('.link-object-type-select');
+        const opt    = ot.options[ot.selectedIndex] || null;
+        const prefix = (opt && opt.dataset.prefix) || '';
+        if (!prefix) return;
+        const input = row.querySelector('.link-value');
+        const v = input.value.trim();
+        if (v.indexOf(prefix) === 0) input.value = v.slice(prefix.length);
+    }
+
+    // Detect a shorthand the user typed/pasted into the value box and switch the row to the
+    // matching object type, carrying over whatever follows the prefix so they keep typing in the
+    // right autocomplete. Driven from both the plain <input> (txn/url) and a TomSelect search box.
+    function handleTypedPrefix(row, str) {
+        const ot = row.querySelector('.link-object-type-select');
+        str = (str || '').trim();
+        const m = str.match(txnUrlRe);                        // pasted transaction URL -> txn + id
+        if (m) { switchType(row, ot, 'transaction', m[2]); return true; }
+        for (const p in prefixMap) {
+            if (str.indexOf(p) === 0 && ot.value !== prefixMap[p]) {
+                switchType(row, ot, prefixMap[p], str.slice(p.length));
+                return true;
+            }
+        }
+        if (/^https?:\/\//i.test(str) && ot.value !== 'url') {
+            switchType(row, ot, 'url', str);
+            return true;
+        }
+        return false;
+    }
+
+    function prefixIn(str) {
+        str = (str || '').trim();
+        if (txnUrlRe.test(str) || /^https?:\/\//i.test(str)) return true;
+        for (const p in prefixMap) if (str.indexOf(p) === 0) return true;
+        return false;
+    }
+
+    function switchType(row, ot, type, rest) {
+        row.querySelector('.link-value').value = '';   // start the rebuilt widget clean, then seed the rest
+        setObjectType(ot, type);                        // fires change -> applyObjectType rebinds the value box
+        seedRow(row, rest);
+    }
+
+    // Put the post-prefix remainder where the user can keep typing: into the new TomSelect's
+    // search box (and kick off its query), or straight into the plain input for txn/url.
+    function seedRow(row, rest) {
+        const input = row.querySelector('.link-value');
+        const ts = input.tomselect;
+        if (ts) {
+            ts.setTextboxValue(rest);
+            ts.focus();
+            if (rest.length) ts.load(rest);
+        } else {
+            input.value = rest;
+            syncSubmit(row);
+            // Setting .value fires no 'input' event, so the bound handler's auto-append never
+            // runs for a pasted URL or shorthand; append the blank row here as typing would.
+            ensureBlankRow();
+            input.focus();
+        }
+    }
+
+    // Plain-input (txn/url) path: typing updates .link-value directly.
+    function syncPrefix(row) {
+        handleTypedPrefix(row, row.querySelector('.link-value').value);
+    }
+
+    function rowHasContent(row) { return row.querySelector('.link-value').value.trim().length > 0; }
+
+    function ensureBlankRow() {
+        const rows = section.querySelectorAll('.add-link-row');
+        const last = rows[rows.length - 1];
+        if (rowHasContent(last)) {
+            const clone = rows[0].cloneNode(true);
+            const clonedInput = clone.querySelector('.link-value');
+            // A cloned tom-select carries over the original's hidden-state markup; start clean.
+            // (value input plus the type/object dropdowns, all tom-selects.)
+            clone.querySelectorAll('.ts-wrapper').forEach(el => el.remove());
+            clonedInput.classList.remove('tomselected', 'ts-hidden-accessible');
+            clonedInput.removeAttribute('tabindex');
+            clonedInput.style.display = '';
+            clonedInput.value = '';
+            clonedInput.removeAttribute('name');
+            const clonedSubmit = clone.querySelector('.link-value-submit');
+            clonedSubmit.value = '';
+            clonedSubmit.removeAttribute('name');
+            // rows[0] may be a prefilled row; the blank clone must not inherit its id-for-name pairing.
+            clone.removeAttribute('data-prefill-id');
+            clone.removeAttribute('data-prefill-name');
+            // ...nor its non-default type/object selection: reset both dropdowns to the default
+            // (the default link type, marked data-default by AddLinksRow, and Ticket) before
+            // initializeSelectElement so the rebuilt tom-selects pick it up.
+            const typeSel = clone.querySelector('.link-type-select');
+            typeSel.querySelectorAll('option').forEach(o => { o.selected = false; });
+            typeSel.querySelector('option[data-default]').selected = true;
+            const otSel = clone.querySelector('.link-object-type-select');
+            otSel.querySelectorAll('option').forEach(o => { o.selected = false; });
+            otSel.querySelector('option[value="ticket"]').selected = true;
+            const clonedSelects = clone.querySelectorAll('select.selectpicker');
+            clonedSelects.forEach(sel => {
+                sel.classList.remove('tomselected', 'ts-hidden-accessible');
+                sel.removeAttribute('tabindex');
+                sel.removeAttribute('id');
+                sel.style.display = '';
+            });
+            clone.querySelector('.remove-link-row').classList.remove('invisible');
+            section.querySelector('.add-links-rows').appendChild(clone);
+            clonedSelects.forEach(sel => initializeSelectElement(sel));
+            bindRow(clone);
+            applyObjectType(clone);
+        }
+    }
+
+    function bindRow(row) {
+        row.querySelector('.link-type-select').addEventListener('change', () => { applyObjectType(row); });
+        row.querySelector('.link-object-type-select').addEventListener('change', () => { applyObjectType(row); });
+        const valueInput = row.querySelector('.link-value');
+        valueInput.addEventListener('input', () => {
+            syncPrefix(row);
+            syncSubmit(row);
+            ensureBlankRow();
+        });
+        ['change', 'blur'].forEach(ev => valueInput.addEventListener(ev, () => {
+            stripPrefix(row);
+            syncSubmit(row);
+        }));
+        row.querySelector('.remove-link-row').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (section.querySelectorAll('.add-link-row').length > 1) row.remove();
+            // Clearing the last row: also clear the hidden submit field so no stale value posts.
+            else { row.querySelector('.link-value').value = ''; syncSubmit(row); }
+        });
+    }
+
+    section.querySelectorAll('.add-link-row').forEach(row => { bindRow(row); applyObjectType(row); });
+}
+
+// Tag a Children tree links-tree-deep (boxes.css gives it an auto-sized id column) when its id
+// column can't fit the cascade, so the id doesn't spill into Subject. Measuring the rendered cells
+// beats the server's depth guess (Elements/ShowLinksTree): it catches large ids and reacts to the
+// widget width. Re-run on htmx swaps, resize and expanding a rolled-up box.
+function fitLinksTree(scope) {
+    const root = scope && scope.querySelectorAll ? scope : document;
+    root.querySelectorAll('.titlebox.links-widget .links-tree.links-default-format').forEach(function (tree) {
+        // A rolled-up box measures every cell as 0; keep the server's guess until it is shown.
+        if (!tree.getClientRects().length) return;
+        // Drop the class first so we measure against the fixed layout; the toggle is synchronous,
+        // so there's no flicker.
+        tree.classList.remove('links-tree-deep');
+        let overflow = false;
+        const cells = tree.querySelectorAll('tbody .links-tree-id');
+        for (let i = 0; i < cells.length; i++) {
+            if (cells[i].scrollWidth > cells[i].clientWidth + 1) { overflow = true; break; }
+        }
+        if (overflow) tree.classList.add('links-tree-deep');
+    });
+}

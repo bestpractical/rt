@@ -185,6 +185,24 @@ missing 's' in the new filename). Existing callbacks should continue to work for
 now, but you should update your callback path to C<EditCustomField> as the
 old callback path will be removed in the future.
 
+=item /Elements/AddLinks ExtraLinkInstructions
+
+The ticket and asset Links widget was redesigned in RT 6.0.4. The "add links"
+form (C</Elements/AddLinks>) no longer shows the inline instructions explaining
+how to enter links; that guidance now lives in a separate "About links" modal
+rendered by the new C</Elements/LinksInfoModal> component, and the
+C<ExtraLinkInstructions> callback moved there with it. Move a callback at
+C<local/html/Callbacks/*/Elements/AddLinks/ExtraLinkInstructions> to
+C<local/html/Callbacks/*/Elements/LinksInfoModal/ExtraLinkInstructions> so it
+continues to run.
+
+The callback's context also changed. It now renders inside the modal body,
+after the "Shortcuts for the value field" list, instead of inline in the form,
+so a callback that previously appended a line of instruction text may want to
+emit its own heading and definition list to fit the modal. It also now receives
+an C<Object> argument and runs for assets as well as tickets, where previously
+it ran only for tickets.
+
 =back
 
 =item *

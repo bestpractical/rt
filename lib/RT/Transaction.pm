@@ -101,6 +101,7 @@ use URI::Escape ();
 # For EscapeHTML() and decode_entities()
 require RT::Interface::Web;
 require HTML::Entities;
+require RT::URI::transaction;
 
 sub Table {'Transactions'}
 
@@ -2808,6 +2809,18 @@ sub TimeWorkerObj {
         }
     }
     return ( $self->{'TimeWorkerObj'} );
+}
+
+=head2 URI
+
+Returns this transaction's URI.
+
+=cut
+
+sub URI {
+    my $self = shift;
+    my $uri = RT::URI::transaction->new( $self->CurrentUser );
+    return $uri->URIForObject($self);
 }
 
 RT::Base->_ImportOverlays();

@@ -3,22 +3,9 @@ use warnings;
 
 use RT::Test tests => undef, config => 'Set( $HideUnsetFieldsOnDisplay, 1 );';
 
-my @link_classes = qw(
-    DependsOn
-    DependedOnBy
-    MemberOf
-    Members
-    RefersTo
-    ReferredToBy
-);
-
 my $foo = RT::Test->create_ticket(
     Queue   => 'General',
     Subject => 'test display page',
-);
-my $dep = RT::Test->create_ticket(
-    Queue   => 'General',
-    Subject => 'dep ticket',
 );
 my $bar = RT::Test->create_ticket(
     Queue     => 'General',
@@ -29,7 +16,6 @@ my $bar = RT::Test->create_ticket(
     Due       => '2011-07-12 00:00:00',
     Cc        => 'foo@example.com',
     AdminCc   => 'admin@example.com',
-    DependsOn => [ $dep->id ],
 );
 $bar->SetTold;
 
@@ -49,10 +35,6 @@ diag "test with root";
 
     is $dom->find(qq{div.told:not(.unset-field)})->size, 1, "has Told as root can modify it";
 
-    for my $class (@link_classes) {
-        is $dom->find(qq{div.$class:not(.unset-field)})->size, 1, "has $class as root can create";
-    }
-
     $m->goto_ticket( $bar->id );
     $dom = $m->dom;
     for my $class (qw/starts started due resolved cc admincc/) {
@@ -69,13 +51,6 @@ diag "test without ModifyTicket right";
     $m->goto_ticket( $foo->id );
     my $dom = $m->dom;
     is $dom->find(qq{div.told.unset-field})->size, 1, "lacks Told as it is unset and user has no modify right";
-    for my $class ( @link_classes ) {
-        is $dom->find(qq{div.$class.unset-field})->size, 1, "lacks $class as it is unset and user has no modify right";
-    }
-
-    $m->goto_ticket( $bar->id );
-    $dom = $m->dom;
-    is $dom->find(qq{div.DependsOn:not(.unset-field)})->size, 1, "has Depends on as it is set";
 }
 
 diag "Test unset custom fields";

@@ -1,0 +1,64 @@
+use strict;
+use warnings;
+use URI;
+
+our @Final = (
+    sub {
+        RT->Logger->debug('Migrating transaction display-URL links to transaction:// URIs');
+
+        my $org       = RT->Config->Get('Organization');
+        my $web_uri   = URI->new( RT->Config->Get('WebURL') );      # scheme://host:port/<path>/
+        my $base_path = $web_uri->path;                             # /<path>/
+        my $txn_path  = $base_path . 'Transaction/Display.html';    # /<path>/Transaction/Display.html
+
+        # Before RT::URI::transaction, a transaction could only be "linked" by pasting a display
+        # URL, stored verbatim as an external-URL link. Two forms were possible:
+        #   * the standalone transaction page:    <WebURL>Transaction/Display.html?id=<txn>
+        #   * a history permalink with an anchor: <WebURL><Object>/Display.html?id=<obj>#txn-<txn>
+        # Convert both, but only when the URL points at *this* RT (scheme/host/port match WebURL
+        # and the path is under it), so links to a different RT are left alone.
+        for my $field (qw/Base Target/) {
+            my $links = RT::Links->new( RT->SystemUser );
+            $links->Limit( FIELD => $field, OPERATOR => 'LIKE', VALUE => '%/Transaction/Display.html?id=%' );
+            $links->Limit( FIELD => $field, OPERATOR => 'LIKE', VALUE => '%#txn-%', ENTRYAGGREGATOR => 'OR' );
+
+            while ( my $link = $links->Next ) {
+                my $stored = $link->$field // '';
+                my $uri    = URI->new($stored);
+
+                next unless $uri->can('host') && defined $uri->host;
+                next
+                    unless lc( $uri->host ) eq lc( $web_uri->host // '' )
+                    && $uri->port == $web_uri->port
+                    && $uri->scheme eq $web_uri->scheme;
+
+                # The transaction id is the #txn-<id> anchor or, for the standalone page, the id
+                # query param. Match the fragment last so its $1 isn't clobbered by the path check.
+                my $txn_id;
+                my $fragment = $uri->can('fragment') ? ( $uri->fragment // '' ) : '';
+                if ( $uri->path =~ m{^\Q$base_path\E} && $fragment =~ /^txn-(\d+)$/ ) {
+                    $txn_id = $1;
+                }
+                elsif ( $uri->path eq $txn_path ) {
+                    my %query = $uri->query_form;
+                    $txn_id = $query{id};
+                }
+                next unless defined $txn_id && $txn_id =~ /^\d+$/;
+
+                # And only when that transaction actually exists here.
+                my $txn = RT::Transaction->new( RT->SystemUser );
+                $txn->Load($txn_id);
+                next unless $txn->id;
+
+                my $new_uri = "transaction://$org/$txn_id";
+                my ( $ret, $msg ) = $link->_Set( Field => $field, Value => $new_uri );
+                if ($ret) {
+                    RT->Logger->info( "Migrated link #" . $link->id . " $field: $stored -> $new_uri" );
+                }
+                else {
+                    RT->Logger->error( "Couldn't migrate transaction link #" . $link->id . " ($field): $msg" );
+                }
+            }
+        }
+        },
+);

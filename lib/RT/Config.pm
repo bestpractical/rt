@@ -691,7 +691,29 @@ our %META;
             Hints       => 'Rows for the Description edit box on tickets', # loc
         }
     },
-
+    LinksDefaultType => {
+        Section         => 'Ticket display',
+        Overridable     => 1,
+        SortOrder       => 16,
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Default link type',    # loc
+            Hints       => 'The link type first selected when adding links to tickets and assets', # loc
+            Values      => [qw(DependsOn DependedOnBy MemberOf Members RefersTo ReferredToBy)],
+            ValuesLabel => {
+                DependsOn    => 'Depends on',        # loc
+                DependedOnBy => 'Depended on by',    # loc
+                MemberOf     => 'Child of',          # loc
+                Members      => 'Parent of',         # loc
+                RefersTo     => 'Refers to',         # loc
+                ReferredToBy => 'Referred to by',    # loc
+            },
+        },
+    },
+    LinksFormat => {
+        Type      => 'HASH',
+        MergeMode => 'recursive',
+    },
     # User overridable locale options
     DateTimeFormat => {
         Section         => 'Locale',                       #loc
@@ -2020,6 +2042,9 @@ our %META;
         Widget => '/Widgets/Form/Integer',
     },
     ExternalStorageCutoffSize => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    LinksListCount => {
         Widget => '/Widgets/Form/Integer',
     },
     LogoutRefresh => {
