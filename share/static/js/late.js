@@ -7,7 +7,7 @@ function sync_grouped_custom_fields() {
         var parsed = parse_cf.exec(elem.attr("name"));
         if (parsed == null)
             return;
-        if (/-Magic$/.test(parsed[4]))
+        if (/-(?:Magic|Original)$/.test(parsed[4]))
             return;
         var name_filter_regex = new RegExp(
             "^Object-"+parsed[1]+"-"+parsed[2]+

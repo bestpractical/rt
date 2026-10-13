@@ -122,6 +122,14 @@ $m->out("\n".'<input type="hidden" class="hidden" name="'
         . ($Name ? $m->interp->apply_escapes($Name, 'h') : $m->interp->apply_escapes($NamePrefix, 'h').$CustomField->Id.'-Values')
         . '-Magic" value="1" />'."\n");
 
+# The "Original" hidden input records which values the form was rendered with, so a field
+# the user left alone doesn't overwrite a change someone else saved in the meantime.
+if ( $Name && $Object && $Object->Id && $Type !~ /^(?:Image|Binary)$/ ) {
+    $m->out('<input type="hidden" class="hidden" name="' . $m->interp->apply_escapes($Name, 'h') . '-Original" value="'
+        . CustomFieldValuesDigest( map { $_->Content } @{ $Values ? $Values->ItemsArrayRef : [] } )
+        . '" />'."\n");
+}
+
 # Just show hints for user cfs that will be set from external sources on create
 if ( RT->Config->Get('ExternalInfoPriority') && $Object && $Object->isa('RT::User') && !$Object->Id ) {
     for my $source ( @{RT->Config->Get('ExternalInfoPriority')} ) {

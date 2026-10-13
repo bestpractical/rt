@@ -3649,6 +3649,17 @@ sub _ProcessObjectCustomFieldUpdates {
         delete $args{'ARGS'}->{'ValuesType'};
     }
 
+    # A field submitted with the values it was rendered with wasn't edited. Don't
+    # compare it to the current values, which someone else may have changed since.
+    my ($original) = grep { defined && !ref } map { delete $args{'ARGS'}->{"$_-Original"} } qw/Value Values/;
+    if ( defined $original ) {
+        my ($submitted) = grep { defined && length } map { $args{'ARGS'}->{$_} } qw/Values Value/;
+        my @values = _NormalizeObjectCustomFieldValue( CustomField => $cf, Value => $submitted );
+        if ( $original eq CustomFieldValuesDigest(@values) ) {
+            delete $args{'ARGS'}->{$_} for qw/Value Values Value-Magic Values-Magic/;
+        }
+    }
+
     my @results;
     foreach my $arg ( keys %{ $args{'ARGS'} } ) {
 
@@ -3754,6 +3765,25 @@ sub _ProcessObjectCustomFieldUpdates {
         }
     }
     return @results;
+}
+
+=head2 CustomFieldValuesDigest VALUES
+
+Returns a digest of a list of custom field values, regardless of their
+order. Edit forms include it as the "Original" input so an update can tell
+whether a field's values were changed in the form.
+
+=cut
+
+sub CustomFieldValuesDigest {
+    my @values = grep { defined } @_;
+
+    for my $value (@values) {
+        $value =~ s/\r+\n/\n/g;
+        $value =~ s/^\s+|\s+$//g;
+    }
+
+    return Digest::MD5::md5_hex( Encode::encode( 'UTF-8', join "\n", sort grep { length } @values ) );
 }
 
 sub ProcessObjectCustomFieldUpdatesForCreate {

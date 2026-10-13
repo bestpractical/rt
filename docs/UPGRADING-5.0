@@ -760,4 +760,24 @@ whitelist Android apps now, e.g.
 
 =back
 
+=head1 UPGRADING FROM 5.0.10 AND EARLIER
+
+=over 4
+
+=item Unchanged custom fields are no longer saved from an out-of-date form
+
+If someone changed a custom field while another user had an edit form open,
+submitting that form used to set the field back to the value the form was
+loaded with. Edit forms now submit an "Original" hidden input with each
+custom field, and RT skips a field whose submitted values are the ones the
+form was loaded with. A custom field the user edits is saved as before.
+
+Fields are still saved when the form's value doesn't exactly match the
+stored one, as with DateTime fields shown in the user's timezone.
+
+Custom code that builds its own custom field forms is not affected unless
+it submits the "Original" input.
+
+=back
+
 =cut
