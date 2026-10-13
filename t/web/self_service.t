@@ -77,6 +77,56 @@ $m->submit_form_ok(
 $m->text_contains('Correspondence added');
 $m->text_contains('Test correspondence from self service');
 
+diag 'Custom field changed by staff while the reply form is open';
+{
+    my $cf = RT::Test->load_or_create_custom_field(
+        Name  => 'Customer Priority',
+        Queue => 'General',
+        Type  => 'SelectSingle',
+    );
+    for my $value (qw/P1 P2 P3/) {
+        my ( $ok, $msg ) = $cf->AddValue( Name => $value );
+        ok( $ok, "Added Customer Priority value $value" ) or diag $msg;
+    }
+    RT::Test->add_rights( { Principal => $Cc, Right => [ 'SeeCustomField', 'ModifyCustomField' ] } );
+
+    my ( $ok, $msg ) = $ticket->AddCustomFieldValue( Field => $cf->Id, Value => 'P3' );
+    ok( $ok, 'Set Customer Priority to P3' ) or diag $msg;
+
+    my $input = 'Object-RT::Ticket-' . $ticket->Id . '-CustomField-' . $cf->Id . '-Values';
+    my $priority_is = sub {
+        my ( $expected, $description ) = @_;
+        my $current = RT::Ticket->new( RT->SystemUser );
+        $current->Load( $ticket->Id );
+        is( $current->FirstCustomFieldValue( $cf->Id ), $expected, $description );
+    };
+
+    $m->get_ok( '/SelfService/Update.html?id=' . $ticket->Id );
+    is( $m->form_name('TicketUpdate')->value($input), 'P3', 'Reply form shows Customer Priority P3' );
+
+    ( $ok, $msg ) = $ticket->AddCustomFieldValue( Field => $cf->Id, Value => 'P1' );
+    ok( $ok, 'Staff changed Customer Priority to P1' ) or diag $msg;
+
+    $m->submit_form_ok(
+        {   form_name => 'TicketUpdate',
+            fields    => { UpdateContent => 'Reply from a form opened before the change' },
+            button    => 'SubmitTicket',
+        },
+        'Submitted the reply without touching Customer Priority'
+    );
+    $priority_is->( 'P1', 'Reply keeps the Customer Priority set by staff' );
+
+    $m->get_ok( '/SelfService/Update.html?id=' . $ticket->Id );
+    $m->submit_form_ok(
+        {   form_name => 'TicketUpdate',
+            fields    => { UpdateContent => 'Reply raising the priority', $input => 'P2' },
+            button    => 'SubmitTicket',
+        },
+        'Submitted the reply changing Customer Priority'
+    );
+    $priority_is->( 'P2', 'Reply saves a Customer Priority the user changed' );
+}
+
 
 diag 'Test $SelfServiceUserPrefs config';
 {
