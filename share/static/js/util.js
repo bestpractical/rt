@@ -1408,7 +1408,7 @@ function filterSearchResults(evt,type) {
 
     var query;
     if ( clauses.length ) {
-        if ( base_query.match(/^\s*\(.+\)\s*$/) ) {
+        if ( base_query.match(/^\s*\([^\)]+\)\s*$/) ) {
             query = base_query + " AND " + clauses.join( ' AND ' );
         }
         else {
