@@ -333,10 +333,9 @@ sub RoleLimit {
         # reverse op
         $args{OPERATOR} =~ s/!|NOT\s+//i;
 
-        # XXX: we have no way to build correct "Watcher.X != 'Y'" when condition
-        # "X = 'Y'" matches more then one user so we try to fetch two records and
-        # do the right thing when there is only one exist and semi-working solution
-        # otherwise.
+        # Fetch up to two users matching "X = 'Y'". With at most one, exclude
+        # records having that user (or a group containing them) as a member;
+        # otherwise exclude records with any matching member, via a subquery.
         my $users_obj = RT::Users->new( $self->CurrentUser );
         $users_obj->Limit(
             FIELD         => $args{FIELD},
@@ -378,34 +377,46 @@ sub RoleLimit {
                 VALUE           => 'NULL',
             );
         } else {
+            $users_obj->RowsPerPage(0);
+            $users_obj->Columns('id');
+            my $members = $users_obj->BuildSelectQuery( PreferBind => 0 );
+
+            unless ( $is_shallow ) {
+                my $member_groups = RT::Groups->new( RT->SystemUser );
+                $member_groups->LimitToUserDefinedGroups;
+                my $cgm = $member_groups->Join(
+                    ALIAS1 => 'main',
+                    FIELD1 => 'id',
+                    TABLE2 => 'CachedGroupMembers',
+                    FIELD2 => 'GroupId',
+                );
+                $member_groups->Limit( ALIAS => $cgm, FIELD => 'Disabled', VALUE => 0 );
+                $member_groups->Limit(
+                    ALIAS      => $cgm,
+                    FIELD      => 'MemberId',
+                    OPERATOR   => 'IN',
+                    VALUE      => "($members)",
+                    QUOTEVALUE => 0,
+                );
+                $member_groups->Columns('id');
+                $member_groups->OrderBy;
+                $members .= ' UNION ' . $member_groups->BuildSelectQuery( PreferBind => 0 );
+            }
+
             $self->Limit(
                 LEFTJOIN   => $group_members,
-                FIELD      => 'GroupId',
-                OPERATOR   => '!=',
-                VALUE      => "$group_members.MemberId",
+                ALIAS      => $group_members,
+                FIELD      => 'MemberId',
+                OPERATOR   => 'IN',
+                VALUE      => "($members)",
                 QUOTEVALUE => 0,
-            );
-            $users ||= $self->Join(
-                TYPE            => 'LEFT',
-                ALIAS1          => $group_members,
-                FIELD1          => 'MemberId',
-                TABLE2          => 'Users',
-                FIELD2          => 'id',
-            );
-            $self->Limit(
-                LEFTJOIN      => $users,
-                ALIAS         => $users,
-                FIELD         => $args{FIELD},
-                OPERATOR      => $args{OPERATOR},
-                VALUE         => $args{VALUE},
-                CASESENSITIVE => 0,
             );
             $self->Limit(
                 %args,
-                ALIAS         => $users,
-                FIELD         => 'id',
-                OPERATOR      => 'IS',
-                VALUE         => 'NULL',
+                ALIAS    => $group_members,
+                FIELD    => 'id',
+                OPERATOR => 'IS',
+                VALUE    => 'NULL',
             );
         }
     } else {
