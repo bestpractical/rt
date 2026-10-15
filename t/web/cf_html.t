@@ -33,6 +33,7 @@ $m->submit_form_ok(
         with_fields => {
             $cf_input => $content,
         },
+        button => 'Submit',
     },
     'Set content'
 );
@@ -49,6 +50,7 @@ $m->submit_form_ok(
             $cf_input => $new_content,
 
         },
+        button => 'Submit',
     },
     'Update content'
 );
@@ -65,6 +67,7 @@ $m->submit_form_ok(
             $cf_input => $newer_content,
 
         },
+        button => 'Submit',
     },
     'Update content again'
 );
@@ -86,6 +89,7 @@ $m->submit_form_ok(
         with_fields => {
             $cf_input => '',
         },
+        button => 'Submit',
     },
     'Delete content'
 );
