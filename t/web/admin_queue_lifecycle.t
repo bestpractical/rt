@@ -34,14 +34,14 @@ $m->content_lacks( 'That is already the current value',
     'no message of "That is already the current value"' );
 
 $form = $m->form_name('ModifyQueue');
-$m->submit_form( fields => { Lifecycle => 'foo' }, );
+$m->submit_form( fields => { Lifecycle => 'foo' }, button => 'Submit' );
 $m->content_contains(
     'Lifecycle changed from &#34;default&#34; to &#34;foo&#34;');
 $lifecycle_input = $form->find_input('Lifecycle');
 is( $lifecycle_input->value, 'foo', 'lifecycle is changed to foo' );
 
 $form = $m->form_name('ModifyQueue');
-$m->submit_form( fields => { Lifecycle => 'default' }, );
+$m->submit_form( fields => { Lifecycle => 'default' }, button => 'Submit' );
 $m->content_contains(
     'Lifecycle changed from &#34;foo&#34; to &#34;default&#34;');
 $lifecycle_input = $form->find_input('Lifecycle');
@@ -68,7 +68,7 @@ RT::Lifecycle->FillCache();
 ok( $m->login(), 'logged in' );
 $m->get_ok( $url . '/Admin/Queues/Modify.html?id=1' );
 $form = $m->form_name('ModifyQueue');
-$m->submit_form( fields => { Lifecycle => 'bar' }, );
+$m->submit_form( fields => { Lifecycle => 'bar' }, button => 'Submit' );
 $m->text_contains(q{Lifecycle changed from "default" to "bar"});
 $lifecycle_input = $form->find_input('Lifecycle');
 is( $lifecycle_input->value, 'bar', 'lifecycle is changed to bar' );
@@ -84,7 +84,7 @@ ok( $m->login(), 'logged in' );
 $m->get_ok( $url . '/Admin/Queues/Modify.html?id=1' );
 $m->next_warning_like(qr/Unable to load lifecycle for bar/, 'warning of missing lifecycle bar');
 $form = $m->form_name('ModifyQueue');
-$m->submit_form( fields => { Lifecycle => 'default' }, );
+$m->submit_form( fields => { Lifecycle => 'default' }, button => 'Submit' );
 $m->text_contains(q{Lifecycle changed from "bar" to "default"});
 $lifecycle_input = $form->find_input('Lifecycle');
 is( $lifecycle_input->value, 'default', 'lifecycle is changed to default' );
