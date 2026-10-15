@@ -86,12 +86,26 @@ sub DefaultHandlerArgs  { (
 sub InitSessionDir {
     return unless RT::Interface::Web::Session->Class->isa('Apache::Session::File');
 
-    my $dir = RT::Interface::Web::Session->Attributes->{Directory}
-        or return;
+    my $attributes = RT::Interface::Web::Session->Attributes;
+    my $dir        = $attributes->{Directory};
+    my $lock_dir   = $attributes->{LockDirectory};
 
-    stat($dir);
+    unless ( $dir && $lock_dir ) {
+        my $missing
+            = !$dir && !$lock_dir ? 'Directory and LockDirectory are'
+            : !$dir               ? 'Directory is'
+            :                       'LockDirectory is';
+        RT->Logger->error(
+            "$missing not set in WebSessionProperties, so session files may be written to /tmp."
+            . " Unset WebSessionProperties or set Directory and LockDirectory to an appropriate"
+            . " directory for session files."
+        );
+    }
+
     die "Can't read and write session directory $dir"
-        unless ( -d _ ) and ( -r _ ) and ( -w _ );
+        if $dir && !( -d $dir && -r _ && -w _ );
+    die "Can't read and write session lock directory $lock_dir"
+        if $lock_dir && !( -d $lock_dir && -r _ && -w _ );
 }
 
 
