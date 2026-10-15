@@ -111,4 +111,10 @@ $tickets->FromSQL('HasNoUnreadMessages = "Owner"');
 is( $tickets->Count,     1, "HasNoUnreadMessages = 'Owner'" );
 is( $tickets->First->id, 1, 'Owner has read ticket 1' );
 
+$tickets = RT::Tickets->new($current_root);
+$tickets->OrderBy( FIELD => 'Subject', ORDER => 'ASC' );
+$tickets->FromSQL('HasNoUnreadMessages = __CurrentUser__');
+is( $tickets->Count, 1, 'HasNoUnreadMessages = __CurrentUser__ on a collection sorted before FromSQL' );
+is_deeply( [ map { $_->Id } @{ $tickets->ItemsArrayRef || [] } ], [5], 'Root has read ticket 5' );
+
 done_testing;
