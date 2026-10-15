@@ -333,7 +333,17 @@ sub FilterLinkListing {
         my ( $active, $inactive ) = $self->SortByActivityType( @{ $collection->ItemsArrayRef || [] } );
         if ( @$active && @$inactive ) {
             # Oracle allows at most 1000 items in an IN list.
-            my @ids = map { int $_->id } @$inactive;
+            my @ids = map { $_->id } @$active, @$inactive;
+            $collection->CleanSlate;
+            $collection->Limit(
+                FIELD           => 'id',
+                OPERATOR        => 'IN',
+                VALUE           => [ splice @ids, 0, 1000 ],
+                ENTRYAGGREGATOR => 'OR',
+            ) while @ids;
+            $collection->{'_sql_current_user_can_see_applied'} = 1;
+
+            @ids = map { int $_->id } @$inactive;
             my @in;
             push @in, 'main.id IN (' . join( ',', splice @ids, 0, 1000 ) . ')' while @ids;
             $collection->OrderByCols(
