@@ -382,6 +382,25 @@ diag 'Test methods that return all links recursively';
         push @ids, $ticket->id;
     }
     is_deeply( \@ids, [ $open->id, $resolved->id ], 'the open ticket comes first' );
+
+    my $requestor = RT::Test->load_or_create_user( Name => 'listing-requestor' );
+    ok( RT::Test->add_rights( { Principal => 'Requestor', Right => ['ShowTicket'], Object => $queue } ),
+        'requestors can see General tickets' );
+    for my $ticket ( $resolved, $open ) {
+        my ( $ok, $msg ) = $ticket->AddWatcher( Type => 'Requestor', PrincipalId => $requestor->id );
+        ok( $ok, "added the requestor: $msg" );
+    }
+    $listing = RT::Links->FilterLinkListing(
+        CurrentUser      => RT::CurrentUser->new($requestor),
+        Class            => 'RT::Ticket',
+        Ids              => [ $resolved->id, $open->id ],
+        RelationshipType => 'DependsOn',
+    );
+    @ids = ();
+    while ( my $ticket = $listing->Next ) {
+        push @ids, $ticket->id;
+    }
+    is_deeply( \@ids, [ $open->id, $resolved->id ], 'the open ticket comes first for a requestor' );
 }
 
 {
