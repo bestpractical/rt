@@ -91,6 +91,11 @@ if ( blessed $RT::System ) {
     $user_small_logo = $RT::System->FirstAttribute('UserSmallLogo') if !$Size || $Size eq 'Small';
 }
 
+if ( $IgnoreCustomLogo ) {
+    undef $user_logo;
+    undef $user_small_logo;
+}
+
 # If we have the attribute, but no content, we don't really have a user logo
 if ($user_logo) {
     my $content = $user_logo->Content;
@@ -118,4 +123,5 @@ $OnlyCustom => 0
 $Name => undef
 $id => 'logo'
 $Size => ''
+$IgnoreCustomLogo => 0
 </%ARGS>

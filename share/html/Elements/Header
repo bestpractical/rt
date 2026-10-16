@@ -66,7 +66,7 @@
 % for (keys %{$LinkRel || {}}) {
     <link rel="<% $_ %>" href="<% RT->Config->Get('WebPath') . $LinkRel->{$_} %>" />
 % }
-<link rel="shortcut icon" href="<%RT->Config->Get('WebImagesURL')%>favicon.png" type="image/png" />
+<link rel="shortcut icon" href="<% $favicon_url %>" />
 
 % if ( $RSSAutoDiscovery ) {
     <link rel="alternate" href="<%$RSSAutoDiscovery%>" type="application/rss+xml" title="RSS RT Search" />
@@ -195,6 +195,17 @@ else {
     @css_files = "/NoAuth/css/$style/squished-$key.css";
 }
 $m->callback( CallbackName => "MassageCSSFiles", CSSFiles => \@css_files, ARGSRef => \%ARGS );
+
+my $favicon_url = RT->Config->Get('WebImagesURL') . 'favicon.png';
+if ( defined $ARGS{FaviconPath} && length $ARGS{FaviconPath} ) {
+    if ( $ARGS{FaviconPath} =~ m{^[\w-]+(?:\.[\w-]+)*(?:/[\w-]+(?:\.[\w-]+)*)*\z}a ) {
+        $favicon_url = RT->Config->Get('WebImagesURL') . $ARGS{FaviconPath};
+    }
+    else {
+        my $shown = $ARGS{FaviconPath} =~ s/([^\x20-\x7e])/sprintf( '\\x{%x}', ord $1 )/ger;
+        RT->Logger->warning("Ignoring invalid FaviconPath '$shown'");
+    }
+}
 
 # We use BodyClass in its $ARGS form so that callbacks have a chance to
 # massage it

@@ -222,6 +222,16 @@ a:hover.close {
     z-index: 9999;
 }
 
+/* Stroke colors live here, not in the SVG attributes, so a stylesheet can
+ * restyle the stock spinner by setting the tokens. */
+.checkbox-spinner rect {
+    stroke: var(--rt-spinner-stroke, #777);
+}
+
+.checkbox-spinner path {
+    stroke: var(--rt-spinner-accent, #e74c3c);
+}
+
 /* Draw the spinner checkmark by animating its stroke. */
 @keyframes rt-checkbox-spinner {
     from { stroke-dashoffset: 40; }
