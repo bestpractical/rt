@@ -2359,6 +2359,7 @@ function initAddLinkRows(section) {
             clone.querySelectorAll('.ts-wrapper').forEach(el => el.remove());
             clonedInput.classList.remove('tomselected', 'ts-hidden-accessible');
             clonedInput.removeAttribute('tabindex');
+            clonedInput.removeAttribute('id');
             clonedInput.style.display = '';
             clonedInput.value = '';
             clonedInput.removeAttribute('name');
