@@ -458,6 +458,11 @@ body.darkmode.IE11 .ui-icon-circle-triangle-e {
     margin-bottom: 1px;
 }
 
+.darkmode a.button.btn {
+    background: #323D42 !important;
+    border-color: #717171;
+}
+
 .darkmode th.collection-as-table svg.fa-sort * {
     color: #777 !important;
 }
