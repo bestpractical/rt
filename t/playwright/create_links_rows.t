@@ -110,6 +110,11 @@ is( $row5_visible, $group_name,                "group row shows the spaced group
 is( $row5_hidden,  'group:' . $link_group->id, "group row hidden submit value is group:<id>, not the spaced name" );
 unlike( $row5_hidden, qr/\s/, "group row hidden submit value has no whitespace" );
 
+my $duplicate_ids = $p->{page}->evaluate(
+    'const ids = [...document.querySelectorAll("div.ticket-info-links .add-link-row .link-value")].map(e => e.id).filter(id => id);'
+        . 'return ids.filter((id, i) => ids.indexOf(id) !== i).join(",");' );
+is( $duplicate_ids, '', 'each link row value box has its own id' );
+
 $p->submit_form_ok(
     {   form_name => 'TicketCreate',
         fields    => { Subject => 'created via link rows' },
