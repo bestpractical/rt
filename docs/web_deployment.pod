@@ -1,29 +1,223 @@
 =head1 Setting up the web interface
 
-As of RT 3.9, RT's web interface speaks PSGI
-(L<http://plackperl.org>) which lets you use RT with any PSGI-supported web
-server (which includes Apache, nginx, lighttpd, etc).
+RT's web interface runs with PSGI via L<Plack|https://plackperl.org>,
+which lets you use RT with any PSGI-supported web server including
+L<Apache|https://httpd.apache.org/> and L<nginx|https://nginx.org/en/>.
 
-=head2 Standalone
+=head2 Choosing a configuration
 
-The standalone RT web server is backed by a pure-Perl server engine
-(L<HTTP::Server::PSGI>). This standalone server is appropriate for development
-and testing, but is not appropriate for production use.
+Starting with version 6.0.0, RT builds each page from many small requests.
+A ticket display page loads the initial framework for the page, then loads
+the individual components based on your page layout. Each is fetched
+separately with htmx, and widgets below the fold load when the user
+scrolls to them. Most of these requests take RT a few tens of
+milliseconds. How fast a page feels to your users therefore depends as
+much on how the browser and web server handle many small requests at once
+as on RT itself.
 
-You should not run this server against port 80 (which is the default port)
-because that requires root-level privileges and may conflict with any existing
-listeners. So choose a high port (for example 8080) and start the standalone
-server with:
+Over HTTP/1.1, a browser opens at most 6 connections to a server, so a
+page's widgets load in rounds of 6, and each set of requests includes a
+network round trip. After the user has been idle for a few seconds, the
+browser may also need new connections, each with its own TLS handshake.
+Over HTTP/2, the browser sends all of a page's requests at once on a
+single connection, so after a pause it needs only one new TLS handshake.
+On a server with any network overhead, running over HTTP/2 will make RT 6
+pages feel noticeably faster, most of all when users come back to RT after
+a pause.
 
-    /opt/rt6/sbin/rt-server --port 8080
+The configurations below show options for HTTP/1.1 and HTTP/2, with
+various options for running RT. The options start with the simplest and
+work up to more complicated configurations that scale for very large RT
+instances.
 
-You can also run C<rt-server> with any other PSGI server, for example,
-to use L<Starman>, a high performance preforking server:
+=over
 
-    /opt/rt6/sbin/rt-server --server Starman --port 8080
+=item * Apache with the prefork MPM and mod_fcgid: the easiest to set up,
+and stable, but HTTP/1.1 only.
 
-To listen on IPv6 too, you can install L<IO::Socket::INET6> and use
-L<Starman> exactly like the above command.
+=item * The same, with HTTP/2 provided by a proxy or load balancer in
+front of Apache.
+
+=item * Apache with mod_proxy_fcgi and separately managed RT FastCGI
+processes, which share memory, so more RT processes fit in the same
+server. This works with the prefork MPM (HTTP/1.1, or HTTP/2 through a
+proxy) or the event MPM (HTTP/2 from Apache itself).
+
+=item * nginx, with the same separately managed RT FastCGI processes.
+
+=back
+
+Whichever you choose, run as many RT processes as will fit in the memory
+available on the server; see L</Sizing RT processes>.
+
+=head2 Settings for every deployment
+
+=head3 Token Authentication
+
+If you plan to set up token-based access, possibly to use L<RT::REST2>,
+add the following directive to your RT Apache configuration to allow
+RT to access the Authorization header.
+
+    SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
+nginx passes request headers, including Authorization, to RT by default.
+
+More information is available in L<RT::Authen::Token>.
+
+=head3 Restricting the REST 1.0 mail-gateway
+
+RT processes email via a REST 1.0 endpoint. If you accept email on the
+same server as your running RT, you can restrict this endpoint to
+localhost only with a configuration like the following:
+
+    # Accept requests only from localhost
+    <Location /REST/1.0/NoAuth/mail-gateway>
+        Require local
+    </Location>
+
+If you run C<bin/rt-mailgate> on a separate server, you can update
+the above to allow additional IP addresses.
+
+    <Location /REST/1.0/NoAuth/mail-gateway>
+        Require ip 127.0.0.1 ::1 192.0.2.0  # Add your actual IPs
+    </Location>
+
+See the L<Apache documentation|https://httpd.apache.org/docs/2.4/mod/mod_authz_host.html>
+for additional configuration options. For nginx, use a C<location> block
+for the same path with C<allow> and C<deny all>, and the same FastCGI
+settings as the main C<location>.
+
+After adding this configuration, test receiving email and confirm
+your C<bin/rt-mailgate> utility and C</etc/aliases> configurations
+can successfully submit email to RT.
+
+=head2 Sizing RT processes
+
+Each RT process handles one request at a time, so the number of RT
+processes sets how many requests RT can work on at once. RT processes use
+far more memory than anything else on a web server, so memory is what
+limits them. Running out of memory can lead to unpredictable server
+errors: the Linux kernel typically kills a process of its own choosing,
+which can be the offending RT process, or something else entirely like a
+process running the web server, the database, or some other OS process.
+
+Calculate how much memory you can give the RT application. Starting with
+the memory available on your server, subtract 500 MB to 1 GB for the OS.
+Adjust based on your specific Linux and the background processes you run
+for normal maintenance. Then subtract memory for the database if it is
+running on the same server. Leave some free room for your RT cronjobs,
+typically 200 - 300 MB.
+
+Your remaining memory should be divided between web server processes and
+RT processes, running as many as possible with what you have available.
+
+=head3 How much memory RT processes use
+
+These are typical sizes for RT 6 processes when they start. Measure your
+own, since extensions and customizations make RT larger:
+
+=over
+
+=item * mod_fcgid: each RT process loads all of RT itself and shares
+almost nothing with the others. With a typical configuration, processes
+start at around 250 MB.
+
+=item * Separately managed RT FastCGI processes (see L</RT FastCGI
+processes>): a manager process loads RT once, about 150 MB, and starts the
+worker processes from it. The workers share much of the manager's
+memory, so each worker adds about 150 MB of its own.
+
+=item * Apache itself is small: under 1 MB of its own per prefork child
+(plan on 5 MB), and about 20 MB for an event child with 64 threads.
+
+=back
+
+=head3 How RT processes grow
+
+RT processes grow as they run. This usually isn't due to memory leaks.
+Data from the database passes through the processes as it is fetched and
+evaluated, so every process grows a bit as it handles requests. Some
+requests need much more: a big set of search results or a very large
+attachment can grow a process by 100 MB or more, depending on how large
+you allow attachments to be. Once that memory is allocated, it stays
+allocated until the process is restarted.
+
+Not every process grows that much. Requests that need a lot of memory are
+a small share of all requests, so at any time only a few processes have
+grown large. This means you can run more processes than you would by
+adding the largest growth to every process.
+
+=head3 Choosing the number of processes
+
+To arrive at your number of processes, start from the memory for RT
+processes you calculated above. Set aside room for a few processes to
+grow large at the same time, then divide the rest by the starting size of
+a process plus a modest amount of growth.
+
+For example, allowing 50 MB of growth per process and setting aside
+300 MB for a few large ones:
+
+=for html <table>
+<tr><th>Memory for RT processes</th><th>mod_fcgid processes</th><th>RT FastCGI workers</th></tr>
+<tr><td>2 GB</td><td>5</td><td>7</td></tr>
+<tr><td>4 GB</td><td>12</td><td>18</td></tr>
+<tr><td>8 GB</td><td>26</td><td>38</td></tr>
+</table>
+
+=begin text
+
+    Memory for RT processes   mod_fcgid processes   RT FastCGI workers
+    2 GB                       5                     7
+    4 GB                      12                    18
+    8 GB                      26                    38
+
+=end text
+
+Memory for RT processes is what is left after the OS, a local database,
+cronjobs and the web server's own processes. If your users regularly
+search for large result sets or work with very large attachments, set
+aside more. If you recycle RT processes by size (see L</RT FastCGI
+processes>), the size limit is the most a process grows before it is
+replaced; check that your processes still fit if many of them reach it.
+
+How many processes you need depends on how many requests arrive at once.
+Under HTTP/2, a single ticket display page can send about ten requests at
+the same moment, so run 10 or more RT processes if you can; with fewer,
+requests from one page briefly wait for each other. More active users need
+more processes. When RT has more requests than processes, the extra
+requests wait, and when that happens routinely, the answer is more memory
+and more processes.
+
+Start all RT processes when the server starts, rather than on demand. A
+process takes seconds to start, so starting on demand makes the first
+requests after a quiet period slow, and makes RT slowest exactly when load
+rises. RT FastCGI processes start this way; mod_fcgid can't (see
+L</mod_fcgid with the prefork MPM>).
+
+=head3 Recycling RT processes
+
+Recycle RT processes to limit how much growth builds up: replace a
+process after it has handled a number of requests, or, with RT FastCGI
+processes, when it grows past a size limit. This also returns a process
+that grew large for one request to its starting size. The configurations
+below show how for each setup.
+
+=head3 Tuning and monitoring memory
+
+The numbers above are a starting point. When you first deploy RT, and
+whenever you change the number of RT processes, watch the server's
+memory under normal use for a while, using the tools you are comfortable
+with. If you see out-of-memory kills, or the server regularly runs low on
+available memory, reduce the number of RT processes or add memory. If
+memory stays well below what the server has even during busy periods,
+you can add processes.
+
+When you measure RT processes, note that the RSS or RES figure most tools
+show counts shared memory in every process that shares it. RT FastCGI
+workers share much of their memory, so adding up their RSS overstates
+the total. The Pss figure counts shared memory once:
+
+    grep -E '^(Rss|Pss|Private)' /proc/PID/smaps_rollup
 
 =head2 Apache
 
@@ -35,31 +229,103 @@ spontaneously logged in as other users in the system.
 See also L<authentication/Apache Configuration>, in case you intend to
 use Apache to provide authentication.
 
-=head3 mod_fcgid
+The configurations below use either the L<prefork
+MPM|https://httpd.apache.org/docs/2.4/mod/prefork.html>, which supports
+only HTTP/1.1, or the L<event
+MPM|https://httpd.apache.org/docs/2.4/mod/event.html>, which supports
+HTTP/2. Whichever you use, set its process limits for RT rather than
+relying on the defaults, and include Apache in your memory calculation
+(see L</Sizing RT processes>).
 
-Apache can run with several different
-L<Multi-Processing Modules (MPMs)|https://httpd.apache.org/docs/2.4/mpm.html>.
-To use mod_fcgid, you need to run it with the L<prefork MPM|https://httpd.apache.org/docs/2.4/mod/prefork.html>.
-Most Linux distributions today use the event MPM by default, so it is
-important to make sure Apache is configured to use prefork on your RT
-server. If you do not use prefork MPM, RT will start okay but fail under
-production load, either because the web server crashes or performance
-severely degrades.
+=head3 mod_fcgid with the prefork MPM
 
-B<WARNING>: Before mod_fcgid 2.3.6, the maximum request size was 1GB.
-Starting in 2.3.6, this is now 128Kb.  This is unlikely to be large
-enough for any RT install that handles attachments.  You can read more
-about FcgidMaxRequestLen at
-L<http://httpd.apache.org/mod_fcgid/mod/mod_fcgid.html#fcgidmaxrequestlen>
+This is the simplest configuration: Apache starts and manages the RT
+processes itself through
+L<mod_fcgid|https://httpd.apache.org/mod_fcgid/>. It is stable, and a
+good choice for a small RT, or as a starting point.
 
-Most distributions will have a mod_fcgid.conf or similar file with
-mod_fcgid configurations and you should add:
+Its limitation is speed as the user sees it. Prefork supports only
+HTTP/1.1, so a ticket page's widgets load in rounds of 6, and
+connections idle longer than Apache's C<KeepAliveTimeout> need a new TLS
+handshake (see L</Choosing a configuration>). With 80 ms of network
+latency, after a pause of a few seconds, a ticket page's widgets take
+about 365 ms to load over HTTP/1.1 and about 180 ms over HTTP/2, mostly
+because of the TLS handshakes for new connections. To add HTTP/2
+while keeping this configuration, put a proxy or load balancer that
+supports HTTP/2 in front of Apache, as described in the next section.
+
+mod_fcgid runs best with the prefork MPM. It's possible to run it with
+the event MPM, and RT will start and run, but it can become unresponsive
+under load. When all RT processes are busy, mod_fcgid makes new requests
+wait, checking for a free process about once a second. Under event with
+HTTP/2, the waiting requests tie up the threads Apache needs for every
+other request on the same connections, and RT seems to stop responding.
+If you want HTTP/2 from Apache itself, use L</mod_proxy_fcgi with the
+event MPM> instead.
+
+=head4 mod_fcgid settings
+
+mod_fcgid's defaults allow up to 100 RT processes, far more than fit in
+most servers' memory. Add these to your mod_fcgid configuration, with
+values for your RT. For 12 RT processes (see L</Choosing the number of
+processes>):
 
     FcgidMaxRequestLen 1073741824
+    FcgidMaxProcesses 12
+    FcgidMaxProcessesPerClass 12
+    FcgidMinProcessesPerClass 12
+    FcgidIdleTimeout 0
+    FcgidProcessLifeTime 0
+    FcgidIOTimeout 120
+    FcgidMaxRequestsPerProcess 5000
 
-to return to the old default.
+=over
 
-    <VirtualHost rt.example.com>
+=item * C<FcgidMaxRequestLen> is the largest request RT accepts, such as
+an attachment upload. Since mod_fcgid 2.3.6 the default is 128 KB, which
+is too small for any RT that handles attachments; the value above is
+1 GB.
+
+=item * C<FcgidMaxProcesses> and C<FcgidMaxProcessesPerClass> cap the
+number of RT processes, which keeps RT within its memory. Set
+C<FcgidMinProcessesPerClass> to the same number, and
+C<FcgidIdleTimeout> and C<FcgidProcessLifeTime> to 0, so that RT
+processes, once started, keep running rather than being stopped and
+started again during the day. mod_fcgid starts RT processes as requests
+arrive, not when Apache starts, and replaces all of them on every graceful
+restart, including the one log rotation does, so the first requests after
+a restart are slow while the processes start.
+
+=item * C<FcgidIOTimeout> is how long mod_fcgid waits for RT to respond.
+The default of 40 seconds is too short for RT's slower requests, such as
+large searches. Set it a little longer than your slowest legitimate
+request; 120 seconds is a reasonable start.
+
+=item * C<FcgidMaxRequestsPerProcess> replaces each RT process after it
+has handled that many requests (see L</Recycling RT processes>). If you
+see your RT processes grow, use it to keep their memory under control.
+The replacement starts when the next request needs it, and that request
+waits while it loads RT, a small but noticeable delay. The right number
+depends on how quickly your processes grow.
+
+=back
+
+=head4 Prefork settings
+
+With prefork, each open browser connection holds an Apache process.
+Limit them with C<MaxRequestWorkers>; about double your number of RT
+processes is a good guideline. For 12 RT processes:
+
+    <IfModule mpm_prefork_module>
+        MaxRequestWorkers 24
+    </IfModule>
+
+=head4 The RT site
+
+    <VirtualHost *:443>
+        ServerName rt.example.com
+        # Your TLS settings go here.
+
         ### Optional apache logs for RT
         # Ensure that your log rotation scripts know about these files
         # ErrorLog /opt/rt6/var/log/apache2.error
@@ -70,7 +336,6 @@ to return to the old default.
 
         ScriptAlias / /opt/rt6/sbin/rt-server.fcgi/
 
-        DocumentRoot "/opt/rt6/share/html"
         <Location />
             Require all granted
             Options +ExecCGI
@@ -78,38 +343,554 @@ to return to the old default.
         </Location>
     </VirtualHost>
 
-=head3 mod_proxy_fcgi
+=head3 HTTP/2 through a proxy or load balancer
 
-This Apache module supports proxying requests via the FastCGI protocol.
-In addition to running Apache, you also need to start RT FCGI processes
-separately with a command like this:
+To give users HTTP/2 while keeping a prefork configuration, such as
+L</mod_fcgid with the prefork MPM> or L</mod_proxy_fcgi with the prefork
+MPM>, put a proxy or load balancer that supports HTTP/2 in front of
+Apache. Browsers connect to the proxy over HTTP/2, and the proxy passes
+their requests on to Apache. The connection between the proxy and Apache
+is usually on a fast local network, where HTTP/1.1's rounds of requests
+cost little. This combines HTTP/2 for users with the stability of prefork,
+and works with a cloud load balancer or any proxy server.
 
-    /opt/rt6/sbin/rt-server.fcgi --listen /opt/rt6/var/rt.sock --nproc 10
+Configure the proxy as its documentation describes. For RT, also check:
 
-In this configuration, RT runs with L<Plack::Handler::FCGI> and supports any
-arguments documented there.
+=over
 
-Below is the corresponding Apache configuration:
+=item * Set C<$WebDomain> and C<$WebPort> in RT to the name and port
+users see at the proxy (for HTTPS, C<$WebPort> 443), not Apache's. RT
+builds its links from them and uses them to check where requests come
+from. Also set C<$CanonicalizeRedirectURLs> and
+C<$CanonicalizeURLsInFeeds> to 1, so that RT's redirects and feeds use
+that name and port too.
 
-    <VirtualHost rt.example.com>
+=item * RT logs the client address from the C<X-Forwarded-For> header
+when it is present, so have the proxy set it.
+
+=item * If the proxy runs on the same server as Apache, every request
+reaches Apache from the local machine, so the C<Require local> rule in
+L</Restricting the REST 1.0 mail-gateway> no longer restricts anything.
+Restrict that path at the proxy instead. Point C<rt-mailgate> at Apache
+directly rather than at the proxy's address, or Apache sees the proxy's
+address and rejects it.
+
+=item * Set the proxy's timeout for responses from Apache a little longer
+than RT's own (C<FcgidIOTimeout> or C<ProxyTimeout>). Otherwise the proxy
+returns an error for slow requests that RT is still working on.
+
+=item * With HTTP/2, a browser sends all of a page's requests at once,
+and the proxy passes them on to Apache together. Each one needs an Apache
+process and then an RT process, so size them as described in L</Sizing
+RT processes>, ideally with 10 or more RT processes.
+
+=back
+
+=head3 mod_proxy_fcgi with the prefork MPM
+
+In this configuration, Apache passes requests to separately running RT
+FastCGI processes (see L</RT FastCGI processes>) with
+L<mod_proxy_fcgi|https://httpd.apache.org/docs/2.4/mod/mod_proxy_fcgi.html>.
+The prefork MPM makes it stable, and more RT processes fit in the same
+memory than with mod_fcgid. Like any prefork configuration, it supports
+only HTTP/1.1, so for HTTP/2 put a proxy in front of it (see L</HTTP/2
+through a proxy or load balancer>).
+
+    <VirtualHost *:443>
+        ServerName rt.example.com
+        # Your TLS settings go here.
+
         AddDefaultCharset UTF-8
 
+        ProxyTimeout 120
         ProxyPass / unix:/opt/rt6/var/rt.sock|fcgi://localhost/
         ProxyFCGIBackendType GENERIC
         ProxyFCGISetEnvIf "true" SCRIPT_NAME ""
     </VirtualHost>
 
-Note that the SCRIPT_NAME directive is needed to avoid issues with URIs not
-being properly encoded, causing errors with URIs that have spaces.
+    <IfModule mpm_prefork_module>
+        MaxRequestWorkers 24
+    </IfModule>
 
-In our testing we have found that this method shares more memory between
-RT FCGI processes, so it can allow you to run more RT processes with less
-memory. This comes at the cost of some extra management of the FCGI processes,
-which mod_fcgid handles for you.
+=over
 
-=head3 mod_perl 2.xx
+=item * C<ProxyTimeout> is how long Apache waits for RT to respond,
+including the time a request waits in RT's socket queue for a free worker.
+Set it longer than your slowest legitimate request plus that wait at your
+busiest times; 120 seconds is a reasonable start. When Apache gives up on
+a request, it closes the connection but has no way to tell RT, so RT still
+runs the request to the end, and a worker is busy with it for nobody. A
+timeout shorter than RT's slow requests lets such abandoned requests take
+up RT's workers under load.
 
-B<WARNING: mod_perl 1.99_xx is not supported.>
+=item * C<MaxRequestWorkers> caps how many requests Apache can pass to RT
+at once, since each prefork process handles one request at a time. About
+double your number of RT processes is a good guideline, as for
+L</mod_fcgid with the prefork MPM>. Requests beyond the number of RT
+workers wait in RT's socket queue until a worker is free, and
+C<ProxyTimeout> includes that wait.
+
+=item * Leave out the C<max> parameter on the C<ProxyPass> line. It limits
+connections for each Apache process, and a prefork process has only one
+at a time, so C<MaxRequestWorkers> is the limit that matters.
+
+=item * Don't add C<enablereuse=on> to the C<ProxyPass> line. An RT worker
+stays with the connection it is serving until the connection closes, so
+reused connections hold RT workers while idle, and other requests wait
+for them.
+
+=item * The C<SCRIPT_NAME> setting is needed to avoid issues with URIs
+not being properly encoded, causing errors with URIs that have spaces.
+
+=back
+
+=head3 mod_proxy_fcgi with the event MPM
+
+This configuration gives users HTTP/2 from Apache itself, with no proxy
+in front, and uses RT FastCGI processes (see L</RT FastCGI processes>),
+which share memory. It needs more care than the prefork configurations:
+the settings below keep requests from piling up in RT when it is busy.
+The MPM settings replace those in your distribution's event MPM
+configuration file; if both apply, the distribution's values can
+silently undo the limits below.
+
+    <IfModule mpm_event_module>
+        ServerLimit             2
+        StartServers            1
+        ThreadLimit             64
+        ThreadsPerChild         64
+        MinSpareThreads         1
+        MaxSpareThreads         64
+        MaxRequestWorkers       64
+        MaxConnectionsPerChild  0
+    </IfModule>
+
+    <VirtualHost *:443>
+        ServerName rt.example.com
+        # Your TLS settings go here.
+        Protocols h2 http/1.1
+        H2MaxSessionStreams 16
+
+        AddDefaultCharset UTF-8
+
+        ProxyTimeout 120
+        ProxyPass / unix:/opt/rt6/var/rt.sock|fcgi://localhost/ max=12 acquire=15000
+        ProxyFCGIBackendType GENERIC
+        ProxyFCGISetEnvIf "true" SCRIPT_NAME ""
+    </VirtualHost>
+
+=head4 Why RT needs these settings
+
+Under prefork, C<MaxRequestWorkers> caps how many requests can reach RT
+at once. Under event with HTTP/2 there is no such natural limit: each
+browser sends all of a page's requests at once, and Apache's threads can
+pass far more requests to RT than it has workers. Requests beyond that
+wait in RT's socket queue, where Apache's C<ProxyTimeout> keeps running.
+When Apache gives up on one, it has no way to tell RT, so RT still runs
+it later, for nobody, while live requests wait behind it. Under sustained
+load, RT can end up spending most of its time on requests nobody is
+waiting for.
+
+The C<max> and C<acquire> parameters on the C<ProxyPass> line prevent
+this by making requests wait in Apache instead, where they can be timed
+out cleanly.
+
+=over
+
+=item * C<max> is the number of connections Apache opens to RT at once.
+Set it to your number of RT worker processes (C<--nproc>), so that every
+request Apache sends to RT goes straight to a free worker, and the rest
+wait in Apache. Always set it: when it isn't set, it is
+C<ThreadsPerChild> minus one plus the number of mod_http2 worker threads,
+not the value the Apache documentation suggests, and usually far larger
+than your number of RT workers.
+
+=item * C<max> applies to each Apache child process, not to Apache as a
+whole. That is why the MPM settings above run a single active child:
+C<MaxRequestWorkers> equal to C<ThreadsPerChild> means Apache never runs
+more than one child at a time, and C<MaxSpareThreads> equal to them means
+it is never stopped. With one child, C<max> is the limit for all of
+Apache. With several children, each would open up
+to C<max> connections, and the total would depend on how many children
+happen to be running.
+
+=item * C<ServerLimit 2> leaves room for a second child during a graceful
+restart, such as the one log rotation does. The new child starts while
+the old one finishes its requests. Without the spare slot, Apache accepts
+no new connections until the old child exits, which can take 30 seconds
+or more. While both run, RT can briefly see up to twice C<max>
+connections; the extra requests wait in RT's socket queue.
+
+=item * C<acquire> is how long, in milliseconds, a request waits for one
+of the C<max> connections before Apache returns a 503 error. Without it,
+requests wait with no limit when RT is overloaded. The wait isn't exact:
+the timer starts again each time a connection is freed and another
+request takes it, and waiting requests aren't served in order, so some
+requests wait longer than C<acquire>. With 15 seconds, the longest waits
+can be a little over twice that.
+
+=item * C<ThreadsPerChild> must be well above C<max>. Every request in
+progress holds an Apache thread, both those RT is working on and those
+waiting for one of the C<max> connections. If the threads run out, new
+requests wait for a thread, even ones RT could answer at once, and RT
+seems to stop responding. HTTP/1.1 requests run on the MPM's threads, and
+HTTP/2 requests on mod_http2's own worker threads, whose number follows
+C<ThreadsPerChild> (one and a half times it at most). Leave
+C<H2MinWorkers> and C<H2MaxWorkers> unset and size C<ThreadsPerChild>
+instead. See L</Choosing values for the event MPM>.
+
+=item * C<H2MaxSessionStreams> limits how many requests a browser can have
+in progress on one HTTP/2 connection. 16 lets a whole ticket page load at
+once, while the browser holds any further requests itself, as it does
+under HTTP/1.1, and drops them if the user moves on.
+
+=item * C<ProxyTimeout> must be longer than your slowest legitimate
+request; 120 seconds is a reasonable start. When a request times out,
+Apache counts its connection as free, but the RT worker is still running
+the request. Apache then sends another request, which waits in RT's
+socket queue, and C<max> no longer protects RT.
+
+=item * Don't add C<enablereuse=on>, for the same reason as under prefork
+(see L</mod_proxy_fcgi with the prefork MPM>).
+
+=item * Use one C<ProxyPass> line for RT's socket. Lines with the same
+backend URL share one set of connections, and only the first line's
+parameters, including C<max> and C<acquire>, apply.
+
+=back
+
+=head4 Choosing values for the event MPM
+
+These settings depend on each other. Work them out in this order:
+
+=over
+
+=item 1.
+
+Choose the number of RT worker processes from your memory (see
+L</Choosing the number of processes>), and set C<--nproc> to it.
+
+=item 2.
+
+Set C<max> to the same number.
+
+=item 3.
+
+Set C<ThreadsPerChild> to at least 5 times C<max>, and never below 64. Set
+C<ThreadLimit>, C<MaxSpareThreads> and C<MaxRequestWorkers> to the same
+value, so that one child holds all the threads and is never stopped. Keep
+C<ServerLimit 2> and C<StartServers 1> whatever the size.
+
+=item 4.
+
+Set C<acquire> to how long a user should wait for RT before
+getting an error; 15000 (15 seconds) is a reasonable start. A shorter
+C<acquire> also means fewer requests wait in Apache at once, so fewer
+threads are needed.
+
+=item 5.
+
+Set C<ProxyTimeout> longer than your slowest legitimate request.
+
+=back
+
+For example:
+
+=for html <table>
+<tr><th>RT workers and <code>max</code></th><th><code>ThreadsPerChild</code>, <code>ThreadLimit</code>, <code>MaxSpareThreads</code>, <code>MaxRequestWorkers</code></th></tr>
+<tr><td>up to 12</td><td>64</td></tr>
+<tr><td>18</td><td>96</td></tr>
+<tr><td>38</td><td>192</td></tr>
+</table>
+
+=begin text
+
+    RT workers and max   ThreadsPerChild, ThreadLimit,
+                         MaxSpareThreads, MaxRequestWorkers
+    up to 12              64
+    18                    96
+    38                   192
+
+=end text
+
+Apache's threads are cheap compared with RT processes: a child with 64
+threads uses about 20 MB of its own memory.
+
+Once RT is running, the logs show which value needs to change:
+
+=over
+
+=item * C<AH00941: FCGI: failed to acquire connection> in Apache's error
+log means requests waited longer than C<acquire> for an RT worker and got
+a 503 error. RT had more work than workers for that long: add RT workers
+if your memory allows, or look for slow requests that hold workers.
+
+=item * If quick requests become slow while Apache's server-status page
+shows all of its threads busy, Apache is running out of threads: raise
+C<ThreadsPerChild> and the settings that go with it.
+
+=item * C<The timeout specified has expired> together with C<AH01075:
+Error dispatching request to : (polling)> in Apache's error log, and 504
+errors in its access log, mean an RT request took longer than
+C<ProxyTimeout>. If those requests are legitimate, raise it.
+
+=back
+
+
+=head2 nginx
+
+nginx passes requests to separately running RT FastCGI processes (see
+L</RT FastCGI processes>), and supports HTTP/2 directly.
+
+    server {
+        listen 443 ssl;
+        http2 on;
+        server_name rt.example.com;
+        # Your TLS settings go here.
+
+        client_max_body_size 100M;
+
+        location / {
+            include fastcgi_params;
+            fastcgi_param SCRIPT_NAME "";
+            fastcgi_param PATH_INFO   $uri;
+            fastcgi_read_timeout 120s;
+            fastcgi_pass unix:/opt/rt6/var/rt.sock;
+        }
+    }
+
+=over
+
+=item * C<http2 on;> needs nginx 1.25.1 or later. On older versions, use
+C<listen 443 ssl http2;> instead.
+
+=item * C<server_name> is required. nginx passes it to RT as
+C<SERVER_NAME>, and without it RT rejects every request.
+
+=item * C<fastcgi_params>, which comes with nginx, passes the request
+details RT needs, including C<HTTPS>, which tells RT the request came
+over HTTPS. The C<SCRIPT_NAME> and C<PATH_INFO> lines that follow are for
+RT at the root of the server (see L</Running RT at /rt rather than />).
+
+=item * The default for C<client_max_body_size> is 1M, which is too small
+for most RT systems that accept attachments. The 100M value above is a
+suggestion. Adjust this to accept the largest attachments you expect to
+allow via email and the web UI.
+
+=item * nginx has no way to hold requests back while all RT workers are
+busy, as Apache's C<max> and C<acquire> do (see L</mod_proxy_fcgi with
+the event MPM>). Every request goes straight to RT's socket queue, and
+C<fastcgi_read_timeout> starts then. Set it longer than your slowest
+legitimate request plus the time a request can wait for a free RT worker
+at your busiest times; 120 seconds is a reasonable start. When the timeout
+expires, or the user leaves the page, nginx closes the connection, but RT
+still runs the request.
+
+=item * Because of that, run enough RT workers for your busiest times
+(see L</Choosing the number of processes>). When requests arrive faster
+than RT's workers can handle them for a sustained period, they wait in
+RT's queue, and RT spends more and more of its time on requests nobody is
+waiting for any more.
+
+=item * Don't use C<max_conns> on an C<upstream> for RT. It doesn't hold
+requests back: once it is reached, nginx rejects further requests with a
+502 error.
+
+=back
+
+=head2 RT FastCGI processes
+
+With L</mod_proxy_fcgi with the prefork MPM>, L</mod_proxy_fcgi with the
+event MPM> and L</nginx>, RT runs as its own service, separate from the
+web server, and the web server passes requests to it over a socket. There
+are two ways to start RT's FastCGI processes.
+
+=head3 rt-server.fcgi with a process manager
+
+We recommend this option. RT's C<rt-server.fcgi> opens the socket and
+starts a manager process, which loads RT and then starts the worker
+processes that handle requests. The workers share much of the manager's
+memory, so more RT processes fit in the same memory than with mod_fcgid
+or C<spawn-fcgi> (see L</How much memory RT processes use>), and the
+manager replaces any worker that exits.
+
+    /opt/rt6/sbin/rt-server.fcgi --listen /opt/rt6/var/rt.sock --nproc 12
+
+C<--nproc> is the number of RT worker processes (see L</Choosing the
+number of processes>). All of them start when RT starts. C<--listen> can
+also be a TCP address such as C<127.0.0.1:9000>. RT runs with
+L<Plack::Handler::FCGI> and supports any arguments documented there.
+
+With this option, we also recommend two modules from CPAN, which are not
+installed with RT:
+
+=over
+
+=item * L<FCGI::ProcManager::Constrained> recycles RT processes (see
+L</Recycling RT processes>). It is configured with environment
+variables:
+
+=over
+
+=item * C<PM_MAX_REQUESTS>: replace a worker after it has handled this
+many requests.
+
+=item * C<PM_MAX_SIZE>: replace a worker once its size is larger than
+this, in KB. The size checked is the process's total (virtual) size, the
+VSZ column in C<ps>, which is larger than its RSS. RT workers are
+typically about 270 MB by this measure in normal use, so the value below
+lets each grow by about 80 MB. Check yours with C<ps> and set the limit
+from that.
+
+=item * C<PM_SIZECHECK_NUM_REQUESTS>: check the size after every this
+many requests.
+
+=back
+
+A worker is replaced only after it finishes a request, and the manager
+starts the replacement from its own copy of RT, so recycling is cheap.
+
+=item * L<Server::Starter> holds RT's socket open while RT restarts, so
+you can restart RT, for example after changing its configuration, without
+the web server returning errors in the meantime.
+
+=back
+
+A systemd unit to run RT this way, for example as
+F</etc/systemd/system/rt-fcgi.service>:
+
+    [Unit]
+    Description=RT FastCGI processes
+    After=network.target
+
+    [Service]
+    User=www-data
+    Group=www-data
+    WorkingDirectory=/opt/rt6
+    Environment=PM_MAX_REQUESTS=5000
+    Environment=PM_MAX_SIZE=350000
+    Environment=PM_SIZECHECK_NUM_REQUESTS=200
+    ExecStart=/usr/local/bin/start_server --path var/rt.sock \
+        --pid-file var/rt.pid --status-file var/rt.status -- \
+        sbin/rt-server.fcgi --listen var/rt.sock --nproc 12 \
+        --manager FCGI::ProcManager::Constrained
+    ExecReload=/usr/local/bin/start_server --restart \
+        --pid-file var/rt.pid --status-file var/rt.status
+    Restart=on-failure
+
+    [Install]
+    WantedBy=multi-user.target
+
+Run it as the user your web server runs as (C<www-data> on Debian and
+Ubuntu, C<apache> on Red Hat), so the web server can use the socket and RT
+can write to its F<var> directory. C<systemctl reload rt-fcgi> restarts
+RT's processes.
+
+=head3 spawn-fcgi
+
+C<spawn-fcgi> opens the socket, starts RT on it and exits:
+
+    spawn-fcgi -u www-data -g www-data -a 127.0.0.1 -p 9000 -F 4 \
+        -- /opt/rt6/sbin/rt-server.fcgi
+
+Started this way, C<rt-server.fcgi> runs a single RT process and ignores
+C<--nproc>. C<-F> sets the number of RT processes, but each one loads its
+own copy of RT and shares almost nothing with the others, so they use as
+much memory as mod_fcgid processes. Nothing replaces a process that
+exits, and they can't be recycled. This is fine for a small RT or for
+testing; for production, use L</rt-server.fcgi with a process manager>.
+
+=head2 Troubleshooting
+
+=head3 RT feels slow
+
+=over
+
+=item * Open your browser's developer tools and load a ticket page. If
+requests spend most of their time blocked or stalled before being sent,
+and the protocol shown is HTTP/1.1, the browser is waiting for one of its
+6 connections: switch to HTTP/2 (see L</Choosing a configuration>). If
+they spend most of it waiting for the response, the time is in RT, or
+waiting for a free RT process.
+
+=item * Check whether requests are waiting for RT workers. Under the
+prefork configurations and nginx, they wait in RT's socket queue: check
+it with C<ss -xl> (or C<ss -tl> for a TCP socket), where a Recv-Q above 0
+is the number of requests waiting. Under L</mod_proxy_fcgi with the event
+MPM>, they wait in Apache instead, so the queue stays near 0; look for
+C<AH00941> errors (see L</Choosing values for the event MPM>). If
+requests wait regularly, add RT processes if your memory allows (see
+L</Sizing RT processes>).
+
+=item * If requests are slow even when RT is idle, the time is in RT
+itself or the database, such as a slow search or a customization, not in
+the web server configuration.
+
+=back
+
+=head3 RT stops responding
+
+=over
+
+=item * Check the kernel log for out-of-memory kills. The kernel may have
+killed an RT process, the web server or the database. Reduce the number
+of RT processes (see L</Sizing RT processes>).
+
+=item * If requests keep waiting for RT workers (see above), or Apache
+logs C<AH00941> errors or timeouts, all RT workers are busy with slow
+requests. Find
+the slow requests in the access log (add the request duration to its
+format: C<%D> in Apache, C<$request_time> in nginx), and check
+C<ProxyTimeout> or C<fastcgi_read_timeout> (see L</mod_proxy_fcgi with the
+event MPM> and L</nginx>).
+
+=item * Under the event MPM, if server-status shows all of Apache's
+threads busy, Apache has run out of threads: see L</Choosing values for
+the event MPM>. If you run mod_fcgid under the event MPM, switch to
+prefork (see L</mod_fcgid with the prefork MPM>).
+
+=item * Under mod_fcgid, C<can't apply process slot> in Apache's error log
+(with a 503 error) means a request waited too long for a free RT process,
+and C<read data timeout> (with a 500 error) means RT took longer than
+C<FcgidIOTimeout>.
+
+=item * Under nginx, immediate 502 errors with C<Resource temporarily
+unavailable> in its error log mean RT's socket queue is full. RT is far
+behind: treat it as the cases above.
+
+=item * If RT stops responding for half a minute or so after log rotation
+under the event MPM, check that C<ServerLimit> leaves room for a second
+child (see L</mod_proxy_fcgi with the event MPM>).
+
+=back
+
+=head2 Other configurations
+
+RT runs with any PSGI-supported web server, and these configurations
+have worked with earlier versions of RT. They have not been actively
+tested in production on recent versions, so for new installations we
+recommend one of the configurations above.
+
+=head3 Standalone
+
+The standalone RT web server is backed by a pure-Perl server engine
+(L<HTTP::Server::PSGI>). This standalone server is appropriate for
+development and testing, but is typically not used for production systems.
+
+When used for development, you usually want to run on a high port to avoid
+conflicts with standard server processes. Port 8080 is commonly used:
+
+    /opt/rt6/sbin/rt-server --port 8080
+
+You can also run C<rt-server> with any other PSGI server, for example,
+to use L<Starman>, a high performance preforking server:
+
+    /opt/rt6/sbin/rt-server --server Starman --port 8080
+
+To listen on IPv6 too, you can install L<IO::Socket::INET6> and use
+L<Starman> exactly like the above command.
+
+=head3 Apache with mod_perl 2
 
 B<WARNING>: Due to thread-safety limitations, all timestamps will be
 presented in the webserver's default time zone when using the C<worker>
@@ -144,89 +925,7 @@ C<SetHandler modperl>, as the example below uses.
         </Perl>
     </VirtualHost>
 
-=head3 Token Authentication
-
-If you plan to set up token-based access, possibly to use L<RT::REST2>,
-add the following directive to your RT Apache configuration to allow
-RT to access the Authorization header.
-
-    SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
-
-More information is available in L<RT::Authen::Token>.
-
-=head3 Restricting the REST 1.0 mail-gateway
-
-RT processes email via a REST 1.0 endpoint. If you accept email on the same
-server as your running RT, you can restrict this endpoint to localhost only
-with a configuration like the following:
-
-    # Accept requests only from localhost
-    <Location /REST/1.0/NoAuth/mail-gateway>
-        Require local
-    </Location>
-
-If you run C<bin/rt-mailgate> on a separate server, you can update
-the above to allow additional IP addresses.
-
-    <Location /REST/1.0/NoAuth/mail-gateway>
-        Require ip 127.0.0.1 ::1 192.0.2.0  # Add your actual IPs
-    </Location>
-
-See the L<Apache documentation|https://httpd.apache.org/docs/2.4/mod/mod_authz_host.html>
-for additional configuration options.
-
-After adding this configuration, test receiving email and confirm
-your C<bin/rt-mailgate> utility and C</etc/aliases> configurations
-can successfully submit email to RT.
-
-=head2 nginx
-
-C<nginx> requires that you start RT's fastcgi process externally, for
-example using C<spawn-fcgi>:
-
-    spawn-fcgi -u www-data -g www-data -a 127.0.0.1 -p 9000 \
-        -- /opt/rt6/sbin/rt-server.fcgi
-
-With the nginx configuration:
-
-    server {
-        listen 80;
-        server_name rt.example.com;
-        access_log  /var/log/nginx/access.log;
-
-        location / {
-            client_max_body_size 100M;
-
-            fastcgi_param  QUERY_STRING       $query_string;
-            fastcgi_param  REQUEST_METHOD     $request_method;
-            fastcgi_param  CONTENT_TYPE       $content_type;
-            fastcgi_param  CONTENT_LENGTH     $content_length;
-
-            fastcgi_param  SCRIPT_NAME        "";
-            fastcgi_param  PATH_INFO          $uri;
-            fastcgi_param  REQUEST_URI        $request_uri;
-            fastcgi_param  DOCUMENT_URI       $document_uri;
-            fastcgi_param  DOCUMENT_ROOT      $document_root;
-            fastcgi_param  SERVER_PROTOCOL    $server_protocol;
-
-            fastcgi_param  GATEWAY_INTERFACE  CGI/1.1;
-            fastcgi_param  SERVER_SOFTWARE    nginx/$nginx_version;
-
-            fastcgi_param  REMOTE_ADDR        $remote_addr;
-            fastcgi_param  REMOTE_PORT        $remote_port;
-            fastcgi_param  SERVER_ADDR        $server_addr;
-            fastcgi_param  SERVER_PORT        $server_port;
-            fastcgi_param  SERVER_NAME        $server_name;
-            fastcgi_pass 127.0.0.1:9000;
-        }
-    }
-
-The default nginx value for C<client_max_body_size> is 1M, which is too
-small for most RT systems that accept attachments. The 100M value above is
-a suggestion. Adjust this to accept the largest attachments you expect to
-allow via email and the web UI.
-
-=head2 lighttpd
+=head3 lighttpd
 
     server.modules += ( "mod_fastcgi" )
     $HTTP["host"] =~ "^rt.example.com" {
@@ -242,23 +941,23 @@ allow via email and the web UI.
         )
     }
 
-
 =head1 Running RT at /rt rather than /
 
-First you need to tell RT where it's located by setting C<$WebPath> in your
-F<RT_SiteConfig.pm>:
+First you need to tell RT where it's located by setting C<$WebPath> in
+your F<RT_SiteConfig.pm>:
 
     # Important: don't include a trailing slash here.  Read `perldoc
     # etc/RT_Config.pm` for more information.
     Set($WebPath, "/rt");
 
-Then you need to update your Apache configuration to match.  Prefix any RT
-related C<ScriptAlias> and C<Location> directives with C</rt>.  You
-should also make sure C<DocumentRoot> is B<not> set to
-C</opt/rt6/share/html/>, otherwise RT's source will be served from C</>.
+Then you need to update your web server configuration to match. For
+Apache, prefix any RT-related C<ScriptAlias>, C<ProxyPass> and
+C<Location> directives with C</rt>. You should also make sure
+C<DocumentRoot> is B<not> set to C</opt/rt6/share/html/>, otherwise RT's
+source will be served from C</>.
 
-For example: if you're using the sample mod_fcgid config above, you might change
-the relevant directives to:
+For example: if you're using the sample mod_fcgid config above, you might
+change the relevant directives to:
 
     ScriptAlias /rt /opt/rt6/sbin/rt-server.fcgi/
 
@@ -269,15 +968,30 @@ the relevant directives to:
         ...
     </Location>
 
-If you are using mod_proxy_fcgi, change these:
+If you are using mod_proxy_fcgi, change these, keeping any parameters
+such as C<max> and C<acquire> on the C<ProxyPass> line, and replacing the
+C<SCRIPT_NAME ""> setting:
 
     ProxyPass /rt/ unix:/opt/rt6/var/rt.sock|fcgi://localhost/
     <Location /rt>
         ProxyFCGISetEnvIf "true" SCRIPT_NAME "/rt"
     </Location>
 
-If you're using the sample mod_perl configuration, you only need to change the
-C<Location> directive.
+If you're using the sample mod_perl configuration, you only need to
+change the C<Location> directive.
 
-If you're not using Apache, please see L<Plack::Handler::FCGI> or the web
+For nginx, change the C<location> and the C<SCRIPT_NAME> and C<PATH_INFO>
+lines, so that RT receives C</rt> as C<SCRIPT_NAME> and the rest of the
+path as C<PATH_INFO>:
+
+    location /rt {
+        include fastcgi_params;
+        fastcgi_split_path_info ^(/rt)(.*)$;
+        fastcgi_param SCRIPT_NAME $fastcgi_script_name;
+        fastcgi_param PATH_INFO   $fastcgi_path_info;
+        fastcgi_read_timeout 120s;
+        fastcgi_pass unix:/opt/rt6/var/rt.sock;
+    }
+
+For other web servers, please see L<Plack::Handler::FCGI> or the web
 server's own documentation for configuration examples.
