@@ -12,10 +12,13 @@ $input-btn-font-size: 0.9231rem;
 
 $alert-margin-bottom: 0.0rem;
 
-$card-border-color: #dde4eb;
-$nav-pills-link-active-bg: #4868b3;
-$dropdown-link-hover-bg: #cfdeff;
-$dropdown-link-active-bg: #4868b3;
+// These emit only into Bootstrap's CSS variables, so point them at RT's
+// runtime role variables (theme-tokens.css) rather than literals. A theme
+// that sets those variables then restyles these components too.
+$card-border-color: var(--bs-border-color);
+$nav-pills-link-active-bg: var(--bs-primary);
+$dropdown-link-hover-bg: var(--rt-menu-hover-bg, #d7deed);
+$dropdown-link-active-bg: var(--bs-primary);
 $dropdown-min-width: 5rem;
 $dropdown-padding-y: 0.2rem;
 
