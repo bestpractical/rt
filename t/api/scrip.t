@@ -412,3 +412,54 @@ note 'TransactionBatch condition receives correct TransactionObj per iteration';
         'Both scrips fired in order: condition saw correct TransactionObj per batch iteration'
       );
 }
+
+note 'queue-level ShowScrips and ModifyScrips apply to scrips added to that queue';
+{
+    my $rights_queue = RT::Test->load_or_create_queue( Name => 'ScripRights' );
+    my $other_queue  = RT::Test->load_or_create_queue( Name => 'ScripRightsOther' );
+
+    my $user = RT::Test->load_or_create_user( Name => 'scrip_admin', Privileged => 1 );
+    ok( RT::Test->add_rights(
+        { Principal => $user, Object => $rights_queue, Right => [qw(ShowScrips ModifyScrips)] },
+    ), 'granted ShowScrips and ModifyScrips on queue ScripRights' );
+
+    my %scrip_args = (
+        ScripCondition    => 'On Create',
+        ScripAction       => 'User Defined',
+        CustomPrepareCode => 'return 1',
+        CustomCommitCode  => 'return 1',
+        Template          => 'Blank',
+    );
+
+    my $scrip = RT::Scrip->new( RT->SystemUser );
+    my ( $ok, $msg ) = $scrip->Create( %scrip_args, Queue => $rights_queue->Id, Description => 'Queue rights scrip' );
+    ok( $ok, "created scrip on queue ScripRights: $msg" );
+
+    my $other_scrip = RT::Scrip->new( RT->SystemUser );
+    ( $ok, $msg ) = $other_scrip->Create( %scrip_args, Queue => $other_queue->Id, Description => 'Other queue scrip' );
+    ok( $ok, "created scrip on queue ScripRightsOther: $msg" );
+
+    my $current_user = RT::CurrentUser->new($user);
+
+    my $user_scrip = RT::Scrip->new($current_user);
+    $user_scrip->Load( $scrip->Id );
+    ok( $user_scrip->CurrentUserHasRight('ShowScrips'), 'user has ShowScrips on scrip added to ScripRights' );
+    ok( $user_scrip->CurrentUserHasRight('ModifyScrips'), 'user has ModifyScrips on scrip added to ScripRights' );
+    is( $user_scrip->Description, 'Queue rights scrip', 'user can read scrip description' );
+
+    ( $ok, $msg ) = $user_scrip->SetDisabled(1);
+    ok( $ok, "user disabled scrip added to ScripRights: $msg" );
+    $scrip->Load( $scrip->Id );
+    is( $scrip->Disabled, 1, 'scrip is disabled' );
+
+    my $user_other_scrip = RT::Scrip->new($current_user);
+    $user_other_scrip->Load( $other_scrip->Id );
+    ok( !$user_other_scrip->CurrentUserHasRight('ShowScrips'), 'user lacks ShowScrips on scrip added to ScripRightsOther' );
+    ok( !$user_other_scrip->CurrentUserHasRight('ModifyScrips'), 'user lacks ModifyScrips on scrip added to ScripRightsOther' );
+
+    ( $ok, $msg ) = $user_other_scrip->SetDisabled(1);
+    ok( !$ok, 'user cannot disable scrip added to ScripRightsOther' );
+    is( $msg, 'Permission Denied', 'got Permission Denied' );
+    $other_scrip->Load( $other_scrip->Id );
+    is( $other_scrip->Disabled, 0, 'other scrip is still enabled' );
+}
