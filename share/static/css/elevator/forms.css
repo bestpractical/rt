@@ -568,32 +568,10 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
         color: #7A7D8D;
     }
 
-    .radio-option,
-    .check-option {
-        color: #FFF;
-    }
-
     .btn-group,
     .btn-group .btn {
         border-color: #7A7D8D;
         color: #FFF;
-    }
-
-    .btn-group--shadow {
-        border: 1px solid #7A7D8D;
-        box-shadow: none;
-    }
-
-    select.btn:hover {
-        color: #7A7D8D;
-    }
-
-    .btn-outline {
-        color: #FFF;
-    }
-
-    .btn-outline:hover svg {
-        fill: #171A1F;
     }
 
     div.modal {

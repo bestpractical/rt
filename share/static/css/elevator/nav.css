@@ -234,11 +234,6 @@
         padding-bottom: 0.25em;
         height: auto;
     }
-
-    /* Fix Queue name position in Queue select for Firefox */
-    #topactions .bootstrap-select .dropdown-toggle .filter-option {
-        margin-top: 5px;
-    }
 }
 
 .create-wide   { display: inline; }
