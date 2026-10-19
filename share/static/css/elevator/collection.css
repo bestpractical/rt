@@ -66,18 +66,18 @@ th.collection-as-table.allow-sorting span.title {
 
 [data-bs-theme=light] {
     th.collection-as-table svg.fa-sort {
-        color: #ccc;
+        color: var(--bs-tertiary-color);
     }
 }
 
 [data-bs-theme=dark] {
     th.collection-as-table svg.fa-sort * {
-        color: #777 !important;
+        color: var(--bs-tertiary-color) !important;
     }
 
     .oddline .collection-as-table,
     .oddline .collection-as-table {
-        background: #323D42;
+        background: var(--bs-tertiary-bg);
     }
 
     div.paging span.pagenum span.currentpage,

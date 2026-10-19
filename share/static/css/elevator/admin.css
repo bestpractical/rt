@@ -154,22 +154,32 @@ table.upgrade-history .upgrade-history-parent .widget a.rolled-up {
     margin-top: 20px;
 }
 
+.palette-input-group {
+    max-width: 14rem;
+}
+
+/* The palette form holds the Basic and Advanced panes and their buttons; hide
+   the buttons too while the Custom CSS pane is showing. */
+#ThemePalette:not(:has(> .tab-pane.active)) {
+    display: none;
+}
+
 
 [data-bs-theme=light] {
     table.upgrade-history .incomplete {
-        color: #900;
+        color: var(--bs-danger-text-emphasis);
     }
 
     #rights-inspector.error .results {
-        color: red;
+        color: var(--bs-danger);
     }
 
     #rights-inspector .results .result:nth-child(even) {
-        background-color: rgb(236, 246, 252);
+        background-color: var(--bs-tertiary-bg);
     }
 
     #rights-inspector .results .result:nth-child(even) .unused {
-        background-color: white;
+        background-color: var(--bs-body-bg);
     }
 
     #rights-inspector .results .result .match {
@@ -177,7 +187,7 @@ table.upgrade-history .upgrade-history-parent .widget a.rolled-up {
     }
 
     #rights-inspector .results .result .detail {
-        color: #AAA;
+        color: var(--bs-tertiary-color);
     }
 
     #rt-help-text kbd {
@@ -188,7 +198,7 @@ table.upgrade-history .upgrade-history-parent .widget a.rolled-up {
 
     span.rt-label.scrip-log,
     a.scrip-log {
-        color: red !important;
+        color: var(--bs-danger) !important;
     }
 }
 
@@ -212,8 +222,8 @@ table.upgrade-history .upgrade-history-parent .widget a.rolled-up {
     }
 
     div.user-related-info a.btn.btn-primary {
-        background: #323D42 !important;
-        border-color: #717171;
+        background: var(--rt-surface-bg) !important;
+        border-color: var(--rt-surface-border-color);
         margin-bottom: 1px;
     }
 }

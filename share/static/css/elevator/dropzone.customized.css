@@ -6,7 +6,7 @@
   left: 100%;
   margin-left: -14px;
   margin-top: -14px;
-  color: red;
+  color: var(--bs-danger);
 }
 
 .dropzone .dz-preview .dz-remove-mark svg {
@@ -21,7 +21,7 @@
 }
 
 .dropzone {
-    background: #eee;
+    background: var(--bs-secondary-bg);
     border: none !important;
 }
 
@@ -73,7 +73,7 @@
 }
 
 .dropzone .dz-preview.dz-image-preview {
-   background-color: #eee;
+   background-color: var(--bs-secondary-bg);
 }
 
 .ticket-info-attachments .dz-message {

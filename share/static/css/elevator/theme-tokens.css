@@ -1,0 +1,177 @@
+/*
+ * Theme tokens for RT. Bootstrap's own variables (--bs-primary, --bs-body-bg,
+ * ...) are the main theme settings; the --rt-* tokens cover parts of RT that
+ * Bootstrap has no variable for.
+ *
+ * The top-level [data-bs-theme=dark] block must contain only custom property
+ * declarations: RT reads it to find properties that differ in dark mode
+ * (RT::Interface::Web->ThemeModeSpecificProperties).
+ */
+
+:root {
+    --rt-secondary: #547CCC;
+    --rt-tertiary: #2C3539;
+    --rt-primary-contrast: #fff;
+    --rt-border-color-strong: #aaa;
+    --rt-page-header-border-color: var(--rt-secondary);
+    --rt-footer-bg: var(--rt-tertiary);
+    --rt-footer-color: #ededed;
+    --rt-menu-bg: var(--rt-surface-bg);
+    --rt-menu-color: var(--bs-emphasis-color);
+    --rt-menu-hover-bg: color-mix(in srgb, var(--bs-primary) 20%, var(--rt-menu-bg));
+    --rt-menu-border-color: var(--rt-border-color-strong);
+    --rt-surface-bg: var(--bs-body-bg);
+    --rt-surface-border-color: var(--bs-border-color);
+    --rt-widget-title-color: var(--bs-primary);
+    --rt-spinner-stroke: #777;
+    --rt-spinner-accent: #e74c3c;
+
+    /* Bootstrap compiles these from $primary at build time; derive them
+       from --bs-primary so a theme only needs to set --bs-primary. */
+    --bs-primary-text-emphasis: color-mix(in srgb, var(--bs-primary) 40%, black);
+    --bs-primary-bg-subtle: color-mix(in srgb, var(--bs-primary) 20%, white);
+    --bs-primary-border-subtle: color-mix(in srgb, var(--bs-primary) 40%, white);
+    --bs-focus-ring-color: color-mix(in srgb, var(--bs-primary) 25%, transparent);
+
+    /* Bootstrap compiles the background and text steps as literals too.
+       Deriving them from the page colors lets a theme that sets only
+       --bs-body-bg and --bs-body-color get matching zebra rows, wells and
+       muted text. */
+    --bs-tertiary-bg: color-mix(in srgb, var(--bs-body-bg), var(--bs-emphasis-color) 5%);
+    --bs-secondary-bg: color-mix(in srgb, var(--bs-body-bg), var(--bs-emphasis-color) 8%);
+    --bs-secondary-color: color-mix(in srgb, var(--bs-body-color) 75%, transparent);
+    --bs-tertiary-color: color-mix(in srgb, var(--bs-body-color) 50%, transparent);
+    --bs-heading-color: var(--rt-tertiary);
+}
+
+/* Dark mode raises controls and menus off the page (--rt-surface-bg).
+   Values that reference other variables are repeated, even where the text
+   matches :root, so that an element with its own data-bs-theme computes
+   them from that mode's colors. */
+[data-bs-theme=dark] {
+    --rt-border-color-strong: #717171;
+    --rt-menu-bg: var(--rt-surface-bg);
+    --rt-menu-color: var(--bs-emphasis-color);
+    --rt-menu-hover-bg: color-mix(in srgb, var(--bs-primary) 25%, var(--bs-secondary-bg));
+    --rt-menu-border-color: var(--rt-border-color-strong);
+    --rt-menu-divider-color: var(--bs-border-color);
+    --rt-surface-bg: var(--bs-tertiary-bg);
+    --rt-surface-border-color: var(--rt-border-color-strong);
+    --bs-primary-text-emphasis: color-mix(in srgb, var(--bs-primary) 60%, white);
+    --bs-primary-bg-subtle: color-mix(in srgb, var(--bs-primary) 20%, black);
+    --bs-primary-border-subtle: color-mix(in srgb, var(--bs-primary) 60%, black);
+    --bs-tertiary-bg: color-mix(in srgb, var(--bs-body-bg), var(--bs-emphasis-color) 4%);
+    --bs-secondary-bg: color-mix(in srgb, var(--bs-body-bg), var(--bs-emphasis-color) 8%);
+    --bs-secondary-color: color-mix(in srgb, var(--bs-body-color) 75%, transparent);
+    --bs-tertiary-color: color-mix(in srgb, var(--bs-body-color) 50%, transparent);
+    --bs-heading-color: var(--bs-emphasis-color);
+    --bs-border-color: #515151;
+}
+
+/* Percentages match Bootstrap's shade-color() steps, so elevator's #3858a3
+   renders as it did when these were compiled. */
+.btn-primary {
+    --bs-btn-color: var(--rt-primary-contrast);
+    --bs-btn-bg: var(--bs-primary);
+    --bs-btn-border-color: var(--bs-primary);
+    --bs-btn-hover-color: var(--rt-primary-contrast);
+    --bs-btn-hover-bg: color-mix(in srgb, var(--bs-primary) 85%, black);
+    --bs-btn-hover-border-color: color-mix(in srgb, var(--bs-primary) 80%, black);
+    --bs-btn-focus-box-shadow: 0 0 0 0.25rem color-mix(in srgb, color-mix(in srgb, var(--bs-primary) 85%, white) 50%, transparent);
+    --bs-btn-active-color: var(--rt-primary-contrast);
+    --bs-btn-active-bg: color-mix(in srgb, var(--bs-primary) 80%, black);
+    --bs-btn-active-border-color: color-mix(in srgb, var(--bs-primary) 75%, black);
+    --bs-btn-disabled-color: var(--rt-primary-contrast);
+    --bs-btn-disabled-bg: var(--bs-primary);
+    --bs-btn-disabled-border-color: var(--bs-primary);
+}
+
+/* Bootstrap's .text-primary reads --bs-primary-rgb, which a theme that sets
+   only --bs-primary does not update. */
+.text-primary {
+    color: color-mix(in srgb, var(--bs-primary) calc(var(--bs-text-opacity, 1) * 100%), transparent) !important;
+}
+
+/* Bootstrap compiles these from $primary, $input-focus-border-color and
+   $focus-ring-color, which also feed Sass color functions and so can't be
+   CSS variables in bootstrap.scss. Point them at the roles here instead. */
+.form-control:focus {
+    color: var(--bs-secondary-color);
+    border-color: var(--bs-secondary-color);
+}
+
+.form-select:focus,
+.form-check-input:focus {
+    border-color: var(--bs-secondary-color);
+    box-shadow: 0 0 0 0.25rem var(--bs-focus-ring-color);
+}
+
+.form-check-input:checked,
+.form-check-input[type=checkbox]:indeterminate {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
+
+/* Separate rules: a browser drops a whole selector list that has a
+   pseudo-element it doesn't know. */
+.form-range::-webkit-slider-thumb {
+    background-color: var(--bs-primary);
+}
+
+.form-range::-moz-range-thumb {
+    background-color: var(--bs-primary);
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--bs-primary);
+    --bs-btn-border-color: var(--bs-primary);
+    --bs-btn-hover-bg: var(--bs-primary);
+    --bs-btn-hover-border-color: var(--bs-primary);
+    --bs-btn-active-bg: var(--bs-primary);
+    --bs-btn-active-border-color: var(--bs-primary);
+    --bs-btn-disabled-color: var(--bs-primary);
+    --bs-btn-disabled-border-color: var(--bs-primary);
+}
+
+.nav-link:focus-visible {
+    box-shadow: 0 0 0 0.25rem var(--bs-focus-ring-color);
+}
+
+.accordion {
+    --bs-accordion-btn-focus-border-color: var(--bs-secondary-color);
+}
+
+.pagination {
+    --bs-pagination-focus-box-shadow: 0 0 0 0.25rem var(--bs-focus-ring-color);
+    --bs-pagination-active-color: var(--rt-primary-contrast);
+    --bs-pagination-active-bg: var(--bs-primary);
+    --bs-pagination-active-border-color: var(--bs-primary);
+}
+
+.progress,
+.progress-stacked {
+    --bs-progress-bar-bg: var(--bs-primary);
+}
+
+.list-group {
+    --bs-list-group-active-color: var(--rt-primary-contrast);
+    --bs-list-group-active-bg: var(--bs-primary);
+    --bs-list-group-active-border-color: var(--bs-primary);
+}
+
+.btn-close {
+    --bs-btn-close-focus-shadow: 0 0 0 0.25rem var(--bs-focus-ring-color);
+}
+
+/* Light mode only: in dark mode elevator paints active dropdown items and
+   nav pills on the menu surface, not on --bs-primary, so the primary's
+   contrast color would be the wrong text color there. */
+[data-bs-theme=light] {
+    .dropdown-menu {
+        --bs-dropdown-link-active-color: var(--rt-primary-contrast);
+    }
+
+    .nav-pills {
+        --bs-nav-pills-link-active-color: var(--rt-primary-contrast);
+    }
+}

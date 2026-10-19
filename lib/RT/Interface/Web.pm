@@ -1760,6 +1760,172 @@ sub StaticRoots {
     return grep { $_ and -d $_ } @static;
 }
 
+=head2 ThemeModeSpecificProperties
+
+Returns a hashref whose keys are the CSS custom properties that the
+elevator stylesheet defines separately for dark mode, read from the
+top-level C<[data-bs-theme=dark]> blocks of F<bootstrap.css> and
+F<theme-tokens.css>. A theme-editor value for one of these applies only to
+light mode unless a dark value is also given.
+
+=cut
+
+sub ThemeModeSpecificProperties {
+    my $self = shift;
+    state $cached;
+    return $cached if $cached;
+
+    my $properties = {};
+    my $complete   = 1;
+    for my $file (qw(bootstrap.css theme-tokens.css)) {
+        my ($path) = grep { -e $_ }
+            map { File::Spec->catfile( $_, 'css', 'elevator', $file ) } $self->StaticRoots;
+        unless ($path) {
+            RT->Logger->error("Unable to find elevator/$file");
+            $complete = 0;
+            next;
+        }
+        open my $fh, '<', $path or do {
+            RT->Logger->error("Unable to read $path: $!");
+            $complete = 0;
+            next;
+        };
+        my $css = do { local $/; <$fh> };
+        while ( $css =~ /^\[data-bs-theme=dark\]\s*\{([^}]*)\}/mg ) {
+            $properties->{$_} = 1 for $1 =~ /(--[\w-]+)\s*:/ga;
+        }
+    }
+    # Don't cache a partial result, so a transient failure doesn't last for
+    # the life of the process.
+    $cached = $properties if $complete;
+    return $properties;
+}
+
+=head2 ValidateThemePalette PALETTE
+
+Takes a hashref of C<< { light => { NAME => VALUE }, dark => { ... } } >>
+custom property values from the theme editor. Returns a cleaned palette of
+the same shape, followed by a list of localized error messages for entries
+that were dropped. Any custom property name is accepted; values are rejected
+only if they contain characters that could end the declaration, the rule, or
+the C<< <style> >> element, or an unclosed string or comment that would run
+into the CSS after it. Empty values are dropped without an error.
+
+=cut
+
+sub ValidateThemePalette {
+    my $self    = shift;
+    my $palette = shift;
+
+    my ( %clean, @errors );
+    if ( defined $palette && ref $palette ne 'HASH' ) {
+        return ( {}, HTML::Mason::Commands::loc('Invalid theme palette') );
+    }
+    $palette ||= {};
+
+    for my $mode (qw(light dark)) {
+        my $values = $palette->{$mode};
+        next unless defined $values;
+        if ( ref $values ne 'HASH' ) {
+            push @errors, HTML::Mason::Commands::loc( 'Invalid theme palette for [_1] mode', $mode );
+            next;
+        }
+        for my $name ( sort keys %$values ) {
+            my $value = $values->{$name} // '';
+            if ( ref $value ) {
+                push @errors, HTML::Mason::Commands::loc( 'Invalid value for theme property [_1]', $name );
+                next;
+            }
+            $value =~ s/^[ \t\r\n\f]+|[ \t\r\n\f]+\z//ga;
+            next unless length $value;
+
+            if ( $name !~ /^--[A-Za-z0-9_-]+\z/a ) {
+                push @errors, HTML::Mason::Commands::loc( 'Invalid theme property name: [_1]', $name );
+                next;
+            }
+            # Quoted strings are fine (font names); a quote or comment left
+            # open outside them would swallow the UserCSS rendered after it.
+            my $unquoted = $value =~ s/"[^"]*"|'[^']*'//gr;
+            if ( $value =~ /[;{}<>\\\r\n]/a || $unquoted =~ m{["']|/\*} ) {
+                push @errors, HTML::Mason::Commands::loc( 'Invalid value for theme property [_1]', $name );
+                next;
+            }
+            $clean{$mode}{$name} = $value;
+        }
+    }
+    return ( \%clean, @errors );
+}
+
+=head2 ThemeContrastColor COLOR
+
+Returns C<#fff> or C<#000>, whichever has the higher WCAG contrast ratio
+against COLOR, a C<#rgb> or C<#rrggbb> hex color. Returns undef for any
+other value, since a named color or C<var()> reference can't be evaluated
+here.
+
+=cut
+
+sub ThemeContrastColor {
+    my $self  = shift;
+    my $color = shift;
+    return unless defined $color && $color =~ /\A#([0-9a-f]{3}|[0-9a-f]{6})\z/ia;
+
+    my $hex = $1;
+    $hex = join '', map { $_ x 2 } split //, $hex if length $hex == 3;
+
+    my @rgb = map {
+        my $c = hex($_) / 255;
+        $c <= 0.04045 ? $c / 12.92 : ( ( $c + 0.055 ) / 1.055 )**2.4;
+    } $hex =~ /(..)(..)(..)/a;
+    my $luminance = 0.2126 * $rgb[0] + 0.7152 * $rgb[1] + 0.0722 * $rgb[2];
+
+    # Contrast against white is 1.05 / (L + 0.05), against black (L + 0.05) / 0.05.
+    return 1.05 / ( $luminance + 0.05 ) >= ( $luminance + 0.05 ) / 0.05 ? '#fff' : '#000';
+}
+
+=head2 ThemePaletteCSS PALETTE
+
+Renders a theme-editor palette (see L</ValidateThemePalette>) as CSS. Light
+values go in C<:root>, so they also apply in dark mode, except
+mode-specific properties (see L</ThemeModeSpecificProperties>), which are
+limited to light mode. Dark values go in C<[data-bs-theme=dark]>.
+
+When a mode sets C<--bs-primary> to a hex color but not C<--rt-primary-contrast>,
+the contrast color is derived with L</ThemeContrastColor> from that mode's own
+primary. A dark primary that isn't hex gets no derived contrast, so dark mode
+inherits the light one.
+
+=cut
+
+sub ThemePaletteCSS {
+    my $self    = shift;
+    my $palette = shift;
+
+    my ($clean)       = $self->ValidateThemePalette($palette);
+    my $mode_specific = $self->ThemeModeSpecificProperties;
+    my $light         = $clean->{light} || {};
+    my $dark          = $clean->{dark}  || {};
+
+    for my $values ( $light, $dark ) {
+        next if !$values->{'--bs-primary'} || exists $values->{'--rt-primary-contrast'};
+        my $contrast = $self->ThemeContrastColor( $values->{'--bs-primary'} ) or next;
+        $values->{'--rt-primary-contrast'} = $contrast;
+    }
+
+    my @blocks = (
+        [ ':root' => { map { $_ => $light->{$_} } grep { !$mode_specific->{$_} } keys %$light } ],
+        [ ':root:not([data-bs-theme=dark])' => { map { $_ => $light->{$_} } grep { $mode_specific->{$_} } keys %$light } ],
+        [ '[data-bs-theme=dark]' => $dark ],
+    );
+
+    return join "\n", map {
+        my ( $selector, $values ) = @$_;
+        %$values
+            ? "$selector {\n" . join( '', map {"    $_: $values->{$_};\n"} sort keys %$values ) . "}\n"
+            : ();
+    } @blocks;
+}
+
 our %IS_WHITELISTED_COMPONENT = (
     # The RSS feed embeds an auth token in the path, but query
     # information for the search.  Because it's a straight-up read, in

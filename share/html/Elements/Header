@@ -81,8 +81,15 @@
 <style type="text/css" media="all" id="sitecss">
 %# Header is used when there isn't a database (such as in the Installer) which means there is no
 %# RT::System object, nor are there attributes.
-% if (blessed(RT->System) and my $attr = RT->System->FirstAttribute('UserCSS')) {
+% if ( blessed(RT->System) ) {
+%   if ( $style eq 'elevator' && ( my $palette = RT->System->FirstAttribute('ThemePalette') ) ) {
+<% RT::Interface::Web->ThemePaletteCSS( $palette->Content ) |n %>
+%   }
+%# Unescaped on purpose: admins close this element in UserCSS to add a
+%# <script>, then reopen a <style> for the closing tag below.
+%   if ( my $attr = RT->System->FirstAttribute('UserCSS') ) {
 <% $attr->Content |n %>
+%   }
 % }
 </style>
 % # Leave %ARGS for backward compatibility

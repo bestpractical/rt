@@ -36,22 +36,22 @@ div.ts-wrapper.plugin-dropdown_input .ts-dropdown .dropdown-input {
 
 [data-bs-theme=light] {
     div.ts-wrapper.plugin-dropdown_input .ts-dropdown .dropdown-input {
-        border-color: #d0d0d0;
+        border-color: var(--bs-border-color);
     }
 }
 
 [data-bs-theme=dark] {
     .ts-wrapper {
-        background-color: #323D42 !important;
-        border-color: #717171;
+        background-color: var(--rt-surface-bg) !important;
+        border-color: var(--rt-surface-border-color);
     }
 
     .ts-dropdown {
-        color: #aaa;
+        color: var(--bs-secondary-color);
     }
 
     .ts-dropdown .create {
-        color: rgba(170, 170, 170, 0.8);
+        color: var(--bs-secondary-color);
     }
 
     .ts-wrapper .ts-control,
@@ -60,14 +60,13 @@ div.ts-wrapper.plugin-dropdown_input .ts-dropdown .dropdown-input {
     }
 
     .ts-wrapper.multi .ts-control,
-    .ts-wrapper.multi .ts-control > div.item,
     .ts-wrapper.multi .ts-control input {
-        background-color: var(--bs-btn-bg) !important;
+        background-color: transparent !important;
     }
 
     .ts-wrapper.multi .ts-control > div.item {
         border: 1px solid;
-        border-color: #717171 !important;
+        border-color: var(--rt-surface-border-color) !important;
         color: var(--bs-body-color);
     }
 
@@ -76,8 +75,20 @@ div.ts-wrapper.plugin-dropdown_input .ts-dropdown .dropdown-input {
     }
 
     div.ts-wrapper.plugin-dropdown_input .ts-dropdown .dropdown-input {
-        border-color: #717171;
+        border-color: var(--rt-surface-border-color);
     }
+}
+
+/* tom-select.bootstrap5.css hard-codes its pill colors */
+.ts-wrapper.multi .ts-control > div {
+    background: var(--bs-secondary-bg);
+    color: var(--bs-body-color);
+}
+
+/* Specific enough to beat the dark item color above */
+.ts-wrapper.multi:not(.disabled) .ts-control > div.item.active {
+    background-color: var(--bs-primary);
+    color: var(--rt-primary-contrast);
 }
 
 /* Override Tom Select styling for article search in top menu to match SimpleSearch */

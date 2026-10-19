@@ -687,7 +687,7 @@ div.results .titlebox .titlebox-content {
 
 /* reset to default border for .card-body */
 #comp-Admin-Queues-DefaultValues .titlebox.card.ticket-info-cfs {
-    border-top-color: #dde4eb;
+    border-top-color: var(--bs-border-color);
 }
 
 .titlebox.card.messagedetails {
@@ -700,7 +700,7 @@ div.results .titlebox .titlebox-content {
     }
 
     .titlebox .titlebox-title a {
-        color: black;
+        color: var(--bs-emphasis-color);
     }
 
     .titlebox .titlebox-title .left {
@@ -709,32 +709,28 @@ div.results .titlebox .titlebox-content {
 
     .titlebox .titlebox-title .left,
     .titlebox .titlebox-title .left a {
-        color: var(--bs-primary);
+        color: var(--rt-widget-title-color);
     }
 
     .titlebox-inner-heading {
-        color: var(--bs-primary);
+        color: var(--rt-widget-title-color);
     }
 
     .links-section-heading {
-        color: var(--bs-primary);
+        color: var(--rt-widget-title-color);
     }
 
     .titlebox:hover .titlebox-title .right a,
     .titlebox:active .titlebox-title .right a {
-        color: #000;
+        color: var(--bs-emphasis-color);
     }
 
     .titlebox .card-header span.toggle:before {
-        border-color: #B0B3BC;
+        border-color: var(--rt-border-color-strong);
     }
 }
 
 [data-bs-theme=dark] {
-    .card {
-        border-color: #515151;
-    }
-
     .card-header {
         background-color: var(--bs-body-bg);
     }

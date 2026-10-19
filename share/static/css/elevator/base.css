@@ -18,8 +18,11 @@ svg:focus {
 
 [data-bs-theme=light] {
 
+    /* Opaque, unlike --bs-secondary-color: browsers paint :visited with the
+       unvisited color's alpha, so a translucent visited color shows as
+       the solid body color. */
     a:not(.btn):visited {
-        color: #666
+        color: color-mix(in srgb, var(--bs-body-color) 75%, var(--bs-body-bg));
     }
 }
 
@@ -27,34 +30,29 @@ svg:focus {
 
     p,
     li span {
-        color: #B2B6BA;
-    }
-
-    h1,
-    h2,
-    h3,
-    h4 {
-        color: #FFF;
+        color: var(--bs-secondary-color);
     }
 
     svg {
-        fill: #FFF;
+        fill: var(--bs-emphasis-color);
     }
 
     .table td {
-        color: #B2B6BA;
+        color: var(--bs-secondary-color);
     }
 
+    /* Not --bs-secondary-color: in dark mode that is too close to the link
+       color to tell visited ticket links apart. */
     table a:visited {
         color: #a7a7a7;
     }
 
     .table {
-        --bs-table-hover-bg: #3A474D;
+        --bs-table-hover-bg: var(--bs-secondary-bg);
     }
 
     .table-active {
-        --bs-table-bg-state: #3A474D;
+        --bs-table-bg-state: var(--bs-secondary-bg);
     }
 }
 

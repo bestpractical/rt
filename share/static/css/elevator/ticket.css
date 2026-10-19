@@ -291,6 +291,6 @@ ul.select-queue li+li {
 
 [data-bs-theme=light] {
     .ticket-inactive a {
-        color: #666;
+        color: var(--bs-secondary-color);
     }
 }

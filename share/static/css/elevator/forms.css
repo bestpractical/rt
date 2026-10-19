@@ -485,7 +485,7 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
     }
 
     .invalid {
-        color: red;
+        color: var(--bs-danger);
     }
 
     .messagebox-attachment-warning {
@@ -498,25 +498,25 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
 
     #EditConfig textarea:disabled,
     #EditConfig input:disabled {
-        background-color: #EEE;
+        background-color: var(--bs-secondary-bg);
     }
 
     #UpdateReminders .row.reminder-headers,
     #UpdateReminders [id^=reminder-] {
-        border-bottom-color: #dee2e6;
+        border-bottom-color: var(--bs-border-color);
     }
 
     .selectionbox-js .contents {
-        border-color: #ccc;
+        border-color: var(--bs-border-color);
     }
 
     .selectionbox-js .contents li {
-        border-color: #aaa;
-        background-color: #eee;
+        border-color: var(--rt-border-color-strong);
+        background-color: var(--bs-secondary-bg);
     }
 
     .selectionbox-js .contents li a.remove {
-        color: #5C6273;
+        color: var(--bs-secondary-color);
     }
 
     .selectionbox-js .contents::-webkit-scrollbar-thumb {
@@ -524,7 +524,7 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
     }
 
     .rt-drop-placeholder {
-        --bs-border-color: #ffc107;
+        --bs-border-color: var(--bs-warning);
     }
 }
 
@@ -536,42 +536,42 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
         --bs-btn-color: var(--bs-body-color);
         --bs-btn-active-color: var(--bs-body-color);
         --bs-btn-hover-color: var(--bs-body-color);
-        --bs-btn-bg: #323d42;
-        --bs-btn-border-color: #717171;
-        --bs-btn-hover-bg: #323d42;
-        --bs-btn-active-border-color: #717171;
-        --bs-btn-hover-border-color: #717171;
+        --bs-btn-bg: var(--rt-surface-bg);
+        --bs-btn-border-color: var(--rt-surface-border-color);
+        --bs-btn-hover-bg: var(--rt-surface-bg);
+        --bs-btn-active-border-color: var(--rt-surface-border-color);
+        --bs-btn-hover-border-color: var(--rt-surface-border-color);
     }
 
     .btn-light {
-        background-color: #323D42 !important;
-        border-color: #717171 !important;
+        background-color: var(--rt-surface-bg) !important;
+        border-color: var(--rt-surface-border-color) !important;
     }
 
     ::-webkit-input-placeholder {
         /* Chrome/Opera/Safari */
-        color: #7A7D8D !important;
+        color: var(--bs-tertiary-color) !important;
     }
 
     textarea:focus,
     input:focus {
-        border-color: #5C6273;
-        color: #FFF;
+        border-color: var(--bs-secondary-color);
+        color: var(--bs-emphasis-color);
     }
 
     label {
-        color: #FFF;
+        color: var(--bs-emphasis-color);
     }
 
 
     option:disabled {
-        color: #7A7D8D;
+        color: var(--bs-tertiary-color);
     }
 
     .btn-group,
     .btn-group .btn {
-        border-color: #7A7D8D;
-        color: #FFF;
+        border-color: var(--rt-border-color-strong);
+        color: var(--bs-emphasis-color);
     }
 
     div.modal {
@@ -583,23 +583,23 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
     }
 
     .dropzone {
-        border: 1px solid #717171 !important;
+        border: 1px solid var(--rt-surface-border-color) !important;
     }
 
     .dropzone.dz-clickable .dz-message,
     .dropzone.dz-clickable .dz-message *,
     .dropzone.dz-clickable .dz-preview,
     .dropzone {
-        background: #323D42 !important;
+        background: var(--rt-surface-bg) !important;
     }
 
     span.current-value.form-control {
-        background: #2C3539 !important;
+        background: var(--bs-body-bg) !important;
     }
 
     .form-control {
-        background-color: #323D42;
-        border-color: #717171;
+        background-color: var(--rt-surface-bg);
+        border-color: var(--rt-surface-border-color);
     }
 
     .form-control.is-invalid {
@@ -608,12 +608,12 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
 
     .selectionbox-js .contents li,
     .selectionbox-js .contents .placeholder {
-        background-color: #323D42 !important;
-        border-color: #717171 !important;
+        background-color: var(--rt-surface-bg) !important;
+        border-color: var(--rt-surface-border-color) !important;
     }
 
     .selectionbox-js .contents {
-        border-color: #515151 !important;
+        border-color: var(--bs-border-color) !important;
     }
 
     div.results .titlebox,
@@ -622,18 +622,18 @@ div.row>div.label>span.prev-icon-helper+.icon-helper {
     div.results .titlebox .card-body,
     div.results .titlebox .card-body>*,
     div.results .titlebox .card-body>*>* {
-        background: #3C494F !important;
+        background: var(--bs-secondary-bg) !important;
     }
 
     .input-group-text {
-        border-color: #717171;
+        border-color: var(--rt-surface-border-color);
     }
 }
 
 /* Chrome doesn't like -moz-placeholder and we have to put it separately */
 [data-bs-theme=dark] ::-moz-placeholder {
     /* Firefox 19+ */
-    color: #7A7D8D !important;
+    color: var(--bs-tertiary-color) !important;
 }
 
 div.rt-label {

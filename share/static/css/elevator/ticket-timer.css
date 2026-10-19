@@ -80,23 +80,23 @@
 
 [data-bs-theme=light] {
     .ticket-timer .ticket-link {
-        border-bottom-color: #547CCC;
+        border-bottom-color: var(--rt-secondary);
     }
 
     .ticket-timer .extra {
-        color: #aaa;
+        color: var(--bs-tertiary-color);
     }
 
     .ticket-timer.error .readout {
-        color: red;
+        color: var(--bs-danger);
     }
 
     .ticket-timer.error .on-error {
-        color: red;
+        color: var(--bs-danger);
     }
 
     .ticket-timer .gutter {
-        border-bottom-color: #ccc;
-        background-color: #eee;
+        border-bottom-color: var(--bs-border-color);
+        background-color: var(--bs-secondary-bg);
     }
 }

@@ -22,7 +22,7 @@
     height: auto;
     padding: 0.5rem 1rem;
     background-color: var(--bs-primary);
-    color: white;
+    color: var(--rt-primary-contrast);
     text-decoration: none;
     font-weight: bold;
     z-index: 10000;
@@ -262,7 +262,7 @@ a:hover.close {
 
 [data-bs-theme=light] {
     .error-load-history {
-        background-color: #b32;
+        background-color: var(--bs-danger);
         color: white;
     }
 
@@ -271,7 +271,7 @@ a:hover.close {
     }
 
     .comment {
-        color: #999;
+        color: var(--bs-tertiary-color);
     }
 
     .modal {
@@ -279,17 +279,17 @@ a:hover.close {
     }
 
     svg.bookmark-selected path {
-        stroke: black;
+        stroke: var(--bs-emphasis-color);
         fill: #46B346;
     }
 
     svg.icon-helper {
-        color: #666;
+        color: var(--bs-secondary-color);
     }
 
     /* row colouring */
     .oddline {
-        background-color: rgba(242, 242, 242);
+        background-color: var(--bs-tertiary-bg);
     }
 
     /* Restyle only the press: .active marks a selected item, and restyling

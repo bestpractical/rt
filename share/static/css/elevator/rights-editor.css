@@ -58,15 +58,15 @@
         border-color: var(--bs-nav-pills-link-active-bg);
     }
     .principal-tabs .rt-rights-role .nav-link:hover:not(.active) {
-        border-color: #ddd;
+        border-color: var(--bs-border-color);
     }
 }
 
 [data-bs-theme=dark] {
     .principal-tabs .rt-rights-role .nav-link.active {
-        border-color: #515151;
+        border-color: var(--bs-border-color);
     }
     .principal-tabs .rt-rights-role .nav-link:hover:not(.active) {
-        border-color: #666;
+        border-color: var(--rt-surface-border-color);
     }
 }

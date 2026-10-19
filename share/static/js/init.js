@@ -87,6 +87,7 @@ document.addEventListener('htmx:beforeHistorySave', function(evt) {
     evt.detail.historyElt.querySelectorAll('.datepicker').forEach(elt => elt.tempusDominus?.dispose());
     evt.detail.historyElt.querySelectorAll('.lifecycle-viewer').forEach(elt => elt.lifecycleViewer?.destroy());
     evt.detail.historyElt.querySelectorAll('.lifecycle-ui').forEach(elt => elt.lifecycleEditor?.destroy());
+    evt.detail.historyElt.querySelectorAll('.theme-editor').forEach(elt => elt.themeEditor?.destroy());
     disposeCombobox(evt.detail.historyElt);
 });
 
@@ -149,6 +150,9 @@ document.addEventListener('htmx:beforeCleanupElement', function(evt) {
     }
     else if ( elt.matches('.lifecycle-ui') ) {
         elt.lifecycleEditor?.destroy();
+    }
+    else if ( elt.matches('.theme-editor') ) {
+        elt.themeEditor?.destroy();
     }
 });
 

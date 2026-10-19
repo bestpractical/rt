@@ -99,6 +99,23 @@ div.history-container {
     font-size: 0.75em;
 }
 
+/* The type badges keep the same colors in every theme and mode, so their
+   icons need a fixed color with enough contrast against each badge. */
+.history .transaction .metadata span.type a {
+    color: #fff;
+}
+
+.history .transaction.description .metadata span.type a,
+.history .transaction.other .metadata span.type a {
+    color: #000;
+}
+
+/* Dark mode fills every svg with the emphasis color, which would undo
+   the black icons above. */
+.history .transaction .metadata span.type a svg {
+    fill: currentColor;
+}
+
 .history .transaction .metadata span.type a#lasttrans {
     display: inline
 }
@@ -197,21 +214,17 @@ div.history-container {
 
 [data-bs-theme=light] {
     .history .transaction {
-        border-top-color: #ccc;
+        border-top-color: var(--bs-border-color);
     }
 
     div.history-container {
-        border-left-color: #ccc;
-        border-right-color: #ccc;
-        border-bottom-color: #ccc;
+        border-left-color: var(--bs-border-color);
+        border-right-color: var(--bs-border-color);
+        border-bottom-color: var(--bs-border-color);
     }
 
     .history .transaction .messagebody {
-        border-top-color: #ccc;
-    }
-
-    .history .transaction .metadata span.type a {
-        color: #D3D3D3;
+        border-top-color: var(--bs-border-color);
     }
 
     .transaction div.downloadattachment {
@@ -220,11 +233,11 @@ div.history-container {
     }
 
     .transaction div.downloadattachment a {
-        color: #aaa;
+        color: var(--bs-tertiary-color);
     }
 
     .transaction .message-header-key {
-        color: #666;
+        color: var(--bs-secondary-color);
     }
 
     /* Keep these colors in sync with the ticket borders in boxes.css */
@@ -316,7 +329,7 @@ div.history-container {
     }
 
     .transaction.other .details tr:not(:first-child) td.value {
-        border-top-color: #ccc;
+        border-top-color: var(--bs-border-color);
     }
 
     .transaction .diff .value del {
@@ -334,7 +347,7 @@ div.history-container {
 
 [data-bs-theme=dark] {
     .history .transaction .messagebody {
-        border-color: #515151;
+        border-color: var(--bs-border-color);
     }
 
     .transaction.basics .type,
@@ -400,13 +413,13 @@ div.history-container {
     }
 
     .history .transaction {
-        border-top: 1px solid #515151;
+        border-top: 1px solid var(--bs-border-color);
     }
 
     div.history-container {
-        border-left: 1px solid #515151;
-        border-right: 1px solid #515151;
-        border-bottom: 1px solid #515151;
+        border-left: 1px solid var(--bs-border-color);
+        border-right: 1px solid var(--bs-border-color);
+        border-bottom: 1px solid var(--bs-border-color);
     }
 
 

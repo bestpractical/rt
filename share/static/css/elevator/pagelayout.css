@@ -100,6 +100,6 @@
 [data-bs-theme=light]  {
     .pagelayout-editor .pagelayout-widget-placeholder,
     .pagelayout-mapping .pagelayout-widget-placeholder {
-        --bs-border-color: #ffc107;
+        --bs-border-color: var(--bs-warning);
     }
 }

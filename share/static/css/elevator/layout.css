@@ -117,49 +117,36 @@ ol ol {
 }
 
 div#header {
-    border-bottom-color: #547CCC;
+    border-bottom-color: var(--rt-page-header-border-color);
 }
 
 [data-bs-theme=light] {
     div#footer {
-        background-color: #fff;
-        background-color: #2C3539;
+        background-color: var(--rt-footer-bg);
     }
 
     div#footer p,
     div#footer a {
-        color: #ededed;
-    }
-
-    h1 {
-        color: #31363E;
-    }
-
-    h2 {
-        color: #31363E;
-    }
-
-    h3 {
-        color: #31363E;
+        color: var(--rt-footer-color);
     }
 
     p {
-        color: #5C6273;
+        color: var(--bs-secondary-color);
     }
 
     ul,
     ol {
-        color: #31363E;
+        color: var(--bs-body-color);
     }
 
     ul li span,
     ol li span {
-        color: #5C6273;
+        color: var(--bs-secondary-color);
     }
 }
 
 [data-bs-theme=dark] {
     div#footer {
-        border-top: 1px solid #515151;
+        border-top: 1px solid var(--bs-border-color);
     }
 }

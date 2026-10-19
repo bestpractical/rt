@@ -44,7 +44,7 @@ div.messagebox-container.action-private div.ck-content {
     --ck-border-radius: var(--bs-border-radius);
 
     /* Set the border color for editor content */
-    --ck-color-focus-border: #5c6273;
+    --ck-color-focus-border: var(--bs-secondary-color);
 
     /* Unset shadow for focused buttons */
     --ck-focus-outer-shadow: none;
@@ -55,36 +55,36 @@ div.messagebox-container.action-private div.ck-content {
 
 :root[data-bs-theme=dark] {
     /* Set border color for toolbar */
-    --ck-color-base-border: #717171;
+    --ck-color-base-border: var(--rt-surface-border-color);
 
     /* Set background for toolbar lists/buttons */
-    --ck-color-list-background: #2C3539;
-    --ck-color-button-on-background: #2C3539;
-    --ck-color-button-default-hover-background: #2C3539;
-    --ck-color-button-on-hover-background: #2C3539;
-    --ck-color-button-default-active-background: #2C3539;
+    --ck-color-list-background: var(--bs-body-bg);
+    --ck-color-button-on-background: var(--bs-body-bg);
+    --ck-color-button-default-hover-background: var(--bs-body-bg);
+    --ck-color-button-on-hover-background: var(--bs-body-bg);
+    --ck-color-button-default-active-background: var(--bs-body-bg);
 
     /* Set background for label fields like "HEX" in color picker input */
-    --ck-color-labeled-field-label-background: #2C3539;
+    --ck-color-labeled-field-label-background: var(--bs-body-bg);
 
     /* Set background for dialogs like "Insert Media" */
-    --ck-color-dialog-background: #2C3539;
-    --ck-color-input-background: #2C3539;
+    --ck-color-dialog-background: var(--bs-body-bg);
+    --ck-color-input-background: var(--bs-body-bg);
 
     /* Set color for dropdown items Paragraph, Font Size, etc. */
-    --ck-color-text: #ededed;
+    --ck-color-text: var(--bs-body-color);
 
     /* Set border color for panels like "Link" */
-    --ck-color-panel-border: #2c3539;
+    --ck-color-panel-border: var(--bs-body-bg);
     /* Set color for link */
-    --ck-color-link-default: #ededed;
+    --ck-color-link-default: var(--bs-body-color);
 
     /* Set color for shortcut keys */
     --ck-accessibility-help-dialog-code-background-color: inherit;
     --ck-accessibility-help-dialog-kbd-shadow-color: inherit;
 
     /* Set background for "Powered by CKEditor" */
-    --ck-powered-by-background: #717171;
+    --ck-powered-by-background: var(--rt-surface-border-color);
 }
 
 [data-bs-theme=light] {
@@ -97,16 +97,16 @@ div.messagebox-container.action-private div.ck-content {
 
 [data-bs-theme=dark] {
     span.ck.ck-toolbar__separator {
-        background-color: #777;
+        background-color: var(--rt-border-color-strong);
     }
 
     .ck-editor .ck-editor__top * {
-        background-color: #2C3539;
+        background-color: var(--bs-body-bg);
     }
 
     /* Set color for "Link" panel */
     div.ck.ck-balloon-rotator {
-        background-color: #2C3539;
+        background-color: var(--bs-body-bg);
         border-radius: 3px; /* Avoid inner background color from leaking into parent */
     }
 
@@ -124,6 +124,6 @@ div.messagebox-container.action-private div.ck-content {
     }
 
     .ck-source-editing-area textarea {
-        background-color: #323D42;
+        background-color: var(--rt-surface-bg);
     }
 }

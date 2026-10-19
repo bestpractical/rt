@@ -28,11 +28,11 @@
     }
 
     .message-stanza-folder.open {
-        color: #ccc;
+        color: var(--bs-tertiary-color);
     }
 
     .message-stanza>blockquote {
-        border-left-color: #ccc;
+        border-left-color: var(--bs-border-color);
     }
 
     .message-stanza .message-stanza {

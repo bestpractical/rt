@@ -52,219 +52,211 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <div class="row mt-3">
-
-  <div id="simple-customize" class="col-6">
-    <div id="upload-logo">
-      <h3>Logo</h3>
-      <div class="border border-secondary-subtle rounded">
-        <& /Elements/Logo, id => 'logo-theme-editor', ShowName => 0, Size => 'Large' &>
-      </div>
-      <form method="POST" enctype="multipart/form-data" action="">
-        <div class="row mt-2 mb-2">
-          <div class="col-auto">
-            <label class="form-label" for="logo-upload"><&|/l&>Upload a new logo</&></label>
-            <input type="file" name="logo-upload" class="form-control" id="logo-upload" />
-          </div>
+  <div id="upload-logo" class="col-md-6">
+    <h3><&|/l&>Logo</&></h3>
+    <div class="border border-secondary-subtle rounded">
+      <& /Elements/Logo, id => 'logo-theme-editor', ShowName => 0, Size => 'Large' &>
+    </div>
+    <form method="POST" enctype="multipart/form-data" action="">
+      <div class="row mt-2 mb-2">
+        <div class="col-auto">
+          <label class="form-label" for="logo-upload"><&|/l&>Upload a new logo</&></label>
+          <input type="file" name="logo-upload" class="form-control" id="logo-upload" />
         </div>
-        <div class="automatic-color-support">
+      </div>
+      <div class="automatic-color-support">
 % if ($valid_image_types) {
-          <&|/l, $valid_image_types &>Your system supports automatic color suggestions for: [_1]</&>
+        <&|/l, $valid_image_types &>Your system supports automatic color suggestions for: [_1]</&>
 % }
-        </div>
-        <input class="btn btn-primary mt-1" name="reset_logo" value="<&|/l&>Reset to default RT Logo</&>" type="submit" />
-        <input class="btn btn-primary mt-1" type="submit" value="<&|/l&>Upload</&>" />
-      </form>
-    </div>
-
-    <hr />
-
-    <div id="upload-smalllogo">
-      <h3><&|/l&>Small Logo</&></h3>
-      <div>
-        <&|/l&>A smaller version of the logo that appears on small screens.</&>
       </div>
-      <div class="border border-secondary-subtle rounded">
-        <& /Elements/Logo, id => 'smalllogo-theme-editor', ShowName => 0, Size => 'Small' &>
-      </div>
-      <form method="POST" enctype="multipart/form-data" action="">
-        <div class="row mt-2 mb-2">
-          <div class="col-auto">
-            <label class="form-label" for="smalllogo-upload"><&|/l&>Upload a new small logo</&></label>
-            <input type="file" name="smalllogo-upload" class="form-control" id="smalllogo-upload" />
-          </div>
-        </div>
-        <input class="btn btn-primary mt-1" name="reset_smalllogo" value="<&|/l&>Reset to default RT Small Logo</&>" type="submit" />
-        <input class="btn btn-primary mt-1" type="submit" value="<&|/l&>Upload</&>" />
-      </form>
-    </div>
-
-    <hr />
-
-    <div id="customize-theme" class="">
-      <h3><&|/l&>Customize the RT theme</&></h3>
-      <&| /Elements/LabeledValue, Label => loc('Select a section') &>
-        <select class="form-select selectpicker" id="section" name="section">
-%       for my $section ( @sections ) {
-              <option value="<% $section->[0] %>"><% $section->[0] %></option>
-%       };
-        </select>
-      </&>
-
-      <&| /Elements/LabeledValue, Label => loc('Select a color for the section') &>
-        <div class="row">
-% if ($colors) {
-          <div class="col btn btn-primary primary-colors">
-%   for (@$colors) {
-%     my $fg = $_->{l} >= $text_threshold ? 'black' : 'white';
-            <button type="button" class="btn btn-primary color-template"
-                    style="background-color: rgb(<% $_->{c} %>); color: <% $fg %>;">
-    <&|/l&>Text</&>
-            </button>
-%   }
-          </div>
-% }
-          <div class="col">
-            <input type="color" class="form-control" id="color-picker" />
-          </div>
-        </div>
-      </&>
-    </div>
-
+      <input class="btn btn-primary mt-1" name="reset_logo" value="<&|/l&>Reset to default RT Logo</&>" type="submit" />
+      <input class="btn btn-primary mt-1" type="submit" value="<&|/l&>Upload</&>" />
+    </form>
   </div>
 
-  <div id="custom-css" class="col-6">
-    <h3><&|/l&>Custom CSS (Advanced)</&></h3>
-
-    <form method="POST" id="custom-css-form" action="">
-      <textarea class="form-control mb-2" rows="20" id="user_css" name="user_css" wrap="off"><% $user_css %></textarea>
-      <input id="try" type="button" class="btn btn-primary" value="<&|/l&>Try</&>" />
-      <input id="reset" type="reset" class="btn btn-primary" value="<&|/l&>Reset</&>" type="submit" />
-      <input name="reset_css" class="btn btn-primary" value="<&|/l&>Reset to default RT Theme</&>" type="submit" />
-      <input class="btn btn-primary" value="<&|/l&>Save</&>" type="submit" />
+  <div id="upload-smalllogo" class="col-md-6">
+    <h3><&|/l&>Small Logo</&></h3>
+    <div>
+      <&|/l&>A smaller version of the logo that appears on small screens.</&>
+    </div>
+    <div class="border border-secondary-subtle rounded">
+      <& /Elements/Logo, id => 'smalllogo-theme-editor', ShowName => 0, Size => 'Small' &>
+    </div>
+    <form method="POST" enctype="multipart/form-data" action="">
+      <div class="row mt-2 mb-2">
+        <div class="col-auto">
+          <label class="form-label" for="smalllogo-upload"><&|/l&>Upload a new small logo</&></label>
+          <input type="file" name="smalllogo-upload" class="form-control" id="smalllogo-upload" />
+        </div>
+      </div>
+      <input class="btn btn-primary mt-1" name="reset_smalllogo" value="<&|/l&>Reset to default RT Small Logo</&>" type="submit" />
+      <input class="btn btn-primary mt-1" type="submit" value="<&|/l&>Upload</&>" />
     </form>
   </div>
 </div>
 
+% if ($colors) {
+<div class="mt-3">
+  <span class="form-label"><&|/l&>Colors from your logo</&></span>
+%   for (@$colors) {
+%     my $hex = sprintf '#%02x%02x%02x', split /,/, $_->{c};
+  <button type="button" class="btn color-swatch" style="background-color: <% $hex %>;"
+          data-color="<% $hex %>" title="<% $hex %>">&nbsp;</button>
+%   }
+</div>
+% }
+
+<hr />
+
+<div id="customize-theme">
+% unless ( $editing_elevator ) {
+  <div class="alert alert-info"><&|/l, GetStylesheet() &>These colors apply to RT's default theme. You are currently using the [_1] theme, so the preview below won't match what other users see.</&></div>
+% }
+  <ul class="nav nav-tabs" id="theme-tabs" role="tablist">
+% for my $tab (@tabs) {
+%   my ( $id, $label ) = @$tab;
+    <li class="nav-item" role="presentation">
+      <a class="nav-link<% $id eq $active_tab ? ' active' : '' %>" href="#theme-<% $id %>" id="theme-<% $id %>-tab"
+         data-bs-toggle="tab" data-theme-tab="<% $id %>" role="tab" aria-controls="theme-<% $id %>"
+         aria-selected="<% $id eq $active_tab ? 'true' : 'false' %>"><% loc($label) %></a>
+    </li>
+% }
+  </ul>
+
+%# The two palette panes sit inside the palette form so Save submits both.
+%# The form is a .tab-content itself because Bootstrap only hides panes
+%# that are direct children of one.
+  <form method="POST" id="ThemePalette" name="ThemePalette" class="theme-editor tab-content" action=""
+        data-mode-specific="<% JSON([ sort keys %$mode_specific ]) %>"
+        data-extra-palette="<% JSON($extra_palette) %>"
+        data-saved-css="<% $saved_css %>">
+    <input type="hidden" name="theme_tab" value="<% $active_tab eq 'advanced' ? 'advanced' : 'basic' %>" />
+% for my $pane ( [ basic => \@basic_fields ], [ advanced => \@advanced_fields ] ) {
+%   my ( $id, $fields ) = @$pane;
+    <div class="tab-pane<% $id eq $active_tab ? ' active' : '' %>" id="theme-<% $id %>" role="tabpanel" aria-labelledby="theme-<% $id %>-tab">
+      <div class="row d-none d-md-flex">
+        <div class="col-md-4"></div>
+        <div class="col-md-4 fw-bold"><&|/l&>Light</&></div>
+        <div class="col-md-4 fw-bold"><&|/l&>Dark</&></div>
+      </div>
+%   for my $field (@$fields) {
+%     my $name  = $field->{name};
+%     my $label = loc( $field->{label} );
+      <div class="row palette-row mt-2" data-property="<% $name %>" data-label="<% $label %>">
+        <div class="col-12 col-md-4">
+          <div><% $label %></div>
+%     if ( $field->{hint} ) {
+          <div class="form-text palette-hint"><% loc( $field->{hint} ) %></div>
+%     }
+        </div>
+%     for my $mode (qw(light dark)) {
+%       my $mode_label  = $mode eq 'light' ? loc('Light') : loc('Dark');
+%       my $field_label = $mode eq 'light' ? loc( '[_1] (light mode)', $label ) : loc( '[_1] (dark mode)', $label );
+%       my $placeholder
+%           = $mode eq 'light'           ? loc( $field->{placeholder} // 'default' )
+%           : $mode_specific->{$name} ? loc('default')
+%           :                            loc('derived');
+        <div class="col-12 col-sm-6 col-md-4">
+          <label class="form-text d-md-none" for="palette-<% $mode %>-<% $name %>"><% $mode_label %></label>
+          <div class="input-group palette-input-group">
+            <input type="color" class="form-control form-control-color palette-picker" data-property="<% $name %>" data-mode="<% $mode %>"
+                   aria-label="<% loc( 'Color picker for [_1]', $field_label ) %>" />
+            <input type="text" class="form-control palette-value" name="palette.<% $mode %>.<% $name %>" id="palette-<% $mode %>-<% $name %>"
+                   data-property="<% $name %>" data-mode="<% $mode %>" value="<% $palette_values{$mode}{$name} // '' %>"
+                   placeholder="<% $placeholder %>" aria-label="<% $field_label %>" />
+          </div>
+        </div>
+%     }
+      </div>
+%   }
+    </div>
+% }
+    <div class="theme-palette-actions mt-3">
+      <button type="button" class="btn btn-secondary" id="preview-mode"
+              data-label-dark="<&|/l&>Preview dark mode</&>" data-label-light="<&|/l&>Preview light mode</&>"><&|/l&>Preview dark mode</&></button>
+      <input type="submit" class="btn btn-primary" name="save_palette" value="<&|/l&>Save colors</&>" />
+    </div>
+  </form>
+
+  <div class="tab-content">
+    <div class="tab-pane<% $active_tab eq 'custom-css' ? ' active' : '' %>" id="theme-custom-css" role="tabpanel" aria-labelledby="theme-custom-css-tab">
+      <form method="POST" id="custom-css-form" action="">
+        <label class="visually-hidden" for="user_css"><&|/l&>Custom CSS</&></label>
+        <textarea class="form-control mb-2" rows="20" id="user_css" name="user_css" wrap="off"><% $user_css %></textarea>
+        <input id="try" type="button" class="btn btn-primary" value="<&|/l&>Try</&>" />
+        <input id="reset" type="reset" class="btn btn-primary" value="<&|/l&>Reset</&>" />
+        <input name="reset_css" class="btn btn-primary" value="<&|/l&>Reset to default RT Theme</&>" type="submit" />
+        <input class="btn btn-primary" value="<&|/l&>Save</&>" type="submit" />
+      </form>
+    </div>
+  </div>
+</div>
+
 <%ONCE>
-my @sections = (
-    ['Page'         => ['body', 'div#body']],
-    ['Menu bar'     => ['div#quickbar', '#main-navigation #app-nav > li, #main-navigation #app-nav > li > a, #prefs-menu > li, #prefs-menu > li > a, #logo .rtname']],
-    ['Title bar'    => ['div#header']],
-    ['Page title'   => ['div#header h1']],
-    ['Page content' => ['div#body, .body-content-class']],
-    ['Buttons'      => ['input[type="reset"], input[type="submit"], input[class="btn"]']],
-    ['Button hover' => ['input[type="reset"]:hover, input[type="submit"]:hover, input[class="btn"]:hover']],
-    ['Search results' => ['table.collection-as-table th.collection-as-table a']],
-    ['Portlet Text'   => ['.titlebox .titlebox-title .left a, .titlebox .titlebox-title .left']],
-    ['Selected bubble'          => ['.ts-wrapper.multi .ts-control > .item']],
-    ['Selected bubble (active)' => ['.ts-wrapper.multi .ts-control > .item.active']],
+my @tabs = (
+    [ basic        => 'Basic' ],         # loc
+    [ advanced     => 'Advanced' ],      # loc
+    [ 'custom-css' => 'Custom CSS' ],    # loc
+);
+
+my @basic_fields = (
+    {   name  => '--bs-primary',
+        label => 'Primary color',                          # loc
+        hint  => 'Buttons, widget titles, focus rings',    # loc
+    },
+    {   name  => '--rt-secondary',
+        label => 'Secondary color',                          # loc
+        hint  => 'Page title underline, menu highlights',    # loc
+    },
+    {   name  => '--rt-tertiary',
+        label => 'Tertiary color',      # loc
+        hint  => 'Headings, footer',    # loc
+    },
+);
+
+my @advanced_fields = (
+    {   name        => '--rt-primary-contrast',
+        label       => 'Text on primary color',    # loc
+        placeholder => 'automatic',                # loc
+    },
+    {   name  => '--bs-link-color',
+        label => 'Links',    # loc
+    },
+    {   name  => '--bs-link-hover-color',
+        label => 'Links (hover)',    # loc
+    },
+    {   name        => '--rt-page-header-border-color',
+        label       => 'Page title underline',    # loc
+        placeholder => 'from Secondary',          # loc
+    },
+    {   name        => '--bs-heading-color',
+        label       => 'Headings',         # loc
+        placeholder => 'from Tertiary',    # loc
+    },
+    {   name        => '--rt-widget-title-color',
+        label       => 'Widget titles',    # loc
+        placeholder => 'from Primary',     # loc
+    },
+    {   name  => '--rt-menu-bg',
+        label => 'Menus',    # loc
+    },
+    {   name  => '--rt-menu-color',
+        label => 'Menu text',    # loc
+    },
+    {   name        => '--rt-menu-hover-bg',
+        label       => 'Menu hover',        # loc
+        placeholder => 'from Primary',      # loc
+    },
+    {   name        => '--rt-footer-bg',
+        label       => 'Footer',           # loc
+        placeholder => 'from Tertiary',    # loc
+    },
+    {   name  => '--rt-footer-color',
+        label => 'Footer text',    # loc
+    },
 );
 </%ONCE>
-<script type="text/javascript">
-var section_css_mapping = <% JSON(\@sections) |n%>;
-jQuery(function($) {
-    function update_sitecss(text) {
-        if (!text)
-            text = $('#user_css').val();
-        $("style#sitecss").text(text);
-    }
-
-    update_sitecss();
-    $('#try').click(function() {
-        update_sitecss();
-    });
-
-    $('#reset').click(function() {
-        setTimeout(function() {
-            update_sitecss();
-        }, 1000);
-    });
-
-    function change_color(bg, fg) {
-      var section = $('select#section').val();
-
-      var applying = jQuery.grep(section_css_mapping, function(a){ return a[0] == section })[0][1];
-      var css = $('#user_css').val();
-      if (applying) {
-          var specials = new RegExp("([.*+?|()\\[\\]{}\\\\])", "g");
-          for (var name in applying) {
-              var selector = (applying[name]).replace(specials, "\\$1");
-              var rule = new RegExp('^'+selector+'\\s*\{.*?\}', "m");
-              var newcss = "background: " + bg;
-
-              /* Don't set the text color on <body> as it affects too much */
-              if (applying[name] != "body")
-                  newcss += "; color: " + fg;
-
-              /* Kill the border on the quickbar if we're styling it */
-              if (applying[name].match(/quickbar/))
-                  newcss += "; border: none;"
-
-              /* Page title's text color is the selected color */
-              if (applying[name].match(/h1/))
-                  newcss = "color: " + bg;
-
-              if (applying[name].match(/collection-as-table/))
-                  newcss = "color: " + bg;
-
-              if (applying[name].match(/titlebox/))
-                  newcss = "color: " + bg;
-
-              if (applying[name].match(/.ts-wrapper.multi .ts-control .item/))
-                  newcss = "color: " + bg;
-
-              if (applying[name].match(/.ts-wrapper.multi .ts-control .item.active/))
-                  newcss = "color: " + bg;
-
-              /* Nav doesn't need a background, but it wants text color */
-              if (applying[name].match(/#main-navigation/))
-                  newcss = "color: " + fg;
-
-              css = css.replace(rule, applying[name]+" { "+newcss+" }");
-          }
-      }
-      $('#user_css').val(css);
-      update_sitecss(css);
-    }
-
-    document.querySelector('#color-picker').addEventListener('change', function() {
-        const red = parseInt('0x' + this.value.substr(1,2));
-        const green = parseInt('0x' + this.value.substr(3,2));
-        const blue = parseInt('0x' + this.value.substr(5,2));
-        const lightness = (Math.max(red, green, blue) + Math.min(red, green, blue))/2/255;
-        change_color(this.value, lightness > <% $text_threshold %> ? '#000' : '#fff');
-    });
-
-    $('button.color-template').click(function() {
-      change_color($(this).css('background-color'), $(this).css('color'));
-    });
-
-
-    document.getElementById('section').addEventListener('change', event => {
-        const section = event.target.value;
-        const selector = section_css_mapping.filter( a => { return a[0] == section })[0][1][0];
-        const specials = new RegExp("([.*+?|()\\[\\]{}\\\\])", "g");
-        const escaped_selector = selector.replace(specials, "\\$1");
-        const rule = new RegExp('^'+escaped_selector+'\\s*\{\\s*background:\\s*(#\\w+|rgb\\((\\d+),\\s*(\\d+),\\s*(\\d+)\\))', "m");
-        const css = document.getElementById('user_css').value;
-        const result = css.match(rule);
-        if ( result ) {
-            if ( result[2] ) {
-                document.getElementById('color-picker').value =
-                  '#' + result.slice(2, 5).map(num => parseInt(num).toString(16).padStart(2, '0')).join('');
-            }
-            else {
-                document.getElementById('color-picker').value = result[1];
-            }
-        }
-        else {
-            document.getElementById('color-picker').value = '#ffffff';
-        }
-    });
-    document.getElementById('section').dispatchEvent(new Event('change'));
-});
-
-</script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/theme-editor.js"></script>
 <%INIT>
 unless ($session{'CurrentUser'}->HasRight( Object=> RT->System, Right => 'SuperUser')) {
     Abort(loc('This feature is only available to system administrators.'));
@@ -272,7 +264,6 @@ unless ($session{'CurrentUser'}->HasRight( Object=> RT->System, Right => 'SuperU
 
 use Digest::MD5 'md5_hex';
 
-my $text_threshold = 0.6;
 my @results;
 my $imgdata;
 
@@ -380,27 +371,107 @@ for my $logo_key (qw(Logo SmallLogo)) {
     }
 }
 
-if ($user_css) {
-    if ($ARGS{'reset_css'}) {
-        RT->System->DeleteAttribute('UserCSS');
-        undef $user_css;
+my $active_tab
+    = ( $ARGS{'reset_css'} || exists $ARGS{'user_css'} ) ? 'custom-css'
+    : ( $ARGS{'save_palette'} && ( $ARGS{'theme_tab'} // '' ) eq 'advanced' ) ? 'advanced'
+    :                                                                           'basic';
+
+# ThemePalette holds { light => { '--name' => value }, dark => { ... } }.
+# Elements/Header renders it via RT::Interface::Web->ThemePaletteCSS, on
+# elevator only; an empty dark value falls back to the light or default one.
+my $palette_attr = RT->System->FirstAttribute('ThemePalette');
+my $stored       = $palette_attr ? $palette_attr->Content : undef;
+
+# The attribute can be edited outside the UI, so accept only hashes here.
+my %palette_values = map { $_ => { ref $stored eq 'HASH' && ref $stored->{$_} eq 'HASH' ? %{ $stored->{$_} } : () } } qw(light dark);
+
+if ( $ARGS{'reset_css'} ) {
+    RT->System->DeleteAttribute('UserCSS');
+    RT->System->DeleteAttribute('ThemePalette');
+    %palette_values = map { $_ => {} } qw(light dark);
+    $user_css = '';
+}
+elsif ( $ARGS{'save_palette'} ) {
+    # Start from the stored palette so values for properties the editor
+    # doesn't show (set by hand or by an extension) survive a save.
+    my %merged = map { $_ => { %{ $palette_values{$_} } } } qw(light dark);
+    my %submitted;
+    for my $arg ( keys %ARGS ) {
+        next unless $arg =~ /^palette\.(light|dark)\.(.+)$/;
+        my ( $mode, $name ) = ( $1, $2 );
+        if ( defined $ARGS{$arg} && length $ARGS{$arg} ) {
+            $merged{$mode}{$name} = $ARGS{$arg};
+            $submitted{$mode}{$name} = 1;
+        }
+        else {
+            delete $merged{$mode}{$name};
+        }
+    }
+
+    my ( $clean, @errors ) = RT::Interface::Web->ValidateThemePalette( \%merged );
+    push @results, @errors;
+
+    # A rejected entry keeps its stored value rather than erasing it.
+    for my $mode (qw(light dark)) {
+        for my $name ( keys %{ $submitted{$mode} || {} } ) {
+            next if exists $clean->{$mode}{$name};
+            next unless exists $palette_values{$mode}{$name};
+            $clean->{$mode}{$name} = $palette_values{$mode}{$name};
+        }
+    }
+
+    my ( $id, $msg ) = RT->System->SetAttribute(
+        Name        => 'ThemePalette',
+        Description => 'Theme editor palette',
+        Content     => $clean,
+    );
+    RT->System->Attributes->RedoSearch;
+    if ($id) {
+        push @results, @errors ? loc('Some theme colors were not saved') : loc('Theme colors saved');
+        %palette_values = map { $_ => { ref $clean->{$_} eq 'HASH' ? %{ $clean->{$_} } : () } } qw(light dark);
     }
     else {
-        my ($id, $msg) = RT->System->SetAttribute( Name => "UserCSS",
-                                                    Description => "User-provided css",
-                                                    Content => $user_css );
-        push @results, loc("Unable to set UserCSS: [_1]", $msg) unless $id;
+        push @results, loc( 'Unable to set ThemePalette: [_1]', $msg );
     }
 }
-
-if (!$user_css) {
-    my $attr = RT->System->FirstAttribute('UserCSS');
-    $user_css = $attr ? $attr->Content : join(
-        "\n\n" => map {
-            join "\n" => "/* ". $_->[0] ." */",
-                         map { "$_ {}" } @{$_->[1]}
-        } @sections
+elsif ($user_css) {
+    my ( $id, $msg ) = RT->System->SetAttribute(
+        Name        => 'UserCSS',
+        Description => 'User-provided css',
+        Content     => $user_css,
     );
+    push @results, loc( 'Unable to set UserCSS: [_1]', $msg ) unless $id;
+}
+
+unless ($user_css) {
+    my $attr = RT->System->FirstAttribute('UserCSS');
+    $user_css = $attr ? $attr->Content : '';
+}
+
+my $mode_specific    = RT::Interface::Web->ThemeModeSpecificProperties;
+my $editing_elevator = GetStylesheet() eq 'elevator';
+
+# What Header renders into <style id="sitecss"> for this user, reflecting any
+# save or reset above. Boosted navigation never re-renders that element, so
+# the editor JS restores this when leaving the page. UserCSS may close the
+# element to add a <script> (see Elements/Header); only the text before that
+# is in the element, so only that is restored. theme-editor.js splits the
+# textarea the same way for the preview.
+my $saved_user_css = RT->System->FirstAttribute('UserCSS');
+my $saved_css = $saved_user_css ? $saved_user_css->Content // '' : '';
+$saved_css =~ s{</style.*}{}is;
+my $extra_palette = { light => {}, dark => {} };
+if ($editing_elevator) {
+    my $saved_palette = RT->System->FirstAttribute('ThemePalette');
+    my $content = $saved_palette ? $saved_palette->Content : undef;
+    $saved_css = RT::Interface::Web->ThemePaletteCSS($content) . ( $saved_user_css ? "\n" . $saved_css : '' );
+
+    # Stored properties the editor has no field for must stay in the preview.
+    my %shown = map { $_->{name} => 1 } @basic_fields, @advanced_fields;
+    my ($clean) = RT::Interface::Web->ValidateThemePalette($content);
+    for my $mode (qw(light dark)) {
+        $extra_palette->{$mode} = { map { $_ => $clean->{$mode}{$_} } grep { !$shown{$_} } keys %{ $clean->{$mode} || {} } };
+    }
 }
 </%INIT>
 <%ARGS>

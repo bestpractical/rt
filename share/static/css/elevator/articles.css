@@ -19,7 +19,7 @@
 
 #comp-Articles .row.article-headers,
 #comp-Articles .row.article-summary {
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--bs-border-color);
 }
 
 /* Possibly remove or adjust if titlebox is updated */

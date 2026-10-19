@@ -8,5 +8,5 @@
 
 .add-asset {
     padding-top: 10px;
-    border-top: 1px solid #E0E6EC;
+    border-top: 1px solid var(--bs-border-color);
 }

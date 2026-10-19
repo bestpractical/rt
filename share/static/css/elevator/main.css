@@ -1,5 +1,6 @@
 @import "tablesorter.css";
 @import "bootstrap.css";
+@import "theme-tokens.css";
 @import "bootstrap-combobox.css";
 @import "dropzone.css";
 @import "dropzone.customized.css";

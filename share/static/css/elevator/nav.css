@@ -263,11 +263,11 @@
 
 [data-bs-theme=light] {
     .navbar a.menu-item {
-        color: #000;
+        color: var(--rt-menu-color);
     }
 
     .navbar a.dropdown-item.active {
-        background-color: #fff;
+        background-color: var(--rt-menu-bg);
     }
 
     a.dropdown-item.hovered,
@@ -276,53 +276,53 @@
     }
 
     .page-menu.pinned {
-        background-color: white;
-        border-left-color: #aaa;
-        border-bottom-color: #aaa;
+        background-color: var(--rt-menu-bg);
+        border-left-color: var(--rt-menu-border-color);
+        border-bottom-color: var(--rt-menu-border-color);
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
     }
 
     .page-menu.pinned li:hover ul {
-        border-left-color: #aaa;
-        border-right-color: #aaa;
+        border-left-color: var(--rt-menu-border-color);
+        border-right-color: var(--rt-menu-border-color);
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
     }
 
     #app-nav > li > a:hover,
     .page-menu > li > a:not(:has(.rt-inline-icon)):hover {
-        background: #cfdeff;
+        background: var(--rt-menu-hover-bg);
     }
 
     /* Keyboard navigation focus styling - only active when keyboard nav is detected */
     body.keyboard-nav-active #app-nav > li > a.menu-item:focus,
     body.keyboard-nav-active .page-menu > li > a.menu-item:focus {
-        background: #cfdeff;
+        background: var(--rt-menu-hover-bg);
     }
 
     #topactions form input.btn {
-        border-color: #4868b3;
+        border-color: var(--bs-primary);
     }
 }
 
 [data-bs-theme=dark] {
     .navbar li a {
-        color: #FFF;
+        color: var(--rt-menu-color);
     }
 
     .dropdown-menu {
-        background: #323D42;
-        border-color: #717171;
+        background: var(--rt-menu-bg);
+        border-color: var(--rt-menu-border-color);
     }
 
     .dropdown-item *,
     .dropdown-item *,
     .dropdown-item,
     a.dropdown-item {
-        background: #323D42;
+        background: var(--rt-menu-bg);
     }
 
     .dropdown-divider {
-        border-color: #3A3C43;
+        border-color: var(--rt-menu-divider-color);
     }
 
     .dropdown-item.hovered,
@@ -331,39 +331,35 @@
     .dropdown-item:hover *,
     .dropdown-item:focus,
     .dropdown-item:hover {
-        background: #3A474D;
+        background: var(--rt-menu-hover-bg);
     }
 
     .page-menu.pinned {
-        background-color: #323D42;
+        background-color: var(--rt-menu-bg);
         box-shadow: none;
     }
 
     .page-menu.pinned ul {
-        border-color: #515151;
+        border-color: var(--bs-border-color);
     }
 
     #app-nav > li > a.menu-item:hover,
     .page-menu > li > a:not(:has(svg.fa-cog)):hover {
-        background: #3a474d;
+        background: var(--rt-menu-hover-bg);
     }
 
     /* Keyboard navigation focus styling for dark mode */
     body.keyboard-nav-active #app-nav > li > a.menu-item:focus,
     body.keyboard-nav-active .page-menu > li > a.menu-item:focus {
-        background: #3a474d;
-    }
-
-    .nav-tabs {
-        border-bottom: 1px solid #515151;
+        background: var(--rt-menu-hover-bg);
     }
 
     .nav-tabs .nav-link:hover,
     .nav-tabs .nav-link.active {
-        border-color: #515151;
+        border-color: var(--bs-border-color);
     }
 
     .nav-pills .nav-link.active {
-        background-color: #323D42 !important;
+        background-color: var(--rt-menu-bg) !important;
     }
 }
