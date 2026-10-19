@@ -540,8 +540,9 @@ sub LoginError {
     my @actions = @{ $HTML::Mason::Commands::session{"Actions"}->{$key} ||= [] };
     push @actions, $new;
     RT::Interface::Web::Session::Set(
-        Key   => 'Actions',
-        Value => \@actions,
+        Key    => 'Actions',
+        SubKey => $key,
+        Value  => \@actions,
     );
 
     return $key;

@@ -61,7 +61,7 @@ if ( RT::Interface::Web::RequestENV('REQUEST_METHOD') eq 'GET' && ( my @warnings
         RT::Interface::Web::Session::Set(
             Key    => 'Actions',
             SubKey => '',
-            Value  => \@warnings,
+            Value  => [ @{ $session{'Actions'}{''} || [] }, @warnings ],
         );
     }
 }
