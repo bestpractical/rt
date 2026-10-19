@@ -45,15 +45,6 @@ svg:focus {
         color: #B2B6BA;
     }
 
-    table.table th {
-        border: none;
-    }
-
-    .table th,
-    .table td {
-        border-top: 1px solid #6d6f71;
-    }
-
     table a:visited {
         color: #a7a7a7;
     }
