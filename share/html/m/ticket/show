@@ -141,8 +141,11 @@ if (@Actions) {
     # resubmission on refresh.
     # But we need to store Actions somewhere too, so we don't lose them.
     my $key = Digest::MD5::md5_hex( rand(1024) );
-    push @{ $session{"Actions"}->{$key} ||= [] }, @Actions;
-    $session{'i'}++;
+    RT::Interface::Web::Session::Set(
+        Key    => 'Actions',
+        SubKey => $key,
+        Value  => \@Actions,
+    );
     my $url = RT->Config->Get('WebURL') . "m/ticket/show?id=" . $Ticket->id . "&results=" . $key;
     $url .= '#' . $ARGS{Anchor} if $ARGS{Anchor};
     RT::Interface::Web::Redirect($url);

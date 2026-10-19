@@ -179,7 +179,13 @@ if ( $NewQuery ) {
     );
 
     # ..and the search results.
-    $session{$session_name}->CleanSlate if defined $session{$session_name};
+    if ( defined $session{$session_name} ) {
+        $session{$session_name}->CleanSlate;
+        RT::Interface::Web::Session::Set(
+            Key   => $session_name,
+            Value => $session{$session_name},
+        );
+    }
 }
 
 { # Attempt to load what we can from the session and preferences, set defaults

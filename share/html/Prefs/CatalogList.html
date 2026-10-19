@@ -112,12 +112,16 @@ if ($ARGS{'Save'}) {
         # Clear for 'CreateAsset'
         my $cache_key = GetObjectSessionCacheKey( ObjectType => 'RT::Catalog',
             CheckRight => 'CreateAsset', ShowAll => 0 );
-        delete $session{$cache_key};
+        RT::Interface::Web::Session::Delete(
+            Key => $cache_key,
+        );
 
         # Clear for 'ShowAsset'
         $cache_key = GetObjectSessionCacheKey( ObjectType => 'RT::Catalog',
             CheckRight => 'ShowAsset', ShowAll => 0 );
-        delete $session{$cache_key};
+        RT::Interface::Web::Session::Delete(
+            Key => $cache_key,
+        );
     }
 }
 

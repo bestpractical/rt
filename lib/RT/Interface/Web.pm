@@ -2436,6 +2436,11 @@ sub ExpandShortenerCode {
                     RT->Logger->warning("Could not load saved search $sc: $msg");
                     push @{ $HTML::Mason::Commands::session{Actions}{''} },
                         HTML::Mason::Commands::loc( "Could not load saved search [_1]: [_2]", $sc, $msg );
+                    RT::Interface::Web::Session::Set(
+                        Key    => 'Actions',
+                        SubKey => '',
+                        Value  => $HTML::Mason::Commands::session{Actions}{''},
+                    );
                 }
             }
 

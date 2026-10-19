@@ -142,7 +142,10 @@ sub BuildMainNav {
             }
         }
 
-        $HTML::Mason::Commands::session{'dashboards_in_menu'} = $dashboards_in_menu->{dashboards} || [];
+        RT::Interface::Web::Session::Set(
+            Key   => 'dashboards_in_menu',
+            Value => $dashboards_in_menu->{dashboards} || [],
+        );
     }
 
     my @dashboards;
@@ -162,8 +165,10 @@ sub BuildMainNav {
                 DashboardId => $id,
                 CurrentUser => $HTML::Mason::Commands::session{CurrentUser}->UserObj,
             );
-            @{ $HTML::Mason::Commands::session{'dashboards_in_menu'} } =
-              grep { $_ != $id } @{ $HTML::Mason::Commands::session{'dashboards_in_menu'} };
+            RT::Interface::Web::Session::Set(
+                Key   => 'dashboards_in_menu',
+                Value => [ grep { $_ != $id } @{ $HTML::Mason::Commands::session{'dashboards_in_menu'} } ],
+            );
         }
     }
 
@@ -198,7 +203,10 @@ sub BuildMainNav {
             }
         }
 
-        $HTML::Mason::Commands::session{'reports_in_menu'} = $reports_in_menu || [];
+        RT::Interface::Web::Session::Set(
+            Key   => 'reports_in_menu',
+            Value => $reports_in_menu || [],
+        );
     }
 
     for my $report ( @{$HTML::Mason::Commands::session{'reports_in_menu'}} ) {
@@ -539,6 +547,10 @@ sub BuildPageNav {
 
                     if ($updatesession) {
                         $HTML::Mason::Commands::session{"collection-RT::Tickets"}->PrepForSerialization();
+                        RT::Interface::Web::Session::Set(
+                            Key   => 'collection-RT::Tickets',
+                            Value => $HTML::Mason::Commands::session{"collection-RT::Tickets"},
+                        );
                     }
 
                     my $search = $search_results_page_menu = $HTML::Mason::Commands::m->notes('search-results-page-menu', RT::Interface::Web::Menu->new());
