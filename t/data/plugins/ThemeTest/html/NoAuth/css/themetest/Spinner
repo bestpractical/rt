@@ -1,0 +1,4 @@
+<span class="themetest-spinner" data-size="<% $Size %>"></span>
+<%ARGS>
+$Size => 40
+</%ARGS>

@@ -1,0 +1,12 @@
+<%INIT>
+return unless GetStylesheet() eq 'themetest';
+
+my $images = RT->Config->Get('WebImagesURL');
+$ARGSRef->{FaviconPath}      = $DECODED_ARGS->{ThemeTestFavicon} // 'themetest/favicon.svg';
+$ARGSRef->{LogoURL}          = $images . 'themetest/logo.svg';
+$ARGSRef->{SmallLogoURL}     = $images . 'themetest/logo-small.svg';
+$ARGSRef->{IgnoreCustomLogo} = 1;
+</%INIT>
+<%ARGS>
+$ARGSRef
+</%ARGS>
