@@ -14,6 +14,7 @@
     --rt-primary-contrast: #fff;
     --rt-border-color-strong: #aaa;
     --rt-page-header-border-color: var(--rt-secondary);
+    --rt-table-header-border-color: var(--rt-secondary);
     --rt-footer-bg: var(--rt-tertiary);
     --rt-footer-color: #ededed;
     --rt-menu-bg: var(--rt-surface-bg);

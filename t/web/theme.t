@@ -287,15 +287,15 @@ diag 'theme editor layout: tabs, fields, placeholders and labels';
         [qw(--bs-primary --rt-secondary --rt-tertiary)], 'Basic tab has primary, secondary, tertiary' );
     is_deeply(
         [ map { $_->at('.palette-hint')->text } @basic ],
-        [ 'Buttons, widget titles, focus rings', 'Page title underline, menu highlights', 'Headings, footer' ],
+        [ 'Buttons, widget titles, focus rings', 'Page title underline, table headers', 'Headings, footer' ],
         'Basic rows have hints'
     );
 
     is_deeply(
         [ map { $_->attr('data-property') } $dom->find('#theme-advanced .palette-row')->each ],
         [   qw(--rt-primary-contrast --bs-link-color --bs-link-hover-color --rt-page-header-border-color
-                --bs-heading-color --rt-widget-title-color --rt-menu-bg --rt-menu-color --rt-menu-hover-bg
-                --rt-footer-bg --rt-footer-color)
+                --rt-table-header-border-color --bs-heading-color --rt-widget-title-color --rt-menu-bg
+                --rt-menu-color --rt-menu-hover-bg --rt-footer-bg --rt-footer-color)
         ],
         'Advanced tab fields in order'
     );
@@ -305,14 +305,15 @@ diag 'theme editor layout: tabs, fields, placeholders and labels';
         return $dom->at(qq{form#ThemePalette input.palette-value[name="palette.$mode.$name"]});
     };
     my %light_placeholder = (
-        '--bs-primary'                  => 'default',
-        '--rt-primary-contrast'         => 'automatic',
-        '--bs-link-color'               => 'default',
-        '--rt-page-header-border-color' => 'from Secondary',
-        '--bs-heading-color'            => 'from Tertiary',
-        '--rt-widget-title-color'       => 'from Primary',
-        '--rt-menu-hover-bg'            => 'from Primary',
-        '--rt-footer-bg'                => 'from Tertiary',
+        '--bs-primary'                   => 'default',
+        '--rt-primary-contrast'          => 'automatic',
+        '--bs-link-color'                => 'default',
+        '--rt-page-header-border-color'  => 'from Secondary',
+        '--rt-table-header-border-color' => 'from Secondary',
+        '--bs-heading-color'             => 'from Tertiary',
+        '--rt-widget-title-color'        => 'from Primary',
+        '--rt-menu-hover-bg'             => 'from Primary',
+        '--rt-footer-bg'                 => 'from Tertiary',
     );
     for my $name ( sort keys %light_placeholder ) {
         is( $field->( light => $name )->attr('placeholder'), $light_placeholder{$name}, "light $name placeholder" );

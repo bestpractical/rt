@@ -102,11 +102,11 @@ diag 'tabs show the Basic and Advanced fields';
     $p->get_ok( $url . '/Admin/Tools/Theme.html', 'load theme editor' );
     is( $visible_rows->('#theme-basic'),    3, 'Basic tab shows three rows' );
     is( $visible_rows->('#theme-advanced'), 0, 'Advanced rows hidden at first' );
-    is( $page->locator('#theme-advanced .palette-row')->count, 11, 'Advanced fields present while hidden' );
+    is( $page->locator('#theme-advanced .palette-row')->count, 12, 'Advanced fields present while hidden' );
     ok( $page->locator('#preview-mode')->isVisible, 'preview toggle visible on Basic tab' );
 
     $page->locator('#theme-tabs a[href="#theme-advanced"]')->click();
-    is( $visible_rows->('#theme-advanced'), 11, 'Advanced tab shows its fields after clicking it' );
+    is( $visible_rows->('#theme-advanced'), 12, 'Advanced tab shows its fields after clicking it' );
     is( $visible_rows->('#theme-basic'),    0,  'Basic rows hidden on Advanced tab' );
     ok( $page->locator('input[name="palette.dark.--rt-footer-color"]')->isVisible, 'dark Advanced field visible' );
 

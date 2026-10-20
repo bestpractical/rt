@@ -22,6 +22,12 @@ table.catalog-summary th.collection-as-table {
     text-align: right
 }
 
+table.collection-as-table th.collection-as-table,
+table.queue-summary th.collection-as-table,
+table.catalog-summary th.collection-as-table {
+    border-bottom: 2px solid var(--rt-table-header-border-color);
+}
+
 .chart-wrapper .query {
     clear: both;
     text-align: center;
