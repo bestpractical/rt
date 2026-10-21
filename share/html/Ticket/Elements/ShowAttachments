@@ -294,6 +294,7 @@ $version->TransactionId%>/<% $version->Id %>/<% $version->Filename | un %>?Alway
 </&>
 
 <%INIT>
+my $DisplayPath = $session{'CurrentUser'}->Privileged ? 'Ticket' : 'SelfService';
 
 # If we haven't been passed in an Attachments object (through the precaching mechanism)
 # then we need to find one
@@ -436,7 +437,6 @@ my %is_checked = map { $_ => 1 } @Checked;
 <%ARGS>
 $Ticket => undef
 $Attachments => undef
-$DisplayPath => $session{'CurrentUser'}->Privileged ? 'Ticket' : 'SelfService'
 $HideTitleBox => 0
 $SelectOnly => 0
 $SelectInputName => 'SelectAttachments'
