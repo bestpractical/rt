@@ -102,14 +102,12 @@ results if Joe has access due to multiple different reasons.</&></p>
     <div class="col-3">
       <input class="form-control" value="<% $ARGS{Right} %>" type="text" name="right" placeholder="<&|/l&>Right</&>">
     </div>
+    <div class="col-3 position-relative">
+      <& /Widgets/Spinner, Size => 32, Class => 'htmx-indicator position-absolute top-50 translate-middle-y' &>
+    </div>
   </div>
 
   <div class="results">
-  </div>
-  <div class="row mt-2">
-    <div class="col-12">
-      <& /Widgets/Spinner &>
-    </div>
   </div>
 </form>
 </&>

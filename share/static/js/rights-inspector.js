@@ -3,6 +3,7 @@ htmx.onLoad(function() {
     if ( !form.length ) return;
 
     var display = form.find('.results');
+    const spinner = form.find('.spinner').parent();
 
     var revoking = {};
     var existingRequest;
@@ -41,11 +42,11 @@ htmx.onLoad(function() {
             data: search,
             timeout: 30000, /* 30 seconds */
             beforeSend: function() {
-                jQuery('.spinner').show();
+                spinner.addClass('htmx-request');
             },
             success: function (response) {
-                jQuery('.spinner').hide();
                 if (response.error) {
+                    spinner.removeClass('htmx-request');
                     displayError(response.error);
                     return;
                 }
@@ -73,6 +74,7 @@ htmx.onLoad(function() {
                     requestPage(search, response.continueAfter);
                 }
                 else {
+                    spinner.removeClass('htmx-request');
                     form.removeClass('continuing-load');
 
                     if (form.hasClass('awaiting-first-result')) {
@@ -83,11 +85,11 @@ htmx.onLoad(function() {
                 }
             },
             error: function (xhr, reason) {
-                jQuery('.spinner').hide();
                 if (reason == 'abort') {
                     return;
                 }
 
+                spinner.removeClass('htmx-request');
                 displayError(xhr.statusText);
             }
         });
