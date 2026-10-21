@@ -217,7 +217,7 @@ div.results .titlebox .titlebox-content {
 }
 
 .links-filter-header {
-    color: var(--bs-primary);
+    color: var(--rt-primary-text-color);
     font-weight: 600;
 }
 

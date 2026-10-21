@@ -62,10 +62,10 @@ div.article-links-link::before {
 
 div.article-links-link a,
 div.article-links-link a:visited {
-  color: var(--bs-primary) !important;
+  color: var(--rt-primary-text-color) !important;
 }
 
 div.article-links-link a:hover {
-  color: var(--bs-primary) !important;
+  color: var(--rt-primary-text-color) !important;
   text-decoration: underline;
 }

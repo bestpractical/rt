@@ -482,7 +482,7 @@ div.history-container {
 }
 
 .transaction-filter-header {
-    color: var(--bs-primary);
+    color: var(--rt-primary-text-color);
 }
 
 .transaction-filter-select-link {

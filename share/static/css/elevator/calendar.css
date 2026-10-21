@@ -599,7 +599,7 @@ table.rt-calendar .ticket-entry.status-color > a {
 }
 
 .calendar-status-filter-header {
-    color: var(--bs-primary);
+    color: var(--rt-primary-text-color);
     font-weight: 600;
 }
 

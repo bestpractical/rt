@@ -24,6 +24,7 @@
     --rt-surface-bg: var(--bs-body-bg);
     --rt-surface-border-color: var(--bs-border-color);
     --rt-widget-title-color: var(--bs-primary);
+    --rt-primary-text-color: var(--bs-primary);
     --rt-spinner-stroke: #777;
     --rt-spinner-accent: #e74c3c;
 
@@ -58,6 +59,7 @@
     --rt-menu-divider-color: var(--bs-border-color);
     --rt-surface-bg: var(--bs-tertiary-bg);
     --rt-surface-border-color: var(--rt-border-color-strong);
+    --rt-primary-text-color: var(--bs-primary-text-emphasis);
     --bs-primary-text-emphasis: color-mix(in srgb, var(--bs-primary) 60%, white);
     --bs-primary-bg-subtle: color-mix(in srgb, var(--bs-primary) 20%, black);
     --bs-primary-border-subtle: color-mix(in srgb, var(--bs-primary) 60%, black);

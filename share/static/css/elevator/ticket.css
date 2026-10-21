@@ -116,7 +116,7 @@ div.requestor-ticket-links {
 }
 
 .attachment-pin-indicator svg {
-    color: var(--bs-primary);
+    color: var(--rt-primary-text-color);
 }
 
 .ticket-info-attachments .attachment-list {
