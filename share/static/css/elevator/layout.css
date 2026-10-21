@@ -134,11 +134,6 @@ div#header {
         color: var(--bs-secondary-color);
     }
 
-    ul,
-    ol {
-        color: var(--bs-body-color);
-    }
-
     ul li span,
     ol li span {
         color: var(--bs-secondary-color);
