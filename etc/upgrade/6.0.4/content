@@ -61,4 +61,265 @@ our @Final = (
             }
         }
         },
+    sub {
+        # The theme editor in RT 4.0 through 6.0 filled the Custom CSS box
+        # with one empty rule per section under a "/* Section */" comment,
+        # and wrote background and color declarations into those rules when
+        # an admin picked colors. RT 6.0.4 sets colors through ThemePalette
+        # instead. Remove the empty rules, move the portlet title color to
+        # the palette, and keep everything else as written: what admins
+        # added by hand can't be interpreted safely.
+        my $attr = RT->System->FirstAttribute('UserCSS') or return;
+        return if RT->System->FirstAttribute('UserCSSBackup-6.0.4');
+
+        my $original = $attr->Content;
+        return unless defined $original && !ref $original;
+
+        # Elements/Header renders UserCSS unescaped, so admins close the
+        # style element to add a script; only the text before that is CSS.
+        my ( $css, $tail ) = $original =~ m{\A(.*?)(</style.*)?\z}is;
+
+        my $normalize = sub {
+            my $selector = shift;
+            $selector =~ s{/\*.*?(?:\*/|\z)}{ }gs;
+            $selector =~ s/^\s+|\s+$//g;
+            $selector =~ s/\s+/ /g;
+            $selector =~ s/ ?([,>]) ?/$1/g;
+            return $selector;
+        };
+
+        my $nav = '#main-navigation #app-nav > li, #main-navigation #app-nav > li > a, '
+            . '#prefs-menu > li, #prefs-menu > li > a, #logo .rtname';
+        ( my $nav_42 = $nav ) =~ s/#app-nav/#app-nav.sf-shadow/g;
+        ( my $nav_40 = $nav ) =~ s/(#main-navigation)/body.aileron $1/g;
+        my $portlet = '.titlebox .titlebox-title .left a, .titlebox .titlebox-title .left';
+
+        # Every selector the editor wrote, from all five versions of its
+        # section list (4.0, 4.2, 4.4.4, 5.0, 6.0). The dead ones match
+        # nothing RT 6 renders.
+        my %live = map { $normalize->($_) => 1 } (
+            'body', 'div#body', 'div#quickbar', $nav, 'div#header', 'div#header h1',
+            'div#body, .body-content-class',
+            ( map {
+                ( qq{input[type="reset"], input[type="submit"], input[class="$_"]},
+                  qq{input[type="reset"]:hover, input[type="submit"]:hover, input[class="$_"]:hover} )
+            } qw(button btn) ),
+            'table.collection-as-table th.collection-as-table a', $portlet,
+            '.ts-wrapper.multi .ts-control > .item', '.ts-wrapper.multi .ts-control > .item.active',
+        );
+        my %dead = map { $normalize->($_) => 1 } (
+            $nav_40, $nav_42,
+            '.selectize-control.multi .selectize-input [data-value]',
+            '.selectize-control.multi .selectize-input [data-value].active',
+        );
+        my %section_comment = map { $_ => 1 } (
+            'Page', 'Header', 'Menu bar', 'Title bar', 'Page title', 'Page content', 'Buttons',
+            'Button hover', 'Search results', 'Portlet Text', 'Selected bubble', 'Selected bubble (active)',
+        );
+
+        # Top-level rules, comments and at-rule statements with their
+        # offsets, so whatever is kept is copied exactly as written.
+        # Comments, strings and nested blocks are skipped, not interpreted.
+        my $skip = qr{/\*.*?(?:\*/|\z)|"(?:\\.|[^"\\])*"?|'(?:\\.|[^'\\])*'?}s;
+        my ( @rules, @comments, @statements );
+        pos($css) = 0;
+        while ( pos($css) < length $css ) {
+            next if $css =~ /\G\s+/gc;
+            if ( $css =~ m{\G/\*(.*?)(?:\*/|\z)}gcs ) {
+                my $comment = { start => $-[0], end => $+[0], text => $1 };
+                $comment->{text} =~ s/^\s+|\s+$//g;
+                push @comments, $comment;
+                next;
+            }
+            my $start = pos $css;
+            $css =~ m{\G(?:$skip|[^{;}/"']|/)*}gc;
+            my $prelude = substr $css, $start, pos($css) - $start;
+            if ( $css =~ /\G\{/gc ) {
+                my $open  = pos $css;
+                my $depth = 1;
+                while ( $depth && $css =~ m{\G(?:$skip|(\{)|(\})|[^{}/"']+|/)}gc ) {
+                    $depth++ if defined $1;
+                    $depth-- if defined $2;
+                }
+                my $end = pos $css;
+                next if $prelude =~ /^\@/;
+                push @rules, {
+                    start    => $start,
+                    end      => $end,
+                    selector => $normalize->($prelude),
+                    body     => substr( $css, $open, $end - $open - ( $depth ? 0 : 1 ) ),
+                };
+            }
+            else {
+                $css =~ /\G[;}]/gc;
+                push @statements, $prelude if $prelude =~ /^\@/;
+            }
+        }
+
+        # These at-rules only work at the very start of a stylesheet, and
+        # ThemePalette and the moved sections would come before them.
+        if ( grep {/^\@(?:import|charset|namespace)\b/i} @statements ) {
+            RT->Logger->info('UserCSS has an @import, @charset or @namespace rule; leaving it unchanged');
+            return;
+        }
+
+        # Declarations of a body the editor could have written, or undef.
+        my $editor_value = qr/^(?:#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})|rgb\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\))$/i;
+        my $editor_declarations = sub {
+            ( my $body = shift ) =~ s{/\*.*?(?:\*/|\z)}{}gs;
+            return if $body =~ /["'\\{}]/;
+            my @declarations;
+            for my $part ( split /;/, $body ) {
+                next unless $part =~ /\S/;
+                my ( $property, $value ) = $part =~ /^\s*([a-z-]+)\s*:\s*(.*?)\s*$/si or return;
+                push @declarations, [ lc $property, $value ];
+            }
+            return @declarations ? \@declarations : undef;
+        };
+
+        my ( @removed, @retained, $portlet_rule, $portlet_color );
+        for my $rule (@rules) {
+            next unless $live{ $rule->{selector} } || $dead{ $rule->{selector} };
+            if ( $rule->{body} !~ /\S/ ) {
+                push @removed, $rule;
+                next;
+            }
+            next if $dead{ $rule->{selector} };
+
+            my $declarations = $editor_declarations->( $rule->{body} ) or next;
+            next if grep {
+                my ( $property, $value ) = @$_;
+                !(     ( $property =~ /^(?:background|background-color|color)$/ && ( $value eq '' || $value =~ $editor_value ) )
+                    || ( $property eq 'border' && lc $value eq 'none' && $rule->{selector} eq 'div#quickbar' ) )
+            } @$declarations;
+
+            if (   !$portlet_rule
+                && $rule->{selector} eq $normalize->($portlet)
+                && @$declarations == 1
+                && $declarations->[0][0] eq 'color'
+                && length $declarations->[0][1] )
+            {
+                $portlet_rule  = $rule;
+                $portlet_color = $declarations->[0][1];
+                next;
+            }
+            push @retained, $rule;
+        }
+        my @section_comments = grep { $section_comment{ $_->{text} } } @comments;
+
+        return unless @removed || @retained || $portlet_rule || @section_comments;
+
+        my ( $ok, $msg ) = RT->System->SetAttribute(
+            Name        => 'UserCSSBackup-6.0.4',
+            Description => 'UserCSS before the RT 6.0.4 upgrade',
+            Content     => $original,
+        );
+        unless ($ok) {
+            RT->Logger->error("Couldn't back up UserCSS, leaving it unchanged: $msg");
+            return;
+        }
+
+        if ($portlet_rule) {
+            my $palette_attr = RT->System->FirstAttribute('ThemePalette');
+            my $palette      = $palette_attr ? $palette_attr->Content : {};
+            if (   ref $palette eq 'HASH'
+                && ( !defined $palette->{light} || ref $palette->{light} eq 'HASH' )
+                && !length( $palette->{light}{'--rt-widget-title-color'} // '' ) )
+            {
+                $palette->{light}{'--rt-widget-title-color'} = $portlet_color;
+                my ( $ok, $msg ) = RT->System->SetAttribute(
+                    Name        => 'ThemePalette',
+                    Description => 'Theme editor palette',
+                    Content     => $palette,
+                );
+                if ($ok) {
+                    push @removed, $portlet_rule;
+                    RT->Logger->info("Set the widget title color to $portlet_color from UserCSS");
+                }
+                else {
+                    RT->Logger->error("Couldn't set the widget title color in ThemePalette: $msg");
+                    push @retained, $portlet_rule;
+                }
+            }
+            else {
+                push @retained, $portlet_rule;
+            }
+            @retained = sort { $a->{start} <=> $b->{start} } @retained;
+        }
+
+        # Removes the [start, end) ranges from $css. A range alone on its
+        # lines takes those lines with it, ranges with only whitespace
+        # between them go as one, and a removal at the top or after a blank
+        # line also takes the blank lines after it, so no gap is left. A
+        # carriage return counts as part of the line break: CSS saved from
+        # the browser form has CRLF line endings.
+        my @ranges = map {
+            my ( $start, $end ) = @$_{qw(start end)};
+            my $line_start = rindex( $css, "\n", $start - 1 ) + 1;
+            my $line_end   = index( $css, "\n", $end );
+            $line_end = $line_end < 0 ? length $css : $line_end + 1;
+            substr( $css, $line_start, $start - $line_start ) =~ /^[ \t]*\z/
+                && substr( $css, $end, $line_end - $end ) =~ /^[ \t\r]*\n?\z/
+                ? [ $line_start, $line_end ]
+                : [ $start, $end ];
+        } sort { $a->{start} <=> $b->{start} } @removed, @retained, @section_comments;
+        my @merged;
+        for my $range (@ranges) {
+            if ( @merged && substr( $css, $merged[-1][1], $range->[0] - $merged[-1][1] ) =~ /^\s*\z/ ) {
+                $merged[-1][1] = $range->[1] if $range->[1] > $merged[-1][1];
+            }
+            else {
+                push @merged, [@$range];
+            }
+        }
+        my ( $custom, $from ) = ( '', 0 );
+        for my $range (@merged) {
+            if ( $range->[0] == 0 || substr( $css, 0, $range->[0] ) =~ /\n[ \t\r]*\n\z/ ) {
+                substr( $css, $range->[1] ) =~ /^((?:[ \t\r]*\n)*)/;
+                $range->[1] += length $1;
+            }
+            $custom .= substr $css, $from, $range->[0] - $from;
+            $from = $range->[1];
+        }
+        $custom .= substr $css, $from;
+        $custom =~ s/^\s+|\s+$//g;
+
+        my $nl = $css =~ /\r\n/ ? "\r\n" : "\n";
+        my @sections;
+        push @sections, join $nl,
+            "/* These colors were set with the theme editor in an earlier version of",
+            " * RT. They override the colors on the Basic and Advanced tabs of the",
+            " * Theme page; remove them once those colors are set there. */",
+            map { substr $css, $_->{start}, $_->{end} - $_->{start} } @retained
+            if @retained;
+        push @sections, join $nl,
+            "/* These styles were copied from an earlier version of RT. The CSS as it",
+            " * was before the upgrade to RT 6.0.4 is kept in the UserCSSBackup-6.0.4",
+            " * attribute. */",
+            $custom
+            if length $custom;
+        my $new = join $nl x 2, @sections;
+        $new .= $nl if length $new;
+        $new .= $tail if defined $tail;
+
+        if ( length $new ) {
+            ( $ok, $msg ) = RT->System->SetAttribute(
+                Name        => 'UserCSS',
+                Description => 'User-provided css',
+                Content     => $new,
+            );
+        }
+        else {
+            ( $ok, $msg ) = RT->System->DeleteAttribute('UserCSS');
+        }
+        unless ($ok) {
+            RT->Logger->error("Couldn't update UserCSS: $msg");
+            return;
+        }
+        RT->Logger->info(
+            sprintf 'Updated UserCSS for RT 6.0.4: removed %d empty or converted rules, kept %d theme editor rules, %s',
+            scalar @removed, scalar @retained,
+            length $custom ? 'moved other styles below them' : 'no other styles'
+        );
+    },
 );
