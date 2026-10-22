@@ -246,19 +246,14 @@ sub Set {
         }
     }
     elsif ( $format eq 'unknown' ) {
+        my $date;
         if ( RT->Config->Get('PreferDateTimeFormatNatural') ) {
-            return $self->Unix(
-                   $self->ParseByDateTimeFormatNatural(%args)
-                || $self->ParseByTimeParseDate(%args)
-                || 0
-            );
+            $date = $self->ParseByDateTimeFormatNatural(%args) || $self->ParseByTimeParseDate(%args);
         } else {
-            return $self->Unix(
-                   $self->ParseByTimeParseDate(%args)
-                || $self->ParseByDateTimeFormatNatural(%args)
-                || 0
-            );
+            $date = $self->ParseByTimeParseDate(%args) || $self->ParseByDateTimeFormatNatural(%args);
         }
+        RT->Logger->warning("Couldn't parse date '$args{'Value'}'") unless $date;
+        return $self->Unix( $date || 0 );
     }
     else {
         $RT::Logger->error(
@@ -295,7 +290,7 @@ sub ParseByTimeParseDate {
         PREFER_FUTURE => RT->Config->Get('AmbiguousDayInFuture'),
     );
     unless ( defined $date ) {
-        $RT::Logger->warning(
+        RT->Logger->info(
             "Couldn't parse date '$args{'Value'}' by Time::ParseDate"
         );
         return undef;
@@ -339,7 +334,7 @@ sub ParseByDateTimeFormatNatural {
         return $date;
     }
     else {
-        $RT::Logger->warning(
+        RT->Logger->info(
             "Couldn't parse date '$args{'Value'}' by DateTime::Format::Natural"
         );
         return undef;

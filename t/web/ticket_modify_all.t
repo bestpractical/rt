@@ -76,8 +76,7 @@ for my $unset ("0", "-", " ") {
             [ @warnings ],
             [
                 (
-                    q{Couldn't parse date '-' by Time::ParseDate},
-                    q{Couldn't parse date '-' by DateTime::Format::Natural}
+                    q{Couldn't parse date '-'}
                 )
             ]
         );
