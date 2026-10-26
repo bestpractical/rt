@@ -1332,6 +1332,17 @@ jQuery(document).on('click', '[data-bs-toggle="tooltip"]', function (e) {
     jQuery('[data-bs-toggle="tooltip"]').tooltip("hide");
 });
 
+// A mouse button can focus the toggle without the click above firing (e.g. right-click to open a
+// link in a new tab), and the 'hover focus' trigger then holds a tooltip or popover open after the
+// mouse leaves. Only keyboard focus (:focus-visible) should keep it.
+// Delegated on document, as mouseleave doesn't bubble, so swapped-in toggles need no binding.
+document.addEventListener('mouseout', function (e) {
+    const toggle = e.target.closest?.('[data-bs-toggle="tooltip"], [data-bs-toggle="popover"]');
+    if (!toggle || toggle.contains(e.relatedTarget)) return;
+    if (toggle.matches(':focus-visible, :has(:focus-visible)')) return;
+    (bootstrap.Tooltip.getInstance(toggle) || bootstrap.Popover.getInstance(toggle))?.hide();
+});
+
 // Delegated on document so rows htmx swaps in need no binding and leave nothing to tear down.
 // The class follows 'change' only: setting .checked directly, as form.reset() does, leaves it stale.
 jQuery(document).on('change', 'input.delete-checkbox', function () {
