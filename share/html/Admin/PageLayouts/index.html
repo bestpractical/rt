@@ -64,7 +64,7 @@
     <tbody>
 %   for my $name ( sort { lc $a cmp lc $b } keys %$page_layouts ) {
       <tr>
-        <td class="collection-as-table"><a href="<% RT->Config->Get('WebURL') %>Admin/PageLayouts/Modify.html?Class=<% $Class %>&Page=<% $Page %>&Name=<% $name |u %>"><% $name %></a></td>
+        <td class="collection-as-table"><a href="<% RT->Config->Get('WebURL') %>Admin/PageLayouts/Modify.html?<% $m->comp('/Elements/QueryString', Class => $Class, Page => $Page, Name => $name) %>"><% $name %></a></td>
         <td class="collection-as-table"><% join ', ', sort { lc $a cmp lc $b } @{$applied{$name} || []} %></td>
         <td class="collection-as-table">
           <div class="form-check">
