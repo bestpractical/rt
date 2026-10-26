@@ -5173,9 +5173,16 @@ sub UpdateDashboard {
         $values = [$values] unless ref $values;
 
         foreach my $value ( @{$values} ) {
-            $value =~ m/^(\w+)-(.+)$/i;
-            my $type = $1;
-            my $name = $2;
+            my ( $type, $name ) = $value =~ m/^(\w+)-(.+)$/;
+
+            unless ( defined $name
+                && exists $available_items->{$type}
+                && exists $available_items->{$type}{$name} )
+            {
+                RT->Logger->warning("Rejecting dashboard update: portlet '$value' is not available to the current user");
+                return ( 0, loc("Invalid portlet") );
+            }
+
             push @{ $data->{panes}->{$pane} }, { type => $type, name => $name };
         }
     }
