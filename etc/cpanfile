@@ -61,7 +61,7 @@ requires 'Log::Dispatch', '>= 2.30';
 requires 'LWP::Simple';
 requires 'Mail::Header', '>= 2.12';
 requires 'Mail::Mailer', '>= 1.57';
-requires 'MIME::Entity', '>= 5.504';
+requires 'MIME::Tools', '>= 5.520';
 requires 'MIME::Types';
 requires 'Module::Refresh', '>= 0.03';
 requires 'Module::Runtime';

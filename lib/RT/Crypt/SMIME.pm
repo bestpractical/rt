@@ -305,7 +305,7 @@ sub SignEncrypt {
     # Work around https://rt.cpan.org/Public/Bug/Display.html?id=87835
     for my $part (grep {$_->is_multipart and $_->preamble and @{$_->preamble}} $newmime->parts_DFS) {
         $part->preamble->[-1] .= "\n"
-            if $part->preamble->[-1] =~ /\r$/;
+            if $part->preamble->[-1] =~ /\r\z/;
     }
 
     $entity->parts([$newmime]);
@@ -628,7 +628,7 @@ sub Decrypt {
     # Work around https://rt.cpan.org/Public/Bug/Display.html?id=87835
     for my $part (grep {$_->is_multipart and $_->preamble and @{$_->preamble}} $res_entity->parts_DFS) {
         $part->preamble->[-1] .= "\n"
-            if $part->preamble->[-1] =~ /\r$/;
+            if $part->preamble->[-1] =~ /\r\z/;
     }
 
     $args{'Data'}->make_multipart( 'mixed', Force => 1 );
