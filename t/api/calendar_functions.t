@@ -307,8 +307,7 @@ $ticket3->SetStatus('resolved');
             = RT::Search::Calendar::GetCalendarTickets( RT->SystemUser, "Queue = '" . $queue->Name . "'",
                 ['Created'], 'invalid-date', '2025-08-31' );
     }
-    [   (   qr{Couldn't parse date 'invalid-date 00:00:00' by Time::ParseDate},
-            qr{Couldn't parse date 'invalid-date 00:00:00' by DateTime::Format::Natural}
+    [   (   qr{Couldn't parse date 'invalid-date 00:00:00'}
         ) x ( RT->Config->Get('DatabaseType') eq 'SQLite' ? 1 : 2 ),
     ],
         'Expected warnings for invalid date parsing';
