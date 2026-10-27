@@ -259,5 +259,5 @@ if ( $r->method eq 'POST' && $ARGS{code} ) {
 }
 
 # Generate a fresh CSRF nonce for the form
-$session{MFAEnrollNonce} = Digest::MD5::md5_hex(time . {} . $$ . rand(1024));
+$session{MFAEnrollNonce} = RT::Util::random_hex(32);
 </%init>

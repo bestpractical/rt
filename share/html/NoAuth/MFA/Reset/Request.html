@@ -98,5 +98,5 @@ if (   $r->method eq 'POST'
 }
 
 # Generate a fresh CSRF nonce for the form
-$session{MFAResetRequestNonce} = Digest::MD5::md5_hex(time . {} . $$ . rand(1024));
+$session{MFAResetRequestNonce} = RT::Util::random_hex(32);
 </%init>

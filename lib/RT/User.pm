@@ -1168,7 +1168,12 @@ sub CreateResetPasswordToken {
         return undef;
     }
 
-    my $nonce = Digest::SHA::sha256_hex( time . {} . $$ . rand() );
+    my $nonce = RT::Util::random_hex(64);
+    unless ( defined $nonce ) {
+        RT->Logger->error( "Couldn't generate a password reset nonce for " . $self->Name );
+        return undef;
+    }
+
     my ( $ret, $msg ) = $self->SetAttribute(
         Name    => 'PasswordResetNonce',
         Content => $nonce,
