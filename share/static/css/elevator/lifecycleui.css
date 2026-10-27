@@ -1,5 +1,7 @@
 
-#color-inputs .form-control {
+/* Frame only the picker, so its swatch stays visible against the white hex
+   field beside it. */
+#color-inputs .form-control-color {
     background-color: var(--bs-secondary-bg);
 }
 
