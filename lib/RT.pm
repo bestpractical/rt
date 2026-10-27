@@ -963,6 +963,7 @@ our %CORED_PLUGINS = (
     'RT::Extension::FormattedTransactions' => '5.0.1',
     'RT::Extension::TimeTracking' => '6.0',
     'RT::Extension::ArticleTemplates' => '6.0',
+    'RT::Extension::ResetPassword' => '5.0.11',
 );
 
 sub InitPlugins {

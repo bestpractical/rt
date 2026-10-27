@@ -66,7 +66,7 @@ requires 'Log::Dispatch', '>= 2.30';
 requires 'LWP::Simple';
 requires 'Mail::Header', '>= 2.12';
 requires 'Mail::Mailer', '>= 1.57';
-requires 'MIME::Entity', '>= 5.504';
+requires 'MIME::Tools', '>= 5.520';
 requires 'MIME::Types';
 requires 'Module::Refresh', '>= 0.03';
 requires 'Module::Runtime';
@@ -211,6 +211,13 @@ feature 'smime' => sub {
 feature 'graphviz' => sub {
     requires 'GraphViz2';
     requires 'IPC::Run', '>= 0.90';
+};
+
+feature 'mfa' => sub {
+    requires 'Auth::GoogleAuth', '>= 1.09';
+    requires 'Crypt::URandom';
+    requires 'CryptX';
+    requires 'Text::QRCode';
 };
 
 feature 'externalauth' => sub {

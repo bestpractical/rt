@@ -82,7 +82,7 @@ sub Table {'Users'}
 
 
 
-use Digest::SHA;
+use Digest::SHA qw(hmac_sha256_hex);
 use Digest::MD5;
 use Crypt::Eksblowfish::Bcrypt qw();
 use RT::Principals;
@@ -97,6 +97,7 @@ sub _OverlayAccessible {
           Name                  => { public => 1,  admin => 1 },    # loc_left_pair
           Password              => { read   => 0 },
           AuthToken             => { read   => 0 },
+          TOTPSecret            => { read   => 0 },
           EmailAddress          => { public => 1 },                 # loc_left_pair
           Organization          => { public => 1,  admin => 1 },    # loc_left_pair
           RealName              => { public => 1 },                 # loc_left_pair
@@ -112,13 +113,14 @@ sub _OverlayAccessible {
     }
 }
 
-# AuthToken is settable internally (GenerateAuthToken / GenerateAuthString /
-# SetCanonicalUserInfo go through SetAuthToken), but no client-facing entry
-# point should let a caller write it directly. Drop it from the allow-list
-# used by REST 2 update_record, the web UI autocreate path, and rt-config.
+# AuthToken and the TOTP fields are settable internally (SetAuthToken, MFA
+# enrollment and ClearTOTPEnrollment), but no client-facing entry point should
+# let a caller write them directly. Drop them from the allow-list used by
+# REST 2 update_record and the web remote user autocreate path.
 sub WritableAttributes {
-    my $self = shift;
-    return grep { $_ ne 'AuthToken' } $self->SUPER::WritableAttributes(@_);
+    my $self     = shift;
+    my %internal = map { $_ => 1 } qw/AuthToken TOTPSecret TOTPEnrolled/;
+    return grep { !$internal{$_} } $self->SUPER::WritableAttributes(@_);
 }
 
 
@@ -177,7 +179,11 @@ sub Create {
     } elsif ( !$args{'Password'} ) {
         $args{'Password'} = '*NO-PASSWORD*';
     } else {
-        my ($ok, $msg) = $self->ValidatePassword($args{'Password'});
+        my ( $ok, $msg ) = $self->ValidatePassword(
+            $args{'Password'},
+            Privileged => $privileged ? 1 : 0,
+            Name       => $args{'Name'},
+        );
         return ($ok, $msg) if !$ok;
 
         $args{'Password'} = $self->_GeneratePassword($args{'Password'});
@@ -388,7 +394,7 @@ sub AnonymizeUser {
         @_,
     );
 
-    my %skip_clear = map { $_ => 1 } qw/Name Password AuthToken/;
+    my %skip_clear = map { $_ => 1 } qw/Name Password AuthToken TOTPSecret TOTPEnrolled/;
     my @user_identifying_info
       = grep { !$skip_clear{$_} && $self->_Accessible( $_, 'write' ) } keys %{ $self->_CoreAccessible() };
 
@@ -404,6 +410,16 @@ sub AnonymizeUser {
                 $RT::Handle->Rollback();
                 return ( $ret, $self->loc( "Couldn't clear user [_1]", $self->loc($attr) ) );
             }
+        }
+    }
+
+    # Clear TOTP enrollment and secret if present
+    if ( $self->TOTPEnrolled || $self->__Value('TOTPSecret') ) {
+        my ( $ret, $msg ) = $self->ClearTOTPEnrollment;
+        unless ($ret) {
+            RT->Logger->error( "Could not clear user MFA enrollment: " . $msg );
+            $RT::Handle->Rollback();
+            return ( $ret, $self->loc( "Couldn't clear user [_1]", $self->loc('MFA enrollment') ) );
         }
     }
 
@@ -457,22 +473,59 @@ sub AnonymizeUser {
     return ( 1, $self->loc('User successfully anonymized') );
 }
 
-=head2 ValidatePassword STRING
+=head2 ValidatePassword STRING, [Privileged => BOOL], [Name => STRING]
 
-Returns either (0, "failure reason") or 1 depending on whether the given
-password is valid.
+Returns either (0, "failure reasons") or 1 depending on whether the given
+password satisfies the user's effective password policy. All unmet requirements
+are reported together in a single failure message.
+
+C<Privileged> is passed to L</EffectivePasswordPolicy> for users not yet
+created. C<Name> is the username checked by C<NoUsername> for users not yet
+created; a loaded user's own C<Name> is used otherwise.
+
+Note: group-specific policies are not enforced when validating during C<Create>
+because the user has no database record yet. See L</EffectivePasswordPolicy>.
 
 =cut
 
 sub ValidatePassword {
-    my $self = shift;
+    my $self     = shift;
     my $password = shift;
+    my %args     = @_;
+    my $name     = delete $args{Name};
 
-    if ( length($password) < RT->Config->Get('MinimumPasswordLength') ) {
-        return ( 0, $self->loc("Password needs to be at least [quant,_1,character,characters] long", RT->Config->Get('MinimumPasswordLength')) );
+    my $policy = $self->EffectivePasswordPolicy(%args);
+
+    my @errors;
+
+    my $min_len = $policy->{MinLength} // 0;
+    if ( $min_len && length($password) < $min_len ) {
+        push @errors, $self->loc(
+            "Password needs to be at least [quant,_1,character,characters] long",
+            $min_len
+        );
     }
 
-    return 1;
+    {
+        my @missing;
+        push @missing, $self->loc("an uppercase letter")  if $policy->{RequireUpper} && $password !~ /[A-Z]/;
+        push @missing, $self->loc("a lowercase letter")   if $policy->{RequireLower} && $password !~ /[a-z]/;
+        push @missing, $self->loc("a digit")               if $policy->{RequireDigit} && $password !~ /[0-9]/;
+        push @missing, $self->loc("a symbol")              if $policy->{RequireSymbol} && $password !~ /[^A-Za-z0-9]/;
+        if (@missing) {
+            push @errors, $self->loc("Password must include [_1]", join ', ', @missing);
+        }
+    }
+
+    if ( $policy->{NoUsername} ) {
+        $name = lc( $self->Name // $name // '' );
+        if ( $name && index( lc($password), $name ) >= 0 ) {
+            push @errors, $self->loc("Password must not contain the username");
+        }
+    }
+
+    return 1 unless @errors;
+    return ( 0, join( '; ', @errors ) );
 }
 
 =head2 SetPrivileged BOOL
@@ -1037,20 +1090,21 @@ sub SetRandomPassword {
     }
 
 
-    my $min = ( RT->Config->Get('MinimumPasswordLength') > 6 ?  RT->Config->Get('MinimumPasswordLength') : 6);
-    my $max = ( RT->Config->Get('MinimumPasswordLength') > 8 ?  RT->Config->Get('MinimumPasswordLength') : 8);
+    my $policy_min = $self->EffectivePasswordPolicy->{MinLength} // 5;
+    my $min = ( $policy_min > 6 ?  $policy_min : 6);
+    my $max = ( $policy_min > 8 ?  $policy_min : 8);
 
     my $pass = $self->GenerateRandomPassword( $min, $max) ;
 
     # If we have "notify user on
 
     my ( $val, $msg ) = $self->SetPassword($pass);
-
-    #If we got an error return the error.
-    return ( 0, $msg ) unless ($val);
-
-    #Otherwise, we changed the password, lets return it.
-    return ( 1, $pass );
+    if ($val) {
+        return ( 1, $pass );
+    }
+    else {
+        return ( $val, $msg );
+    }
 
 }
 
@@ -1090,6 +1144,173 @@ sub ResetPassword {
         return ( 0, $self->loc('Notification could not be sent') );
     }
 
+}
+
+=head3 CreateResetPasswordToken
+
+Returns a one-time password reset token for this user. The token is an
+HMAC-SHA-256 (keyed by C<$SecretKey>) of the user's ID, hashed password,
+last-updated timestamp, web path, and a random nonce. Only the nonce is
+stored, as the C<PasswordResetNonce> attribute; creating a new token
+replaces it and so invalidates any earlier token.
+
+The nonce keeps tokens unforgeable even when C<$SecretKey> is weak and the
+user has no password to contribute secret input.
+
+The token also becomes invalid if the password or LastUpdated field changes.
+
+=cut
+
+sub CreateResetPasswordToken {
+    my $self = shift;
+
+    unless ( $self && $self->Id ) {
+        RT->Logger->error('Need a loaded RT::User object for CreateResetPasswordToken');
+        return undef;
+    }
+
+    my $nonce = Digest::SHA::sha256_hex( time . {} . $$ . rand() );
+    my ( $ret, $msg ) = $self->SetAttribute(
+        Name    => 'PasswordResetNonce',
+        Content => $nonce,
+    );
+    unless ($ret) {
+        RT->Logger->error( "Unable to store password reset nonce for " . $self->Name . ": $msg" );
+        return undef;
+    }
+
+    return $self->_ResetPasswordToken($nonce);
+}
+
+=head3 ValidateResetPasswordToken Token => $token
+
+Validates a password reset token against the current user state and the
+stored nonce. Returns true if the token matches, false otherwise.
+
+Note: this only checks token validity, not expiry. The caller is
+responsible for enforcing a time limit via C<LastUpdatedObj-E<gt>Diff>.
+
+=cut
+
+sub ValidateResetPasswordToken {
+    my $self  = shift;
+    my %args  = ( Token => undef, @_ );
+    my $token = $args{Token};
+
+    return 0 unless $token;
+
+    my $attr  = $self->FirstAttribute('PasswordResetNonce') or return 0;
+    my $nonce = $attr->Content                              or return 0;
+
+    my $expected = $self->_ResetPasswordToken($nonce);
+    return 0 unless length($token) == length($expected);
+    return RT::Util::constant_time_eq( $token, $expected );
+}
+
+sub _ResetPasswordToken {
+    my $self  = shift;
+    my $nonce = shift;
+
+    return hmac_sha256_hex(
+        join( "\0", $self->id, $self->__Value('Password'),
+            $self->LastUpdated,
+            RT->Config->Get('WebPath') . '/NoAuth/ResetPassword/Reset', $nonce ),
+        RT->Config->Get('SecretKey'),
+    );
+}
+
+=head3 CreateTokenAndResetPassword
+
+Bumps C<LastUpdated> on this user (invalidating any prior reset tokens),
+generates a new token via L</CreateResetPasswordToken>, and sends the C<PasswordReset>
+email template to the user's address.
+
+Returns C<(1, message)> on success, C<(0, error)> on failure.
+
+=cut
+
+sub CreateTokenAndResetPassword {
+    my $self = shift;
+    my %args = ( Throttle => 1, @_ );
+
+    unless ( $self->CurrentUserCanModify('Password') ) {
+        return ( 0, $self->loc('Password: Permission Denied') );
+    }
+
+    if ( $self->Disabled ) {
+        return ( 0, $self->loc("Disabled users can't reset their password") );
+    }
+
+    unless ( $self->EmailAddress ) {
+        return ( 0, $self->loc('No email address on file for this account') );
+    }
+
+    # Throttle: skip if a reset was sent too recently for this user.
+    # Admin-initiated resets pass Throttle => 0 to bypass.
+    my $cooldown = RT->Config->Get('ResetRequestCooldown') // 300;
+    if ( $args{Throttle} && $cooldown > 0 ) {
+        my $attr = $self->FirstAttribute('LastPasswordResetRequest');
+        if ( $attr && ( time - $attr->Content ) < $cooldown ) {
+            RT->Logger->info( "Password reset throttled for " . $self->EmailAddress . " (cooldown ${cooldown}s)" );
+            # Return success so callers show the generic message
+            return ( 1, 'Throttled' );
+        }
+    }
+
+    # Bump LastUpdated so the new token supersedes any outstanding one.
+    $self->_SetLastUpdated();
+
+    my $token = $self->CreateResetPasswordToken;
+    return ( 0, $self->loc('Could not generate token') ) unless $token;
+
+    my %send_options = (
+        To        => $self->EmailAddress,
+        Template  => 'PasswordReset',
+        Arguments => {
+            Token => $token,
+            User  => $self,
+        },
+    );
+
+    if ( my $from = RT->Config->Get('ResetPasswordFromAddress') ) {
+        $send_options{'From'} = $from;
+    }
+
+    my ( $status, $msg ) = RT::Interface::Email::SendEmailUsingTemplate(%send_options);
+    return ( 0, $msg // $self->loc('Failed to send password reset email') ) unless $status && $status > 0;
+
+    $self->SetAttribute(
+        Name    => 'LastPasswordResetRequest',
+        Content => time,
+    );
+
+    return ( 1, $self->loc('Password reset email sent') );
+}
+
+=head3 UnsetPassword
+
+Clears this user's password (sets the Password field to C<*NO-PASSWORD*>,
+which L</HasPassword> treats as no password). Requires the current user to
+have permission to modify the Password field.
+
+Returns C<(1, message)> on success, C<(0, error)> on failure.
+
+=cut
+
+sub UnsetPassword {
+    my $self = shift;
+
+    unless ( $self->CurrentUserCanModify('Password') ) {
+        return ( 0, $self->loc('Password: Permission Denied') );
+    }
+
+    my ( $val, $msg ) = $self->_Set( Field => 'Password', Value => '*NO-PASSWORD*' );
+    if ($val) {
+        return ( 1, $self->loc('Password unset') );
+    }
+    else {
+        return ( $val, $msg );
+    }
 }
 
 =head3 GenerateRandomPassword MIN_LEN and MAX_LEN
@@ -1562,6 +1783,556 @@ sub OwnGroups {
     return $groups;
 }
 
+=head2 EffectivePasswordPolicy [Privileged => BOOL]
+
+Returns the effective password policy for this user as a hashref.
+
+Resolution order:
+
+=over
+
+=item 1.
+
+Group policies (most-restrictive-wins merge): if the user belongs to any
+user-defined group that has a password policy, those policies are merged
+(max C<MinLength>, OR for boolean flags like C<RequireUpper>, etc.).
+
+=item 2.
+
+Otherwise, the global C<$PasswordPolicy> config is resolved by role:
+
+=over
+
+=item *
+
+C<Privileged> key if the user is privileged and the key exists
+
+=item *
+
+C<Unprivileged> key if the user is not privileged and the key exists
+
+=item *
+
+C<Default> key as fallback
+
+=item *
+
+Hardcoded C<{ MinLength =E<gt> 5 }> as final fallback
+
+=back
+
+=back
+
+Note: when called on a user that has not yet been saved (during C<Create>),
+the group lookup returns no results and the global C<$PasswordPolicy> config
+is used, resolved by the C<Privileged> argument if given, or C<Default>
+otherwise. Group-specific policies are only effective once the user exists
+in the database.
+
+The group lookup runs as C<RT-E<gt>SystemUser> so that policies on groups
+the actor cannot see are still merged into the effective policy. This is an
+enforcement decision and must not depend on the actor's C<SeeGroup> rights.
+
+=cut
+
+sub EffectivePasswordPolicy {
+    my $self = shift;
+    my %args = @_;
+
+    my @policies;
+
+    # Installer checks password policy, where user is not created yet
+    if ( $self->Id ) {
+        my $groups = RT::Groups->new( RT->SystemUser );
+        $groups->LimitToUserDefinedGroups;
+        $groups->LimitToEnabled;
+        $groups->WithMember( PrincipalId => $self->Id, Recursively => 1 );
+        while ( my $group = $groups->Next ) {
+            my $policy = $group->PasswordPolicy;
+            push @policies, $policy if $policy;
+        }
+    }
+
+    unless (@policies) {
+        my $config     = RT->Config->Get('PasswordPolicy') // {};
+        my $privileged = $self->Id ? ( $self->Privileged ? 1 : 0 ) : $args{Privileged};
+
+        if ( $privileged && $config->{Privileged} ) {
+            return $config->{Privileged};
+        }
+        elsif ( defined $privileged && !$privileged && $config->{Unprivileged} ) {
+            return $config->{Unprivileged};
+        }
+        elsif ( $config->{Default} ) {
+            return $config->{Default};
+        }
+        else {
+            return { MinLength => 5 };
+        }
+    }
+
+    my %merged = (
+        MinLength     => 0,
+        RequireUpper  => 0,
+        RequireLower  => 0,
+        RequireDigit  => 0,
+        RequireSymbol => 0,
+        NoUsername    => 0,
+    );
+    for my $policy (@policies) {
+        $merged{MinLength} = $policy->{MinLength}
+            if ( $policy->{MinLength} // 0 ) > $merged{MinLength};
+        $merged{RequireUpper}  = 1 if $policy->{RequireUpper};
+        $merged{RequireLower}  = 1 if $policy->{RequireLower};
+        $merged{RequireDigit}  = 1 if $policy->{RequireDigit};
+        $merged{RequireSymbol} = 1 if $policy->{RequireSymbol};
+        $merged{NoUsername}    = 1 if $policy->{NoUsername};
+    }
+    return \%merged;
+}
+
+=head2 PasswordPolicyRequirements [POLICY]
+
+Returns a list of human-readable, localized strings describing the
+requirements of the given password policy hashref (as returned by
+L</EffectivePasswordPolicy>). If POLICY is omitted, the user's own
+effective policy is used.
+
+=cut
+
+sub PasswordPolicyRequirements {
+    my $self   = shift;
+    my $policy = shift // $self->EffectivePasswordPolicy;
+
+    my @req;
+    push @req, $self->loc( 'At least [quant,_1,character,characters]', $policy->{MinLength} )
+        if $policy->{MinLength};
+    {
+        my @include;
+        push @include, $self->loc('an uppercase letter') if $policy->{RequireUpper};
+        push @include, $self->loc('a lowercase letter')  if $policy->{RequireLower};
+        push @include, $self->loc('a digit')             if $policy->{RequireDigit};
+        push @include, $self->loc('a symbol')            if $policy->{RequireSymbol};
+        push @req, $self->loc( 'Must include [_1]', join ', ', @include ) if @include;
+    }
+    push @req, $self->loc('Must not contain the username')   if $policy->{NoUsername};
+    return @req;
+}
+
+=head2 EffectiveMFAPolicy
+
+Returns the effective MFA policy for this user as a hashref with keys
+C<Mode> and C<Drift>.
+
+Resolution order:
+
+=over
+
+=item 1.
+
+Group policies (most-restrictive-wins merge): if the user belongs to any
+user-defined group that has an MFA policy, those policies are merged
+(C<Required> beats C<Optional> beats C<Off>; the minimum C<Drift>
+wins, capped at 5).
+
+=item 2.
+
+Otherwise, the global C<$MFAPolicy> config is resolved by role:
+
+=over
+
+=item *
+
+C<Privileged> key if the user is privileged and the key exists
+
+=item *
+
+C<Unprivileged> key if the user is not privileged and the key exists
+
+=item *
+
+C<Default> key as fallback
+
+=item *
+
+Hardcoded C<{ Mode =E<gt> 'Off', Drift =E<gt> 0 }> as final fallback
+
+=back
+
+=back
+
+=cut
+
+sub EffectiveMFAPolicy {
+    my $self = shift;
+
+    my %mode_rank = ( Off => 0, Optional => 1, Required => 2 );
+    my @policies;
+
+    # Group lookup runs as RT->SystemUser so that policies on groups the
+    # actor cannot see are still merged into the effective policy. This is
+    # an enforcement decision and must not depend on the actor's SeeGroup
+    # rights.
+    if ( $self->Id ) {
+        my $groups = RT::Groups->new( RT->SystemUser );
+        $groups->LimitToUserDefinedGroups;
+        $groups->LimitToEnabled;
+        $groups->WithMember( PrincipalId => $self->Id, Recursively => 1 );
+        while ( my $group = $groups->Next ) {
+            my $policy = $group->MFAPolicy;
+            push @policies, $policy if $policy;
+        }
+    }
+
+    unless (@policies) {
+        my $config = RT->Config->Get('MFAPolicy') // {};
+
+        if ( $self->Id && $self->Privileged && $config->{Privileged} ) {
+            return $config->{Privileged};
+        }
+        elsif ( $self->Id && !$self->Privileged && $config->{Unprivileged} ) {
+            return $config->{Unprivileged};
+        }
+        elsif ( $config->{Default} ) {
+            return $config->{Default};
+        }
+        else {
+            return { Mode => 'Off', Drift => 0 };
+        }
+    }
+
+    my %merged = ( Mode => 'Off', Drift => 5 );
+    for my $policy (@policies) {
+        my $rank = $mode_rank{ $policy->{Mode} } // 0;
+        if ( $rank > ( $mode_rank{ $merged{Mode} } // 0 ) ) {
+            $merged{Mode} = $policy->{Mode};
+        }
+        if ( defined $policy->{Drift} && $policy->{Drift} < $merged{Drift} ) {
+            $merged{Drift} = $policy->{Drift};
+        }
+    }
+    $merged{Drift} = 5 if $merged{Drift} > 5;
+    return \%merged;
+}
+
+=head2 SetTOTPSecret VALUE
+
+Encrypts the TOTP secret before storing it in the database. An empty
+value clears the field without encryption.
+
+=cut
+
+sub SetTOTPSecret {
+    my $self  = shift;
+    my $value = shift;
+
+    if ( defined $value && length $value ) {
+        $value = $self->_EncryptTOTPSecret($value);
+    }
+    return $self->_Set( Field => 'TOTPSecret', Value => $value // '' );
+}
+
+=head2 TOTPSecretDecrypted
+
+Returns the decrypted TOTP shared secret, or the empty string if none
+is set.
+
+=cut
+
+sub TOTPSecretDecrypted {
+    my $self = shift;
+    my $raw  = $self->__Value('TOTPSecret');
+    return '' unless defined $raw && length $raw;
+    return $self->_DecryptTOTPSecret($raw);
+}
+
+=head2 _EncryptTOTPSecret PLAINTEXT
+
+Encrypts a TOTP secret using AES-256-GCM with a random 12-byte IV,
+keyed by a SHA-256 hash of C<$SecretKey>. The user ID is bound as
+additional authenticated data (AAD) so a ciphertext cannot be copied
+between user rows. Returns a hex string formatted as
+C<gcm:IV_HEX:CIPHERTEXT_HEX:TAG_HEX>.
+
+=cut
+
+sub _EncryptTOTPSecret {
+    my ( $self, $plain ) = @_;
+    require Crypt::AuthEnc::GCM;
+    require Crypt::URandom;
+    my $key = Digest::SHA::sha256( RT->Config->Get('SecretKey') );
+    my $iv  = Crypt::URandom::urandom(12);
+    my $aad = 'totp-secret:' . $self->Id;
+    my ( $ct, $tag ) = Crypt::AuthEnc::GCM::gcm_encrypt_authenticate(
+        'AES', $key, $iv, $aad, $plain,
+    );
+    return 'gcm:' . unpack( 'H*', $iv ) . ':' . unpack( 'H*', $ct ) . ':' . unpack( 'H*', $tag );
+}
+
+=head2 _DecryptTOTPSecret RAW_VALUE
+
+Decrypts a TOTP secret stored as C<gcm:IV_HEX:CIPHERTEXT_HEX:TAG_HEX>.
+
+=cut
+
+sub _DecryptTOTPSecret {
+    my ( $self, $raw ) = @_;
+    $raw =~ /^gcm:([0-9a-f]+):([0-9a-f]+):([0-9a-f]+)$/ or return $raw;
+    my $iv  = pack( 'H*', $1 );
+    my $ct  = pack( 'H*', $2 );
+    my $tag = pack( 'H*', $3 );
+    my $aad = 'totp-secret:' . $self->Id;
+    require Crypt::AuthEnc::GCM;
+    my $key   = Digest::SHA::sha256( RT->Config->Get('SecretKey') );
+    my $plain = Crypt::AuthEnc::GCM::gcm_decrypt_verify(
+        'AES', $key, $iv, $aad, $ct, $tag,
+    );
+
+    unless ( defined $plain ) {
+        RT->Logger->error(
+            "Failed to decrypt TOTP secret for user #" . $self->Id
+            . ": SecretKey may have changed since enrollment"
+        );
+        return '';
+    }
+
+    return $plain;
+}
+
+=head2 ClearTOTPEnrollment
+
+Clears C<TOTPSecret> and sets C<TOTPEnrolled> to 0, unenrolling the user
+from TOTP MFA.
+
+=cut
+
+sub ClearTOTPEnrollment {
+    my $self = shift;
+
+    if ( $self->__Value('TOTPSecret') ) {
+        my ( $ok, $msg ) = $self->SetTOTPSecret('');
+        return ( $ok, $msg ) unless $ok;
+    }
+
+    if ( $self->TOTPEnrolled ) {
+        my ( $ok, $msg ) = $self->SetTOTPEnrolled(0);
+        return ( $ok, $msg ) unless $ok;
+    }
+
+    if ( my $attr = $self->FirstAttribute('TOTPLastUsedWindow') ) {
+        my ( $ok, $msg ) = $self->DeleteAttribute('TOTPLastUsedWindow');
+        return ( $ok, $msg ) unless $ok;
+    }
+
+    $self->ClearMFAFailedAttempts;
+
+    return ( 1, $self->loc('MFA enrollment cleared') );
+}
+
+=head2 ReserveMFAAttempt
+
+Counts an MFA verification attempt for this user before the code is
+checked. Returns C<($reserved, $count)>: C<$reserved> is false when the
+user already has C<$RT::MFA::TOTP::MAX_VERIFY_ATTEMPTS> attempts within
+the lockout window, in which case the code must not be checked; otherwise
+C<$count> is the new attempt count. Callers clear the count via
+L</ClearMFAFailedAttempts> once the code verifies.
+
+Counts persist on the user across browser sessions, so an attacker cannot
+reset the lockout window by logging in again.
+
+=cut
+
+sub ReserveMFAAttempt {
+    my $self = shift;
+    require RT::MFA::TOTP;
+
+    # Check and increment under one row lock, so concurrent requests from
+    # parallel sessions can't all pass the limit before any is counted.
+    RT->DatabaseHandle->BeginTransaction;
+    $self->LockForUpdate;
+    $self->ClearAttributes;
+
+    my $attr  = $self->FirstAttribute('MFAFailedAttempts');
+    my $data  = $attr ? $attr->Content : {};
+    my $count = $data->{Count} || 0;
+    $count = 0 if time - ( $data->{At} || 0 ) >= $RT::MFA::TOTP::LOCKOUT_INTERVAL;
+
+    if ( $count >= $RT::MFA::TOTP::MAX_VERIFY_ATTEMPTS ) {
+        RT->DatabaseHandle->Rollback;
+        return ( 0, $count );
+    }
+
+    $count++;
+    my ( $ret, $msg ) = $self->SetAttribute(
+        Name    => 'MFAFailedAttempts',
+        Content => { Count => $count, At => time },
+    );
+    unless ($ret) {
+        RT->DatabaseHandle->Rollback;
+        RT->Logger->error( "Unable to record MFA attempt for user " . $self->Name . ": $msg" );
+        return ( 0, $count - 1 );
+    }
+    RT->DatabaseHandle->Commit;
+
+    return ( 1, $count );
+}
+
+=head2 IsMFALockedOut
+
+Returns C<($locked, $remaining)>. C<$locked> is true when the user has
+reached the maximum failed attempts within the lockout window. C<$remaining>
+is the number of seconds until the lockout window elapses (0 when not
+locked).
+
+If the lockout window has fully elapsed since the most recent failure,
+the stored counter is auto-cleared as a side effect so the next attempt
+starts fresh.
+
+=cut
+
+sub IsMFALockedOut {
+    my $self = shift;
+    require RT::MFA::TOTP;
+
+    my $attr = $self->FirstAttribute('MFAFailedAttempts') or return ( 0, 0 );
+    my $data = $attr->Content                             or return ( 0, 0 );
+
+    my $count    = $data->{Count} || 0;
+    my $last_at  = $data->{At}    || 0;
+    my $interval = $RT::MFA::TOTP::LOCKOUT_INTERVAL;
+    my $elapsed  = time - $last_at;
+
+    if ( $elapsed >= $interval ) {
+        $self->ClearMFAFailedAttempts;
+        return ( 0, 0 );
+    }
+
+    return ( 0, 0 ) if $count < $RT::MFA::TOTP::MAX_VERIFY_ATTEMPTS;
+    return ( 1, $interval - $elapsed );
+}
+
+=head2 ClearMFAFailedAttempts
+
+Clears any record of failed MFA attempts. Called on successful
+verification, when MFA enrollment is reset, and after the lockout
+window elapses.
+
+=cut
+
+sub ClearMFAFailedAttempts {
+    my $self = shift;
+
+    if ( my $attr = $self->FirstAttribute('MFAFailedAttempts') ) {
+        $self->DeleteAttribute('MFAFailedAttempts');
+    }
+    return 1;
+}
+
+=head2 CreateMFAResetToken
+
+Returns a one-time MFA reset token for this user. The token is an
+HMAC-SHA-256 (keyed by C<$SecretKey>) of the user's ID, current TOTPSecret,
+TOTPEnrolled value, LastUpdated timestamp, and a path constant.
+
+The token becomes invalid as soon as the user record changes (since
+LastUpdated is part of the hash), including when the enrollment is
+cleared. Expiry is enforced by the caller via C<LastUpdatedObj-E<gt>Diff>,
+following the same pattern as password reset tokens.
+
+=cut
+
+sub CreateMFAResetToken {
+    my $self = shift;
+
+    unless ( $self && $self->Id ) {
+        RT->Logger->error('Need a loaded RT::User object for CreateMFAResetToken');
+        return undef;
+    }
+
+    return hmac_sha256_hex(
+        join( "\0",
+            $self->Id,
+            $self->__Value('TOTPSecret') // '',
+            $self->TOTPEnrolled          // 0,
+            $self->LastUpdated,
+            RT->Config->Get('WebPath') . '/NoAuth/MFA/Reset' ),
+        RT->Config->Get('SecretKey'),
+    );
+}
+
+=head2 ValidateMFAResetToken Token => $token
+
+Validates an MFA reset token against the current user state.
+Returns true if the token matches, false otherwise.
+
+Note: this only checks token validity, not expiry. The caller is
+responsible for enforcing a time limit via C<LastUpdatedObj-E<gt>Diff>.
+
+=cut
+
+sub ValidateMFAResetToken {
+    my $self  = shift;
+    my %args  = ( Token => undef, @_ );
+    my $token = $args{Token};
+
+    return 0 unless $token;
+
+    my $expected = $self->CreateMFAResetToken;
+    return 0 unless $expected;
+
+    return 0 unless length($token) == length($expected);
+    return RT::Util::constant_time_eq( $token, $expected );
+}
+
+=head2 CreateTokenAndResetMFA
+
+Sends the C<MFAReset> email template to the user's address containing a
+reset link. Returns C<(1, message)> on success, C<(0, error)> on failure.
+
+=cut
+
+sub CreateTokenAndResetMFA {
+    my $self = shift;
+
+    unless ( $self->EmailAddress ) {
+        return ( 0, $self->loc('No email address on file for this account') );
+    }
+
+    my $cooldown = RT->Config->Get('ResetRequestCooldown') // 300;
+    if ( $cooldown > 0 ) {
+        my $attr = $self->FirstAttribute('LastMFAResetRequest');
+        if ( $attr && ( time - $attr->Content ) < $cooldown ) {
+            RT->Logger->info( "MFA reset throttled for " . $self->EmailAddress . " (cooldown ${cooldown}s)" );
+            return ( 1, 'Throttled' );
+        }
+    }
+
+    # Bump LastUpdated so the new token supersedes any outstanding one.
+    $self->_SetLastUpdated();
+
+    my $token = $self->CreateMFAResetToken;
+    return ( 0, $self->loc('Could not generate token') ) unless $token;
+
+    my ( $status, $msg ) = RT::Interface::Email::SendEmailUsingTemplate(
+        To        => $self->EmailAddress,
+        Template  => 'MFAReset',
+        Arguments => {
+            Token => $token,
+            User  => $self,
+        },
+    );
+
+    return ( 0, $msg // $self->loc('Failed to send MFA reset email') ) unless $status && $status > 0;
+
+    $self->SetAttribute(
+        Name    => 'LastMFAResetRequest',
+        Content => time,
+    );
+
+    return ( 1, $self->loc('MFA reset email sent') );
+}
+
 =head2 HasRight
 
 Shim around PrincipalObj->HasRight. See L<RT::Principal>.
@@ -1871,7 +2642,7 @@ sub _Set {
     if ( $ret == 0 ) { return ( 0, $msg ); }
 
     if ( $args{'RecordTransaction'} == 1 ) {
-        if ($args{'Field'} eq "Password") {
+        if ($args{'Field'} =~ /^(?:Password|TOTPSecret)$/) {
             $args{'Value'} = $Old = '********';
         }
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
@@ -3093,8 +3864,12 @@ sub _CoreAccessible {
         {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         LastUpdatedBy => 
         {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
-        LastUpdated => 
+        LastUpdated =>
         {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
+        TOTPSecret =>
+        {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+        TOTPEnrolled =>
+        {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint', default => '0'},
 
  }
 };
@@ -3285,6 +4060,10 @@ sub PreInflate {
     my $principal_uid = delete $data->{Principal};
     my $principal_id  = delete $data->{PrincipalId};
     my $disabled      = delete $data->{Disabled};
+
+    # The TOTP secret is encrypted against the source user id and
+    # $SecretKey, so it can't be decrypted here; users re-enroll instead.
+    delete $data->{$_} for qw/TOTPSecret TOTPEnrolled/;
 
     my $obj = RT::User->new( RT->SystemUser );
     $obj->LoadByCols( Name => $data->{Name} );

@@ -1489,6 +1489,17 @@ sub _CanonicalizeRoleName {
         if ( $self->Field eq 'Password' ) {
             return ('Password changed');    #loc()
         }
+        elsif ( $self->Field eq 'TOTPSecret' ) {
+            return ('TOTP secret changed');    #loc()
+        }
+        elsif ( $self->Field eq 'TOTPEnrolled' ) {
+            if ( $self->NewValue ) {
+                return ('MFA enrollment enabled');    #loc()
+            }
+            else {
+                return ('MFA enrollment cleared');    #loc()
+            }
+        }
         elsif ( $self->Field eq 'Queue' ) {
             my $q1 = RT::Queue->new( $self->CurrentUser );
             $q1->Load( $self->OldValue );

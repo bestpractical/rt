@@ -427,7 +427,16 @@ sub HandleRequest {
 
     MaybeRejectPrivateComponentRequest();
 
+    # Before MaybeShowNoAuthPage, which serves the /NoAuth/MFA/ pages
+    ExpireStaleMFAPending() unless RT->Config->Get('DisableMFA');
+
     MaybeShowNoAuthPage($ARGS);
+
+    # MFA enforcement must run after MaybeShowNoAuthPage so that the
+    # /NoAuth/MFA/ pages themselves (Enroll, Verify, Reset) can be
+    # served without being caught by the MFA redirect.
+    MaybeForceMFAPage() unless RT->Config->Get('DisableMFA');
+    MaybeForceExistingPasswordChange($ARGS);
 
     AttemptExternalAuth($ARGS) if RT->Config->Get('WebRemoteUserContinuous') or not _UserLoggedIn();
 
@@ -452,12 +461,19 @@ sub HandleRequest {
     unless ( _UserLoggedIn() ) {
         _ForceLogout();
 
-        # Authenticate if the user is trying to login via user/pass query args
-        my ($authed, $msg) = AttemptPasswordAuthentication($ARGS);
+        my $m = $HTML::Mason::Commands::m;
+
+        # Authenticate if the user is trying to login via user/pass query args,
+        # unless external auth already verified the password and MFA refused it
+        my ( $authed, $msg );
+        if ( my $mfa_msg = $m->notes('ExternalAuthMFARejected') ) {
+            ( $authed, $msg ) = ( 0, $mfa_msg );
+        }
+        else {
+            ( $authed, $msg ) = AttemptPasswordAuthentication($ARGS);
+        }
 
         unless ($authed) {
-            my $m = $HTML::Mason::Commands::m;
-
             # REST urls get a special 401 response
             if ($m->request_comp->path =~ m{^/REST/\d+\.\d+/}) {
                 $HTML::Mason::Commands::r->content_type("text/plain; charset=utf-8");
@@ -750,9 +766,157 @@ sub MaybeShowNoAuthPage {
     Redirect(RT->Config->Get('WebURL'))
         if $m->base_comp->path eq '/NoAuth/Login.html' and _UserLoggedIn();
 
+    # MFA pages are not available when MFA is disabled
+    Redirect( RT->Config->Get('WebURL') )
+        if $m->base_comp->path =~ m{^/NoAuth/MFA/} and RT->Config->Get('DisableMFA');
+
     # If it's a noauth file, don't ask for auth.
     $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %$ARGS );
     $m->abort;
+}
+
+=head2 ExpireStaleMFAPending
+
+Discards the pending MFA state set by L</ApplyMFAPolicy> once it is older
+than C<$RT::MFA::TOTP::PENDING_TIMEOUT>, or once the user is disabled or
+gone, so an abandoned password step can't be completed later.
+
+=cut
+
+sub ExpireStaleMFAPending {
+    my $session    = \%HTML::Mason::Commands::session;
+    my $pending_id = $session->{MFAPendingUserID} or return;
+    require RT::MFA::TOTP;
+
+    my $user = RT::User->new( RT->SystemUser );
+    $user->Load($pending_id);
+
+    my $reason;
+    if ( !$user->Id || $user->Disabled ) {
+        $reason = 'user is missing or disabled';
+    }
+    elsif ( time - ( $session->{MFAPendingAt} || 0 ) > $RT::MFA::TOTP::PENDING_TIMEOUT ) {
+        $reason = 'timed out';
+    }
+    return unless $reason;
+
+    RT->Logger->info("Discarding pending MFA login for user #$pending_id: $reason");
+    RT::Interface::Web::Session::Delete( Key => $_ )
+        for qw/MFAPendingUserID MFAPendingAt MFAPendingNext MFAPendingPasswordViolation MFAPendingTOTPSecret/;
+}
+
+=head2 MaybeForceMFAPage
+
+If a session has C<MFAPendingUserID> set (password auth passed but TOTP
+not yet verified), redirect any non-NoAuth request to the appropriate
+MFA page. Called from the autohandler before other auth checks.
+
+=cut
+
+sub MaybeForceMFAPage {
+    my $pending_id = $HTML::Mason::Commands::session{MFAPendingUserID} or return;
+
+    # REMOTE_USER sessions handle auth externally; skip MFA enforcement
+    return if $HTML::Mason::Commands::session{'WebExternallyAuthed'};
+
+    # Use base_comp->path for the canonical Mason component path, matching
+    # MaybeShowNoAuthPage. $r->path_info is un-normalized and may include
+    # the WebPath prefix on non-root deployments.
+    my $path = $HTML::Mason::Commands::m->base_comp->path;
+
+    # Skip non-page requests that may be triggered by the browser in the
+    # background; redirecting them would regenerate the CSRF nonce and
+    # invalidate the form. Match exact prefixes only.
+    return if $path =~ m{^/\.well-known/};
+
+    # Load the user to determine whether to send to enroll or verify
+    my $user = RT::User->new( RT->SystemUser );
+    $user->Load($pending_id);
+
+    if ( $user->Id && !$user->TOTPEnrolled ) {
+        Redirect( RT->Config->Get('WebURL') . 'NoAuth/MFA/Enroll.html' );
+    }
+    else {
+        Redirect( RT->Config->Get('WebURL') . 'NoAuth/MFA/Verify.html' );
+    }
+}
+
+=head2 MaybeForceExistingPasswordChange
+
+If C<$ExistingPasswordPolicyAction> is C<force> and the current session
+has C<ExistingPasswordPolicyViolation> set, redirect any non-NoAuth,
+non-compliance-page request to the appropriate compliance-change page.
+Stashes the originally-requested URL in C<ExistingPasswordPolicyChangeNext>
+so the compliance page can return the user there after a successful
+change.
+
+Requests under C</REST/> are handled separately: rather than redirecting
+an API client to an HTML page, we abort with a plain-text 401 carrying
+the policy-violation message.
+
+=cut
+
+sub MaybeForceExistingPasswordChange {
+    my $ARGS = shift;
+
+    return unless _UserLoggedIn();
+    return unless RT->Config->Get('ExistingPasswordPolicyAction') eq 'force';
+    return unless $HTML::Mason::Commands::session{ExistingPasswordPolicyViolation};
+
+    my $path = $HTML::Mason::Commands::m->base_comp->path;
+
+    # Allow the compliance pages themselves, and background asset requests through.
+    return if $path eq '/Prefs/ExistingPasswordChange.html';
+    return if $path eq '/SelfService/ExistingPasswordChange.html';
+    return if $path =~ m{^/\.well-known/};
+
+    # REST: reject with a plain-text 401 instead of redirecting an API
+    # client to an HTML compliance page it cannot render.
+    if ( $path =~ m{^/REST/\d+\.\d+/} ) {
+        my $m   = $HTML::Mason::Commands::m;
+        my $msg = HTML::Mason::Commands::loc(
+            'Your password no longer meets the current password policy. Log in via the web interface to update it.'
+        );
+        RT->Logger->error(
+            "REST request rejected for @{[$HTML::Mason::Commands::session{CurrentUser}->Name]}: "
+                . "existing password violates policy" );
+        $HTML::Mason::Commands::r->content_type("text/plain; charset=utf-8");
+        $HTML::Mason::Commands::r->status(401);
+        $m->error_format("text");
+        $m->out("RT/$RT::VERSION 401 Credentials required\n\n$msg\n");
+        $m->abort;
+    }
+
+    my $user_obj = $HTML::Mason::Commands::session{CurrentUser}->UserObj;
+    my $target
+        = $user_obj->Privileged
+        ? '/Prefs/ExistingPasswordChange.html'
+        : '/SelfService/ExistingPasswordChange.html';
+
+    my ($is_csrf) = RT->Config->Get('RestrictReferrer') ? IsPossibleCSRF($ARGS) : 0;
+    if ($is_csrf) {
+        RT::Interface::Web::Session::Delete( Key => 'ExistingPasswordPolicyChangeNext' );
+    }
+    elsif ( $path ne $target ) {
+        # REQUEST_URI keeps the query string; strip URL-param credentials so
+        # the post-change redirect doesn't replay them.
+        my $next = RequestENV('REQUEST_URI');
+        if ( defined $next ) {
+            $next =~ s{^/+}{/};
+            my $uri = URI->new($next);
+            if ( defined $uri->query_param('user') && defined $uri->query_param('pass') ) {
+                $uri->query_param_delete('user');
+                $uri->query_param_delete('pass');
+            }
+            $next = $uri->as_string;
+        }
+        else {
+            $next = $path;
+        }
+        RT::Interface::Web::Session::Set( Key => 'ExistingPasswordPolicyChangeNext', Value => $next );
+    }
+
+    Redirect( RT->Config->Get('WebURL') . substr( $target, 1 ) );
 }
 
 =head2 MaybeRejectPrivateComponentRequest
@@ -1043,11 +1207,41 @@ sub AttemptPasswordAuthentication {
         return (0, HTML::Mason::Commands::loc('Your username or password is incorrect'));
     }
     else {
-        $RT::Logger->info("Successful login for @{[$ARGS->{user}]} from $remote_addr");
+        # PostLoadCheck guarantees 'ignore', 'notify' or 'force'
+        my $existing_action   = RT->Config->Get('ExistingPasswordPolicyAction');
+        my $password_violates = 0;
+        if ( $existing_action ne 'ignore' ) {
+            my ($ok) = $user_obj->ValidatePassword( $ARGS->{pass} );
+            $password_violates = !$ok;
+        }
 
-        # It's important to nab the next page from the session before we blow
-        # the session away
-        my $next = RemoveNextPage($ARGS->{'next'});
+        # REST clients can't reach the compliance page
+        if (   $password_violates
+            && $existing_action eq 'force'
+            && $m->request_comp->path =~ m{^/REST/} )
+        {
+            RT->Logger->error("REST login rejected for @{[$ARGS->{user}]}: existing password violates policy");
+            $m->callback( %$ARGS, CallbackName => 'FailedLogin', CallbackPage => '/autohandler' );
+            return (
+                0,
+                HTML::Mason::Commands::loc(
+                    'Your password no longer meets the current password policy. Log in via the web interface to update it.'
+                )
+            );
+        }
+
+        my ( $ret, $msg ) = ApplyMFAPolicy(
+            User             => $user_obj,
+            ARGS             => $ARGS,
+            PasswordViolates => $password_violates,
+        );
+        return ( 0, $msg ) unless $ret;
+
+        RT->Logger->info("Successful login for @{[$ARGS->{user}]} from $remote_addr");
+
+        # No MFA required: complete login normally. It's important to nab the next
+        # page from the session before we blow the session away
+        my $next = RemoveNextPage( $ARGS->{'next'} );
            $next = $next->{'url'} if ref $next;
 
         InstantiateNewSession();
@@ -1057,19 +1251,114 @@ sub AttemptPasswordAuthentication {
             Value => $user_obj,
         );
 
-        $m->callback( %$ARGS, CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler', RedirectTo => \$next );
+        # The notice is one-shot (PageLayout deletes it); the violation flag
+        # persists and drives the force gate.
+        if ($password_violates) {
+            RT::Interface::Web::Session::Set( Key => 'ExistingPasswordPolicyViolation', Value => 1 );
+            if ( $existing_action eq 'notify' ) {
+                RT::Interface::Web::Session::Set( Key => 'ExistingPasswordPolicyNotice', Value => 1 );
+            }
+        }
+
+        $m->callback(
+            %$ARGS, CallbackName => 'SuccessfulLogin',
+            CallbackPage => '/autohandler', RedirectTo => \$next
+        );
 
         # Really the only time we don't want to redirect here is if we were
         # passed user and pass as query params in the URL.
         if ($next) {
             Redirect($next);
         }
-        elsif ($ARGS->{'next'}) {
+        elsif ( $ARGS->{'next'} ) {
             # Invalid hash, but still wants to go somewhere, take them to /
-            Redirect(RT->Config->Get('WebURL'));
+            Redirect( RT->Config->Get('WebURL') );
         }
 
-        return (1, HTML::Mason::Commands::loc('Logged in'));
+        # URL-param logins (?user=&pass=) don't redirect, so gate now or the
+        # requested page renders before the gate runs.
+        MaybeForceExistingPasswordChange($ARGS);
+
+        return ( 1, HTML::Mason::Commands::loc('Logged in') );
+    }
+}
+
+=head2 ApplyMFAPolicy User => $user, ARGS => \%ARGS, Next => $url, PasswordViolates => 0|1
+
+Call after a user's password has been verified, before logging them in.
+If the user's effective MFA policy applies, starts a pending MFA session
+and redirects to the enroll or verify page.
+
+C<Next> is the URL to go to once MFA succeeds. If not given, it's taken
+from the session's next page for C<< $ARGS->{next} >>.
+
+Returns C<(1)> if MFA does not apply and the caller should log the user
+in. Returns C<(0, $message)> if the login must be refused: a REST login
+when MFA applies, or a user locked out of MFA.
+
+=cut
+
+sub ApplyMFAPolicy {
+    my %args = (
+        User             => undef,
+        ARGS             => {},
+        Next             => undef,
+        PasswordViolates => 0,
+        @_,
+    );
+    my $user_obj = $args{User};
+    my $ARGS     = $args{ARGS};
+
+    return 1 if RT->Config->Get('DisableMFA');
+
+    my $m           = $HTML::Mason::Commands::m;
+    my $remote_addr = RequestENV('HTTP_X_FORWARDED_FOR') || RequestENV('REMOTE_ADDR');
+    my $mode        = $user_obj->EffectiveMFAPolicy->{Mode} // 'Off';
+
+    my $enrolled = $user_obj->TOTPEnrolled;
+
+    # REST API: reject username+password when MFA applies
+    if (   ( $mode eq 'Required' || ( $mode eq 'Optional' && $enrolled ) )
+        && $m->request_comp->path =~ m{^/REST/} )
+    {
+        RT->Logger->error("REST login rejected for @{[$ARGS->{user}]}: MFA required, use an auth token");
+        $m->callback( %$ARGS, CallbackName => 'FailedLogin', CallbackPage => '/autohandler' );
+        return ( 0,
+            HTML::Mason::Commands::loc('MFA is required for your account. Use an authentication token for API access.')
+        );
+    }
+
+    return 1 if $mode eq 'Off' || ( $mode eq 'Optional' && !$enrolled );
+
+    # Refuse to start a new pending session while the user is locked out,
+    # so the per-user counter cannot be reset by repeated logins. Return
+    # the same generic credential failure to avoid leaking lockout state to
+    # an unauthenticated attacker.
+    my ($mfa_locked) = $user_obj->IsMFALockedOut;
+    if ($mfa_locked) {
+        RT->Logger->warning("Login blocked for @{[$ARGS->{user}]} from $remote_addr: MFA lockout active");
+        $m->callback( %$ARGS, CallbackName => 'FailedLogin', CallbackPage => '/autohandler' );
+        return ( 0, HTML::Mason::Commands::loc('Your username or password is incorrect') );
+    }
+
+    my $next = $args{Next} // RemoveNextPage( $ARGS->{'next'} );
+       $next = ref $next ? $next->{'url'} : $next;
+
+    RT->Logger->info("Password accepted for @{[$ARGS->{user}]} from $remote_addr; MFA verification pending");
+
+    InstantiateNewSession();
+    RT::Interface::Web::Session::Set( Key => 'MFAPendingUserID', Value => $user_obj->Id );
+    RT::Interface::Web::Session::Set( Key => 'MFAPendingAt',     Value => time );
+    RT::Interface::Web::Session::Set( Key => 'MFAPendingNext',   Value => $next );
+
+    # Verify/Enroll restore this after MFA succeeds
+    RT::Interface::Web::Session::Set( Key => 'MFAPendingPasswordViolation', Value => 1 ) if $args{PasswordViolates};
+
+    if ( $mode eq 'Required' && !$enrolled ) {
+        Redirect( RT->Config->Get('WebURL') . 'NoAuth/MFA/Enroll.html' );
+    }
+    else {
+        Redirect( RT->Config->Get('WebURL') . 'NoAuth/MFA/Verify.html' );
     }
 }
 
@@ -2540,6 +2829,71 @@ sub ExtractImages {
         }
     );
     return ( $content, @images );
+}
+
+=head2 ProcessExistingPasswordChangeRequest ARGSRef
+
+Shared handler for the privileged and unprivileged existing-password
+compliance-change pages. Loads the current user via C<RT::SystemUser>
+(the admin has opted into enforcement, so the page bypasses the usual
+C<ModifySelf> requirement). Silently redirects to C<WebURL> when the
+session marker is absent, regardless of request method.
+
+On a POST with C<Password>/C<PasswordConfirm>, checks C<CurrentPassword>,
+validates the new password against the policy, sets it on success, clears
+the marker, and redirects to C<ExistingPasswordPolicyChangeNext> (or
+C<WebURL>).
+Validation failures are returned to the caller for display.
+
+Returns C<($user, \@results, \@policy_requirements)>.
+
+=cut
+
+sub ProcessExistingPasswordChangeRequest {
+    my $ARGSRef = shift;
+
+    my $user = RT::User->new( RT->SystemUser );
+    $user->Load( $HTML::Mason::Commands::session{CurrentUser}->Id );
+
+    # Policy messages are localized for the object's current user
+    my $self_user = $HTML::Mason::Commands::session{CurrentUser}->UserObj;
+
+    unless ( $HTML::Mason::Commands::session{ExistingPasswordPolicyViolation} ) {
+        Redirect( RT->Config->Get('WebURL') );
+    }
+
+    my @results;
+
+    if ( RequestENV('REQUEST_METHOD') eq 'POST' && ( $ARGSRef->{Password} || $ARGSRef->{PasswordConfirm} ) ) {
+        if ( !$user->IsPassword( $ARGSRef->{CurrentPassword} // '' ) ) {
+            push @results, HTML::Mason::Commands::loc('Please enter your current password correctly.');
+        }
+        elsif ( ( $ARGSRef->{Password} // '' ) ne ( $ARGSRef->{PasswordConfirm} // '' ) ) {
+            push @results, HTML::Mason::Commands::loc("The two passwords you typed didn't match.");
+        }
+        else {
+            my ( $ok, $msg ) = $self_user->ValidatePassword( $ARGSRef->{Password} );
+            if ( !$ok ) {
+                push @results, $msg;
+            }
+            else {
+                ( $ok, $msg ) = $user->SetPassword( $ARGSRef->{Password} );
+                if ($ok) {
+                    my $next = $HTML::Mason::Commands::session{ExistingPasswordPolicyChangeNext}
+                        || RT->Config->Get('WebURL');
+                    RT::Interface::Web::Session::Delete( Key => $_ )
+                        for qw/ExistingPasswordPolicyViolation ExistingPasswordPolicyChangeNext/;
+                    Redirect($next);
+                }
+                else {
+                    push @results, $msg;
+                }
+            }
+        }
+    }
+
+    my @policy_requirements = $self_user->PasswordPolicyRequirements;
+    return ( $user, \@results, \@policy_requirements );
 }
 
 package HTML::Mason::Commands;

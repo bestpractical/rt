@@ -217,3 +217,7 @@ table.upgrade-history .upgrade-history-parent .widget a.rolled-up {
         margin-bottom: 1px;
     }
 }
+
+.password-policy-min-length {
+    width: 5rem;
+}

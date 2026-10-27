@@ -272,6 +272,8 @@ CREATE TABLE Users (
   SMIMECertificate text collate NOCASE NULL,
   ImageContentType varchar(80) collate NOCASE NULL,
   Image text collate NOCASE NULL  ,
+  TOTPSecret varchar(255) NULL,
+  TOTPEnrolled smallint NOT NULL DEFAULT 0,
 
   Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,

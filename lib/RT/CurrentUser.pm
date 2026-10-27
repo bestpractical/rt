@@ -173,6 +173,7 @@ sub _CoreAccessible {
         Lang         => { 'read' => 1 },
         Password     => { 'read' => 0 },
         EmailAddress => { 'read' => 1 },
+        TOTPEnrolled => { 'read' => 1 },
     };
 }
 

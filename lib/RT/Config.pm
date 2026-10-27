@@ -907,6 +907,18 @@ our %META;
             $self->Set( DisableGraphViz => 1 );
         },
     },
+    DisableMFA => {
+        Type            => 'SCALAR',
+        Widget          => '/Widgets/Form/Boolean',
+        PostLoadCheck   => sub {
+            my $self  = shift;
+            my $value = shift;
+            return if $value;
+            return if RT::StaticUtil::RequireModule("RT::MFA::TOTP");
+            RT->Logger->debug("You've enabled MFA, but we couldn't load the module: $@");
+            $self->Set( DisableMFA => 1 );
+        },
+    },
     MailCommand => {
         Type    => 'SCALAR',
         Widget  => '/Widgets/Form/String',
@@ -1489,6 +1501,38 @@ our %META;
         Widget => '/Widgets/Form/Boolean',
     },
 
+    ResetPasswordAllowUsersWithoutPassword => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+
+    ResetPasswordCreateNewUserAndSetPassword => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+
+    ResetPasswordCreateNewUserAsPrivileged => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+
+    DisableResetPasswordOnLogin => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+
+    ResetLinkExpirySeconds => {
+        Widget => '/Widgets/Form/Integer',
+    },
+
+    ResetPasswordFromAddress => {
+        Widget => '/Widgets/Form/String',
+    },
+
+    HidePasswordResetErrors => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+
+    ResetRequestCooldown => {
+        Widget => '/Widgets/Form/Integer',
+    },
+
     ExternalSettings => {
         Immutable     => 1,
         Obfuscate => sub {
@@ -1833,6 +1877,28 @@ our %META;
     SearchResultsAutoRedirect => {
         Widget => '/Widgets/Form/Boolean',
     },
+    SecretKey => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/String',
+        Obfuscate => sub {
+            my ($config, $sources, $user) = @_;
+            return $user->loc('Secret not printed');
+        },
+        PostLoadCheck => sub {
+            my $self = shift;
+            unless ( $self->Get('SecretKey') ) {
+                $self->Set( SecretKey => $self->Get('DatabasePassword') );
+            }
+
+            my $key = $self->Get('SecretKey') // '';
+            if ( $key eq '' || $key eq 'rt_pass' ) {
+                RT->Logger->warning(
+                    "SecretKey is empty or the default database password, which weakens password reset tokens "
+                        . "and TOTP secret encryption. Set \$SecretKey to a long, random value in RT_SiteConfig.pm"
+                );
+            }
+        },
+    },
     SelfServiceUseDashboard => {
         Widget => '/Widgets/Form/Boolean',
     },
@@ -2065,8 +2131,144 @@ our %META;
     MaxUserImageSize => {
         Widget => '/Widgets/Form/Integer',
     },
-    MinimumPasswordLength => {
-        Widget => '/Widgets/Form/Integer',
+    PasswordPolicy => {
+        Type          => 'HASH',
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+            return unless defined $value;
+
+            my %valid_role  = map { $_ => 1 } qw(Default Privileged Unprivileged);
+            my %valid_field = map { $_ => 1 }
+                qw(MinLength RequireUpper RequireLower RequireDigit RequireSymbol NoUsername);
+
+            my %sanitized;
+            for my $role ( keys %$value ) {
+                unless ( $valid_role{$role} ) {
+                    RT->Logger->warning( "Invalid \$PasswordPolicy key '$role' "
+                            . "(must be one of 'Default', 'Privileged', 'Unprivileged'); ignoring" );
+                    next;
+                }
+
+                my $policy = $value->{$role};
+                unless ( ref $policy eq 'HASH' ) {
+                    RT->Logger->warning(
+                        "Invalid \$PasswordPolicy->{$role} value (must be a HASH ref); ignoring" );
+                    next;
+                }
+
+                my %clean;
+                if ( defined( my $min = $policy->{MinLength} ) ) {
+                    if ( $min =~ /^\d+$/ ) {
+                        $clean{MinLength} = $min;
+                    }
+                    else {
+                        RT->Logger->warning( "Invalid \$PasswordPolicy->{$role}{MinLength} value '$min' "
+                                . "(must be a non-negative integer); falling back to 0" );
+                        $clean{MinLength} = 0;
+                    }
+                }
+
+                for my $flag (qw(RequireUpper RequireLower RequireDigit RequireSymbol NoUsername)) {
+                    $clean{$flag} = $policy->{$flag} ? 1 : 0 if exists $policy->{$flag};
+                }
+
+                for my $k ( keys %$policy ) {
+                    next if $valid_field{$k};
+                    RT->Logger->warning("Unknown \$PasswordPolicy->{$role}{$k} key; ignoring");
+                }
+
+                $sanitized{$role} = \%clean;
+            }
+
+            $self->Set( PasswordPolicy => \%sanitized );
+        },
+    },
+    ExistingPasswordPolicyAction => {
+        Type            => 'SCALAR',
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Action for existing noncompliant passwords',    # loc
+            Values      => [qw(ignore notify force)],
+            ValuesLabel => {
+                ignore => 'Ignore: no action when existing passwords violate current policy',       # loc
+                notify => 'Notify: show a flash message linking to the compliance page',            # loc
+                force  => 'Force: gate every request until the user picks a compliant password',    # loc
+            },
+        },
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+            return
+                if defined $value
+                && ( $value eq 'ignore' || $value eq 'notify' || $value eq 'force' );
+            if ( defined $value ) {
+                RT->Logger->warning( "Invalid \$ExistingPasswordPolicyAction value '$value' "
+                        . "(must be one of 'ignore', 'notify', 'force'); falling back to 'ignore'" );
+            }
+            $self->Set( ExistingPasswordPolicyAction => 'ignore' );
+        },
+    },
+    MFAPolicy => {
+        Type          => 'HASH',
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+            return unless defined $value;
+
+            my %valid_mode = map { $_ => 1 } qw(Off Optional Required);
+            my %valid_role = map { $_ => 1 } qw(Default Privileged Unprivileged);
+
+            my %sanitized;
+            for my $role ( keys %$value ) {
+                unless ( $valid_role{$role} ) {
+                    RT->Logger->warning( "Invalid \$MFAPolicy key '$role' "
+                            . "(must be one of 'Default', 'Privileged', 'Unprivileged'); ignoring" );
+                    next;
+                }
+
+                my $policy = $value->{$role};
+                unless ( ref $policy eq 'HASH' ) {
+                    RT->Logger->warning(
+                        "Invalid \$MFAPolicy->{$role} value (must be a HASH ref); ignoring" );
+                    next;
+                }
+
+                my %clean;
+                my $mode = $policy->{Mode};
+                if ( defined $mode && $valid_mode{$mode} ) {
+                    $clean{Mode} = $mode;
+                }
+                else {
+                    if ( defined $mode ) {
+                        RT->Logger->warning( "Invalid \$MFAPolicy->{$role}{Mode} value '$mode' "
+                                . "(must be one of 'Off', 'Optional', 'Required'); falling back to 'Off'" );
+                    }
+                    $clean{Mode} = 'Off';
+                }
+
+                my $drift = $policy->{Drift};
+                if ( defined $drift && $drift =~ /^\d+$/ && $drift <= 5 ) {
+                    $clean{Drift} = $drift;
+                }
+                else {
+                    if ( defined $drift ) {
+                        RT->Logger->warning( "Invalid \$MFAPolicy->{$role}{Drift} value '$drift' "
+                                . "(must be a non-negative integer between 0 and 5); falling back to 0" );
+                    }
+                    $clean{Drift} = 0;
+                }
+
+                for my $k ( keys %$policy ) {
+                    next if $k eq 'Mode' || $k eq 'Drift';
+                    RT->Logger->warning("Unknown \$MFAPolicy->{$role}{$k} key; ignoring");
+                }
+
+                $sanitized{$role} = \%clean;
+            }
+
+            $self->Set( MFAPolicy => \%sanitized );
+        },
     },
     MoreAboutRequestorGroupsLimit => {
         Widget => '/Widgets/Form/Integer',

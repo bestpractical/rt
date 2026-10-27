@@ -46,7 +46,13 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%init>
-my ($good, $msg) = RT::Interface::Web::AttemptPasswordAuthentication(\%ARGS);
+my ( $good, $msg );
+if ( my $mfa_msg = $m->notes('ExternalAuthMFARejected') ) {
+    ( $good, $msg ) = ( 0, $mfa_msg );
+}
+else {
+    ( $good, $msg ) = RT::Interface::Web::AttemptPasswordAuthentication(\%ARGS);
+}
 $ARGS{'actions'} = [$msg] if not $good and $msg;
 </%init>
 

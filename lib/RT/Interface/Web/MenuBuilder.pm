@@ -1770,6 +1770,16 @@ sub _BuildAdminPageMenu {
                         description  => loc("Group dashboards page"),
                     );
                 }
+                $settings->child(
+                    'password-policy' => title => loc('Password Policy'),
+                    path => "/Admin/Groups/PasswordPolicy.html?id=" . $obj->id
+                );
+                unless ( RT->Config->Get('DisableMFA') ) {
+                    $settings->child(
+                        'mfa-policy' => title => loc('MFA Policy'),
+                        path => "/Admin/Groups/MFAPolicy.html?id=" . $obj->id
+                    );
+                }
                 my $rights = $page->child( rights => title => loc('Rights') );
                 $rights->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Groups/GroupRights.html?id=" . $obj->id );
                 $rights->child( 'user-rights'  => title => loc('User Rights'),  path => "/Admin/Groups/UserRights.html?id=" . $obj->id );

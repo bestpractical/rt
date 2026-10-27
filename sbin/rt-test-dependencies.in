@@ -68,6 +68,7 @@ GetOptions(
 
     'with-GPG',
     'with-GRAPHVIZ',
+    'with-MFA',
     'with-EXTERNALAUTH',
 
     'with-S3', 'with-DROPBOX',
@@ -94,6 +95,7 @@ my %default = (
     'with-GPG'          => @RT_GPG_DEPS@,
     'with-SMIME'        => @RT_SMIME_DEPS@,
     'with-GRAPHVIZ'     => @RT_GRAPHVIZ@,
+    'with-MFA'          => @RT_MFA@,
     'with-EXTERNALAUTH' => @RT_EXTERNALAUTH@,
     'with-S3'           => (uc(q{@ATTACHMENT_STORE@}) eq 'S3'),
     'with-DROPBOX'      => (uc(q{@ATTACHMENT_STORE@}) eq 'DROPBOX'),
@@ -534,6 +536,10 @@ Add dependencies for visualizing dependencies between tickets.
 =item B<--with-gd>
 
 Add dependencies for creating charts and graphs from search results.
+
+=item B<--with-mfa>
+
+Add dependencies for TOTP multi-factor authentication.
 
 =item B<--with-externalauth>
 

@@ -250,6 +250,8 @@ CREATE TABLE Users (
   SMIMECertificate text NULL,
   ImageContentType varchar(80) CHARACTER SET ascii NULL,
   Image mediumtext NULL,
+  TOTPSecret varchar(255) CHARACTER SET ascii NULL,
+  TOTPEnrolled int2 NOT NULL DEFAULT 0,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
