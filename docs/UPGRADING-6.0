@@ -539,6 +539,22 @@ that checks these response messages may need updates. For example:
       Old: URI asset:1 refers to Ticket 5.
       New: Asset 1 refers to Ticket 5.
 
+=item Faster ticket history search on MySQL and MariaDB
+
+With indexed full text search on MySQL or MariaDB, the "Search history"
+box on a ticket's History used C<MATCH>, which InnoDB evaluates against
+the whole index, so it got slow on large databases. RT now scans only that
+ticket's indexed content with C<REGEXP>.
+
+MariaDB uses this automatically. MySQL stops a C<REGEXP> after
+C<regexp_time_limit> match steps, so RT uses it only when that limit is
+disabled in the server configuration:
+
+    [mysqld]
+    regexp_time_limit = 0
+
+Otherwise ticket history search on MySQL still uses C<MATCH>.
+
 =back
 
 =cut

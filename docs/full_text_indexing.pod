@@ -113,6 +113,21 @@ See the MySQL documentation, at
 L<http://dev.mysql.com/doc/refman/5.6/en/fulltext-boolean.html>, for a
 list of the full capabilities.
 
+=head3 Ticket history search on MySQL and MariaDB
+
+The "Search history" box on a ticket's History scans that ticket's
+indexed content with C<REGEXP> instead of using C<MATCH>, which InnoDB
+evaluates against the whole index and which gets slow on large databases. MySQL (unlike
+MariaDB) stops a C<REGEXP> after C<regexp_time_limit> match steps, which
+large attachments exceed, so on MySQL RT scans only when that limit is
+disabled in the server configuration:
+
+    [mysqld]
+    regexp_time_limit = 0
+
+Otherwise ticket history search on MySQL uses C<MATCH> like other
+searches.
+
 
 =head1 ORACLE
 
