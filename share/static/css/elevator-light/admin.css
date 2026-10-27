@@ -191,3 +191,7 @@ div.scrip-log.label,
 a.scrip-log {
     color: red;
 }
+
+.password-policy-min-length {
+    width: 5rem;
+}

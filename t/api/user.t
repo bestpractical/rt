@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use RT;
 use RT::Test tests => undef;
+use Digest::SHA;
 
 
 {
@@ -419,6 +420,135 @@ diag 'Test Stylesheet';
     my ( $status, $msg ) = $user->SetPreferences( RT->System, { WebDefaultStylesheet => 'elevator-dark' } );
     ok( $status, $msg );
     is( $user->Stylesheet, 'elevator-dark', 'Updated stylesheet' );
+}
+
+diag 'CreateResetPasswordToken returns a 64-char hex token that only the latest call validates';
+{
+    my $user = RT::Test->load_or_create_user(
+        Name         => 'token_test',
+        EmailAddress => 'token@example.com',
+        Password     => 'secret123',
+    );
+
+    my $token = $user->CreateResetPasswordToken;
+    like( $token, qr/^[0-9a-f]{64}$/, 'Token is 64-char sha256 hex' );
+    ok( $user->ValidateResetPasswordToken( Token => $token ), 'Token validates' );
+
+    my $token2 = $user->CreateResetPasswordToken;
+    isnt( $token2, $token, 'New token differs' );
+    ok( !$user->ValidateResetPasswordToken( Token => $token ), 'Earlier token no longer validates' );
+    ok( $user->ValidateResetPasswordToken( Token => $token2 ), 'New token validates' );
+    ok( !$user->ValidateResetPasswordToken( Token => '' ),      'Empty token does not validate' );
+}
+
+diag 'Token is invalidated after password changes';
+{
+    my $user = RT::Test->load_or_create_user(
+        Name         => 'token_change_test',
+        EmailAddress => 'tokenchange@example.com',
+        Password     => 'secret123',
+    );
+
+    my $token = $user->CreateResetPasswordToken;
+    $user->SetPassword('newpassword456');
+    ok( !$user->ValidateResetPasswordToken( Token => $token ), 'Token no longer validates after password change' );
+}
+
+diag 'Token for a user without a password cannot be derived from public state';
+{
+    my $user = RT::Test->load_or_create_user(
+        Name         => 'token_nopass_test',
+        EmailAddress => 'tokennopass@example.com',
+    );
+    ok( !$user->HasPassword, 'User has no password' );
+
+    my ( $ret, $ret_msg ) = $user->CreateTokenAndResetPassword( Throttle => 0 );
+    ok( $ret, "CreateTokenAndResetPassword succeeded: " . ( $ret_msg // '' ) );
+
+    my $guess = Digest::SHA::hmac_sha256_hex(
+        join( "\0", $user->id, $user->__Value('Password'),
+            $user->LastUpdated, RT->Config->Get('WebPath') . '/NoAuth/ResetPassword/Reset' ),
+        RT->Config->Get('SecretKey'),
+    );
+    ok( !$user->ValidateResetPasswordToken( Token => $guess ), 'Token computed without the nonce is rejected' );
+}
+
+diag 'CreateTokenAndResetPassword updates LastUpdated and emails a valid token';
+{
+    my $user = RT::Test->load_or_create_user(
+        Name         => 'reset_test',
+        EmailAddress => 'reset@example.com',
+        Password     => 'secret123',
+    );
+
+    my $token_before   = $user->CreateResetPasswordToken;
+    my $updated_before = $user->LastUpdated;
+
+    sleep 1;    # LastUpdated has second granularity; ensure it changes
+    RT::Test->clean_caught_mails;
+    my ( $ret, $ret_msg ) = $user->CreateTokenAndResetPassword;
+    ok( $ret, "CreateTokenAndResetPassword succeeded: " . ( $ret_msg // '' ) );
+
+    my $updated_after = $user->LastUpdated;
+    isnt( $updated_before, $updated_after, 'LastUpdated changes after CreateTokenAndResetPassword' );
+    ok( !$user->ValidateResetPasswordToken( Token => $token_before ), 'Earlier token no longer validates' );
+
+    my @mails = RT::Test->fetch_caught_mails;
+    is( scalar @mails, 1, 'One email sent' );
+    my ($emailed) = ( $mails[0] // '' ) =~ m{/NoAuth/ResetPassword/Reset/([0-9a-f]{64})/\Q@{[ $user->id ]}\E};
+    ok( $user->ValidateResetPasswordToken( Token => $emailed ), 'Emailed token validates' );
+    is( $ret_msg, 'Password reset email sent', 'Success message' );
+}
+
+diag 'CreateTokenAndResetPassword fails for a user without an email address';
+{
+    my $user = RT::Test->load_or_create_user(
+        Name     => 'reset_no_email',
+        Password => 'secret123',
+    );
+    ok( !$user->EmailAddress, 'User has no email address' );
+
+    RT::Test->clean_caught_mails;
+    my ( $ret, $ret_msg ) = $user->CreateTokenAndResetPassword( Throttle => 0 );
+    ok( !$ret, 'CreateTokenAndResetPassword fails' );
+    is( $ret_msg, 'No email address on file for this account', 'Error message' );
+
+    my @mails = RT::Test->fetch_caught_mails;
+    is( scalar @mails, 0, 'No email sent' );
+    ok( !$user->FirstAttribute('LastPasswordResetRequest'), 'Cooldown not recorded' );
+}
+
+diag 'CreateTokenAndResetPassword fails for a disabled user';
+{
+    my $user = RT::Test->load_or_create_user(
+        Name         => 'reset_disabled',
+        EmailAddress => 'reset_disabled@example.com',
+        Password     => 'secret123',
+    );
+    my ( $ok, $msg ) = $user->SetDisabled(1);
+    ok( $ok, "Disabled user: $msg" );
+
+    RT::Test->clean_caught_mails;
+    my ( $ret, $ret_msg ) = $user->CreateTokenAndResetPassword( Throttle => 0 );
+    ok( !$ret, 'CreateTokenAndResetPassword fails' );
+    is( $ret_msg, "Disabled users can't reset their password", 'Error message' );
+
+    my @mails = RT::Test->fetch_caught_mails;
+    is( scalar @mails, 0, 'No email sent' );
+}
+
+diag 'UnsetPassword clears the password';
+{
+    my $user = RT::Test->load_or_create_user(
+        Name         => 'unset_test',
+        EmailAddress => 'unset@example.com',
+        Password     => 'secret456',
+    );
+    ok( $user->HasPassword, 'User has password initially' );
+
+    my ( $ret, $unset_msg ) = $user->UnsetPassword;
+    ok( $ret,                "UnsetPassword succeeded: $unset_msg" );
+    ok( !$user->HasPassword, 'User has no password after UnsetPassword' );
 }
 
 done_testing();

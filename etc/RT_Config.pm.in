@@ -1208,6 +1208,25 @@ This disables RT's clickjacking protection.
 
 Set($Framebusting, 1);
 
+=item C<$SecretKey>
+
+A secret string used as keying material for cryptographic operations
+such as password-reset tokens, MFA-reset tokens, and TOTP secret
+encryption. When empty (the default), RT falls back to
+C<$DatabasePassword>.
+
+B<Recommended>: set this to a long, random value in
+F<RT_SiteConfig.pm> before enabling MFA, so application-level crypto
+is not coupled to the database credential.
+
+Changing this value (or changing C<$DatabasePassword> while this is
+empty) invalidates outstanding password-reset and MFA-reset links, and
+makes every stored TOTP secret undecryptable.
+
+=cut
+
+Set($SecretKey, '');
+
 =item C<$RestrictReferrer>
 
 If set to 0, the HTTP C<Referer> (sic) header will not be
@@ -1691,14 +1710,216 @@ requirements.
 
 Set($WebHttpOnlyCookies, 1);
 
-=item C<$MinimumPasswordLength>
+=item C<$PasswordPolicy>
 
-C<$MinimumPasswordLength> defines the minimum length for user
-passwords. Setting it to 0 disables this check.
+C<$PasswordPolicy> defines password complexity requirements. It is a hash
+reference with up to three optional keys: C<Default>, C<Privileged>, and
+C<Unprivileged>. Each key holds a policy hash with the following fields:
+
+=over 4
+
+=item MinLength
+
+Minimum password length. Set to 0 to disable this check.
+
+=item RequireUpper
+
+When true, passwords must contain at least one uppercase letter.
+
+=item RequireLower
+
+When true, passwords must contain at least one lowercase letter.
+
+=item RequireDigit
+
+When true, passwords must contain at least one digit.
+
+=item RequireSymbol
+
+When true, passwords must contain at least one non-alphanumeric character.
+
+=item NoUsername
+
+When true, passwords must not contain the username (case-insensitive).
+
+=back
+
+When a user sets a password, the effective policy is resolved in this order:
+
+=over 4
+
+=item 1.
+
+Group policies (most-restrictive-wins across all groups the user belongs to),
+if any user-defined group has a password policy configured.
+
+=item 2.
+
+The C<Privileged> key, if the user is privileged.
+
+=item 3.
+
+The C<Unprivileged> key, if the user is unprivileged.
+
+=item 4.
+
+The C<Default> key as a fallback.
+
+=item 5.
+
+A hardcoded C<< { MinLength => 5 } >> as the final fallback.
+
+=back
+
+    Set($PasswordPolicy, {
+        Default => {
+            MinLength     => 5,
+            RequireUpper  => 0,
+            RequireLower  => 0,
+            RequireDigit  => 0,
+            RequireSymbol => 0,
+            NoUsername    => 0,
+        },
+        Privileged => {
+            MinLength     => 8,
+            RequireUpper  => 1,
+            RequireLower  => 1,
+            RequireDigit  => 1,
+            RequireSymbol => 0,
+            NoUsername    => 1,
+        },
+        Unprivileged => {
+            MinLength     => 6,
+        },
+    });
 
 =cut
 
-Set($MinimumPasswordLength, 5);
+Set($PasswordPolicy, {
+    Default => {
+        MinLength     => 5,
+        RequireUpper  => 0,
+        RequireLower  => 0,
+        RequireDigit  => 0,
+        RequireSymbol => 0,
+        NoUsername    => 0,
+    },
+});
+
+=item C<$ExistingPasswordPolicyAction>
+
+Controls how RT handles a user whose I<existing> password no longer meets
+the effective password policy when they log in. The check only applies to
+internal RT passwords.
+
+Valid values:
+
+=over 4
+
+=item C<ignore>
+
+Default. No action; existing noncompliant passwords are not flagged.
+
+=item C<notify>
+
+Show a one-time flash message on the first page after a successful
+login that violates the policy, with a link to a dedicated
+compliance-change page where the user can update their password.
+
+=item C<force>
+
+After successful login (and after MFA verification, if applicable),
+gate every request through the compliance-change page until the user
+picks a compliant password. REST username+password requests are
+rejected outright with a message directing the user to log in via the
+web interface.
+
+=back
+
+Any other value is rejected at startup with a warning and treated as
+C<ignore>.
+
+=cut
+
+Set($ExistingPasswordPolicyAction, 'ignore');
+
+=item C<$MFAPolicy>
+
+C<$MFAPolicy> defines multi-factor authentication requirements. It is a hash
+reference with up to three optional keys: C<Default>, C<Privileged>, and
+C<Unprivileged>. Each key holds a policy hash with the following fields:
+
+=over 4
+
+=item C<Mode>
+
+One of C<Off> (default), C<Optional>, or C<Required>. C<Off> disables MFA
+unless overridden by a group policy. C<Optional> allows users to enroll but
+does not require it. C<Required> forces users to enroll and verify TOTP on
+every login.
+
+=item C<Drift>
+
+Number of 30-second TOTP windows accepted on each side of the current
+window, to accommodate clock drift between the authenticator device and
+the server. Defaults to C<0> (only the current window). Use C<1> to also
+accept one window before and after, C<2> for two in each direction, etc.
+Must be a non-negative integer; maximum allowed value is C<5> (which
+accepts a total of 11 windows).
+
+=back
+
+When a user logs in, the effective policy is resolved in this order:
+
+=over 4
+
+=item 1.
+
+Group policies (most-restrictive-wins: Required > Optional > Off; minimum
+C<Drift> wins, capped at 5), if any user-defined group has an MFA policy
+configured.
+
+=item 2.
+
+The C<Privileged> key, if the user is privileged.
+
+=item 3.
+
+The C<Unprivileged> key, if the user is unprivileged.
+
+=item 4.
+
+The C<Default> key as a fallback.
+
+=item 5.
+
+A hardcoded C<< { Mode => 'Off', Drift => 0 } >> as the final fallback.
+
+=back
+
+    Set($MFAPolicy, {
+        Default => {
+            Mode  => 'Off',
+            Drift => 0,
+        },
+        Privileged => {
+            Mode  => 'Required',
+            Drift => 0,
+        },
+        Unprivileged => {
+            Mode  => 'Off',
+            Drift => 0,
+        },
+    });
+
+=cut
+
+Set($MFAPolicy, {
+    Default => {
+        Mode  => 'Off',
+        Drift => 0,
+    },
+});
 
 =back
 
@@ -1765,6 +1986,113 @@ to true (1).
 =cut
 
 Set($DisablePasswordForAuthToken, 0);
+
+=head3 Password Reset
+
+=over 4
+
+=item C<$ResetPasswordAllowUsersWithoutPassword>
+
+When true, users who have an RT account but no password set are allowed to
+use the self-service password reset flow to create a password for themselves.
+
+When false (the default), a user must already have a password in order to
+request a reset. This is the most secure setting for internet-facing RT
+instances.
+
+=cut
+
+Set($ResetPasswordAllowUsersWithoutPassword, 0);
+
+=item C<$ResetPasswordCreateNewUserAndSetPassword>
+
+When true, a visitor who enters an email address not found in RT will have
+a new (unprivileged) user account created for them, and a password-set link
+emailed to that address.
+
+B<WARNING>: Only enable this on RT instances whose web UI is not publicly
+accessible (e.g. restricted to an internal network), because it allows
+anyone to create an RT account.
+
+=cut
+
+Set($ResetPasswordCreateNewUserAndSetPassword, 0);
+
+=item C<$ResetPasswordCreateNewUserAsPrivileged>
+
+When true, new user accounts created via the password reset page are created
+as privileged users. Only meaningful when
+C<$ResetPasswordCreateNewUserAndSetPassword> is also true.
+
+B<WARNING>: Enabling this together with
+C<$ResetPasswordCreateNewUserAndSetPassword> lets anyone create a privileged
+RT account. Use with extreme caution.
+
+=cut
+
+Set($ResetPasswordCreateNewUserAsPrivileged, 0);
+
+=item C<$DisableResetPasswordOnLogin>
+
+When true, the "Forgot password?" (and "New account") link is hidden on
+the RT login page and the self-service reset request page is blocked.
+Admins can still send reset emails from the user admin page, and
+existing reset links already sent by email continue to work.
+
+Self-service reset is disabled by default; set this to 0 to enable it.
+
+=cut
+
+Set($DisableResetPasswordOnLogin, 1);
+
+=item C<$ResetLinkExpirySeconds>
+
+Number of seconds before a password-reset or MFA-reset link expires.
+Defaults to C<4*60*60> (4 hours).
+
+=cut
+
+Set($ResetLinkExpirySeconds, 4 * 60 * 60);
+
+=item C<$ResetPasswordFromAddress>
+
+Overrides the From address used in password reset emails. When unset (the
+default), the C<$CorrespondAddress> value is used.
+
+=cut
+
+Set($ResetPasswordFromAddress, undef);
+
+=item C<$HidePasswordResetErrors>
+
+When true, all outcomes of a self-service reset request (user not found,
+user disabled, etc.) show the same generic success message to the requestor,
+and every response takes at least one second, so the page doesn't reveal
+which addresses have active accounts. Failures are still logged.
+
+Sending the reset email can take longer than a second through a slow SMTP
+relay, which makes responses for active accounts measurably slower. Each
+request also holds a web server process for that second. Sites that enable
+self-service reset should rate-limit F</NoAuth/ResetPassword/Request.html>
+at the web server or proxy.
+
+=cut
+
+Set($HidePasswordResetErrors, 1);
+
+=item C<$ResetRequestCooldown>
+
+Minimum number of seconds between consecutive reset emails (password reset
+or MFA reset) for the same user. Repeated requests within this window are
+silently ignored (while still showing the generic success message to the
+requestor). Set to C<0> to disable throttling. Defaults to C<300> (5
+minutes).
+
+=cut
+
+Set($ResetRequestCooldown, 300);
+
+=back
 
 =head2 Initialdata Formats
 

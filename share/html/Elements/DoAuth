@@ -48,15 +48,34 @@
 <%init>
 # return as quickly as possible if the user is logged in
 return if $session{CurrentUser} && $session{'CurrentUser'}->id;
+return if $m->notes('ExternalAuthMFARejected');
 
 # It's important to nab the next page from the session before we
 # potentially blow the session away below.
 my $next = $session{'NextPage'}->{ $ARGS{'next'} || "" };
    $next = $next->{'url'} if ref $next;
 
-my ($val,$msg) = RT::Authen::ExternalAuth::DoAuth(\%session,$user,$pass);
+my ($val,$msg,$sso) = RT::Authen::ExternalAuth::DoAuth(\%session,$user,$pass);
 $RT::Logger->debug("Autohandler called ExternalAuth. Response: ($val, $msg)");
+
+# SSO cookie logins are trusted like REMOTE_USER, so only password logins
+# go through MFA.
+if ( $val && !$sso ) {
+    ( $val, $msg ) = RT::Interface::Web::ApplyMFAPolicy(
+        User => $session{CurrentUser},
+        ARGS => \%ARGS,
+        Next => $next,
+    );
+    unless ($val) {
+        $session{CurrentUser} = RT::CurrentUser->new;
+        $m->notes( ExternalAuthMFARejected => $msg );
+        return;
+    }
+}
+
 if ( $val ) {
+    RT->Logger->info( 'Successful login for ' . $session{CurrentUser}->Name . ' from '
+            . ( RT::Interface::Web::RequestENV('REMOTE_ADDR') || 'UNKNOWN' ) );
     $m->callback( %ARGS, CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler', RedirectTo => \$next );
 }
 

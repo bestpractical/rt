@@ -1,0 +1,186 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%init>
+my $title          = loc('Reset your password');
+my $bland_error    = loc('Invalid or expired reset link');
+my $cookie_name    = 'RTPasswdResetCookie';
+my $password_saved = 0;
+my @password_errors;
+
+my $virtual_path = $m->dhandler_arg();
+my ( $submitted_token, $id ) = split( '/', $virtual_path );
+
+# If token and ID are in the URL path, store them in a cookie and redirect
+# to the bare /Reset/ URL. This prevents the token leaking via Referer header.
+if ( $submitted_token && $id ) {
+    my $cookie = CGI::Cookie->new(
+        -name     => $cookie_name,
+        -value    => "$submitted_token/$id",
+        -path     => RT->Config->Get('WebPath'),
+        -secure   => ( RT->Config->Get('WebSecureCookies')   ? 1 : 0 ),
+        -httponly => ( RT->Config->Get('WebHttpOnlyCookies') ? 1 : 0 ),
+        -samesite => RT->Config->Get('WebSameSiteCookies'),
+    );
+    $r->err_headers_out->{'Set-Cookie'} = $cookie->as_string;
+    $r->status(302);
+    $m->redirect( RT->Config->Get('WebPath') . '/NoAuth/ResetPassword/Reset/',
+        '302 found' );
+    $m->abort;
+}
+
+# Without a cookie we can't proceed
+my %cookies
+    = CGI::Cookie->parse( RT::Interface::Web::RequestENV('HTTP_COOKIE') );
+
+unless ( $cookies{$cookie_name} ) {
+    $m->comp( '/NoAuth/Elements/Error', Why => $bland_error );
+    return;
+}
+
+( $submitted_token, $id ) = split( '/', $cookies{$cookie_name}->value() );
+unless ( $submitted_token && $id ) {
+    $m->comp( '/NoAuth/Elements/Error', Why => $bland_error );
+    return;
+}
+
+my $u = RT::User->new( RT->SystemUser );
+$u->LoadByCols( id => $id );
+unless ( $u->Id ) {
+    $m->comp( '/NoAuth/Elements/Error', Why => $bland_error );
+    return;
+}
+
+if ( $u->Disabled ) {
+    $m->comp( '/NoAuth/Elements/Error', Why => $bland_error );
+    return;
+}
+
+# Calculate age of the link (seconds since user's LastUpdated)
+my $age = $u->LastUpdatedObj->Diff;
+unless ( defined($age) && $age <= 0 ) {
+    $m->comp( '/NoAuth/Elements/Error', Why => $bland_error );
+    return;
+}
+$age = -1 * $age;
+
+unless ( $u->ValidateResetPasswordToken( Token => $submitted_token ) ) {
+    $m->comp( '/NoAuth/Elements/Error', Why => $bland_error );
+    return;
+}
+
+if ( $age > ( RT->Config->Get('ResetLinkExpirySeconds') || ( 4 * 60 * 60 ) ) ) {
+    $m->comp( '/NoAuth/Elements/Error', Why => $bland_error );
+    return;
+}
+
+# Valid token and not expired - process form submission if present
+my $submitted = $r->method eq 'POST' && $ARGS{'password'};
+if ( $submitted && $ARGS{'password2'} && ( $ARGS{'password'} eq $ARGS{'password2'} ) ) {
+    my ( $val, $msg ) = $u->SetPassword( $ARGS{'password'} );
+    if ($val) {
+        $password_saved = 1;
+
+        # Clear the cookie
+        my $cookie = CGI::Cookie->new(
+            -name     => $cookie_name,
+            -value    => '',
+            -expires  => '-10y',
+            -path     => RT->Config->Get('WebPath'),
+            -secure   => ( RT->Config->Get('WebSecureCookies')   ? 1 : 0 ),
+            -httponly => ( RT->Config->Get('WebHttpOnlyCookies') ? 1 : 0 ),
+            -samesite => RT->Config->Get('WebSameSiteCookies'),
+        );
+        $r->err_headers_out->{'Set-Cookie'} = $cookie->as_string;
+    }
+    else {
+        push @password_errors, $msg;
+    }
+}
+elsif ($submitted) {
+    push @password_errors, loc("The two passwords you typed didn't match.");
+}
+
+my @policy_requirements;
+if ( !$password_saved && $u->Id ) {
+    @policy_requirements = $u->PasswordPolicyRequirements;
+}
+</%init>
+<& /Elements/Header, Title => $title, RichText => 0 &>
+</div>
+<div id="body">
+<& /Elements/ListActions, actions => \@password_errors &>
+
+<&| /Widgets/TitleBox, title => $title, hideable => 0, class => 'mx-auto max-width-lg', content_class => 'mx-auto w-100 max-width-sm' &>
+% if ($password_saved) {
+  <p class="mt-2"><&|/l&>Your password has been changed.</&></p>
+  <p class="text-right"><a class="button btn btn-primary" href="<% RT->Config->Get('WebURL') %>"><&|/l&>Log in</&></a></p>
+% } else {
+%   if ( @policy_requirements ) {
+  <div class="alert alert-info">
+    <strong><&|/l&>Password requirements</&>:</strong>
+    <% join( " \N{MIDDLE DOT} ", @policy_requirements ) %>
+  </div>
+%   }
+  <p class="mt-2"><&|/l&>Choose a new password for your account.</&></p>
+  <form action="" method="post">
+    <&| /Elements/LabeledValue, Label => loc('New password') &>
+      <input name="password" type="password" class="form-control" />
+    </&>
+    <&| /Elements/LabeledValue, Label => loc('Retype Password') &>
+      <input type="password" class="form-control" name="password2" autocomplete="off" />
+    </&>
+    <div class="row mt-2">
+      <div class="col-12">
+        <a class="button btn btn-secondary float-left" href="<% RT->Config->Get('WebURL') %>"><&|/l&>Back to login</&></a>
+        <input class="button btn btn-primary float-right" type="submit" value="<% loc('Change password') %>" />
+      </div>
+    </div>
+  </form>
+% }
+</&>
+<& /Elements/Footer, Menu => 0 &>

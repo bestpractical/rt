@@ -217,6 +217,25 @@ jQuery(function() {
   </div>
 
 % $m->callback( %ARGS, UsersObj => $users, CallbackName => 'InUsersAdminForm' );
+  <div class="row mt-2">
+    <div class="col-12">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="FindUsersWithPassword" name="FindUsersWithPassword" value="1" <% $FindUsersWithPassword ? 'checked="checked"' : '' |n %> />
+        <label class="custom-control-label" for="FindUsersWithPassword"><&|/l&>List users with a password set</&></label>
+      </div>
+    </div>
+  </div>
+
+% unless ( RT->Config->Get('DisableMFA') ) {
+  <div class="row mt-2">
+    <div class="col-12">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="FindUsersWithMFA" name="FindUsersWithMFA" value="1" <% $FindUsersWithMFA ? 'checked="checked"' : '' |n %> />
+        <label class="custom-control-label" for="FindUsersWithMFA"><&|/l&>List users with MFA enrolled</&></label>
+      </div>
+    </div>
+  </div>
+% }
 
   <div class="form-row">
     <div class="col-12 text-right">
@@ -241,7 +260,7 @@ my %collection_list_args = (
     Format => $Format,
     Collection => $users,
     AllowSorting => 1,
-    PassArguments => [qw(Format Rows Page Order OrderBy UserString UserOp UserField UserString2 UserOp2 UserField2 UserString3 UserOp3 UserField3 IdLike EmailLike FindDisabledUsers FindEnabledUsers IncludeSystemGroups)],
+    PassArguments => [qw(Format Rows Page Order OrderBy UserString UserOp UserField UserString2 UserOp2 UserField2 UserString3 UserOp3 UserField3 IdLike EmailLike FindDisabledUsers FindEnabledUsers IncludeSystemGroups FindUsersWithPassword FindUsersWithMFA)],
 );
 </%perl>
 
@@ -267,6 +286,39 @@ else {
 }
 
 $m->callback( UsersObj => $users, ARGSRef => \%ARGS, CallbackName => 'Initial' );
+
+if ( $FindUsersWithPassword ) {
+    $users->Limit(
+        FIELD           => 'Password',
+        OPERATOR        => '!=',
+        VALUE           => '*NO-PASSWORD*',
+        ENTRYAGGREGATOR => 'AND',
+        SUBCLAUSE       => 'withpassword',
+    );
+    $users->Limit(
+        FIELD           => 'Password',
+        OPERATOR        => '!=',
+        VALUE           => '',
+        ENTRYAGGREGATOR => 'AND',
+        SUBCLAUSE       => 'withpassword',
+    ) if RT->Config->Get('DatabaseType') ne 'Oracle';
+    $users->Limit(
+        FIELD           => 'Password',
+        OPERATOR        => 'IS NOT',
+        VALUE           => 'NULL',
+        ENTRYAGGREGATOR => 'AND',
+        SUBCLAUSE       => 'withpassword',
+    );
+}
+
+if ( $FindUsersWithMFA ) {
+    $users->Limit(
+        FIELD           => 'TOTPEnrolled',
+        OPERATOR        => '=',
+        VALUE           => 1,
+        ENTRYAGGREGATOR => 'AND',
+    );
+}
 
 $caption = loc("Users matching search criteria");
 my @users_queries = ();
@@ -333,7 +385,7 @@ my %sorted = map { $_ => $i++ } qw(
 );
 
 my @attrs = sort { $sorted{$a} <=> $sorted{$b} }
-            grep { !/(?:^id$|ContactInfo|AuthToken|^Last|^Creat(?:ed|or)$|^Signature$)/ }
+            grep { !/(?:^id$|ContactInfo|AuthToken|^Last|^Creat(?:ed|or)$|^Signature$|^TOTP)/ }
             RT::User->ReadableAttributes;
 my @fields;
 
@@ -411,4 +463,6 @@ $EmailLike => undef
 $FindDisabledUsers => 0
 $FindEnabledUsers => undef
 $IncludeSystemGroups => 'Privileged'
+$FindUsersWithPassword => 0
+$FindUsersWithMFA => 0
 </%ARGS>
