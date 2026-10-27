@@ -1,7 +1,48 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef, playwright => 1, config => 'Set( $ArticleOnTicketCreate, 1 );';
+use RT::Test tests => undef, playwright => 1, config => q{
+    Set( $ArticleOnTicketCreate, 1 );
+
+    Set(
+        %PageLayouts,
+        'RT::Ticket' => {
+            Update => {
+                'No Preview Scrips' => [
+                    {
+                        Layout   => 'col-md-7,col-md-5',
+                        Elements => [ [ 'Recipients', 'Message', 'Submit' ], ['Basics'] ],
+                    },
+                ],
+                'No Recipients' => [
+                    {
+                        Layout   => 'col-md-7,col-md-5',
+                        Elements => [ [ 'Message', 'Submit', 'PreviewScrips' ], ['Basics'] ],
+                    },
+                ],
+            },
+        },
+    );
+
+    Set(
+        %PageLayoutMapping,
+        'RT::Ticket' => {
+            Update => [
+                {
+                    Type   => 'Queue',
+                    Layout => {
+                        'NoPreviewScrips' => 'No Preview Scrips',
+                        'NoRecipients'    => 'No Recipients',
+                    },
+                },
+                {
+                    Type   => 'Default',
+                    Layout => 'Default',
+                },
+            ],
+        },
+    );
+};
 
 my ( $url, $p ) = RT::Test->started_ok;
 
@@ -394,6 +435,69 @@ diag "Test simplied recipients";
     my $popup = $pages->[-1];  # Get the last (newest) page
     $p->text_contains('CC: alice@example.com', $popup);
     $popup->close();
+}
+
+diag "Test simplified recipients with different update page layouts";
+{
+    for my $name (qw(NoPreviewScrips NoRecipients)) {
+        my $queue = RT::Test->load_or_create_queue( Name => $name );
+        ok( $queue->Id, "Created $name queue" );
+    }
+
+    my %widget = (
+        General         => '.ticket-info-recipients',
+        NoPreviewScrips => '.ticket-info-recipients',
+        NoRecipients    => '.ticket-info-preview-scrips',
+    );
+
+    for my $queue (qw(General NoPreviewScrips NoRecipients)) {
+        diag "Unchecked recipients stay unchecked after adding a one-time Cc in queue $queue";
+
+        my $ticket = RT::Test->create_ticket(
+            Queue     => $queue,
+            Subject   => "Simplified recipients in $queue",
+            Requestor => 'alice@example.com',
+            Cc        => 'bob@example.com',
+        );
+
+        $p->get_ok( '/Ticket/Update.html?Action=Respond;id=' . $ticket->Id );
+
+        my $has_preview_scrips = $p->{page}->locator('.ticket-info-preview-scrips')->count() ? 1 : 0;
+        is( $has_preview_scrips, $queue eq 'NoPreviewScrips' ? 0 : 1,
+            'Scrips and Recipients widget presence matches layout' );
+        my $has_recipients = $p->{page}->locator('.ticket-info-recipients')->count() ? 1 : 0;
+        is( $has_recipients, $queue eq 'NoRecipients' ? 0 : 1, 'Recipients widget presence matches layout' );
+
+        # Scrips and Recipients is rolled up when SimplifiedRecipients is enabled
+        if ( $queue eq 'NoRecipients' ) {
+            $p->{page}->locator('.ticket-info-preview-scrips .titlebox-title .toggle')->first->dispatchEvent('click');
+            $p->wait_for_element('.ticket-info-preview-scrips .titlebox-content.show');
+        }
+
+        my $alice
+            = $p->{page}->locator(qq{$widget{$queue} input[name="TxnSendMailTo"][value="alice\@example.com"]})->first;
+        my $bob = $p->{page}->locator(qq{$widget{$queue} input[name="TxnSendMailTo"][value="bob\@example.com"]})->first;
+
+        ok( $alice->isChecked(), 'alice is checked initially' );
+        ok( $bob->isChecked(),   'bob is checked initially' );
+
+        $alice->click();
+        $bob->click();
+        ok( !$alice->isChecked(), 'alice is unchecked' );
+        ok( !$bob->isChecked(),   'bob is unchecked' );
+
+        my $update_cc = $p->{page}->locator('#UpdateCc');
+        $update_cc->fill('carol@example.com');
+        $update_cc->dispatchEvent('change');
+        $p->wait_for_htmx;
+
+        $p->text_contains( 'carol@example.com', 'One-time Cc shows up in refreshed recipients' );
+
+        ok( !$alice->isChecked(), 'alice is still unchecked after refresh' );
+        ok( !$bob->isChecked(),   'bob is still unchecked after refresh' );
+
+        is( $p->{page}->locator('input[name="TxnRecipients"]')->count(), 1, 'Exactly one TxnRecipients input' );
+    }
 }
 
 diag "Test quote selection feature";
