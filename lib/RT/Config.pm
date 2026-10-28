@@ -1897,6 +1897,11 @@ our %META;
                         . "and TOTP secret encryption. Set \$SecretKey to a long, random value in RT_SiteConfig.pm"
                 );
             }
+
+            if ( !$self->Get('DisableMFA') && $key eq ( $self->Get('DatabasePassword') // '' ) ) {
+                RT->Logger->warning( "SecretKey is not set or matches \$DatabasePassword; "
+                        . "changing the database password will break MFA login for all enrolled users" );
+            }
         },
     },
     SelfServiceUseDashboard => {
