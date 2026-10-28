@@ -349,8 +349,8 @@ div.results .titlebox .titlebox-content {
 /* Shared id/type column, the alignment anchor: second when the table has a delete column. Every
    format's first column is the object's id or name (Elements/ShowLinksTableOfType titles it after
    the object type), so this applies to customized formats too. */
-.titlebox.links-widget .links-type-table[data-link-delete-type] thead th:nth-child(2),
-.titlebox.links-widget .links-type-table:not([data-link-delete-type]) thead th:first-child {
+.titlebox.links-widget .links-type-table[data-link-delete-type]:not([data-links-object-type="URL"]) thead th:nth-child(2),
+.titlebox.links-widget .links-type-table:not([data-link-delete-type]):not([data-links-object-type="URL"]) thead th:first-child {
     width: 16%;
 }
 
