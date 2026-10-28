@@ -71,6 +71,8 @@
 
 % $m->callback(CallbackName => 'BeforePanes', Dashboard => $Dashboard);
 
+% {
+%     local $session{CurrentUser} = $context_user;
 <& /Elements/ShowWidgets,
     Object        => $Dashboard,
     Layout        => '',
@@ -83,6 +85,7 @@
     SavedSearchSelectedUserName => $m->request_args->{'SavedSearchSelectedUserName'},
     defined $subscription_rows && length $subscription_rows ? ( Rows => $subscription_rows ) : (),
 &>
+% }
 
 % $m->callback(CallbackName => 'AfterPanes', Dashboard => $Dashboard);
 
@@ -92,7 +95,7 @@
 
 % if (!$Preview) {
 
-% if ( $session{ContextUser}->id != $session{CurrentUser}->id ) {
+% if ( $context_user->id != $session{CurrentUser}->id ) {
 <p><&|/l, $Dashboard->Name, $session{CurrentUser}->Name &>This is generated from dashboard "[_1]" by the subscription of user "[_2]".</&></p>
 % }
 
@@ -148,12 +151,8 @@ if ( $SubscriptionObj ) {
     $subscription_rows = ( $SubscriptionObj->Content || {} )->{Rows};
 }
 
-if ( !$session{ContextUser} ) {
-   RT::Interface::Web::Session::Set(
-       Key   => 'ContextUser',
-       Value => $session{CurrentUser},
-   );
-}
+# ContextUser is set by RT::Dashboard::Mailer for emailed dashboards
+my $context_user = !$Preview && $session{ContextUser} || $session{CurrentUser};
 
 my $title;
 if ( $Dashboard->IsSelfService ) {
