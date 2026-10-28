@@ -49,7 +49,7 @@
 %# widget renders it outside the inline-edit <form> (a nested <form> is dropped, breaking Create).
 <div id="create-linked-ticket">
   <form action="<% RT->Config->Get('WebPath') ."/Helpers/SpawnLinkedTicket" %>" name="SpawnLinkedTicket">
-  <div class="row mt-2 justify-content-center">
+  <div class="row mt-2 gy-2 justify-content-center">
     <input type="hidden" name="CloneTicket" value="<% $Object->id %>">
     <div class="col-auto label">
       <label for="link-type"><&|/l&>Create new</&></label>
