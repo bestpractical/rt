@@ -73,6 +73,8 @@ my @results;
 my $page_layouts = RT->Config->Get('PageLayouts');
 my $page_layout = $page_layouts->{$Class}{$Page}{$Name};
 
+my @available_widgets = GetAvailableWidgets( Class => $Class, Page => $Page );
+
 if ( $AddRow || $Update || $UpdatePage ) {
     Abort( loc("Permission Denied") )
         unless $session{CurrentUser}->HasRight( Right => 'SuperUser', Object => RT->System );
@@ -100,7 +102,19 @@ if ( $AddRow || $Update || $UpdatePage ) {
             push @results, loc("Couldn't decode JSON");
         }
         else {
-            if ( JSON::to_json( $page_layout, { canonical => 1, pretty => 1 } ) ne
+            my ( $valid, @warnings ) = ValidateWidgets(
+                Class            => $Class,
+                Content          => $content,
+                AvailableWidgets => \@available_widgets,
+            );
+
+            if ( !$valid ) {
+                for my $warning (@warnings) {
+                    push @results, $warning;
+                    RT->Logger->warning("Rejecting $Class $Page page layout $Name: $warning");
+                }
+            }
+            elsif ( JSON::to_json( $page_layout, { canonical => 1, pretty => 1 } ) ne
                 JSON::to_json( $content, { canonical => 1, pretty => 1 } ) )
             {
                 $page_layouts->{$Class}{$Page}{$Name} = $content;
@@ -155,7 +169,6 @@ if ( $AddRow || $Update || $UpdatePage ) {
     );
 }
 
-my @available_widgets = GetAvailableWidgets( Class => $Class, Page => $Page );
 my %available_widgets = map { $_ => 1 } @available_widgets;
 my @widgets;
 if ($page_layout) {

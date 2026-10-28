@@ -427,4 +427,54 @@ diag "Testing page layout names containing an ampersand";
     }
 }
 
+diag "Page layout content only accepts available widgets";
+{
+    my $page_layouts = RT->Config->Get('PageLayouts');
+    for my $class ( sort keys %$page_layouts ) {
+        for my $page ( sort keys %{ $page_layouts->{$class} } ) {
+            for my $name ( sort keys %{ $page_layouts->{$class}{$page} } ) {
+                my $uri = URI->new('/Admin/PageLayouts/Advanced.html');
+                $uri->query_form( Class => $class, Page => $page, Name => $name );
+                $m->get_ok( $uri->as_string );
+                $m->submit_form_ok( { form_name => 'ModifyPageLayoutAdvanced', button => 'Validate' },
+                    "Validated $class $page page layout $name" );
+                $m->text_contains( 'Page Layout is valid', "$class $page page layout $name is valid" );
+            }
+        }
+    }
+
+    my %args       = ( Class => 'RT::Ticket', Page => 'Display', Name => 'Foo-Bar_1' );
+    my $layout_for = sub {
+        my $config = RT::Configuration->new( RT->SystemUser );
+        $config->LoadByCols( Name => 'PageLayouts', Disabled => 0 );
+        return $config->DecodedContent->{ $args{Class} }{ $args{Page} }{ $args{Name} };
+    };
+
+    my $valid = [ 'History', { Layout => 'col-6', Elements => [ ['Basics:foo'], [ { Name => 'People' } ] ] } ];
+    $m->post_ok( '/Admin/PageLayouts/Modify.html', { %args, Update => 1, Content => JSON::encode_json($valid) } );
+    $m->text_contains( 'Page Layout updated', 'Saved a layout with available widgets' );
+    is_deeply( $layout_for->(), $valid, 'Layout is saved' );
+
+    for my $invalid (
+        [ ['NoSuchWidget'],                                                  'NoSuchWidget' ],
+        [ [ { Name => '../../Elements/Foo:bar' } ],                          '../../Elements/Foo' ],
+        [ [ { Layout => 'col-12', Elements => [ [ 'History', 'Nope' ] ] } ], 'Nope' ],
+        [ [ { Layout => 'col-12', Elements => 'History' } ], '{"Elements":"History","Layout":"col-12"}' ],
+        )
+    {
+        my ( $content, $widget ) = @$invalid;
+        my $json = JSON::encode_json($content);
+
+        $m->post_ok( '/Admin/PageLayouts/Modify.html', { %args, Update => 1, Content => $json } );
+        $m->text_contains( "Invalid widget: $widget", "Modify.html rejected $json" );
+        $m->next_warning_like(qr/Rejecting RT::Ticket Display page layout Foo-Bar_1: Invalid widget/);
+
+        $m->post_ok( '/Admin/PageLayouts/Advanced.html', { %args, Update => 1, Config => $json } );
+        $m->text_contains( "Invalid widget: $widget", "Advanced.html rejected $json" );
+        $m->next_warning_like(qr/Rejecting RT::Ticket Display page layout Foo-Bar_1: Invalid widget/);
+
+        is_deeply( $layout_for->(), $valid, 'Layout is unchanged' );
+    }
+}
+
 done_testing;
