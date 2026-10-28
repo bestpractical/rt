@@ -7385,6 +7385,68 @@ sub GetAvailableWidgets {
     return sort keys %widget;
 }
 
+=head2 ValidateWidgets Class => $Class, Content => ARRAYREF, AvailableWidgets => ARRAYREF
+
+Checks that every widget in page layout or dashboard content is in the
+list L</GetAvailableWidgets> returned for the same class and page. Pass
+C<RT::Dashboard> as C<$Class> for dashboard content.
+
+Returns a tuple of (status, messages).
+
+=cut
+
+sub ValidateWidgets {
+    my %args = (
+        Class            => 'RT::Ticket',
+        Content          => undef,
+        AvailableWidgets => undef,
+        @_,
+    );
+
+    return ( 0, loc('Invalid Content') ) unless ref $args{Content} eq 'ARRAY';
+
+    my $is_dashboard = $args{Class} eq 'RT::Dashboard';
+    my $key_for      = sub {
+        my $item = shift;
+        if ($is_dashboard) {
+            return join '-', $item->{portlet_type} // '', $item->{component} || $item->{id} // ''
+                if ref $item eq 'HASH';
+        }
+        else {
+            my $name = ref $item eq 'HASH' ? $item->{Name} : $item;
+            return ( split /:/, $name, 2 )[0] // '' if defined $name && !ref $name;
+        }
+        return ref $item ? JSON::to_json( $item, { canonical => 1 } ) : $item // '';
+    };
+
+    my %available = map { $key_for->($_) => 1 } @{ $args{AvailableWidgets} || [] };
+
+    my @invalid;
+    my $check = sub {
+        my $key = $key_for->(shift);
+        push @invalid, $key unless $available{$key};
+    };
+
+    for my $row ( @{ $args{Content} } ) {
+        if ( !$is_dashboard && !( ref $row eq 'HASH' && exists $row->{Elements} ) ) {
+            $check->($row);
+            next;
+        }
+
+        unless ( ref $row eq 'HASH' && ref $row->{Elements} eq 'ARRAY' ) {
+            push @invalid, $key_for->($row);
+            next;
+        }
+
+        for my $element ( @{ $row->{Elements} } ) {
+            $check->($_) for ref $element eq 'ARRAY' ? @$element : $element;
+        }
+    }
+
+    return ( 0, map { loc( 'Invalid widget: [_1]', $_ ) } @invalid ) if @invalid;
+    return 1;
+}
+
 =head2 UpdateConfig Name => $Name, Value => $Value
 
 Update Config C<$Name>. It will create L<RT::Configuration> if needed.
