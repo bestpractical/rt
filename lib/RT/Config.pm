@@ -3465,18 +3465,10 @@ sub RefreshConfigFromDatabase {
 
     if( RT->InstallMode ) { return; } # RT can't load the config in the DB if the DB is not there!
     my $needs_update = RT->System->ConfigCacheNeedsUpdate;
-    if ($needs_update > $database_config_cache_time) {
+    if ( $ENV{'RT_TEST_DISABLE_CONFIG_CACHE'} || $needs_update > $database_config_cache_time ) {
         $self->LoadConfigFromDatabase();
         $HTML::Mason::Commands::ReloadScrubber = 1;
-        if ( $ENV{'RT_TEST_DISABLE_CONFIG_CACHE'} ) {
-            # When running in test mode, disable the local DB config cache
-            # to allow for immediate config changes. Without this, tests needed
-            # to sleep for 1 second to allow time for config updates.
-            $database_config_cache_time = 0;
-        }
-        else {
-            $database_config_cache_time = $needs_update;
-        }
+        $database_config_cache_time = $needs_update;
         $self->PostLoadCheck;
     }
 }
