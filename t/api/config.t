@@ -43,6 +43,9 @@ RT::Config->Set( WebDefaultStylesheet => 'non-existent-skin-name' );
 warning_like {RT::Config->PostLoadCheck} qr{elevator-light},
     'Correct warning for default stylesheet';
 
+my $disable_mfa = RT::Config->Get('DisableMFA');
+RT::Config->Set( DisableMFA => 1 );
+
 RT::Config->Set( SecretKey => '' );
 RT::Config->Set( DatabasePassword => 'rt_pass' );
 warning_like { RT::Config->PostLoadCheck } qr{SecretKey is empty or the default database password},
@@ -53,8 +56,38 @@ RT::Config->Set( DatabasePassword => '' );
 warning_like { RT::Config->PostLoadCheck } qr{SecretKey is empty or the default database password},
     'Warning for empty SecretKey';
 
+RT::Config->Set( SecretKey => '' );
+RT::Config->Set( DatabasePassword => 'a-db-password' );
+warnings_are { RT::Config->PostLoadCheck } [],
+    'No warning for SecretKey falling back to the database password with MFA disabled';
+
 RT::Config->Set( SecretKey => 'a-long-random-secret' );
 warnings_are { RT::Config->PostLoadCheck } [], 'No warning for a dedicated SecretKey';
+
+SKIP: {
+    skip 'RT::MFA::TOTP is not available', 3 unless eval { require RT::MFA::TOTP };
+
+    RT::Config->Set( DisableMFA => 0 );
+
+    RT::Config->Set( SecretKey => '' );
+    RT::Config->Set( DatabasePassword => 'a-db-password' );
+    warning_like { RT::Config->PostLoadCheck } qr{SecretKey is not set or matches \$DatabasePassword},
+        'Warning for SecretKey falling back to the database password with MFA enabled';
+
+    RT::Config->Set( SecretKey => '' );
+    RT::Config->Set( DatabasePassword => 'rt_pass' );
+    warnings_like { RT::Config->PostLoadCheck }
+        [
+            qr{SecretKey is empty or the default database password},
+            qr{SecretKey is not set or matches \$DatabasePassword},
+        ],
+        'Both warnings for SecretKey falling back to the default database password with MFA enabled';
+
+    RT::Config->Set( SecretKey => 'a-long-random-secret' );
+    warnings_are { RT::Config->PostLoadCheck } [], 'No warning for a dedicated SecretKey with MFA enabled';
+}
+
+RT::Config->Set( DisableMFA => $disable_mfa );
 
 my @canonical_encodings = RT::Config->Get('EmailInputEncodings');
 is_deeply(\@encodings, \@canonical_encodings, 'Got correct encoding list');
