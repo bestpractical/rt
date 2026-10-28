@@ -1843,6 +1843,15 @@ C<ignore>.
 
 Set($ExistingPasswordPolicyAction, 'ignore');
 
+=item C<$DisableMFA>
+
+Set this to 1 to manually disable multi-factor authentication. MFA is
+enabled automatically when its required modules are installed (see the
+C<--enable-mfa> option to C<configure>). See L<docs/authentication.pod>
+for details.
+
+=cut
+
 =item C<$MFAPolicy>
 
 C<$MFAPolicy> defines multi-factor authentication requirements. It is a hash
