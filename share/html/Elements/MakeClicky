@@ -47,6 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%ONCE>
 use Regexp::Common qw(URI);
+use HTML::Entities ();
 
 my $escaper = sub {
     my $content = shift;
@@ -63,7 +64,8 @@ my %actions = (
         my %args = @_;
         my $post = "";
         $post = ")" if $args{value} !~ /\(/ and $args{value} =~ s/\)$//;
-        $args{value} = $escaper->($args{value}) unless $args{html};
+        $args{value} = HTML::Entities::decode_entities($args{value}) if $args{html};
+        $args{value} = $escaper->($args{value});
         my $result = qq{[<a target="_blank" href="$args{value}">}. loc('Open URL') .qq{</a>]};
         return $args{value} . qq{ <span class="clickylink">$result</span>$post};
     },
@@ -71,7 +73,8 @@ my %actions = (
         my %args = @_;
         my $post = "";
         $post = ")" if $args{value} !~ /\(/ and $args{value} =~ s/\)$//;
-        $args{value} = $escaper->($args{value}) unless $args{html};
+        $args{value} = HTML::Entities::decode_entities($args{value}) if $args{html};
+        $args{value} = $escaper->($args{value});
         my $result = qq{<a target="_blank" href="$args{value}">$args{value}</a>};
         return qq{<span class="clickylink">$result</span>$post};
     },

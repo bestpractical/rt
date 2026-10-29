@@ -71,7 +71,11 @@ sub dispatch_rules {
             my $package = 'RT::' . ucfirst $class;
             my $record = $package->new( $req->env->{"rt.current_user"} );
 
-            $record->Load($id);
+            if ( $class eq 'group' ) {
+                $record->LoadUserDefinedGroup($id);
+            } else {
+                $record->Load($id);
+            }
             return { collection => $record->Transactions };
         },
     ),

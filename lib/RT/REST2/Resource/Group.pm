@@ -58,9 +58,24 @@ extends 'RT::REST2::Resource::Record';
 with 'RT::REST2::Resource::Record::Readable'
         => { -alias => { serialize => '_default_serialize' } },
     'RT::REST2::Resource::Record::DeletableByDisabling',
-    'RT::REST2::Resource::Record::Writable',
+    'RT::REST2::Resource::Record::Writable'
+        => { -alias => { immutable_fields => '_default_immutable_fields' } },
     'RT::REST2::Resource::Record::Hypermedia'
         => { -alias => { hypermedia_links => '_default_hypermedia_links' } };
+
+=head2 immutable_fields
+
+Adds C<Domain> and C<Instance>. With C<Name>, they are how RT locates a role
+group, so they describe where a group sits in RT rather than anything a
+client states. C<Name> stays writable, so groups can still be renamed.
+
+=cut
+
+sub immutable_fields {
+    my $self = shift;
+
+    return ( $self->_default_immutable_fields(@_), qw(Domain Instance) );
+}
 
 sub dispatch_rules {
     Path::Dispatcher::Rule::Regex->new(
@@ -69,7 +84,16 @@ sub dispatch_rules {
     ),
     Path::Dispatcher::Rule::Regex->new(
         regex => qr{^/group/(\d+)/?$},
-        block => sub { { record_class => 'RT::Group', record_id => shift->pos(1) } },
+        block => sub {
+            my ($match, $req) = @_;
+            my $group = RT::Group->new( $req->env->{"rt.current_user"} );
+            $group->LoadUserDefinedGroup( $match->pos(1) );
+            return {
+                record_class => 'RT::Group',
+                record_id    => $match->pos(1),
+                record       => $group,
+            };
+        },
     )
 }
 

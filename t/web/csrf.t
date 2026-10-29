@@ -175,7 +175,7 @@ $m->content_contains("Possible cross-site request forgery");
 my ($token) = $m->content =~ m{CSRF_Token=(\w+)};
 
 $m->add_header(Referer => undef);
-$m->get_ok("/Admin/Queues/Modify.html?id=new&Name=test&CSRF_Token=$token");
+$m->get_ok("/Admin/Queues/Modify.html?id=new&Name=test&Submit=1&CSRF_Token=$token");
 $m->content_contains("Possible cross-site request forgery");
 $m->content_contains("If you really intended to visit <tt>$baseurl/Admin/Queues/Modify.html</tt>");
 $m->content_contains("your browser did not supply a Referrer header");

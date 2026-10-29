@@ -59,7 +59,23 @@ extends 'RT::REST2::Resource::Record';
 with 'RT::REST2::Resource::Record::Readable',
      'RT::REST2::Resource::Record::Hypermedia',
      'RT::REST2::Resource::Record::Deletable',
-     'RT::REST2::Resource::Record::Writable';
+     'RT::REST2::Resource::Record::Writable'
+        => { -alias => { immutable_fields => '_default_immutable_fields' } };
+
+=head2 immutable_fields
+
+Adds C<CustomField>. A value belongs to one custom field for its whole life,
+and the request path already names it, so there is nothing for the request
+body to say. forbidden checks rights on the custom field from the path too,
+which a value the body pointed elsewhere would sidestep.
+
+=cut
+
+sub immutable_fields {
+    my $self = shift;
+
+    return ( $self->_default_immutable_fields(@_), 'CustomField' );
+}
 
 has 'customfield' => (
     is  => 'ro',
@@ -87,6 +103,20 @@ sub dispatch_rules {
             return { record_class => 'RT::CustomFieldValue', record_id => shift->pos(2), customfield => $cf }
         },
     )
+}
+
+=head2 resource_exists
+
+A value is only a resource under the custom field that owns it.
+
+=cut
+
+sub resource_exists {
+    my $self = shift;
+
+    my $record = $self->record;
+    return 0 unless $record->id && $self->customfield->id;
+    return $record->CustomField == $self->customfield->id;
 }
 
 sub forbidden {
@@ -159,6 +189,8 @@ around 'from_json' => sub {
 sub create_record {
     my $self = shift;
     my $data = shift;
+
+    delete @{$data}{ $self->immutable_fields('create') };
 
     my ($ok, $msg) = $self->customfield->AddValue(%$data);
     $self->record->Load($ok) if $ok;

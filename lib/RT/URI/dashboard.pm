@@ -191,7 +191,7 @@ Otherwise, return its URI.
 sub HREF {
     my $self = shift;
     if ( $self->IsLocal and $self->Object ) {
-        return RT->Config->Get('WebURL') . "Dashboards/" . $self->Object->Id . '/' . $self->Object->Name;
+        return RT->Config->Get('WebURL') . "Dashboards/" . $self->Object->Id . '/' . ( $self->Object->Name // '' );
     }
     return $self->URI;
 }
@@ -205,7 +205,13 @@ Returns a description of this object
 sub AsString {
     my $self = shift;
     if ( $self->IsLocal and $self->Object ) {
-        return $self->loc( 'Dashboard #[_1]: [_2]', $self->Object->id, $self->Object->Name );
+        my $name = $self->Object->Name;
+        if ( defined $name and length $name ) {
+            return $self->loc( 'Dashboard #[_1]: [_2]', $self->Object->id, $name );
+        }
+        else {
+            return $self->loc( 'Dashboard #[_1]', $self->Object->id );
+        }
     }
     else {
         return $self->SUPER::AsString(@_);

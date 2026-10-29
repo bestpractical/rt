@@ -77,6 +77,10 @@ sub expand_field {
     my $field = shift;
     my $param_prefix = shift || 'fields';
 
+    # Selecting a field reads the accessor directly rather than going through
+    # Serialize, so the time fields have to be filtered out here as well.
+    return if $item->can('IsTimeField') && $item->IsTimeField($field) && !$item->CurrentUserCanSeeTime;
+
     my $result;
     if ($field eq 'CustomFields') {
         if (my $cfs = custom_fields_for($item)) {

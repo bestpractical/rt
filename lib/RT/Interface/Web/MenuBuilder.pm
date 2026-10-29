@@ -150,7 +150,7 @@ sub BuildMainNav {
         my $dash = RT::Dashboard->new( $current_user );
         my ( $status, $msg ) = $dash->LoadById($id);
         if ( $status ) {
-            if ( $dash->Disabled ) {
+            if ( $dash->__Value('Disabled') ) {
                 $RT::Logger->debug( "dashboard $id is disabled, skipping" );
             }
             else {
@@ -169,10 +169,9 @@ sub BuildMainNav {
 
     if (@dashboards) {
         for my $dash (@dashboards) {
-            $reports->child( 'dashboard-' . $dash->id,
-                title => $dash->Name,
-                path  => '/Dashboards/' . $dash->id . '/' . $dash->Name
-            );
+            my $path = '/Dashboards/' . $dash->id;
+            $path .= '/' . $dash->Name if $dash->CurrentUserCanSee;
+            $reports->child( 'dashboard-' . $dash->id, title => $dash->Label, path => $path );
         }
     }
 
@@ -395,7 +394,7 @@ sub BuildPageNav {
         if ( my $id = ( $1 || $HTML::Mason::Commands::DECODED_ARGS->{'id'} ) ) {
             my $obj = RT::Dashboard->new( $current_user );
             $obj->LoadById($id);
-            if ( $obj and $obj->id ) {
+            if ( $obj->id && $obj->CurrentUserCanSee ) {
                 $page->child( basics       => title => loc('Basics'),       path => "/Dashboards/Modify.html?id=" . $obj->id);
                 $page->child( content      => title => loc('Content'),      path => "/Dashboards/Queries.html?id=" . $obj->id);
                 $page->child( subscription => title => loc('Subscription'), path => "/Dashboards/Subscription.html?id=" . $obj->id)
@@ -835,33 +834,49 @@ sub BuildPageNav {
                                 OrderBy => $rss_data{OrderBy}
                               )
                         );
-                    if ( RT->Config->Get('EnableRSS') ) {
-                        my $RSSPath = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
-                            $current_user->UserObj->Name,
-                            $current_user->UserObj->GenerateAuthString( $short_query{sc}
-                                || ( $rss_data{Query} . $rss_data{Order} . $rss_data{OrderBy} ) );
 
-                        $more->child(
-                            rss        => title => loc('RSS'),
-                            path       => "/NoAuth/rss/$RSSPath/$RSSQueryString",
-                            attributes => {
-                                'hx-boost' => 'false',
-                            },
-                        );
+                    if ( RT->Config->Get('EnableRSS') ) {
+
+                        # The feed URL carries its own signature, so with no auth
+                        # string there is no link to offer. Leave the item out
+                        # rather than produce one that cannot authenticate.
+                        my $rss_auth = $current_user->UserObj->GenerateAuthString( $short_query{sc}
+                                || ( $rss_data{Query} . $rss_data{Order} . $rss_data{OrderBy} ) );
+                        if ( defined $rss_auth ) {
+                            my $RSSPath = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
+                                $current_user->UserObj->Name, $rss_auth;
+
+                            $more->child(
+                                rss        => title => loc('RSS'),
+                                path       => "/NoAuth/rss/$RSSPath/$RSSQueryString",
+                                attributes => {
+                                    'hx-boost' => 'false',
+                                },
+                            );
+                        }
+                        else {
+                            RT->Logger->error("Couldn't sign an RSS feed URL; omitting the RSS link");
+                        }
                     }
 
                     if ( RT->Config->Get('EnableICal') ) {
-                        my $ical_path = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
-                            $current_user->UserObj->Name,
-                            $current_user->UserObj->GenerateAuthString( $rss_data{Query} ),
-                            $short_query{sc} ? "sc-$short_query{sc}" : $rss_data{Query};
-                        $more->child(
-                            ical       => title => loc('iCal'),
-                            path       => '/NoAuth/iCal/' . $ical_path,
-                            attributes => {
-                                'hx-boost' => 'false',
-                            },
-                        );
+                        my $ical_auth = $current_user->UserObj->GenerateAuthString( $rss_data{Query} );
+                        if ( defined $ical_auth ) {
+                            my $ical_path = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
+                                $current_user->UserObj->Name,
+                                $ical_auth,
+                                $short_query{sc} ? "sc-$short_query{sc}" : $rss_data{Query};
+                            $more->child(
+                                ical       => title => loc('iCal'),
+                                path       => '/NoAuth/iCal/' . $ical_path,
+                                attributes => {
+                                    'hx-boost' => 'false',
+                                },
+                            );
+                        }
+                        else {
+                            RT->Logger->error("Couldn't sign an iCal feed URL; omitting the iCal link");
+                        }
                     }
                 }
 

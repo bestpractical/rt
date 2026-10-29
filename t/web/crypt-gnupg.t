@@ -50,7 +50,7 @@ ok $m->login, 'logged in';
 $m->get_ok("/Admin/Queues/Modify.html?id=$qid");
 $m->form_with_fields('Sign', 'Encrypt');
 $m->field(Encrypt => 1);
-$m->submit;
+$m->click('Submit');
 
 RT::Test->clean_caught_mails;
 
@@ -119,7 +119,7 @@ $m->get("$baseurl/Admin/Queues/Modify.html?id=$qid");
 $m->form_with_fields('Sign', 'Encrypt');
 $m->field(Encrypt => undef);
 $m->field(Sign => 1);
-$m->submit;
+$m->click('Submit');
 
 RT::Test->clean_caught_mails;
 
@@ -213,7 +213,7 @@ $m->get("$baseurl/Admin/Queues/Modify.html?id=$qid");
 $m->form_with_fields('Sign', 'Encrypt');
 $m->field(Encrypt => 1);
 $m->field(Sign => 1);
-$m->submit;
+$m->click('Submit');
 
 RT::Test->clean_caught_mails;
 

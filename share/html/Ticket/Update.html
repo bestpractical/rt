@@ -79,6 +79,15 @@ my $checks_failure = 0;
 
 my $TicketObj = LoadTicket($id);
 
+# The update form renders ticket data that object rights do not filter, such
+# as single value custom role members, so require ShowTicket to display it.
+unless ( $TicketObj->CurrentUserHasRight('ShowTicket') ) {
+    Abort(
+        loc("No permission to view ticket"),
+        Code => HTTP::Status::HTTP_FORBIDDEN,
+    );
+}
+
 my @results;
 
 # no support for muliple articles included at the same time

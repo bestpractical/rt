@@ -78,6 +78,7 @@ $m->submit_form(
         Name => 'Image Test '.$$,
         Summary => 'testing img cf creation',
     },
+    button => 'Submit',
 );
 
 $m->content_like(qr/Article \d+ created/, "an article was created succesfully");

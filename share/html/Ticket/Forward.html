@@ -122,7 +122,7 @@ $m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
 );
 
 Abort( loc("Permission Denied") )
-    unless $TicketObj->CurrentUserHasRight('ForwardMessage');
+    unless $TicketObj->CurrentUserCanSee && $TicketObj->CurrentUserHasRight('ForwardMessage');
 
 my $txn;
 if ( $QuoteTransaction ) {
@@ -130,6 +130,10 @@ if ( $QuoteTransaction ) {
     $txn->Load( $QuoteTransaction );
     Abort( loc("Couldn't load transaction #[_1]", $QuoteTransaction) )
         unless $txn->id;
+    Abort( loc("Permission Denied") )
+        unless $txn->CurrentUserCanSee
+        && $txn->ObjectType eq 'RT::Ticket'
+        && $txn->Object->id == $TicketObj->id;
 }
 
 my @results;

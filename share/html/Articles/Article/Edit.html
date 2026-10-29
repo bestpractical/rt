@@ -118,7 +118,7 @@
 </&>
 
 
-<& /Elements/Submit, Label => ($id eq 'new' ? loc('Create') : loc('Save Changes')), color => "#993333", FullWidth => 1 &>
+<& /Elements/Submit, Label => ($id eq 'new' ? loc('Create') : loc('Save Changes')), color => "#993333", FullWidth => 1, Name => 'Submit' &>
 </form>
 
 <%INIT>
@@ -269,7 +269,7 @@ elsif ( $id eq 'new' ) {
     }
 
     my %cfs;
-    if (!$ARGS{ClassChanged}) {
+    if ( $ARGS{Submit} && !$ARGS{ClassChanged} ) {
         if ($sortorder_ok) {
             %cfs = ProcessObjectCustomFieldUpdatesForCreate(
                 ARGSRef         => \%ARGS,
@@ -323,7 +323,7 @@ else {
 
     # If it was a real submit, make changes.
     # If it was just a reload to change the Class, don't make changes.
-    if (!$ARGS{ClassChanged}) {
+    if ( $ARGS{Submit} && !$ARGS{ClassChanged} ) {
         my @attribs = qw(Name Type Summary Class Disabled SortOrder);
 
         if ($sortorder_ok) {

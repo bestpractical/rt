@@ -65,10 +65,22 @@ sub Prepare {
 
     my $txn = $self->TransactionObj;
 
+    my $forwarded;
+    my $creator = RT::CurrentUser->new( $txn->Creator );
     if ( $txn->Type eq 'Forward Transaction' ) {
-        my $forwarded_txn = RT::Transaction->new( $self->CurrentUser );
-        $forwarded_txn->Load( $txn->Field );
-        $self->{ForwardedTransactionObj} = $forwarded_txn;
+        $forwarded = RT::Transaction->new($creator);
+        $forwarded->Load( $txn->Field );
+        $self->{ForwardedTransactionObj} = $forwarded;
+    }
+    else {
+        $forwarded = RT::Ticket->new($creator);
+        $forwarded->Load( $self->TicketObj->id );
+        $self->{ForwardedTicketObj} = $forwarded;
+    }
+
+    unless ( $creator->id && $forwarded->id && $forwarded->CurrentUserCanSee ) {
+        RT->Logger->error( "Not forwarding transaction " . $txn->id . ": not visible to its creator" );
+        return undef;
     }
 
     my ( $result, $message ) = $self->TemplateObj->Parse(
@@ -90,7 +102,7 @@ sub Prepare {
         $entity = $self->ForwardedTransactionObj->ContentAsMIME;
     }
     else {
-        my $txns = $self->TicketObj->Transactions;
+        my $txns = $self->ForwardedTicketObj->Transactions;
         $txns->Limit(
             FIELD    => 'Type',
             OPERATOR => 'IN',
@@ -131,6 +143,11 @@ sub SetSubjectToken {
 sub ForwardedTransactionObj {
     my $self = shift;
     return $self->{'ForwardedTransactionObj'};
+}
+
+sub ForwardedTicketObj {
+    my $self = shift;
+    return $self->{'ForwardedTicketObj'};
 }
 
 RT::Base->_ImportOverlays();

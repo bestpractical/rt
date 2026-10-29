@@ -435,6 +435,11 @@ sub Create {
 
     $args{'Subject'} =~ s/\n//g;
 
+    $args{'Description'} = HTML::Mason::Commands::ScrubHTML(
+        Content    => $args{'Description'},
+        Permissive => $self->_ContentIsPermissive,
+    ) if defined $args{'Description'} && length $args{'Description'};
+
     $RT::Handle->BeginTransaction();
 
     my %params = (
@@ -1253,6 +1258,38 @@ sub SetSubject {
     return $self->_Set( Field => 'Subject', Value => $value );
 }
 
+=head2 SetDescription VALUE
+
+Sets the ticket's Description. This field is HTML content. It is processed by
+the RT HTML scrubber utility using the selected scrubber level.
+
+=cut
+
+sub SetDescription {
+    my $self  = shift;
+    my $value = shift;
+
+    $value = HTML::Mason::Commands::ScrubHTML(
+        Content    => $value,
+        Permissive => $self->_ContentIsPermissive,
+    ) if defined $value && length $value;
+
+    return $self->_Set( Field => 'Description', Value => $value );
+}
+
+=head2 _ContentIsPermissive
+
+Returns a boolean indicating whether ticket content should be scrubbed with
+the permissive scrubber. The default for tickets is false, matching how ticket
+custom field values are handled in L<RT::CustomField/_ContentIsPermissive>.
+
+=cut
+
+sub _ContentIsPermissive {
+    my $self = shift;
+    return 0;
+}
+
 =head2 SubjectTag
 
 Takes nothing. Returns SubjectTag for this ticket. Includes
@@ -1495,6 +1532,9 @@ Returns the amount of time worked on this ticket and all child tickets
 sub TotalTimeWorked {
     my $self = shift;
     my $seen = shift || {};
+
+    return 0 unless $self->CurrentUserCanSeeTime;
+
     my $time = $self->TimeWorked;
     my $links = $self->Members;
     LINK: while (my $link = $links->Next) {
@@ -1529,6 +1569,8 @@ that user
 sub TimeWorkedPerUser {
     my $self = shift;
     my %time_worked;
+
+    return \%time_worked unless $self->CurrentUserCanSeeTime;
 
     my $transactions = $self->Transactions;
     $transactions->Limit(
@@ -2033,10 +2075,11 @@ sub Atomic {
         }
 
         if (%granted) {
+            my $atomic_id = $self->id;
             *CurrentUserHasRight = sub {
                 my $self  = shift;
                 my $right = shift;
-                return 1 if $granted{$right};
+                return 1 if $granted{$right} && ( $self->id // 0 ) == ( $atomic_id // 0 );
                 return $orig_current_user_has_right->( $self, $right, @_ );
             };
         }
@@ -3018,6 +3061,9 @@ sub _Value {
     unless ( $self->CurrentUserHasRight('ShowTicket') ) {
         return (undef);
     }
+
+    return undef if $self->IsTimeField($field) && !$self->CurrentUserCanSeeTime;
+
     return ( $self->SUPER::_Value($field) );
 
 }
@@ -3460,8 +3506,23 @@ sub Forward {
         @_
     );
 
-    unless ( $self->CurrentUserHasRight('ForwardMessage') ) {
+    unless ( $self->CurrentUserCanSee && $self->CurrentUserHasRight('ForwardMessage') ) {
         return ( 0, $self->loc("Permission Denied") );
+    }
+
+    if ( $args{Transaction} ) {
+        my $txn = RT::Transaction->new( $self->CurrentUser );
+        $txn->Load( $args{Transaction}->id );
+
+        unless ($txn->id
+            && $txn->CurrentUserCanSee
+            && $txn->ObjectType eq 'RT::Ticket'
+            && $txn->Object->id == $self->id )
+        {
+            return ( 0, $self->loc("Permission Denied") );
+        }
+
+        $args{Transaction} = $txn;
     }
 
     if ( $args{MIMEObj} ) {
@@ -3528,8 +3589,24 @@ Returns true if the current user can see time worked, estimated, left
 sub CurrentUserCanSeeTime {
     my $self = shift;
 
-    return $self->CurrentUser->Privileged ||
-           !RT->Config->Get('HideTimeFieldsFromUnprivilegedUsers');
+    return 1 unless RT->Config->Get('HideTimeFieldsFromUnprivilegedUsers');
+    return 1 if $self->CurrentUser->Id == RT->SystemUser->Id;
+    return $self->CurrentUser->Privileged ? 1 : 0;
+}
+
+=head2 IsTimeField FIELD
+
+Returns true if FIELD is one of the ticket time columns governed by
+C<$HideTimeFieldsFromUnprivilegedUsers>. Callable as a class method.
+
+=cut
+
+sub IsTimeField {
+    my $self  = shift;
+    my $field = shift;
+
+    return 0 unless defined $field;
+    return $field =~ /^Time(?:Worked|Estimated|Left)$/i ? 1 : 0;
 }
 
 sub _DateForCustomDateRangeField {

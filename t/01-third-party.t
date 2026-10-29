@@ -2,6 +2,7 @@ use strict;
 use warnings;
 
 use Test::More;
+plan skip_all => 'devel/third-party is not available' unless -d 'devel/third-party';
 plan skip_all => 'YAML::Tiny is not installed' unless eval { require YAML::Tiny };
 
 use IPC::Run3;

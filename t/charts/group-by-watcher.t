@@ -104,7 +104,7 @@ use_ok 'RT::Report::Tickets';
                 'cells' => [
                     {
                         'type'  => 'label',
-                        'value' => '(no value)'
+                        'value' => '&#40;no value&#41;'
                     },
                     {
                         'query' => '(Requestor.Name SHALLOW IS NULL OR Requestor IS NULL)',
@@ -225,7 +225,7 @@ use_ok 'RT::Report::Tickets';
                 'cells' => [
                     {
                         'type'  => 'label',
-                        'value' => '(no value)'
+                        'value' => '&#40;no value&#41;'
                     },
                     {
                         'query' => '(Requestor.EmailAddress SHALLOW IS NULL OR Requestor IS NULL)',
@@ -319,7 +319,7 @@ use_ok 'RT::Report::Tickets';
                 'cells' => [
                     {
                         'type'  => 'label',
-                        'value' => '(no value)'
+                        'value' => '&#40;no value&#41;'
                     },
                     {
                         'query' => '(Requestor.CustomField.{Department} SHALLOW IS NULL OR Requestor IS NULL)',
@@ -396,7 +396,7 @@ use_ok 'RT::Report::Tickets';
                 'cells' => [
                     {
                         'type'  => 'label',
-                        'value' => '(no value)'
+                        'value' => '&#40;no value&#41;'
                     },
                     {
                         'query' => '(Requestor.CustomField.{Manager} SHALLOW IS NULL OR Requestor IS NULL)',
@@ -480,7 +480,7 @@ use_ok 'RT::Report::Tickets';
                 'cells' => [
                     {
                         'type'  => 'label',
-                        'value' => '(no value)'
+                        'value' => '&#40;no value&#41;'
                     },
                     {
                         'query' => 'id=4 OR id=5',

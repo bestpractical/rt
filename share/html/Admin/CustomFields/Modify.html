@@ -403,11 +403,16 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     }
 
     if ( $CustomFieldObj->SupportDefaultValues ) {
-        my ($ret, $msg) = $CustomFieldObj->SetDefaultValues(
-            Object => RT->System,
-            Values => $ARGS{'Default-' . $CustomFieldObj->id . '-Value'} // $ARGS{'Default-' . $CustomFieldObj->id . '-Values'},
-        );
-        push @results, $msg;
+        if ( $CustomFieldObj->CurrentUserHasRight('AdminCustomField') ) {
+            my ($ret, $msg) = $CustomFieldObj->SetDefaultValues(
+                Object => RT->System,
+                Values => $ARGS{'Default-' . $CustomFieldObj->id . '-Value'} // $ARGS{'Default-' . $CustomFieldObj->id . '-Values'},
+            );
+            push @results, $msg;
+        }
+        else {
+            push @results, loc('Permission Denied');
+        }
     }
 
     my $paramtag = "CustomField-". $CustomFieldObj->Id ."-Value";

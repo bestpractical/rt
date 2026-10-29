@@ -19,6 +19,7 @@ ok( $m->login, 'we did log in' );
     $m->submit_form(
         form_number => 3,
         fields      => { CorrespondAddress => 'rt-recipient@example.com' },
+        button      => 'Submit',
     );
     $m->content_like(qr/rt-recipient\@example.com.* - never/, 'has key info.');
 }

@@ -156,6 +156,15 @@ my $title;
 
 my $t = LoadTicket($id);
 
+# The update form renders ticket data that object rights do not filter, such
+# as the current owner, so require ShowTicket to display it.
+unless ( $t->CurrentUserHasRight('ShowTicket') ) {
+    Abort(
+        loc("No permission to view ticket"),
+        Code => HTTP::Status::HTTP_FORBIDDEN,
+    );
+}
+
 my @results;
 
 $m->callback( Ticket => $t, ARGSRef => \%ARGS, results => \@results, CallbackName => 'Initial' );
