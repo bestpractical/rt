@@ -1652,6 +1652,9 @@ sub _HasUnreadMessagesLimit {
     # HasNoUnreadMessages is the reverse of HasUnreadMessages
     if ( !$FIELD_METADATA{$field}->[1] ) {
         $self->Columns('id');
+
+        # Oracle rejects ORDER BY in an IN subquery
+        $self->OrderByCols();
         $orig_self->Limit(
             %rest,
             FIELD      => 'id',
