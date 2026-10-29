@@ -70,7 +70,7 @@ requires 'Net::CIDR';
 requires 'Net::IP';
 requires 'Parallel::ForkManager';
 requires 'Plack', '>= 1.0002';
-requires 'Plack::Handler::Starlet';
+requires 'Starlet', '>= 0.33';
 requires 'Regexp::Common';
 requires 'Regexp::Common::net::CIDR';
 requires 'Regexp::IPv6';
