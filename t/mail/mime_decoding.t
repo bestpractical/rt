@@ -16,9 +16,11 @@ diag q{'=' char in a leading part before an encoded part};
             "right decoding"
         );
     } [qr/DecodeMIMEWordsTo.*?called without field name/i];
+
+    $str = 'attachment; key1="plain"; key2="=?UTF-8?B?0LzQvtC5X9GE0LDQudC7LmJpbg==?="';
     is(
         RT::I18N::DecodeMIMEWordsToUTF8($str, 'content-disposition'),
-        'key="plain"; key="мой_файл.bin"',
+        'attachment; key1="plain"; key2="мой_файл.bin"',
         "right decoding"
     );
 }
