@@ -334,6 +334,11 @@ elsif ( $ARGS{'SavedSearchDelete'} ) {
             return @results;
         }
     }
+    else {
+        push @results, loc( 'Can not load saved search "[_1]"', $SavedSearch->{'Id'} );
+        return @results;
+    }
+
     $SavedSearch->{'Id'}          = 'new';
     $SavedSearch->{'Object'}      = undef;
     $SavedSearch->{'Description'} = undef;
@@ -341,6 +346,12 @@ elsif ( $ARGS{'SavedSearchDelete'} ) {
 }
 elsif ( $ARGS{'SavedSearchCopy'} ) {
     my ($container, $id ) = _parse_saved_search( $ARGS{'SavedSearchId'} );
+
+    unless ( $container ) {
+        push @results, loc( 'Can not load saved search "[_1]"', $ARGS{'SavedSearchId'} );
+        return @results;
+    }
+
     $SavedSearch->{'Object'} = RT::Attribute->new( $session{'CurrentUser'} );
     $SavedSearch->{'Object'}->Load( $id );
     if ( $ARGS{'SavedSearchDescription'} && $ARGS{'SavedSearchDescription'} ne $SavedSearch->{'Object'}->Description ) {
@@ -356,9 +367,12 @@ if ( $SavedSearch->{'Id'} && $SavedSearch->{'Id'} ne 'new'
      && !$SavedSearch->{'Object'} )
 {
     my ($container, $id ) = _parse_saved_search( $ARGS{'SavedSearchId'} );
-    $SavedSearch->{'Object'} = RT::Attribute->new( $session{'CurrentUser'} );
-    $SavedSearch->{'Object'}->Load( $id );
-    $SavedSearch->{'Description'} ||= $SavedSearch->{'Object'}->Description;
+
+    if ( $id ) {
+        $SavedSearch->{'Object'} = RT::Attribute->new( $session{'CurrentUser'} );
+        $SavedSearch->{'Object'}->Load( $id );
+        $SavedSearch->{'Description'} ||= $SavedSearch->{'Object'}->Description;
+    }
 }
 
 return @results;
@@ -410,7 +424,12 @@ if ( $obj && $obj->id ) {
         # or it will fail the 2nd change if we use SetObjectType and
         # SetObjectId sequentially
 
-        if ( $obj->CurrentUserHasRight('update') ) {
+        # __Set skips the ACL as well, so the destination has to be authorized
+        # here: landing the search there takes the rights to have saved it there
+        my $can_move = ( $new_obj_type eq $obj_type && $new_obj_id == $obj_id )
+            || RT::SavedSearch->new( $session{'CurrentUser'} )->CurrentUserCanCreate("$new_obj_type-$new_obj_id");
+
+        if ( $can_move && $obj->CurrentUserHasRight('update') ) {
             if ( $new_obj_type ne $obj_type ) {
                 ( $val, $msg ) = $obj->__Set(
                     Field => 'ObjectType',
@@ -429,6 +448,9 @@ if ( $obj && $obj->id ) {
             }
             # Reload to refresh $obj->Object
             $obj->Load( $obj->Id );
+
+            my ( $type, $oid ) = ( $obj->__Value('ObjectType'), $obj->__Value('ObjectId') );
+            $SavedSearch->{'Id'} = join '-', $type, $oid, 'SavedSearch', $obj->Id;
         }
         else {
             # two loc are just for convenience so we don't need to
@@ -455,11 +477,7 @@ elsif ( $id eq 'new' and defined $desc and length $desc ) {
         $SavedSearch->{'Object'} = RT::Attribute->new( $session{'CurrentUser'} );
         $SavedSearch->{'Object'}->Load( $saved_search->Id );
         # Build new SearchId
-        $SavedSearch->{'Id'} =
-                ref( $session{'CurrentUser'}->UserObj ) . '-'
-                    . $session{'CurrentUser'}->UserObj->Id
-                    . '-SavedSearch-'
-                    . $SavedSearch->{'Object'}->Id;
+        $SavedSearch->{'Id'} = join '-', $saved_search->Privacy, 'SavedSearch', $saved_search->Id;
     }
     else {
         push @results, loc("Can't find a saved search to work with").': '.loc($msg);
@@ -482,16 +500,21 @@ return @results;
 % my $links = $Object->DependedOnBy;
 % $links->RowsPerPage(50);
 % my $total = $links->CountAll;
+% my $dashboard = RT::Dashboard->new( $session{CurrentUser} );
   <p>
     <&|/l, $total &>This search is used in the following [quant,_1,dashboard,dashboards]</&>:
   </p>
   <ul class="saved-search-depended-on-by-list list-group-compact">
 % while ( my $link = $links->Next ) {
+%   my $resolver = $link->BaseURI->Resolver;
+%   my $base     = $resolver->Object;
+%   next unless $base && $base->isa('RT::Attribute') && $base->Name eq 'Dashboard';
+%   my $privacy = $dashboard->_build_privacy( $base->ObjectType, $base->ObjectId );
     <li class="list-group-item">
-%   if ( $link->BaseObj->Name eq 'Dashboard' ) {
-      <a href="<% $link->BaseURI->Resolver->HREF %>" target="_blank"><% $link->BaseURI->AsString %></a>
+%   if ( $dashboard->CurrentUserCanSee($privacy) ) {
+      <a href="<% $resolver->HREF %>" target="_blank"><% $resolver->AsString %></a>
 %   } else {
-      <% $link->BaseObj->ObjectType %>: #<% $link->BaseObj->ObjectId %>
+      <% loc( 'Dashboard #[_1]', $base->id ) %>
 %   }
     </li>
 % }

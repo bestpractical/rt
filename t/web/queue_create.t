@@ -21,6 +21,7 @@ diag "Create a queue";
         fields => {
             Name => '',
         },
+        button => 'Submit',
     );
     $m->text_contains('Queue name is required');
     $m->submit_form(
@@ -28,6 +29,7 @@ diag "Create a queue";
         fields => {
             Name => '0',
         },
+        button => 'Submit',
     );
     $m->text_contains("'0' is not a valid name");
     $m->submit_form(
@@ -35,6 +37,7 @@ diag "Create a queue";
         fields => {
             Name => '1',
         },
+        button => 'Submit',
     );
     $m->text_contains("'1' is not a valid name");
     $m->submit_form(
@@ -42,6 +45,7 @@ diag "Create a queue";
         fields => {
             Name => $queue_name,
         },
+        button => 'Submit',
     );
     $m->content_contains('Queue created', 'created queue sucessfully' );
 

@@ -152,8 +152,12 @@ sub from_json {
         for my $param (@$params) {
             if ($param =~ /^\d+$/) {
                 my $group = RT::Group->new($self->request->env->{"rt.current_user"});
-                $group->Load($param);
-                push @results, $group->AddMember($user->id);
+                $group->LoadUserDefinedGroup($param);
+                if ( $group->id ) {
+                    push @results, $group->AddMember($user->id);
+                } else {
+                    push @results, 0, $self->current_user->loc( "Group [_1] not found", $param );
+                }
             } else {
                 push @results, [0, 'You should provide group id for each group user should be added'];
             }

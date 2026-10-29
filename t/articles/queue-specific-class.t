@@ -38,7 +38,8 @@ for my $name ( keys %class ) {
         form_number => 3,
         fields      => { Name => "article $name",
                          'Summary' => "$name summary",
-                         'Object-RT::Article--CustomField-1-Values' => "$name content"}
+                         'Object-RT::Article--CustomField-1-Values' => "$name content"},
+        button      => 'Submit',
     );
 
     $m->content_like( qr/Article \d+ created/, "created article $name" );

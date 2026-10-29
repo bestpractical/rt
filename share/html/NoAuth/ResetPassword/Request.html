@@ -197,7 +197,7 @@ if ( $r->method eq 'POST' && $ARGS{'Email'} ) {
 
 
 # Generate a fresh CSRF nonce for the form
-$session{ResetPasswordNonce} = Digest::MD5::md5_hex(time . {} . $$ . rand(1024));
+$session{ResetPasswordNonce} = RT::Util::random_hex(32);
 </%init>
 <%args>
 $Mode => 'reset'

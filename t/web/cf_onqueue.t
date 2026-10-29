@@ -52,6 +52,7 @@ diag "Edit the CF value for default queue";
         fields => {
             'Object-RT::Queue-1-CustomField-2-Value' => 'QueueCFTest content',
         },
+        button => 'Submit',
     );
     $m->content_contains('QueueCFTest QueueCFTest content added', 'Content filed in CF QueueCFTest for default queue' );
 

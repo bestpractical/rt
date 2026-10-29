@@ -89,6 +89,13 @@ our $PERSONAL_ACL_MAP = {
 
 };
 
+our $SYSTEM_ACL_MAP = {
+    SavedSearch => { create => 'SuperUser',
+                     update => 'SuperUser',
+                     delete => 'SuperUser' },
+
+};
+
 =head2 LookupObjectRight { ObjectType => undef, ObjectId => undef, Name => undef, Right => { create, update, delete, display } }
 
 Returns the right that the user needs to have on this attribute's object to perform the related attribute operation. Returns "allow" if the right is otherwise unspecified.
@@ -102,6 +109,17 @@ sub LookupObjectRight {
                  Right => undef,
                  Name => undef,
                  @_);
+
+    # if it's an attribute on the whole instance, check the system acl map first
+    if ( $args{'ObjectType'} eq 'RT::System' ) {
+        my $right = $SYSTEM_ACL_MAP->{ $args{'Name'} // '' }{ $args{'Right'} // '' };
+        return $right if $right;
+    }
+
+    # RT's built-in searches: shown to everyone, shared by everyone
+    if ( ( $args{'Name'} // '' ) =~ /^Search - / ) {
+        return ( $args{'Right'} // '' ) eq 'display' ? 'allow' : 'SuperUser';
+    }
 
     # if it's an attribute on oneself, check the personal acl map
     if (($args{'ObjectType'} eq 'RT::User') && ($args{'ObjectId'} eq $self->CurrentUser->Id)) {

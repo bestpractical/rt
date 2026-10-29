@@ -51,6 +51,12 @@ $TicketObj->Load($ARGS{id});
 $m->abort unless $TicketObj->id && $ARGS{UpdateType};
 
 $m->abort unless $TicketObj->CurrentUserHasRight('ShowOutgoingEmail');
+
+# Recipients are computed from scrips prepared as RT_System, so they are not
+# filtered by the requesting user's visibility. Render them only to a user who
+# is allowed to see the ticket.
+$m->abort unless $TicketObj->CurrentUserHasRight('ShowTicket');
+
 if ( $ARGS{UpdateType} eq 'private' ) {
     $m->abort
       unless $TicketObj->CurrentUserHasRight( 'CommentOnTicket' ) || $TicketObj->CurrentUserHasRight( 'ModifyTicket' );

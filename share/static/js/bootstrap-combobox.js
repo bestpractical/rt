@@ -215,11 +215,23 @@
       return beginswith.concat(caseSensitive, caseInsensitive);
     }
 
+  , escape: function (text) {
+      return $('<div>').text(text == null ? '' : text).html();
+    }
+
   , highlighter: function (item) {
+      var that = this
+        , text = item == null ? '' : String(item);
+
+      if (!this.query.length) {
+        return this.escape(text);
+      }
+
       var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&');
-      return item.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
-        return '<strong>' + match + '</strong>';
-      })
+      return text.split(new RegExp('(' + query + ')', 'i')).map(function (part, i) {
+        var escaped = that.escape(part);
+        return i % 2 ? '<strong>' + escaped + '</strong>' : escaped;
+      }).join('');
     }
 
   , render: function (items) {

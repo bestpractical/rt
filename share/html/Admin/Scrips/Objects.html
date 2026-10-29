@@ -163,8 +163,13 @@ if ( $Update ) {
         }
     }
     if ($global and $global->Stage ne $Stage) {
-        my ($status, $msg) = $global->SetStage($Stage);
-        push @results, $msg;
+        if ( $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'ModifyScrips' ) ) {
+            my ($status, $msg) = $global->SetStage($Stage);
+            push @results, $msg;
+        }
+        else {
+            push @results, loc('Permission Denied');
+        }
     }
     MaybeRedirectForResults(
         Actions   => \@results,

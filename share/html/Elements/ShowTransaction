@@ -173,6 +173,23 @@ $EmailRecordPath => undef
 
 </%ONCE>
 <%INIT>
+my %link_paths = (
+    AttachmentPath  => \$AttachmentPath,
+    DisplayPath     => \$DisplayPath,
+    EmailRecordPath => \$EmailRecordPath,
+    EncryptionPath  => \$EncryptionPath,
+    ForwardPath     => \$ForwardPath,
+    UpdatePath      => \$UpdatePath,
+);
+
+for my $name ( sort keys %link_paths ) {
+    my $path = $link_paths{$name};
+    next if RT::Interface::Web->LinkPathIsSafe($$path);
+    RT->Logger->warning("Ignoring $name that is not an internal path: $$path");
+    undef $$path;
+    delete $ARGS{$name};
+}
+
 my $record_type = $Object->RecordType;
 my $type_class  = $Object->ClassifyTransaction( $Transaction );
 

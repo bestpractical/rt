@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2026-05-20 16:57+0000\n"
-"X-Generator: Launchpad (build 21e17fefcf122f18da93c143f29f40ba940e464c)\n"
+"X-Launchpad-Export-Date: 2026-10-29 17:57+0000\n"
+"X-Generator: Launchpad (build 8aad169d2e22e99bfd86998a2cf0f0a07502f5e7)\n"
 
 #: share/html/Asset/Elements/ShowPeople:72
 msgid "(via this asset's catalog)"
@@ -73,7 +73,7 @@ msgstr "Catalogue Create txn failed: %1"
 msgid "Catalog create failed: %1"
 msgstr "Catalogue create failed: %1"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1291 lib/RT/Interface/Web/MenuBuilder.pm:955
+#: lib/RT/Interface/Web/MenuBuilder.pm:1305 lib/RT/Interface/Web/MenuBuilder.pm:969
 msgid "Catalogs"
 msgstr "Catalogues"
 
@@ -108,7 +108,7 @@ msgid "Create, modify, and disable catalogs"
 msgstr "Create, modify, and disable catalogues"
 
 #. ($catalog->Name)
-#: share/html/Admin/Assets/Catalogs/DefaultValues.html:80
+#: share/html/Admin/Assets/Catalogs/DefaultValues.html:83
 msgid "Default Values for catalog %1"
 msgstr "Default Values for catalogue %1"
 
@@ -149,11 +149,11 @@ msgstr "Invalid Catalogue"
 msgid "Logging %1 level messages and higher to STDERR, which will usually end up in your webserver's error logs."
 msgstr "Logging %1 level messages and higher to STDERR, which will usually end up in your web server's error logs."
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1292
+#: lib/RT/Interface/Web/MenuBuilder.pm:1306
 msgid "Modify asset catalogs"
 msgstr "Modify asset catalogues"
 
-#: lib/RT/Interface/Web.pm:4615
+#: lib/RT/Interface/Web.pm:5124
 msgid "No catalog specified."
 msgstr "No catalogue specified."
 
@@ -165,7 +165,7 @@ msgstr "No catalogues matching search criteria found."
 msgid "No permission to modify this catalog"
 msgstr "No permission to modify this catalogue"
 
-#: lib/RT/Config.pm:512
+#: lib/RT/Config.pm:491
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr "Rich text (HTML) shows formatting such as coloured text, bold, italics, and more"
 
@@ -173,7 +173,7 @@ msgstr "Rich text (HTML) shows formatting such as coloured text, bold, italics, 
 msgid "See catalogs"
 msgstr "See catalogues"
 
-#: lib/RT/Interface/Web/MenuBuilder.pm:1258
+#: lib/RT/Interface/Web/MenuBuilder.pm:1272
 msgid "Select Custom Fields for Assets in all Catalogs"
 msgstr "Select Custom Fields for Assets in all Catalogues"
 
@@ -190,7 +190,7 @@ msgid "The default catalog"
 msgstr "The default catalogue"
 
 #. ($id)
-#: lib/RT/Interface/Web.pm:4620
+#: lib/RT/Interface/Web.pm:5129
 msgid "Unable to find catalog %1"
 msgstr "Unable to find catalogue %1"
 
@@ -208,7 +208,7 @@ msgstr "You can also click on the logo above to get colours!"
 msgid "You don't have permission to create assets in catalog %1."
 msgstr "You don't have permission to create assets in catalogue %1."
 
-#: lib/RT/Interface/Web.pm:4623
+#: lib/RT/Interface/Web.pm:5132
 msgid "You don't have permission to view this catalog."
 msgstr "You don't have permission to view this catalogue."
 
@@ -217,7 +217,7 @@ msgstr "You don't have permission to view this catalogue."
 msgid "Your system supports automatic color suggestions for: %1"
 msgstr "Your system supports automatic colour suggestions for: %1"
 
-#: lib/RT/Transaction.pm:1470
+#: lib/RT/Transaction.pm:1481
 msgid "[a hidden catalog]"
 msgstr "[a hidden catalogue]"
 

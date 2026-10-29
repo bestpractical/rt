@@ -52,10 +52,13 @@ use warnings;
 
 
 use base 'Exporter';
-our @EXPORT = qw/safe_run_child mime_recommended_filename EntityLooksLikeEmailMessage EmailContentTypes InlineCSS/;
+our @EXPORT
+    = qw/safe_run_child mime_recommended_filename EntityLooksLikeEmailMessage EmailContentTypes InlineCSS CanonicalizeContentType/;
 
 use Scalar::Util qw/weaken/;
 use Encode qw/encode/;
+use Crypt::URandom ();
+use HTTP::Headers::Util qw/split_header_words join_header_words/;
 
 sub safe_run_child (&) {
     my $our_pid = $$;
@@ -136,6 +139,42 @@ sub mime_recommended_filename {
     return;
 }
 
+=head2 CanonicalizeContentType( TYPE )
+
+Parses TYPE and returns it re-serialized in a form with a single possible
+interpretation, so that matching it against known content types gives the
+same answer as parsing the C<Content-Type> header built from it.
+
+Returns the empty string unless TYPE holds exactly one content type of the
+form C<type/subtype>, followed by parameters that all have a value as
+RFC 2045 section 5.1 requires. Callers are expected to fall back to a type
+of their own choosing on an empty return.
+
+=cut
+
+sub CanonicalizeContentType {
+    my $type = shift;
+    return '' unless defined $type;
+
+    $type =~ s/[^\x20-\x7e]+//g;
+
+    my @words = split_header_words($type);
+    return '' unless @words == 1;
+
+    my $word = $words[0];
+
+    # restricted-name from RFC 6838 section 4.2
+    return '' unless $word->[0] =~ m{^[a-z0-9][a-z0-9!\#\$&^_.+-]*/[a-z0-9][a-z0-9!\#\$&^_.+-]*$};
+
+    # [ type/subtype, undef, name, value, ... ], so parameters start at 2.
+    # RFC 2045 section 5.1 requires a value: reject "text/plain; charset".
+    for ( my $i = 2; $i < @$word; $i += 2 ) {
+        return '' unless defined $word->[ $i + 1 ];
+    }
+
+    return join_header_words(@words);
+}
+
 sub assert_bytes {
     my $string = shift;
     return unless utf8::is_utf8($string);
@@ -214,6 +253,66 @@ sub constant_time_eq {
         }
     }
     return 0 + not $result;
+}
+
+=head2 C<random_bytes($count)>
+
+Returns C<$count> random octets.
+
+Returns undef, having logged the reason, if the platform cannot supply
+random data or supplies less than was asked for.
+
+=cut
+
+sub random_bytes {
+    my $count = shift;
+
+    # Count must be a positive integer.
+    unless ( defined $count && $count =~ /\A[0-9]+\z/ && $count > 0 ) {
+        RT->Logger->error('random_bytes requires a positive integer count');
+        return;
+    }
+
+    # Crypt::URandom reports failure by croaking; convert that to RT's
+    # convention here so callers only ever have to check for undef.
+    my $bytes = eval { Crypt::URandom::urandom($count) };
+    unless ( defined $bytes ) {
+        RT->Logger->error("Could not read $count octets from the system CSPRNG: $@");
+        return;
+    }
+
+    unless ( length($bytes) == $count ) {
+        RT->Logger->error(
+            "Asked the system CSPRNG for $count octets and got " . length($bytes) );
+        return;
+    }
+
+    return $bytes;
+}
+
+=head2 C<random_hex($count)>
+
+Returns a string of C<$count> lowercase hexadecimal digits drawn from
+L</random_bytes>, so C<$count> characters carry C<$count * 4> bits of
+entropy. Convenient where a random value has to survive as text, in a
+URL or an ascii database column.
+
+Returns undef under the same conditions as L</random_bytes>.
+
+=cut
+
+sub random_hex {
+    my $count = shift;
+
+    unless ( defined $count && $count =~ /\A[0-9]+\z/ && $count > 0 ) {
+        RT->Logger->error('random_hex requires a positive integer count');
+        return;
+    }
+
+    my $bytes = random_bytes( int( ( $count + 1 ) / 2 ) );
+    return unless defined $bytes;
+
+    return substr( unpack( 'H*', $bytes ), 0, $count );
 }
 
 =head2 EntityLooksLikeEmailMessage( MIME::Entity )

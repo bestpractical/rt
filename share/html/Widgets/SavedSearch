@@ -135,9 +135,8 @@ if ( $args->{SavedSearchSave} || $args->{SavedSearchCopy} ) {
         );
         if ($ok) {
             $self->{CurrentSearch}{Object} = $saved_search->{Attribute};
-            $self->{SearchId} = $args->{SavedChartSearchId} = 'RT::User-' .
-                $session{CurrentUser}->id . '-SavedSearch-' .
-                $saved_search->Id;
+            $self->{SearchId} = $args->{SavedChartSearchId}
+                = join '-', $saved_search->Privacy, 'SavedSearch', $saved_search->Id;
             push @actions, loc( '[_1] [_2] saved.', loc($self->{SearchType}), $args->{SavedSearchDescription} );
         } else {
             push @actions,

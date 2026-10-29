@@ -368,7 +368,7 @@ sub t_set_queue_crypt_options {
             $m->untick($opt => 1);
         }
     }
-    $m->submit;
+    $m->click('Submit');
 }
 
 sub describe_options {

@@ -45,7 +45,7 @@ use_ok 'RT::Report::Tickets';
         'tbody' => [
             {   'cells' => [
                     {   'type'  => 'label',
-                        'value' => '(no value)'
+                        'value' => '&#40;no value&#41;'
                     },
                     {   'query' => '(CustomRole.{1}.Name IS NULL)',
                         'type'  => 'value',

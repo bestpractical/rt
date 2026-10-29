@@ -182,6 +182,10 @@ sub Create {
         return ($ok, $msg) if !$ok;
 
         $args{'Password'} = $self->_GeneratePassword($args{'Password'});
+        unless ( defined $args{'Password'} ) {
+            RT->Logger->error("Couldn't hash a password for new user $args{'Name'}");
+            return ( 0, $self->loc("Could not set password") );
+        }
     }
 
     #TODO Specify some sensible defaults.
@@ -1164,7 +1168,12 @@ sub CreateResetPasswordToken {
         return undef;
     }
 
-    my $nonce = Digest::SHA::sha256_hex( time . {} . $$ . rand() );
+    my $nonce = RT::Util::random_hex(64);
+    unless ( defined $nonce ) {
+        RT->Logger->error( "Couldn't generate a password reset nonce for " . $self->Name );
+        return undef;
+    }
+
     my ( $ret, $msg ) = $self->SetAttribute(
         Name    => 'PasswordResetNonce',
         Content => $nonce,
@@ -1377,6 +1386,10 @@ sub SetPassword {
 
         my $new = !$self->HasPassword;
         $password = $self->_GeneratePassword($password);
+        unless ( defined $password ) {
+            RT->Logger->error("Couldn't hash a password for user " . $self->id);
+            return ( 0, $self->loc("Could not set password") );
+        }
 
         ( $val, $msg ) = $self->_Set(Field => 'Password', Value => $password);
         if ($val) {
@@ -1405,9 +1418,12 @@ sub _GeneratePassword_bcrypt {
     } else {
         $rounds = RT->Config->Get('BcryptCost');
 
-        # Generate a random 16-octet base64 salt
-        $salt = "";
-        $salt .= pack("C", int rand(256)) for 1..16;
+        # Generate a random 16-octet salt
+        $salt = RT::Util::random_bytes(16);
+        unless ( defined $salt ) {
+            RT->Logger->error("Couldn't generate a bcrypt salt");
+            return;
+        }
     }
 
     my $hash = Crypt::Eksblowfish::Bcrypt::bcrypt_hash({
@@ -1426,11 +1442,18 @@ sub _GeneratePassword_sha512 {
     my $self = shift;
     my ($password, $salt) = @_;
 
-    # Generate a 16-character base64 salt
+    # Generate a 16-character base64 salt. The alphabet is 64 characters, a
+    # power of two, so masking each random octet down to six bits picks from
+    # it without bias.
     unless ($salt) {
-        $salt = "";
-        $salt .= ("a".."z", "A".."Z","0".."9", "+", "/")[rand 64]
-            for 1..16;
+        my $bytes = RT::Util::random_bytes(16);
+        unless ( defined $bytes ) {
+            RT->Logger->error("Couldn't generate a sha512 salt");
+            return;
+        }
+
+        my @alphabet = ("a".."z", "A".."Z", "0".."9", "+", "/");
+        $salt = join '', map { $alphabet[ $_ & 0x3f ] } unpack( 'C*', $bytes );
     }
 
     my $sha = Digest::SHA->new(512);
@@ -1449,6 +1472,8 @@ By default, the method is currently C<bcrypt>.
 
 =cut
 
+# Returns undef if the salt cannot be generated. Callers storing the result
+# MUST check it: an undef here means no password.
 sub _GeneratePassword {
     my $self = shift;
     return $self->_GeneratePassword_bcrypt(@_);
@@ -1489,7 +1514,9 @@ sub IsPassword {
 
    if ( $self->PrincipalObj->Disabled ) {
         # Run the bcrypt generator to avoid timing side-channel attacks
-        RT::Util::constant_time_eq($self->_GeneratePassword_bcrypt($value), '0' x 64);
+        if ( defined( my $hash = $self->_GeneratePassword_bcrypt($value) ) ) {
+            RT::Util::constant_time_eq( $hash, '0' x 64 );
+        }
         $RT::Logger->info(
             "Disabled user " . $self->Name . " tried to log in" );
         return (undef);
@@ -1497,7 +1524,9 @@ sub IsPassword {
 
     unless ($self->HasPassword) {
         # Run the bcrypt generator to avoid timing side-channel attacks
-        RT::Util::constant_time_eq($self->_GeneratePassword_bcrypt($value), '0' x 64);
+        if ( defined( my $hash = $self->_GeneratePassword_bcrypt($value) ) ) {
+            RT::Util::constant_time_eq( $hash, '0' x 64 );
+        }
         return undef;
     }
     my $stored = $self->__Value('Password');
@@ -1554,8 +1583,12 @@ sub IsPassword {
 
     # We got here by validating successfully, but with a legacy
     # password form.  Update to the most recent form.
+    # The password was valid; if it cannot be rehashed right now, leave it in
+    # its old form rather than failing a login that should have succeeded.
     my $obj = $self->isa("RT::CurrentUser") ? $self->UserObj : $self;
-    $obj->_Set(Field => 'Password', Value =>  $self->_GeneratePassword($value) );
+    if ( defined( my $rehashed = $self->_GeneratePassword($value) ) ) {
+        $obj->_Set(Field => 'Password', Value => $rehashed );
+    }
     return 1;
 }
 
@@ -1594,7 +1627,11 @@ Generate a random authentication string for the user.
 
 sub GenerateAuthToken {
     my $self = shift;
-    my $token = substr(Digest::MD5::md5_hex(time . {} . rand()),0,16);
+    my $token = RT::Util::random_hex(16);
+    unless ( defined $token ) {
+        RT->Logger->error("Couldn't generate an auth token for user " . $self->id);
+        return ( 0, $self->loc("Could not generate a secure token") );
+    }
     return $self->SetAuthToken( $token );
 }
 
@@ -1614,7 +1651,11 @@ sub GenerateAuthString {
         # Mint on demand via SystemUser: signing RSS/iCal/CSRF URLs is a
         # system action, but ModifySelf isn't granted to Privileged users
         # by default, so SetAuthToken under the current user would fail.
-        $token = substr(Digest::MD5::md5_hex(time . {} . rand()), 0, 16);
+        $token = RT::Util::random_hex(16);
+        unless ( defined $token ) {
+            RT->Logger->error("Couldn't generate an auth token for user " . $self->id);
+            return;
+        }
         my $writer = RT::User->new( RT->SystemUser );
         $writer->Load( $self->id );
         my ($ok, $msg) = $writer->SetAuthToken($token);
@@ -2559,14 +2600,7 @@ sub Stylesheet {
     my $self = shift;
 
     my $style = RT->Config->Get('WebDefaultStylesheet', $self);
-
-    if (RT::Interface::Web->ComponentPathIsSafe($style)) {
-        for my $root (RT::Interface::Web->StaticRoots) {
-            if (-d "$root/css/$style") {
-                return $style
-            }
-        }
-    }
+    return $style if grep { $_ eq $style } RT::Interface::Web->Themes;
 
     # Fall back to the system stylesheet.
     return RT->Config->Get('WebDefaultStylesheet');

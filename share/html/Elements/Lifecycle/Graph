@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="lifecycle-ui" id="lifecycle-<% $id %>">
+<div class="lifecycle-ui" id="lifecycle-<% $id %>" data-config="<% $Config %>" data-maps="<% $Maps %>" data-layout="<% $Layout || '' %>">
   <div id="lifeycycle-ui-edit-node" class="lifeycycle-ui-edit-node collapse card card-body">
     <input type="hidden" name="id" />
     <div class="alert alert-warning invalid-name hidden"><&|/l&>Invalid name</&></div>
@@ -76,7 +76,12 @@
 
   <script type="text/javascript">
     jQuery(function () {
-        new RT.NewLifecycleEditor( document.getElementById('lifecycle-<% $id %>'), <% $Config |n %>, <% $Maps |n %> <% $Layout ? ", $Layout" : () |n %> );
+        const container = document.getElementById('lifecycle-<% $id %>');
+        const layout = container.getAttribute('data-layout');
+        new RT.NewLifecycleEditor( container,
+                                   JSON.parse(container.getAttribute('data-config')),
+                                   JSON.parse(container.getAttribute('data-maps')),
+                                   layout ? JSON.parse(layout) : null );
     });
   </script>
   <div class="row">

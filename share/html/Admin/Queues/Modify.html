@@ -185,9 +185,9 @@
   <div class="form-row">
     <div class="col-12">
 % if ( $Create ) {
-      <& /Elements/Submit, Label => loc('Create') &>
+      <& /Elements/Submit, Label => loc('Create'), Name => 'Submit' &>
 % } else {
-      <& /Elements/Submit, Label => loc('Save Changes') &>
+      <& /Elements/Submit, Label => loc('Save Changes'), Name => 'Submit' &>
 % }
     </div>
   </div>
@@ -234,7 +234,7 @@ unless ($status) {
 $EnabledChecked = 'checked="checked"';
 
 unless ($Create) {
-    if ( defined $id && $id eq 'new' && not $skip_update ) {
+    if ( defined $id && $id eq 'new' && !$skip_update && $ARGS{Submit} ) {
         my ($val, $msg) = $QueueObj->Create( Name => $Name );
         $ARGS{Name} = $QueueObj->Name; # In case original Name has leading/trailing spaces
         if (!$val) {
@@ -275,7 +275,7 @@ if ( $QueueObj->Id && not $skip_update ) {
         AttributesRef => \@attribs,
         Object => $QueueObj,
         ARGSRef => \%ARGS
-    );
+    ) if $ARGS{Submit};
 
     if (   $QueueObj->Disabled
         && $disabled_pre_update != $QueueObj->Disabled
@@ -300,7 +300,7 @@ if ( $QueueObj->Id && not $skip_update ) {
         CallbackName => 'ProcessLinks'
     );
     push @results, @linkresults;
-    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $QueueObj );
+    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $QueueObj ) if $ARGS{Submit};
     if ( !$QueueObj->SLADisabled && !( RT->Config->Get('ServiceAgreements') && keys %{RT->Config->Get('ServiceAgreements')}) ) {
         push @no_redirect_results, loc("You enabled [_1] but [_2] hasn't been configured in RT_SiteConfig.pm, please check '[_3]' for more help", 'SLA', '%ServiceAgreements', 'docs/customizing/sla.pod');
     }

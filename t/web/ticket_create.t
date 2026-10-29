@@ -30,7 +30,7 @@ my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login;
 $m->get_ok( '/Admin/Queues/Modify.html?id=' . $queue1->id );
 $m->form_name('ModifyQueue');
-$m->submit_form( fields => { Lifecycle => 'foo' } );
+$m->submit_form( fields => { Lifecycle => 'foo' }, button => 'Submit' );
 
 # set up custom field
 my $cf = RT::Test->load_or_create_custom_field( Name => 'test_cf', Queue => $queue1->Name, Type => 'FreeformSingle' );

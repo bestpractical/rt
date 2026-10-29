@@ -84,6 +84,21 @@ sub PostLoad {
     $self->{'Type'} = $self->{'Attribute'}->SubValue('SearchType');
 }
 
+=head2 PostLoadValidate
+
+Ensure that the ID corresponds to an actual saved search, since it's all
+attributes under the hood. RT's built-in searches are named C<Search - I<name>>
+rather than C<SavedSearch>, so they count too.
+
+=cut
+
+sub PostLoadValidate {
+    my $self = shift;
+    my $name = $self->{'Attribute'}->__Value('Name') // '';
+    return ( 0, "Invalid object type" ) unless $name eq 'SavedSearch' || $name =~ /^Search - /;
+    return 1;
+}
+
 sub SaveAttribute {
     my $self   = shift;
     my $object = shift;
@@ -113,6 +128,37 @@ sub UpdateAttribute {
     }
 
     return ($status, $msg);
+}
+
+=head2 CurrentUserCanCreate [PRIVACY]
+
+Returns true if the current user may save a search under PRIVACY, which defaults
+to this search's own privacy, asking L<RT::Attribute/LookupObjectRight> so that
+the answer is the one L<RT::Attribute/Create> would give.
+
+The other C<CurrentUserCan*> methods are still L<RT::SharedSetting>'s, which
+leave the question to L<RT::Attribute>. This one is here because a caller that
+wants to move a search has to ask about a container it has not reached yet.
+
+=cut
+
+sub CurrentUserCanCreate {
+    my $self    = shift;
+    my $privacy = shift || $self->Privacy;
+
+    my $object = $self->_GetObject($privacy);
+    return 0 unless $object;
+
+    my $right = RT::Attribute->new( $self->CurrentUser )->LookupObjectRight(
+        ObjectType => ref($object),
+        ObjectId   => $object->Id,
+        Name       => 'SavedSearch',
+        Right      => 'create',
+    );
+
+    return 1 if $right eq 'allow';
+    return 0 if $right eq 'deny';
+    return $self->CurrentUser->HasRight( Right => $right, Object => $object ) ? 1 : 0;
 }
 
 =head2 RT::SavedSearch->EscapeDescription STRING

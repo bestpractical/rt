@@ -642,6 +642,11 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 sub SetLookupType {
     my $self = shift;
     my $lookup = shift;
+
+    unless ( $self->CurrentUser->HasRight( Object => RT->System, Right => 'AdminCustomRoles' ) ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
+
     if ( $lookup ne $self->LookupType ) {
         # Okay... We need to invalidate our existing relationships
         RT::ObjectCustomRole->new($self->CurrentUser)->DeleteAll( CustomRole => $self );
