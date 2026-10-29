@@ -185,7 +185,7 @@ my $selected_dashboard_ids = $dashboard_pref->{'dashboards'} || [];
 
 my @selected_dashboards;
 foreach my $id ( @{$selected_dashboard_ids} ) {
-    my $dashboard = RT::Dashboard->new( RT->SystemUser );
+    my $dashboard = RT::Dashboard->new( $session{'CurrentUser'} );
     my ($ret, $msg) = $dashboard->Load( $id );
     unless ( $ret ) {
         RT::Logger->error( "Could not load dashboard: $id" );
@@ -194,8 +194,8 @@ foreach my $id ( @{$selected_dashboard_ids} ) {
 
     push @selected_dashboards, {
       id      => $id,
-      name    => $dashboard->Name,
-      label   => $dashboard->Name,
+      name    => $dashboard->Label,
+      label   => $dashboard->Label,
       type    => 'dashboard'
     };
 }

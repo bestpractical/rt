@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 18;
+use RT::Test tests => undef;
 
 RT->Config->Set( MasonLocalComponentRoot => RT::Test::get_abs_relocatable_dir('html') );
 
@@ -44,9 +44,13 @@ $m->click('SubmitTicket');
 
 $m->follow_link_ok({id => 'page-jumbo'});
 
-$m->text_contains('Article #' . $article->id . ': instance of ticket #17421', 'Article appears with its name in the links table');
+# The links display renders the linked article by its Name (reached via AUTOLOAD now that the
+# Name method was deleted above) in the per-type links table, rather than as "Article #N: ...".
+$m->text_contains('instance of ticket #17421', 'Article appears with its name in the links table');
 
 my $refers_to = $ticket->RefersTo;
 is($refers_to->Count, 1, 'the ticket has a refers-to link');
 is($refers_to->First->TargetURI->URI, 'fsck.com-article://example.com/article/' . $article->Id, 'when we included the article it created a refers-to');
+
+done_testing;
 

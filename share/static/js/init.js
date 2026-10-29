@@ -85,6 +85,8 @@ document.addEventListener('htmx:beforeHistorySave', function(evt) {
     evt.detail.historyElt.querySelectorAll('.tomselected').forEach(elt => elt.tomselect?.destroy());
     evt.detail.historyElt.querySelectorAll('.dropzone-init').forEach(elt => elt.dropzone?.destroy());
     evt.detail.historyElt.querySelectorAll('.datepicker').forEach(elt => elt.tempusDominus?.dispose());
+    evt.detail.historyElt.querySelectorAll('.lifecycle-viewer').forEach(elt => elt.lifecycleViewer?.destroy());
+    evt.detail.historyElt.querySelectorAll('.lifecycle-ui').forEach(elt => elt.lifecycleEditor?.destroy());
     disposeCombobox(evt.detail.historyElt);
 });
 
@@ -141,6 +143,12 @@ document.addEventListener('htmx:beforeCleanupElement', function(evt) {
     }
     else if (elt.matches('.combobox-wrapper')) {
         disposeCombobox(elt);
+    }
+    else if ( elt.matches('.lifecycle-viewer') ) {
+        elt.lifecycleViewer?.destroy();
+    }
+    else if ( elt.matches('.lifecycle-ui') ) {
+        elt.lifecycleEditor?.destroy();
     }
 });
 
@@ -241,6 +249,9 @@ document.addEventListener('collectionsChanged', function(evt) {
     document.querySelectorAll('table.collection-as-table[data-display-format][data-class="' + evt.detail.class + '"]').forEach(table => {
         const tr = table.querySelector('tr[data-record-id="' + evt.detail.id + '"]');
         if ( tr ) {
+            // Pass the relationship's delete type/mode through so a reloaded Links row keeps its
+            // edit-mode removal checkbox.
+            const linkTable = table.closest('.links-type-table');
             htmx.ajax(
                 'POST', RT.Config.WebHomePath + '/Helpers/CollectionListRow',
                 {
@@ -254,7 +265,12 @@ document.addEventListener('collectionsChanged', function(evt) {
                         InlineEdit    : table.classList.contains('inline-edit') ? 1 : 0,
                         i             : tr.getAttribute('data-index'),
                         ObjectId      : tr.getAttribute('data-record-id'),
-                        Warning       : tr.getAttribute('data-warning') || 0
+                        Warning       : tr.getAttribute('data-warning') || 0,
+                        MarkInactive  : table.getAttribute('data-mark-inactive') || 0,
+                        LinkDeleteType: linkTable ? ( linkTable.getAttribute('data-link-delete-type') || '' ) : '',
+                        LinkDeleteMode: linkTable ? ( linkTable.getAttribute('data-link-delete-mode') || '' ) : '',
+                        TreePrefix    : tr.getAttribute('data-tree-prefix') || '',
+                        Depth         : tr.getAttribute('data-depth') || ''
                     }
                 }
             );
@@ -642,15 +658,54 @@ document.addEventListener('htmx:load', function(evt) {
         });
     });
 
-    if (elt.querySelectorAll('.lifecycle-ui').length) {
-        const checkLifecycleEditor = setInterval(function () {
-            if (window.d3 && RT.NewLifecycleEditor) {
-                clearInterval(checkLifecycleEditor);
-                elt.querySelectorAll('.lifecycle-ui').forEach(elt => {
-                    new RT.NewLifecycleEditor(elt, JSON.parse(elt.getAttribute('data-config')), JSON.parse(elt.getAttribute('data-maps')), elt.getAttribute('data-layout') ? JSON.parse(elt.getAttribute('data-layout')) : null);
-                });
+    // Cytoscape loads from a separate <script>; poll briefly until it (and the
+    // lifecycle class) is ready, then initialize. Bail out after a fixed number
+    // of attempts so a failed load doesn't leave a timer running forever.
+    const whenCytoscapeReady = function (isReady, init) {
+        if (isReady()) { init(); return; }
+        let attempts = 0;
+        const timer = setInterval(function () {
+            if (isReady()) {
+                clearInterval(timer);
+                init();
+            }
+            else if (++attempts >= 100) {   // ~5s at 50ms
+                clearInterval(timer);
+                if (window.console) console.warn('Cytoscape did not load in time; lifecycle graph not initialized.');
             }
         }, 50);
+    };
+
+    if (elt.querySelectorAll('.lifecycle-ui').length) {
+        whenCytoscapeReady(
+            function () { return window.cytoscape && RT.NewLifecycleEditor; },
+            function () {
+                elt.querySelectorAll('.lifecycle-ui').forEach(function (editorEl) {
+                    if (editorEl.__editorInitialized) return;
+                    if (!document.contains(editorEl)) return;   // swapped out while cytoscape loaded
+                    editorEl.__editorInitialized = true;
+                    // Stash the instance so the htmx teardown hooks can destroy()
+                    // it when this admin page is navigated away from.
+                    editorEl.lifecycleEditor = new RT.NewLifecycleEditor(editorEl, JSON.parse(editorEl.getAttribute('data-config')), JSON.parse(editorEl.getAttribute('data-maps')), editorEl.getAttribute('data-layout') ? JSON.parse(editorEl.getAttribute('data-layout')) : null);
+                });
+            }
+        );
+    }
+
+    if (elt.querySelectorAll('.lifecycle-viewer').length) {
+        whenCytoscapeReady(
+            function () { return window.cytoscape && RT.LifecycleViewer; },
+            function () {
+                elt.querySelectorAll('.lifecycle-viewer').forEach(function (viewerEl) {
+                    if (viewerEl.__viewerInitialized) return;
+                    if (!document.contains(viewerEl)) return;   // swapped out while cytoscape loaded
+                    viewerEl.__viewerInitialized = true;
+                    // Stash the instance so the htmx teardown hooks can destroy()
+                    // it when this portlet is refreshed/swapped out.
+                    viewerEl.lifecycleViewer = new RT.LifecycleViewer(viewerEl);
+                });
+            }
+        );
     }
 
     elt.querySelectorAll('[data-bs-toggle="popover"]').forEach(function(elt) {
@@ -731,16 +786,19 @@ document.addEventListener('htmx:load', function(evt) {
 
     /* inline edit on ticket display */
     jQuery('.titlebox[data-inline-edit-behavior="link"], .titlebox[data-inline-edit-behavior="click"]').each(function() {
-        // If there are only id/submit, there are no fields to edit
-        if ( jQuery(this).find('form.inline-edit :input').length <= 2 ) {
+        // Only id/submit means no fields to edit -- unless the form lazy-loads its fields via
+        // htmx (e.g. custom fields), which arrive after page load and keep the panel editable.
+        if ( jQuery(this).find('form.inline-edit :input').length <= 2
+            && !jQuery(this).find('form.inline-edit [hx-get]').length ) {
             jQuery(this).data('inline-edit-behavior', 'hide');
             jQuery(this).find('.inline-edit-toggle').addClass('hide');
         }
     });
 
     jQuery('.titlebox[data-inline-edit-behavior="always"]').each(function() {
-        // If there are only id/submit, there are no fields to edit
-        if ( jQuery(this).find('form.inline-edit :input').length <= 2 ) {
+        // Only id/submit means no fields to edit -- unless the form lazy-loads them via htmx.
+        if ( jQuery(this).find('form.inline-edit :input').length <= 2
+            && !jQuery(this).find('form.inline-edit [hx-get]').length ) {
             jQuery(this).find('form.inline-edit :input[type=submit]').closest('div.row').addClass('hide');
         }
     });
@@ -839,9 +897,307 @@ document.addEventListener('htmx:load', function(evt) {
     });
 
     // enable bootstrap tooltips
+    // Some tooltips are created on first hover (e.g. linksTruncatedTooltip), which can land between
+    // the swap and this load. A second instance would replace it and orphan its visible tip.
     elt.querySelectorAll('[data-bs-toggle=tooltip]').forEach(elt => {
-        new bootstrap.Tooltip(elt, {
+        bootstrap.Tooltip.getOrCreateInstance(elt, {
             trigger: 'hover focus'
+        });
+    });
+
+    // Sort rows by a "field-direction" value (e.g. "type-asc"), pinned on top.
+    // Shared by the desktop tom-select and the mobile sort dropdown.
+    const sortAttachmentRows = (widget, value) => {
+        const sorter = (value || '').toLowerCase().split('-');
+        if ( sorter.length !== 2 ) return;
+
+        const tbody = widget?.querySelector('.attachment-list tbody');
+        if ( !tbody ) return;
+        const rows = Array.from(widget.querySelectorAll('.attachment-list > table > tbody > tr'));
+        const direction = sorter[1] === 'asc' ? 1 : -1;
+        const sorted_rows = rows.sort((a, b) => {
+            if (!(a.classList.contains('attachment-pinned') && b.classList.contains('attachment-pinned'))) {
+                if (a.classList.contains('attachment-pinned')) return -1;
+                if (b.classList.contains('attachment-pinned')) return 1;
+            }
+
+            let value_a = a.getAttribute('data-' + sorter[0]).toLowerCase();
+            let value_b = b.getAttribute('data-' + sorter[0]).toLowerCase();
+            if (sorter[0] === 'size') {
+                value_a = parseInt(value_a);
+                value_b = parseInt(value_b);
+            }
+            if ( value_a < value_b ) {
+                return -1 * direction;
+            }
+            else if ( value_a > value_b ) {
+                return direction;
+            }
+            else {
+                return 0;
+            }
+        });
+        tbody.append(...sorted_rows);
+    };
+
+    const attachmentSort = elt.querySelector('select.attachment-sort');
+    const attachmentSortMenu = elt.querySelector('.attachment-sort-menu');
+    const attachmentSortOptions = attachmentSortMenu
+        ? Array.from(attachmentSortMenu.querySelectorAll('.attachment-sort-option'))
+        : [];
+
+    // The desktop <select> and the mobile dropdown share one value; keep both
+    // in sync so switching breakpoints never shows a stale choice. Update the
+    // tom-select silently to avoid re-triggering the sort.
+    const syncAttachmentSort = value => {
+        if ( attachmentSort ) {
+            if ( attachmentSort.tomselect ) {
+                attachmentSort.tomselect.setValue(value, true);
+            }
+            else {
+                attachmentSort.value = value;
+            }
+        }
+        attachmentSortOptions.forEach(o => o.classList.toggle('active', o.getAttribute('data-sort') === value));
+    };
+
+    if ( attachmentSort ) {
+        attachmentSort.addEventListener('change', evt => {
+            sortAttachmentRows(evt.target.closest('.ticket-info-attachments'), evt.target.value);
+            syncAttachmentSort(evt.target.value);
+        });
+    }
+
+    attachmentSortOptions.forEach(option => {
+        option.addEventListener('click', evt => {
+            evt.preventDefault();
+            const value = option.getAttribute('data-sort');
+            sortAttachmentRows(option.closest('.ticket-info-attachments'), value);
+            syncAttachmentSort(value);
+        });
+    });
+
+    // Sort once on load and reflect the default choice on both controls.
+    if ( attachmentSort ) {
+        sortAttachmentRows(attachmentSort.closest('.ticket-info-attachments'), attachmentSort.value);
+        syncAttachmentSort(attachmentSort.value);
+    }
+
+    elt.querySelector('.attachment-search')?.addEventListener('input', debounce(filterAttachments, 500));
+    const attachmentFilterDropdown = elt.querySelector('.attachment-filter-dropdown');
+    attachmentFilterDropdown?.addEventListener('change', debounce(filterAttachments, 100));
+    attachmentFilterDropdown?.addEventListener('change', () => {
+        const toggle = attachmentFilterDropdown.closest('.attachment-filter-toggle');
+        if ( !toggle ) return;
+        const active = !!attachmentFilterDropdown.querySelector('input[name="FilterAttachmentTypes"]:not(:checked)');
+        toggle.classList.toggle('attachment-filter-active', active);
+        const label = toggle.dataset[active ? 'labelActive' : 'label'];
+        if ( label ) {
+            toggle.querySelector('.attachment-filter')?.setAttribute('aria-label', label);
+            toggle.setAttribute('data-bs-title', label);
+            // Bootstrap reads the title once, when it creates the tooltip.
+            bootstrap.Tooltip.getInstance(toggle)?.setContent({ '.tooltip-inner': label });
+        }
+    });
+
+    // Set by ticket.css's mobile media query, so the breakpoint isn't repeated here.
+    const attachmentSearchCompact = widget =>
+        getComputedStyle(widget).getPropertyValue('--rt-attachment-search-compact').trim() === '1';
+    // Collapsing hides the focused input or close icon; move focus to the glass so it isn't lost.
+    const setAttachmentSearchOpen = (widget, open) => {
+        widget.classList.toggle('attachment-search-open', open);
+        widget.querySelector(open ? '.attachment-search' : '.attachment-search-toggle')?.focus();
+    };
+    // role="button" spans don't get a button's Enter/Space activation, so add it.
+    const clickOnEnterOrSpace = evt => {
+        if ( evt.key === 'Enter' || evt.key === ' ' ) {
+            evt.preventDefault();
+            evt.currentTarget.click();
+        }
+    };
+
+    const attachmentSearchToggle = elt.querySelector('.attachment-search-toggle');
+    attachmentSearchToggle?.addEventListener('click', evt => {
+        const widget = evt.currentTarget.closest('.titlebox');
+        if ( !widget ) return;
+        // On wider screens the search is always shown; the glass just focuses it.
+        if ( !attachmentSearchCompact(widget) ) {
+            widget.querySelector('.attachment-search')?.focus();
+            return;
+        }
+        setAttachmentSearchOpen(widget, !widget.classList.contains('attachment-search-open'));
+    });
+    attachmentSearchToggle?.addEventListener('keydown', clickOnEnterOrSpace);
+
+    const attachmentSearchClose = elt.querySelector('.attachment-search-close');
+    attachmentSearchClose?.addEventListener('click', evt => {
+        const widget = evt.currentTarget.closest('.titlebox');
+        if ( widget ) setAttachmentSearchOpen(widget, false);
+    });
+    attachmentSearchClose?.addEventListener('keydown', clickOnEnterOrSpace);
+
+    const attachmentSearch = elt.querySelector('.attachment-search');
+    attachmentSearch?.addEventListener('keydown', evt => {
+        if ( evt.key !== 'Escape' ) return;
+        const widget = evt.target.closest('.titlebox');
+        // The open class outlives a resize to a wide screen; don't pull focus off a visible search.
+        if ( widget?.classList.contains('attachment-search-open') && attachmentSearchCompact(widget) ) {
+            setAttachmentSearchOpen(widget, false);
+        }
+    });
+
+    // Mark the input group, not the toggle: the picker's glass isn't a toggle but still fills.
+    const attachmentSearchGroup = attachmentSearch?.closest('.attachment-search-input');
+    if ( attachmentSearchGroup ) {
+        const markSearchActive = () => {
+            const active = attachmentSearch.value.length > 0;
+            attachmentSearchGroup.classList.toggle('attachment-search-active', active);
+            const label = attachmentSearchToggle?.dataset[active ? 'labelActive' : 'label'];
+            if ( label ) attachmentSearchToggle.setAttribute('aria-label', label);
+        };
+        attachmentSearch.addEventListener('input', markSearchActive);
+        markSearchActive();
+    }
+
+    elt.querySelector('.attachment-list')?.addEventListener('click', evt => {
+        const action = evt.target.closest('.attachment-pin, .attachment-unpin, .attachment-delete, .attachment-rename');
+        if (!action) return;
+
+        evt.preventDefault();
+        evt.stopPropagation();
+
+        const row = evt.target.closest('[data-id]');
+        if (!row) return;
+
+        if (action.classList.contains('attachment-rename')) {
+            row.querySelector('.editable .edit-icon')?.dispatchEvent(
+                new MouseEvent('click', { bubbles: true, cancelable: true })
+            );
+            return;
+        }
+
+        const list = evt.target.closest('.attachment-list');
+        const ticketId = list?.dataset.ticketId;
+        const url = list?.dataset.updateUrl;
+        if (!ticketId || !url) return;
+
+        if (action.classList.contains('attachment-delete')) {
+            showAttachmentDeleteModal(evt.target.closest('.titlebox'),
+                [{ id: row.getAttribute('data-id'), name: row.getAttribute('data-name') }]);
+            return;
+        }
+
+        const key = action.classList.contains('attachment-pin') ? 'PinAttachments' : 'UnpinAttachments';
+        htmx.ajax('POST', url, {
+            source: row,
+            swap: 'none',
+            values: { id: ticketId, [key]: row.getAttribute('data-id') }
+        });
+    });
+
+    elt.querySelectorAll('.attachment-bulk-toggle').forEach(elt => {
+        elt.addEventListener('click', evt => {
+            evt.currentTarget.classList.add('hidden');
+            const widget = evt.target.closest('.titlebox');
+
+            if (evt.currentTarget.classList.contains('bulk')) {
+                widget.classList.add('bulk');
+                widget.querySelector('.attachment-bulk-toggle.cancel').classList.remove('hidden');
+            }
+            else {
+                widget.classList.remove('bulk');
+                widget.querySelector('.attachment-bulk-toggle.bulk').classList.remove('hidden');
+            }
+            evt.preventDefault();
+            evt.stopPropagation();
+        })
+    });
+
+    elt.querySelectorAll('input.attachment-select').forEach(elt => {
+        elt.addEventListener('change', evt => {
+            const widget = evt.target.closest('.titlebox');
+            const checkboxes = widget.querySelectorAll('input.attachment-select:checked');
+            const ids = Array.from(checkboxes).map(checkbox => checkbox.value);
+
+            if ( ids.length ) {
+                widget.querySelectorAll('.attachment-bulk-actions .btn').forEach(elt => {
+                    elt.classList.remove('disabled');
+                    elt.removeAttribute('aria-disabled');
+                });
+            }
+            else {
+                widget.querySelectorAll('.attachment-bulk-actions .btn').forEach(elt => {
+                    elt.classList.add('disabled');
+                    elt.setAttribute('aria-disabled', true);
+                });
+            }
+
+            widget.querySelector('.attachment-bulk-download')?.setAttribute('hx-vals', JSON.stringify({ ids: ids }));
+            widget.querySelector('.attachment-bulk-create')?.setAttribute('hx-vals', JSON.stringify({ AttachExisting: ids }));
+
+            // Mirror the server-side MaxBulkAttachment{Count,TotalSize} caps client-side:
+            // disable any unchecked checkbox that would push the selection over either limit.
+            if (widget.querySelector('.attachment-bulk-actions')) {
+                const maxCount = RT.Config.MaxBulkAttachmentCount;
+                const maxTotalSize = RT.Config.MaxBulkAttachmentTotalSize;
+                const selectedSize = Array.from(checkboxes).reduce((sum, cb) => {
+                    const row = cb.closest('[data-size]');
+                    return sum + (parseInt(row?.dataset.size, 10) || 0);
+                }, 0);
+
+                widget.querySelectorAll('input.attachment-select:not(:checked)').forEach(cb => {
+                    let blocked = false;
+                    if (maxCount && ids.length >= maxCount) {
+                        blocked = true;
+                    }
+                    if (!blocked && maxTotalSize) {
+                        const row = cb.closest('[data-size]');
+                        const size = parseInt(row?.dataset.size, 10) || 0;
+                        if (selectedSize + size > maxTotalSize) blocked = true;
+                    }
+                    cb.disabled = blocked;
+                });
+            }
+        });
+    });
+
+    elt.querySelectorAll('.attachment-bulk-download, .attachment-bulk-create').forEach(elt => {
+        elt.addEventListener('click', evt => {
+            if (evt.currentTarget.classList.contains('disabled')) {
+                evt.preventDefault();
+                evt.stopPropagation();
+            }
+        });
+    });
+
+    elt.querySelector('.attachment-bulk-delete')?.addEventListener('click', evt => {
+        evt.preventDefault();
+        if (evt.currentTarget.classList.contains('disabled')) return;
+
+        const widget = evt.target.closest('.titlebox');
+        const checkboxes = widget ? widget.querySelectorAll('input.attachment-select:checked') : [];
+        const items = Array.from(checkboxes).map(cb => {
+            const row = cb.closest('[data-id]');
+            return { id: cb.value, name: row ? row.getAttribute('data-name') : '' };
+        });
+        if (!items.length) return;
+
+        showAttachmentDeleteModal(widget, items);
+    });
+
+    elt.querySelector('.attachment-delete-confirm')?.addEventListener('click', evt => {
+        const list = evt.target.closest('.titlebox')?.querySelector('.attachment-list');
+        const ticketId = list?.dataset.ticketId;
+        const url = list?.dataset.updateUrl;
+        if (!ticketId || !url) return;
+
+        const ids = JSON.parse(evt.currentTarget.getAttribute('data-ids') || '[]');
+        if (!ids.length) return;
+
+        htmx.ajax('POST', url, {
+            source: list,
+            swap: 'none',
+            values: { id: ticketId, DeleteAttachments: ids }
         });
     });
 
@@ -907,6 +1263,7 @@ document.addEventListener('htmx:load', function(evt) {
     }
 
     expandCalendar(elt);
+    fitLinksTree(elt);
 
     // Delay calendar popup requests so that mousing across the calendar
     // does not fire a request for every ticket the cursor passes over.
@@ -921,6 +1278,20 @@ document.addEventListener('htmx:load', function(evt) {
             clearTimeout(el._calendarHoverTimer);
         });
     });
+
+    // Scan the whole document, not just the swap root: a lazy-loaded portlet swap's root may not
+    // contain the filter bar. initLinksFilter is idempotent.
+    document.querySelectorAll('.links-filter-form').forEach(el => initLinksFilter(el));
+
+    // matches/add: include elt itself, not just descendants (create pages have no portlet wrapper).
+    const addLinkSections = new Set(elt.querySelectorAll('.add-links-section'));
+    if (elt.matches && elt.matches('.add-links-section')) addLinkSections.add(elt);
+    addLinkSections.forEach(el => initAddLinkRows(el));
+
+});
+
+document.addEventListener('shown.bs.collapse', function (e) {
+    fitLinksTree(e.target);
 });
 
 /* Load the owner dropdown when the user clicks the pencil in basics */
@@ -939,8 +1310,9 @@ jQuery(document).on('click', '.titlebox[data-inline-edit-behavior="click"] > .ti
         return;
     }
 
-    // Bypass links, buttons and radio/checkbox controls too
-    if (jQuery(e.target).closest('a, button, div.custom-radio, div.custom-checkbox').length) {
+    // Bypass links, buttons and radio/checkbox controls -- plus inline-editable cells and the
+    // Links filter, which are their own controls and must not trigger the panel's click-to-edit.
+    if (jQuery(e.target).closest('a, button, div.custom-radio, div.custom-checkbox, .editable, .links-filter-form').length) {
         return;
     }
 
@@ -958,6 +1330,34 @@ jQuery(document).on('click', '.titlebox[data-inline-edit-behavior="click"] > .ti
 // Hide the tooltip everywhere when the element is clicked
 jQuery(document).on('click', '[data-bs-toggle="tooltip"]', function (e) {
     jQuery('[data-bs-toggle="tooltip"]').tooltip("hide");
+});
+
+// A mouse button can focus the toggle without the click above firing (e.g. right-click to open a
+// link in a new tab), and the 'hover focus' trigger then holds a tooltip or popover open after the
+// mouse leaves. Only keyboard focus (:focus-visible) should keep it.
+// Delegated on document, as mouseleave doesn't bubble, so swapped-in toggles need no binding.
+document.addEventListener('mouseout', function (e) {
+    const toggle = e.target.closest?.('[data-bs-toggle="tooltip"], [data-bs-toggle="popover"]');
+    if (!toggle || toggle.contains(e.relatedTarget)) return;
+    if (toggle.matches(':focus-visible, :has(:focus-visible)')) return;
+    (bootstrap.Tooltip.getInstance(toggle) || bootstrap.Popover.getInstance(toggle))?.hide();
+});
+
+// Delegated on document so rows htmx swaps in need no binding and leave nothing to tear down.
+// The class follows 'change' only: setting .checked directly, as form.reset() does, leaves it stale.
+jQuery(document).on('change', 'input.delete-checkbox', function () {
+    const row = this.closest('tr, li');
+    if (row) row.classList.toggle('pending-delete', this.checked);
+});
+
+// A capped Links section's Show all control swaps in the whole section.
+document.addEventListener('click', function (e) {
+    const button = e.target.closest('.links-show-all');
+    if (!button) return;
+    e.preventDefault();
+    button.disabled = true;
+    linksSwapKeepingDeletes(button.closest('.links-section'), button.dataset.linksShowAllUrl, 'outerHTML')
+        .catch(() => { button.disabled = false; });
 });
 
 jQuery(document).on('click', 'a.delete-attach', function() {
@@ -1080,6 +1480,16 @@ jQuery(document).on('click', '.asset-create-linked-ticket', function (e) {
         bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
     });
 });
+// Lazy-load the Actions-menu Merge modal into the shared #dynamic-modal container.
+document.addEventListener('click', function (e) {
+    const link = e.target.closest('a.merge-ticket-modal-link');
+    if (!link) return;
+    e.preventDefault();
+    htmx.ajax('GET', link.getAttribute('href'), '#dynamic-modal').then(() => {
+        bootstrap.Modal.getOrCreateInstance('#dynamic-modal').show();
+    });
+});
+
 jQuery(document).on('click', '#bulk-update-create-linked-ticket', function (e) {
     e.preventDefault();
     var chkArray = [];
@@ -1304,6 +1714,17 @@ jQuery(function () {
         }, 150);
     });
 
+    let fitLinksTreeResizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(fitLinksTreeResizeTimeout);
+        fitLinksTreeResizeTimeout = setTimeout(() => {
+            fitLinksTree(document);
+        }, 150);
+    });
+
+    document.addEventListener('mouseover', linksTruncatedTooltip);
+    document.addEventListener('focusin', linksTruncatedTooltip);
+
     const html = document.querySelector('html');
     if ( html.getAttribute('data-bs-theme') === 'auto' ) {
         if ( window.matchMedia("(prefers-color-scheme:dark)").matches ) {
@@ -1315,3 +1736,4 @@ jQuery(function () {
     }
 
 });
+

@@ -53,7 +53,8 @@ $ContentLanguage => 'en'
 my $Config = {};
 $Config->{$_} = RT->Config->Get( $_, $session{CurrentUser} )
   for qw(rtname WebURL WebPath MessageBoxRichText MessageBoxRichTextHeight
-         MaxAttachmentSize WebDefaultStylesheet QuoteSelectedText OldestTransactionsFirst
+         MaxAttachmentSize MaxBulkAttachmentCount MaxBulkAttachmentTotalSize
+         WebDefaultStylesheet QuoteSelectedText OldestTransactionsFirst
          MessageBoxRichTextInitArguments EnableKeyboardShortcuts);
 
 # In case the value is string '0', which is true in js if condition.
@@ -107,6 +108,10 @@ my $Catalog = {
     http_message_network => 'Network Error: Unable to reach the RT server.', # loc
     http_message_network_get => 'Network Error: Unable to reach the RT server. Retrying...', # loc
     revoke => 'Revoke', # loc
+    zoom_in => 'Zoom in', # loc
+    zoom_out => 'Zoom out', # loc
+    fit_to_view => 'Fit to view', # loc
+    edit_transition => 'Edit transition', # loc
 };
 $_ = loc($_) for values %$Catalog;
 

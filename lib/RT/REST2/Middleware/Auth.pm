@@ -53,11 +53,17 @@ use warnings;
 
 use base 'Plack::Middleware';
 
+use Plack::Response;
+use RT::REST2::Util 'error_as_json';
+use JSON ();
+
 our @auth_priority = qw(
     login_from_cookie
     login_from_authtoken
     login_from_basicauth
 );
+
+our %SAFE_METHODS = map { $_ => 1 } qw(GET HEAD OPTIONS);
 
 sub call {
     my ($self, $env) = @_;
@@ -70,6 +76,9 @@ sub call {
     if ($env->{'rt.current_user'}) {
         return $self->app->($env);
     }
+    elsif ($env->{'rt.csrf'}) {
+        return $self->forbidden($env);
+    }
     else {
         return $self->unauthorized($env);
     }
@@ -81,6 +90,11 @@ sub login_from_cookie {
     # allow reusing authentication from the ordinary web UI so that
     # among other things our JS can use REST2
     if ($env->{HTTP_COOKIE}) {
+        unless ($self->request_origin_allowed($env)) {
+            $env->{'rt.csrf'} = 1;
+            return;
+        }
+
         no warnings 'redefine';
 
         # this is foul but LoadSessionFromCookie doesn't have a hook for
@@ -94,6 +108,15 @@ sub login_from_cookie {
         RT::Interface::Web::LoadSessionFromCookie();
 
         if (RT::Interface::Web::_UserLoggedIn) {
+            # A force-gated web session can't be used for REST2 either. The env
+            # flag makes unauthorized() return 401 instead of its cookie 302.
+            if ( RT->Config->Get('ExistingPasswordPolicyAction') eq 'force'
+                && $HTML::Mason::Commands::session{ExistingPasswordPolicyViolation} )
+            {
+                RT->Logger->error("REST/2.0 cookie auth rejected: existing password violates policy");
+                $env->{'rt.existing_password_policy_gated'} = 1;
+                return;
+            }
             return $HTML::Mason::Commands::session{CurrentUser};
         }
         else {
@@ -138,6 +161,27 @@ sub login_from_basicauth {
         $system_user->Load(1);    # User with ID 1 should always exist!
 
         if ($cu->id and $cu->IsPassword($pass)) {
+            unless ( RT->Config->Get('DisableMFA') ) {
+                my $user_su = RT::User->new( RT->SystemUser );
+                $user_su->Load( $cu->Id );
+                my $mode = $user_su->EffectiveMFAPolicy->{Mode} // 'Off';
+                if ( $mode eq 'Required' || ( $mode eq 'Optional' && $user_su->TOTPEnrolled ) ) {
+                    RT->Logger->error("REST login rejected for $user: MFA required, use an auth token");
+                    return;
+                }
+            }
+
+            if ( RT->Config->Get('ExistingPasswordPolicyAction') eq 'force' ) {
+                my $user_su = RT::User->new( RT->SystemUser );
+                $user_su->Load( $cu->Id );
+                my ($ok) = $user_su->ValidatePassword($pass);
+                unless ($ok) {
+                    RT->Logger->error("REST login rejected for $user: existing password violates policy");
+                    $env->{'rt.existing_password_policy_gated'} = 1;
+                    return;
+                }
+            }
+
             return $cu;
         }
         else {
@@ -153,6 +197,39 @@ sub login_from_basicauth {
     return;
 }
 
+sub request_origin_allowed {
+    my $self = shift;
+    my $env = shift;
+
+    return 1 if $SAFE_METHODS{ $env->{REQUEST_METHOD} || '' };
+    return 1 unless RT->Config->Get('RestrictReferrer');
+
+    my $origin = $env->{HTTP_ORIGIN} || $env->{HTTP_REFERER};
+    return 0 unless $origin and $origin ne 'null';
+
+    my ($allowed) = RT::Interface::Web::IsRefererCSRFWhitelisted($origin);
+    return $allowed ? 1 : 0;
+}
+
+sub forbidden {
+    my $self = shift;
+    my $env = shift;
+
+    RT->Logger->notice(
+        "Possible CSRF: REST2 " . ($env->{REQUEST_METHOD} || '') . " request from origin "
+        . ($env->{HTTP_ORIGIN} || $env->{HTTP_REFERER} || '(none supplied)')
+        . " is not allowed by RT's configured hostname or whitelisted hosts"
+    );
+
+    my $body = JSON::to_json( { message => 'Cross-site request forgery protection refused this request' } );
+    return [
+        403,
+        [ 'Content-Type'   => 'application/json; charset=utf-8',
+          'Content-Length' => length $body ],
+        [ $body ],
+    ];
+}
+
 sub _looks_like_browser {
     my $self = shift;
     my $env = shift;
@@ -165,6 +242,15 @@ sub _looks_like_browser {
 sub unauthorized {
     my $self = shift;
     my $env = shift;
+
+    # Set for force-gated sessions and password logins
+    # JSON so ErrorAsJSON doesn't replace the message with a generic one
+    if ($env->{'rt.existing_password_policy_gated'}) {
+        my $res = Plack::Response->new(401);
+        error_as_json( $res, undef,
+            'Your password no longer meets the current password policy. Log in via the web interface to update it.' );
+        return $res->finalize;
+    }
 
     if ($self->_looks_like_browser($env)) {
         my $url = RT->Config->Get('WebPath') . '/';

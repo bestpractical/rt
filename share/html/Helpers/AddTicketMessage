@@ -71,11 +71,10 @@
         <&|/Widgets/TitleBox, title => loc('Message') &>
           <& /Ticket/Elements/MessageDetails,
             %ARGS,
-            TicketObj               => $Ticket,
-            HideCc                  => 1,
-            HideBcc                 => 1,
-            HideAttachments         => 1,
-            ArticleAutoSubmitAction => 'inlineAddMessageIncludeArticle()'
+            TicketObj       => $Ticket,
+            HideCc          => 1,
+            HideBcc         => 1,
+            HideAttachments => 1,
           &>
           <div class="row mt-2">
             <div class="col-12 text-end">

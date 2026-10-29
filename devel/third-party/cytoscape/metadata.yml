@@ -1,0 +1,39 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: cytoscape
+version: "3.33.4"
+
+upstream:
+  homepage: https://js.cytoscape.org/
+  repository: https://github.com/cytoscape/cytoscape.js
+
+license:
+  spdx: MIT
+  file: LICENSE
+
+purl: pkg:npm/cytoscape@3.33.4
+cpe: ~
+
+description: >
+  Graph theory (network) library for visualization and analysis.
+
+shipped: true
+security-critical: false
+
+upgrade-instructions: README
+
+artifacts:
+  - from: dist/cytoscape.umd.js
+    to: devel/third-party/cytoscape/cytoscape.umd.js
+  - from: dist/cytoscape.min.js
+    to: share/static/js/cytoscape.min.js
+
+patches: []
+
+notes: ~

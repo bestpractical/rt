@@ -1,6 +1,25 @@
 use strict;
 use warnings;
 
+# Returns true if the ACE's principal already has a DIRECT ACE for $new_right
+# on the same object, ignoring inherited (group-membership) rights. Used to
+# collapse multiple old rights that converge on one new right for the SAME
+# principal (e.g. the three dashboard rights) without deleting a principal's
+# own ACE just because a group it belongs to was migrated first. This applies
+# to any principal that inherits through membership -- a subgroup of the
+# migrated group, or a user who is a member of it. Using HasRight here would
+# honor that inheritance and wrongly delete the principal's own direct grant.
+sub _has_direct_ace {
+    my ( $ace, $new_right ) = @_;
+    my $existing = RT::ACL->new( RT->SystemUser );
+    $existing->Limit( FIELD => 'RightName',     VALUE => $new_right );
+    $existing->Limit( FIELD => 'PrincipalId',   VALUE => $ace->__Value('PrincipalId') );
+    $existing->Limit( FIELD => 'PrincipalType', VALUE => $ace->__Value('PrincipalType') );
+    $existing->Limit( FIELD => 'ObjectType',    VALUE => $ace->__Value('ObjectType') );
+    $existing->Limit( FIELD => 'ObjectId',      VALUE => $ace->__Value('ObjectId') );
+    return $existing->Count ? 1 : 0;
+}
+
 our @Final = (
     sub {
         RT->Logger->debug("Migrating old saved search rights");
@@ -38,21 +57,21 @@ our @Final = (
             }
 
             if ($new_right) {
-                if ( $principal->HasRight( Object => $object, Right => $new_right ) ) {
-                    # If they already added the new right, just remove the old record
+                if ( _has_direct_ace( $ace, $new_right ) ) {
+                    # This principal already has a direct ACE for the new right on
+                    # this object (a true duplicate), so just remove the old record.
                     my ( $ret, $msg ) = $ace->DBIx::SearchBuilder::Record::Delete;
                     if ( !$ret ) {
                         RT->Logger->error( "Couldn't delete $right for principal #" . $principal->Id . ": $msg" );
                     }
                 }
                 else {
-                    # No new right has been added, so update the old record with the new right name
+                    # No direct new right exists, so update the old record with the new right name
                     my ( $ret, $msg ) = $ace->__Set( Field => 'RightName', Value => $new_right );
                     if ( !$ret ) {
                         RT->Logger->error(
                             "Couldn't rename $right to $new_right for principal #" . $principal->Id . ": $msg" );
                     }
-                    RT::Principal->InvalidateACLCache(); # Sync rights check
                 }
             }
         }
@@ -75,21 +94,21 @@ our @Final = (
 
             my $new_right = $right =~ /Group/ ? 'AdminGroupDashboard' : 'AdminDashboard';
 
-            if ( $principal->HasRight( Object => $object, Right => $new_right ) ) {
-                # If they already added the new right, just remove the old record
+            if ( _has_direct_ace( $ace, $new_right ) ) {
+                # This principal already has a direct ACE for the new right on
+                # this object (a true duplicate), so just remove the old record.
                 my ( $ret, $msg ) = $ace->DBIx::SearchBuilder::Record::Delete;
                 if ( !$ret ) {
                     RT->Logger->error( "Couldn't delete $right for principal #" . $principal->Id . ": $msg" );
                 }
             }
             else {
-                # No new right has been added, so update the old record with the new right name
+                # No direct new right exists, so update the old record with the new right name
                 my ( $ret, $msg ) = $ace->__Set( Field => 'RightName', Value => $new_right );
                 if ( !$ret ) {
                     RT->Logger->error(
                         "Couldn't rename $right to $new_right for principal #" . $principal->Id . ": $msg" );
                 }
-                RT::Principal->InvalidateACLCache(); # Sync rights check
             }
         }
     },

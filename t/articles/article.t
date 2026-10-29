@@ -258,6 +258,56 @@ ok($art->URIObj);
 ok($art->__Value('URI') eq $art->URIObj->URI, "The uri in the db is set correctly");
 
 
+diag "SetClass must reject empty/undef/0/invalid class values";
+{
+    my $ecc1 = RT::Class->new( RT->SystemUser );
+    ( $id, $msg ) = $ecc1->Create( Name => "EmptyClassTest1-$$" );
+    ok( $id, $msg );
+
+    my $ecc2 = RT::Class->new( RT->SystemUser );
+    ( $id, $msg ) = $ecc2->Create( Name => "EmptyClassTest2-$$" );
+    ok( $id, $msg );
+
+    my $ea = RT::Article->new( RT->SystemUser );
+    ( $id, $msg ) = $ea->Create( Class => $ecc1->id, Name => "EmptyClassArticle-$$" );
+    ok( $id, $msg );
+    is( $ea->Class, $ecc1->id, "Article starts in class " . $ecc1->id );
+
+    # Empty string
+    ( $val, $msg ) = $ea->SetClass('');
+    ok( !$val, "SetClass('') is rejected: $msg" );
+    is( $ea->Class, $ecc1->id, "Class unchanged after SetClass('')" );
+
+    # undef
+    ( $val, $msg ) = $ea->SetClass(undef);
+    ok( !$val, "SetClass(undef) is rejected: $msg" );
+    is( $ea->Class, $ecc1->id, "Class unchanged after SetClass(undef)" );
+
+    # zero
+    ( $val, $msg ) = $ea->SetClass(0);
+    ok( !$val, "SetClass(0) is rejected: $msg" );
+    is( $ea->Class, $ecc1->id, "Class unchanged after SetClass(0)" );
+
+    # non-existent class id
+    ( $val, $msg ) = $ea->SetClass( $ecc2->id + 1_000_000 );
+    ok( !$val, "SetClass(non-existent id) is rejected: $msg" );
+    is( $ea->Class, $ecc1->id, "Class unchanged after SetClass(non-existent id)" );
+
+    # The web/REST update path with an explicit empty Class
+    $ea->Update( AttributesRef => ['Class'], ARGSRef => { Class => '' } );
+    is( $ea->Class, $ecc1->id, "Class unchanged after Update with empty Class" );
+
+    # Positive control: a valid class id still works
+    ( $val, $msg ) = $ea->SetClass( $ecc2->id );
+    ok( $val, "SetClass(valid id) succeeds: $msg" );
+    is( $ea->Class, $ecc2->id, "Class changed to " . $ecc2->id );
+
+    # Positive control: a class name still resolves to its id
+    ( $val, $msg ) = $ea->SetClass( $ecc1->Name );
+    ok( $val, "SetClass(class name) succeeds: $msg" );
+    is( $ea->Class, $ecc1->id, "Class changed back to " . $ecc1->id . " via name" );
+}
+
 my $art_id = $art->id;
 $art = RT::Article->new($RT::SystemUser);
 $art->Load($art_id);

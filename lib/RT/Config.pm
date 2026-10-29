@@ -56,7 +56,6 @@ use File::Spec ();
 use DateTime::TimeZone;
 use POSIX qw(strftime tzset);
 use Symbol::Global::Name;
-use List::MoreUtils 'uniq';
 use Clone ();
 use Hash::Merge;
 use Hash::Merge::Extra;
@@ -105,6 +104,78 @@ $page_layout_mapping_merger->add_behavior_spec($page_layout_mapping_merger_behav
 
 # Store log messages generated before RT::Logger is available
 our @PreInitLoggerMessages;
+
+# For custom field groupings, we use a merger that normalizes both operands
+# before merging them. Two config files can each write a different one of the
+# accepted shapes, and the default merger only recurses on HASH/HASH, returning
+# the left-hand (already loaded) operand for every other pairing, so one
+# file's groupings are silently discarded. Once both sides are keyed by
+# category, they can be merged category by category and group by group, with
+# the left-hand list of custom fields winning any grouping both files define.
+#
+# Groupings written as a hash carry no order of their own and are displayed
+# alphabetically, so _CanonicalizeCustomFieldGroupings leaves them as a hash and
+# they are sorted only once, by _FlattenCustomFieldGroupings, after every config
+# file has been merged.
+#
+# Only the HASH/HASH entry is replaced, and it does not recurse back into the
+# merger, so it is called exactly once per merge with the whole class-keyed
+# structure. Each nested value's meaning is therefore known from its position
+# here, rather than having to be guessed by a handler that gets no path
+# information.
+my $custom_field_groupings_merger = Hash::Merge->new();
+my $custom_field_groupings_merger_behavior = Clone::clone(Hash::Merge::Extra::L_OVERRIDE);
+$custom_field_groupings_merger_behavior->{HASH}{HASH} = sub {
+    my $left  = RT::Config->_CanonicalizeCustomFieldGroupings( shift );
+    my $right = RT::Config->_CanonicalizeCustomFieldGroupings( shift );
+
+    for my $class ( keys %$right ) {
+        unless ( $left->{$class} ) {
+            $left->{$class} = $right->{$class};
+            next;
+        }
+
+        for my $category ( keys %{ $right->{$class} } ) {
+            my $l = $left->{$class}{$category};
+            my $r = $right->{$class}{$category};
+
+            unless ($l) {
+                $left->{$class}{$category} = $r;
+                next;
+            }
+
+            # Two unsorted sets of groupings stay unsorted, to be sorted as a
+            # whole once all config files are loaded.
+            if ( ref $l eq 'HASH' && ref $r eq 'HASH' ) {
+                for my $group ( keys %$r ) {
+                    $l->{$group} //= $r->{$group};
+                }
+                next;
+            }
+
+            # At least one side is explicitly ordered, so merge the two
+            # "group => [ cfs ]" lists by group name, keeping left-hand order
+            # and the left-hand custom fields of any group both sides define.
+            my ( @groups, %cfs );
+            my @pairs = (
+                RT::Config->_CustomFieldGroupingPairs($l),
+                RT::Config->_CustomFieldGroupingPairs($r),
+            );
+            while (@pairs) {
+                my $group = shift @pairs;
+                my $list  = shift @pairs;
+                push @groups, $group unless exists $cfs{$group};
+                $cfs{$group} //= $list;
+            }
+
+            $left->{$class}{$category} = [ map { $_, $cfs{$_} } @groups ];
+        }
+    }
+
+    return $left;
+};
+
+$custom_field_groupings_merger->add_behavior_spec($custom_field_groupings_merger_behavior, "CUSTOM_FIELD_GROUPINGS");
 
 =head1 NAME
 
@@ -320,34 +391,14 @@ our %META;
         WidgetArguments => {
             Description => 'Theme',                  #loc
             Callback    => sub {
-                state @stylesheets;
-                unless (@stylesheets) {
-                    for my $static_path ( RT::Interface::Web->StaticRoots ) {
-                        my $css_path =
-                          File::Spec->catdir( $static_path, 'css' );
-                        next unless -d $css_path;
-                        if ( opendir my $dh, $css_path ) {
-                            push @stylesheets, grep {
-                                -e File::Spec->catfile( $css_path, $_, 'main.css' )
-                            } readdir $dh;
-                        }
-                        else {
-                            RT->Logger->error("Can't read $css_path: $!");
-                        }
-                    }
-                    @stylesheets = sort { lc $a cmp lc $b } uniq @stylesheets;
-                }
-                return { Values => \@stylesheets };
+                return { Values => [ RT::Interface::Web->Themes ] };
             },
         },
         PostLoadCheck => sub {
             my $self = shift;
             my $value = $self->Get('WebDefaultStylesheet');
 
-            my @roots = RT::Interface::Web->StaticRoots;
-            for my $root (@roots) {
-                return if -d "$root/css/$value";
-            }
+            return if grep { $_ eq $value } RT::Interface::Web->Themes;
 
             $RT::Logger->warning(
                 "The default stylesheet ($value) does not exist in this instance of RT. "
@@ -547,6 +598,15 @@ our %META;
             Hints => 'Display all plain-text attachments in a monospace font with formatting preserved, but wrapping as needed.', #loc
         },
     },
+    LifecycleStatusChangeConfirm => {
+        Section         => 'Ticket display',
+        Overridable     => 1,
+        SortOrder       => 5.1,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Confirm status changes made from the lifecycle graph', #loc
+        },
+    },
     MoreAboutRequestorTicketList => {
         Section         => 'Ticket display',                       #loc
         Overridable     => 1,
@@ -682,7 +742,29 @@ our %META;
             Hints       => 'Rows for the Description edit box on tickets', # loc
         }
     },
-
+    LinksDefaultType => {
+        Section         => 'Ticket display',
+        Overridable     => 1,
+        SortOrder       => 16,
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Default link type',    # loc
+            Hints       => 'The link type first selected when adding links to tickets and assets', # loc
+            Values      => [qw(DependsOn DependedOnBy MemberOf Members RefersTo ReferredToBy)],
+            ValuesLabel => {
+                DependsOn    => 'Depends on',        # loc
+                DependedOnBy => 'Depended on by',    # loc
+                MemberOf     => 'Child of',          # loc
+                Members      => 'Parent of',         # loc
+                RefersTo     => 'Refers to',         # loc
+                ReferredToBy => 'Referred to by',    # loc
+            },
+        },
+    },
+    LinksFormat => {
+        Type      => 'HASH',
+        MergeMode => 'recursive',
+    },
     # User overridable locale options
     DateTimeFormat => {
         Section         => 'Locale',                       #loc
@@ -874,6 +956,18 @@ our %META;
             return if RT::StaticUtil::RequireModule("GraphViz2");
             $RT::Logger->debug("You've enabled GraphViz, but we couldn't load the module: $@");
             $self->Set( DisableGraphViz => 1 );
+        },
+    },
+    DisableMFA => {
+        Type            => 'SCALAR',
+        Widget          => '/Widgets/Form/Boolean',
+        PostLoadCheck   => sub {
+            my $self  = shift;
+            my $value = shift;
+            return if $value;
+            return if RT::StaticUtil::RequireModule("RT::MFA::TOTP");
+            RT->Logger->debug("You've enabled MFA, but we couldn't load the module: $@");
+            $self->Set( DisableMFA => 1 );
         },
     },
     MailCommand => {
@@ -1278,80 +1372,13 @@ our %META;
     CustomFieldGroupings => {
         Type            => 'HASH',
         MergeMode       => 'recursive',
+        Merger          => $custom_field_groupings_merger,
         PostLoadCheck   => sub {
             my $config = shift;
             # use scalar context intentionally to avoid not a hash error
             my $groups = $config->Get('CustomFieldGroupings') || {};
-
-            unless (ref($groups) eq 'HASH') {
-                RT->Logger->error("Config option \%CustomFieldGroupings is a @{[ref $groups]} not a HASH; ignoring");
-                $groups = {};
-            }
-
-            for my $class (keys %$groups) {
-                my %h;
-                if (ref($groups->{$class}) eq 'HASH') {
-                    for my $key ( keys %{ $groups->{$class} } ) {
-                        my $value = $groups->{$class}{$key};
-                        if ( ref $value eq 'ARRAY' ) {
-                            if ( ref $value->[1] eq 'ARRAY' ) {
-                                # 'RT::Ticket' => {
-                                #     General => [
-                                #         'Network' => [ 'IP Address', 'Router', ],
-                                #     ],
-                                # }
-                                $h{$key} = $value;
-                            }
-                            else {
-                                # 'RT::Ticket' => {
-                                #     'Network' => [ 'IP Address', 'Router', ],
-                                # }
-                                $h{Default} = [
-                                    map { $_, $groups->{$class}->{$_} }
-                                    sort { lc($a) cmp lc($b) } keys %{ $groups->{$class} }
-                                ];
-                                last;
-                            }
-                        }
-                        elsif ( ref $value eq 'HASH' ) {
-                            # 'RT::Ticket' => {
-                            #     General => {
-                            #         'Network' => [ 'IP Address', 'Router', ],
-                            #     },
-                            # }
-                            $h{$key} = [ map { $_, $groups->{$class}{$key}{$_} }
-                                    sort { lc($a) cmp lc($b) } keys %{ $groups->{$class}{$key} } ];
-                        }
-                        else {
-                            RT->Logger->error(
-                                "Config option \%CustomFieldGroupings{$class}{$key} is not a HASH or ARRAY; ignoring");
-                        }
-                    }
-                } elsif (ref($groups->{$class}) eq 'ARRAY') {
-                    $h{Default} = $groups->{$class};
-                } else {
-                    RT->Logger->error("Config option \%CustomFieldGroupings{$class} is not a HASH or ARRAY; ignoring");
-                    delete $groups->{$class};
-                    next;
-                }
-
-                $groups->{$class} = {};
-                for my $category ( keys %h ) {
-                    my @h = @{ $h{$category} };
-                    while (@h) {
-                        my $group = shift @h;
-                        my $ref   = shift @h;
-                        if ( ref($ref) eq 'ARRAY' ) {
-                            push @{ $groups->{$class}{$category} }, $group => $ref;
-                        }
-                        else {
-                            RT->Logger->error(
-                                "Config option \%CustomFieldGroupings{$class}{$category}{$group} is not an ARRAY; ignoring");
-                        }
-                    }
-                }
-            }
-            $config->Set( CustomFieldGroupings => %$groups );
+            my $merged = $config->_CanonicalizeCustomFieldGroupings($groups);
+            $config->Set( CustomFieldGroupings => %{ $config->_FlattenCustomFieldGroupings($merged) } );
         },
     },
     CustomDateRanges => {
@@ -1456,6 +1483,38 @@ our %META;
 
     DisablePasswordForAuthToken => {
         Widget => '/Widgets/Form/Boolean',
+    },
+
+    ResetPasswordAllowUsersWithoutPassword => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+
+    ResetPasswordCreateNewUserAndSetPassword => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+
+    ResetPasswordCreateNewUserAsPrivileged => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+
+    DisableResetPasswordOnLogin => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+
+    ResetLinkExpirySeconds => {
+        Widget => '/Widgets/Form/Integer',
+    },
+
+    ResetPasswordFromAddress => {
+        Widget => '/Widgets/Form/String',
+    },
+
+    HidePasswordResetErrors => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+
+    ResetRequestCooldown => {
+        Widget => '/Widgets/Form/Integer',
     },
 
     ExternalSettings => {
@@ -1742,9 +1801,6 @@ our %META;
     DropLongAttachments => {
         Widget => '/Widgets/Form/Boolean',
     },
-    EditCustomFieldsSingleColumn => {
-        Widget => '/Widgets/Form/Boolean',
-    },
     EnableReminders => {
         Widget => '/Widgets/Form/Boolean',
     },
@@ -1804,6 +1860,33 @@ our %META;
     },
     SearchResultsAutoRedirect => {
         Widget => '/Widgets/Form/Boolean',
+    },
+    SecretKey => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/String',
+        Obfuscate => sub {
+            my ($config, $sources, $user) = @_;
+            return $user->loc('Secret not printed');
+        },
+        PostLoadCheck => sub {
+            my $self = shift;
+            unless ( $self->Get('SecretKey') ) {
+                $self->Set( SecretKey => $self->Get('DatabasePassword') );
+            }
+
+            my $key = $self->Get('SecretKey') // '';
+            if ( $key eq '' || $key eq 'rt_pass' ) {
+                RT->Logger->warning(
+                    "SecretKey is empty or the default database password, which weakens password reset tokens "
+                        . "and TOTP secret encryption. Set \$SecretKey to a long, random value in RT_SiteConfig.pm"
+                );
+            }
+
+            if ( !$self->Get('DisableMFA') && $key eq ( $self->Get('DatabasePassword') // '' ) ) {
+                RT->Logger->warning( "SecretKey is not set or matches \$DatabasePassword; "
+                        . "changing the database password will break MFA login for all enrolled users" );
+            }
+        },
     },
     SelfServiceUseDashboard => {
         Widget => '/Widgets/Form/Boolean',
@@ -1993,7 +2076,10 @@ our %META;
     },
 
     AttachmentListCount => {
-        Widget => '/Widgets/Form/Integer',
+        Deprecated => {
+            LogLevel => "info",
+            Message  => "The AttachmentListCount configuration option no longer affects display; please remove it from your RT_SiteConfig.pm",
+        },
     },
     AutoLogoff => {
         Widget => '/Widgets/Form/Integer',
@@ -2013,10 +2099,19 @@ our %META;
     ExternalStorageCutoffSize => {
         Widget => '/Widgets/Form/Integer',
     },
+    LinksListCount => {
+        Widget => '/Widgets/Form/Integer',
+    },
     LogoutRefresh => {
         Widget => '/Widgets/Form/Integer',
     },
     MaxAttachmentSize => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    MaxBulkAttachmentCount => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    MaxBulkAttachmentTotalSize => {
         Widget => '/Widgets/Form/Integer',
     },
     MaxFulltextAttachmentSize => {
@@ -2025,13 +2120,152 @@ our %META;
     MaxUserImageSize => {
         Widget => '/Widgets/Form/Integer',
     },
-    MinimumPasswordLength => {
-        Widget => '/Widgets/Form/Integer',
+    PasswordPolicy => {
+        Type          => 'HASH',
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+            return unless defined $value;
+
+            my %valid_role  = map { $_ => 1 } qw(Default Privileged Unprivileged);
+            my %valid_field = map { $_ => 1 }
+                qw(MinLength RequireUpper RequireLower RequireDigit RequireSymbol NoUsername);
+
+            my %sanitized;
+            for my $role ( keys %$value ) {
+                unless ( $valid_role{$role} ) {
+                    RT->Logger->warning( "Invalid \$PasswordPolicy key '$role' "
+                            . "(must be one of 'Default', 'Privileged', 'Unprivileged'); ignoring" );
+                    next;
+                }
+
+                my $policy = $value->{$role};
+                unless ( ref $policy eq 'HASH' ) {
+                    RT->Logger->warning(
+                        "Invalid \$PasswordPolicy->{$role} value (must be a HASH ref); ignoring" );
+                    next;
+                }
+
+                my %clean;
+                if ( defined( my $min = $policy->{MinLength} ) ) {
+                    if ( $min =~ /^\d+$/ ) {
+                        $clean{MinLength} = $min;
+                    }
+                    else {
+                        RT->Logger->warning( "Invalid \$PasswordPolicy->{$role}{MinLength} value '$min' "
+                                . "(must be a non-negative integer); falling back to 0" );
+                        $clean{MinLength} = 0;
+                    }
+                }
+
+                for my $flag (qw(RequireUpper RequireLower RequireDigit RequireSymbol NoUsername)) {
+                    $clean{$flag} = $policy->{$flag} ? 1 : 0 if exists $policy->{$flag};
+                }
+
+                for my $k ( keys %$policy ) {
+                    next if $valid_field{$k};
+                    RT->Logger->warning("Unknown \$PasswordPolicy->{$role}{$k} key; ignoring");
+                }
+
+                $sanitized{$role} = \%clean;
+            }
+
+            $self->Set( PasswordPolicy => \%sanitized );
+        },
+    },
+    ExistingPasswordPolicyAction => {
+        Type            => 'SCALAR',
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Action for existing noncompliant passwords',    # loc
+            Values      => [qw(ignore notify force)],
+            ValuesLabel => {
+                ignore => 'Ignore: no action when existing passwords violate current policy',       # loc
+                notify => 'Notify: show a flash message linking to the compliance page',            # loc
+                force  => 'Force: gate every request until the user picks a compliant password',    # loc
+            },
+        },
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+            return
+                if defined $value
+                && ( $value eq 'ignore' || $value eq 'notify' || $value eq 'force' );
+            if ( defined $value ) {
+                RT->Logger->warning( "Invalid \$ExistingPasswordPolicyAction value '$value' "
+                        . "(must be one of 'ignore', 'notify', 'force'); falling back to 'ignore'" );
+            }
+            $self->Set( ExistingPasswordPolicyAction => 'ignore' );
+        },
+    },
+    MFAPolicy => {
+        Type          => 'HASH',
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+            return unless defined $value;
+
+            my %valid_mode = map { $_ => 1 } qw(Off Optional Required);
+            my %valid_role = map { $_ => 1 } qw(Default Privileged Unprivileged);
+
+            my %sanitized;
+            for my $role ( keys %$value ) {
+                unless ( $valid_role{$role} ) {
+                    RT->Logger->warning( "Invalid \$MFAPolicy key '$role' "
+                            . "(must be one of 'Default', 'Privileged', 'Unprivileged'); ignoring" );
+                    next;
+                }
+
+                my $policy = $value->{$role};
+                unless ( ref $policy eq 'HASH' ) {
+                    RT->Logger->warning(
+                        "Invalid \$MFAPolicy->{$role} value (must be a HASH ref); ignoring" );
+                    next;
+                }
+
+                my %clean;
+                my $mode = $policy->{Mode};
+                if ( defined $mode && $valid_mode{$mode} ) {
+                    $clean{Mode} = $mode;
+                }
+                else {
+                    if ( defined $mode ) {
+                        RT->Logger->warning( "Invalid \$MFAPolicy->{$role}{Mode} value '$mode' "
+                                . "(must be one of 'Off', 'Optional', 'Required'); falling back to 'Off'" );
+                    }
+                    $clean{Mode} = 'Off';
+                }
+
+                my $drift = $policy->{Drift};
+                if ( defined $drift && $drift =~ /^\d+$/ && $drift <= 5 ) {
+                    $clean{Drift} = $drift;
+                }
+                else {
+                    if ( defined $drift ) {
+                        RT->Logger->warning( "Invalid \$MFAPolicy->{$role}{Drift} value '$drift' "
+                                . "(must be a non-negative integer between 0 and 5); falling back to 0" );
+                    }
+                    $clean{Drift} = 0;
+                }
+
+                for my $k ( keys %$policy ) {
+                    next if $k eq 'Mode' || $k eq 'Drift';
+                    RT->Logger->warning("Unknown \$MFAPolicy->{$role}{$k} key; ignoring");
+                }
+
+                $sanitized{$role} = \%clean;
+            }
+
+            $self->Set( MFAPolicy => \%sanitized );
+        },
     },
     MoreAboutRequestorGroupsLimit => {
         Widget => '/Widgets/Form/Integer',
     },
     TicketsItemMapSize => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    ProgressiveSearchResultRows => {
         Widget => '/Widgets/Form/Integer',
     },
 
@@ -2075,15 +2309,22 @@ our %META;
             my $self = shift;
             return unless $self->Get('EmailDashboardIncludeCharts');
 
-            if ( RT::StaticUtil::RequireModule('WWW::Mechanize::Chrome') ) {
-                my $chrome = RT->Config->Get('ChromePath') || 'chromium';
-                if ( !WWW::Mechanize::Chrome->find_executable( $chrome ) ) {
-                    RT->Logger->warning("Can't find chrome executable from \$ChromePath value '$chrome', disabling \$EmailDashboardIncludeCharts");
-                    $self->Set( 'EmailDashboardIncludeCharts', 0 );
-                }
+            my $chrome = $self->Get('ChromePath') || 'chromium';
+            unless ( RT::StaticUtil::RequireModule('File::Which') ) {
+                RT->Logger->warning('File::Which is not installed, disabling $EmailDashboardIncludeCharts');
+                $self->Set( 'EmailDashboardIncludeCharts', 0 );
+                return;
+            }
+
+            if ( my $path = File::Which::which($chrome) ) {
+
+                # Cache the resolved path for the mailer.
+                $self->Set( 'ChromePath', $path );
             }
             else {
-                RT->Logger->warning('WWW::Mechanize::Chrome is not installed, disabling $EmailDashboardIncludeCharts');
+                RT->Logger->warning(
+                    "Can't find a Chrome-based browser from \$ChromePath value '$chrome', disabling \$EmailDashboardIncludeCharts"
+                );
                 $self->Set( 'EmailDashboardIncludeCharts', 0 );
             }
         },
@@ -3213,18 +3454,10 @@ sub RefreshConfigFromDatabase {
 
     if( RT->InstallMode ) { return; } # RT can't load the config in the DB if the DB is not there!
     my $needs_update = RT->System->ConfigCacheNeedsUpdate;
-    if ($needs_update > $database_config_cache_time) {
+    if ( $ENV{'RT_TEST_DISABLE_CONFIG_CACHE'} || $needs_update > $database_config_cache_time ) {
         $self->LoadConfigFromDatabase();
         $HTML::Mason::Commands::ReloadScrubber = 1;
-        if ( $ENV{'RT_TEST_DISABLE_CONFIG_CACHE'} ) {
-            # When running in test mode, disable the local DB config cache
-            # to allow for immediate config changes. Without this, tests needed
-            # to sleep for 1 second to allow time for config updates.
-            $database_config_cache_time = 0;
-        }
-        else {
-            $database_config_cache_time = $needs_update;
-        }
+        $database_config_cache_time = $needs_update;
         $self->PostLoadCheck;
     }
 }
@@ -3328,6 +3561,120 @@ sub LoadConfigFromDatabase {
     }
 
     $database_config_cache_time = $now;
+}
+
+# Handle log messages that happen before the Logger is available
+sub _LogConfigError {
+    my ( $self, $message ) = @_;
+    if ( RT->Logger ) {
+        RT->Logger->error($message);
+    }
+    else {
+        push @PreInitLoggerMessages, { Level => 'error', Message => $message };
+    }
+}
+
+# %CustomFieldGroupings accepts several shapes for a class. Normalize them all
+# to { class => { category => groupings } }, where groupings is either an
+# ARRAY of "group => [ cfs ]" pairs, when the config gave them in an explicit
+# order, or a HASH of "group => [ cfs ]", when it did not and they are to be
+# sorted by group name. _FlattenCustomFieldGroupings turns the latter into the
+# former, once all config files have been merged.
+sub _CanonicalizeCustomFieldGroupings {
+    my ( $self, $groups ) = @_;
+
+    unless ( ref($groups) eq 'HASH' ) {
+        $self->_LogConfigError("Config option \%CustomFieldGroupings is a @{[ref $groups]} not a HASH; ignoring");
+        return {};
+    }
+
+    for my $class ( keys %$groups ) {
+        my $value = $groups->{$class};
+
+        if ( ref $value eq 'HASH' ) {
+            my %categories;
+            for my $key ( keys %$value ) {
+                my $entry = $value->{$key};
+                if ( ref $entry eq 'ARRAY' ) {
+                    if ( ref $entry->[1] eq 'ARRAY' ) {
+                        # 'RT::Ticket' => {
+                        #     General => [
+                        #         'Network' => [ 'IP Address', 'Router', ],
+                        #     ],
+                        # }
+                        $categories{$key} = $entry;
+                    }
+                    else {
+                        # 'RT::Ticket' => {
+                        #     'Network' => [ 'IP Address', 'Router', ],
+                        # }
+                        %categories = ( Default => $value );
+                        last;
+                    }
+                }
+                elsif ( ref $entry eq 'HASH' ) {
+                    # 'RT::Ticket' => {
+                    #     General => {
+                    #         'Network' => [ 'IP Address', 'Router', ],
+                    #     },
+                    # }
+                    $categories{$key} = $entry;
+                }
+                else {
+                    $self->_LogConfigError(
+                        "Config option \%CustomFieldGroupings{$class}{$key} is not a HASH or ARRAY; ignoring");
+                }
+            }
+            $groups->{$class} = \%categories;
+        }
+        elsif ( ref $value eq 'ARRAY' ) {
+            # 'RT::Ticket' => [ 'Network' => [ 'IP Address', 'Router', ], ]
+            $groups->{$class} = { Default => $value };
+        }
+        else {
+            $self->_LogConfigError("Config option \%CustomFieldGroupings{$class} is not a HASH or ARRAY; ignoring");
+            delete $groups->{$class};
+        }
+    }
+
+    return $groups;
+}
+
+# Reduce the groupings of one category, as normalized by
+# _CanonicalizeCustomFieldGroupings, to a list of "group => [ cfs ]" pairs,
+# sorting the groups by name when the config did not order them itself.
+sub _CustomFieldGroupingPairs {
+    my ( $self, $groupings ) = @_;
+    return @$groupings if ref $groupings eq 'ARRAY';
+    return map { $_, $groupings->{$_} } sort { lc($a) cmp lc($b) } keys %$groupings;
+}
+
+# Turn the normalized groupings of every class into "group => [ cfs ]" lists,
+# sorting the groups of any category the config didn't order itself.
+sub _FlattenCustomFieldGroupings {
+    my ( $self, $groups ) = @_;
+
+    for my $class ( keys %$groups ) {
+        my $categories = $groups->{$class};
+        for my $category ( keys %$categories ) {
+            my @pairs = $self->_CustomFieldGroupingPairs( $categories->{$category} );
+            delete $categories->{$category};
+
+            while (@pairs) {
+                my $group = shift @pairs;
+                my $cfs   = shift @pairs;
+                if ( ref($cfs) eq 'ARRAY' ) {
+                    push @{ $categories->{$category} }, $group => $cfs;
+                }
+                else {
+                    $self->_LogConfigError(
+                        "Config option \%CustomFieldGroupings{$class}{$category}{$group} is not an ARRAY; ignoring");
+                }
+            }
+        }
+    }
+
+    return $groups;
 }
 
 sub _GetFromFilesOnly {

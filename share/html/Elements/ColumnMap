@@ -336,6 +336,33 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
         value => sub { return $role_value->('CustomRole', @_) },
     },
 
+    DeleteLinkCheckBox => {
+        title => sub { \ GetSVGImage( Name => 'trash', Title => loc('Remove') ) },
+        value => sub {
+            my $record = $_[0];
+            my $type   = $m->notes('LinkDeleteType') or return \'';
+            my $mode   = $m->notes('LinkDeleteMode') || 'Target';
+            my $uri    = $record->URI;
+
+            # Build the DeleteLink-* name exactly as ProcessRecordLinks parses it:
+            #   Target mode: DeleteLink--<Type>-<targetURI>
+            #   Base mode:   DeleteLink-<baseURI>-<Type>-
+            my $name = $mode eq 'Base'
+                ? "DeleteLink-$uri-$type-"
+                : "DeleteLink--$type-$uri";
+
+            ( my $object_type = ref $record ) =~ s/^RT:://;
+
+            my $label
+                = $record->isa('RT::User')    ? loc( 'Remove link to [_1] [_2]', loc($object_type), $record->Format )
+                : $record->isa('RT::Group')   ? loc( 'Remove link to [_1] [_2]', loc($object_type), $record->Label )
+                : $record->isa('RT::Article') ? loc( 'Remove link to [_1] [_2]', loc($object_type), $record->Name )
+                :                               loc( 'Remove link to [_1] #[_2]', loc($object_type), $record->id );
+
+            return \ $m->scomp( '/Elements/DeleteCheckBox', Name => $name, Label => $label );
+        },
+    },
+
     CheckBox => {
         title => sub {
             my $name = $_[1] || 'SelectedTickets';

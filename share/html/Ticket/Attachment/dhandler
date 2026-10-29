@@ -46,6 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%perl>
+use RT::Util 'CanonicalizeContentType';
+
 my ( $ticket, $trans, $attach, $filename );
 my $arg = $m->dhandler_arg;    # get rest of path
 if ( $arg =~ m{^(\d+)/(\d+)} ) {
@@ -66,10 +68,10 @@ unless ( $AttachmentObj->TransactionId() == $trans ) {
 }
 
 my $content = $AttachmentObj->OriginalContent;
-my $content_type = $AttachmentObj->ContentType || 'text/plain';
+my $content_type = CanonicalizeContentType( $AttachmentObj->ContentType ) || 'text/plain';
 
 my $attachment_regex = qr{^(image/svg\+xml|application/pdf)}i;
-if ( RT->Config->Get('AlwaysDownloadAttachments') || ($content_type =~ $attachment_regex) ) {
+if ( $AlwaysDownloadAttachments || RT->Config->Get('AlwaysDownloadAttachments') || ($content_type =~ $attachment_regex) ) {
     RT::Interface::Web::RedirectBoostedRequest();
     $r->headers_out->{'Content-Disposition'} = "attachment";
 }
@@ -107,6 +109,11 @@ $m->clear_buffer();
 $m->out($content);
 $m->abort;
 </%perl>
+
+<%ARGS>
+$AlwaysDownloadAttachments => 0
+</%ARGS>
+
 <%attr>
 AutoFlush => 0
 </%attr>

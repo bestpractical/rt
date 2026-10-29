@@ -137,10 +137,40 @@ sub LimitToTicket {
 
 }
 
+=head2 SingleTicketSearch [BOOLEAN]
+
+Gets or sets whether the caller limits this search to a single ticket's
+history. It only applies to MySQL and MariaDB full text indexing, where a
+C<Content> search normally runs C<MATCH>, which InnoDB evaluates against
+the whole index. When this is true, the search instead scans the ticket's
+own indexed content, which is much faster for one ticket. Unlike C<MATCH>,
+boolean mode operators other than a trailing C<*> match literally, and
+stopwords and short words are not ignored. On MySQL this requires
+C<regexp_time_limit> to be 0.
+
+=cut
+
+sub SingleTicketSearch {
+    my $self = shift;
+    $self->{_single_ticket_search} = shift if @_;
+    return $self->{_single_ticket_search};
+}
+
+sub _CanRegexpContent {
+    return 1 if RT->DatabaseHandle->_IsMariaDB;
+    return ( RT->DatabaseHandle->FetchResult('SELECT @@regexp_time_limit') // '' ) eq '0';
+}
+
 
 sub AddRecord {
     my $self = shift;
     my ($record) = @_;
+
+    # CurrentUserCanSee says no for these, but the checks below are skipped
+    # for most types when UseSQLForACLChecks is on, and no SQL limit expresses
+    # this. Grouped report rows are not transactions and have nothing to hide.
+    return if $record->isa('RT::Transaction') && $record->IsHiddenTimeFieldChange;
+
     return $self->SUPER::AddRecord($record) if $self->{_current_user_can_see_all};
 
     if ( $self->{_is_ticket_only_search} && RT->Config->Get('UseSQLForACLChecks') ) {
@@ -326,6 +356,8 @@ Meta Data:
 sub _EnumLimit {
     my ( $sb, $field, $op, $value, @rest ) = @_;
 
+    return if $sb->IsHiddenTimeField($field);
+
     # SQL::Statement changes != to <>.  (Can we remove this now?)
     $op = "!=" if $op eq "<>";
 
@@ -362,6 +394,31 @@ sub _EnumLimit {
     );
 }
 
+=head2 IsHiddenTimeField FIELD
+
+Returns true if FIELD is one of the time columns and the current user may not
+see it, per L<RT::Ticket/CurrentUserCanSeeTime>.
+
+=cut
+
+sub IsHiddenTimeField {
+    my $self  = shift;
+    my $field = shift;
+
+    return 0 unless defined $field;
+
+    # TimeTaken is ours; _TicketLimit drops the Ticket prefix before it asks about the ticket's own columns
+    return 0 unless RT::Transaction->IsTimeField($field) || RT::Ticket->IsTimeField($field);
+
+    my $ticket = RT::Ticket->new( $self->CurrentUser );
+    return $ticket->CurrentUserCanSeeTime ? 0 : 1;
+}
+
+sub OrderByCols {
+    my $self = shift;
+    return $self->SUPER::OrderByCols( grep { !$self->IsHiddenTimeField( $_->{FIELD} ) } @_ );
+}
+
 =head2 _IntLimit
 
 Handle fields where the values are limited to integers.  (id)
@@ -373,6 +430,8 @@ Meta Data:
 
 sub _IntLimit {
     my ( $sb, $field, $op, $value, @rest ) = @_;
+
+    return if $sb->IsHiddenTimeField($field);
 
     my $is_a_like = $op =~ /MATCHES|ENDSWITH|STARTSWITH|LIKE/i;
 
@@ -407,6 +466,8 @@ Meta Data:
 
 sub _DateLimit {
     my ( $sb, $field, $op, $value, %rest ) = @_;
+
+    return if $sb->IsHiddenTimeField($field);
 
     die "Invalid Date Op: $op"
         unless $op =~ /^(=|>|<|>=|<=|IS(\s+NOT)?)$/i;
@@ -804,15 +865,39 @@ sub _AttachContentLimit {
         }
         elsif ( $db_type eq 'mysql' ) {
             my $dbh = $RT::Handle->dbh;
-            # Wrap multi-word phrases in double quotes for exact phrase matching
-            my $search_value = $value =~ /\s/ && $value !~ /^".+"$/s ? qq{"$value"} : $value;
-            $self->Limit(
-                %rest,
-                FUNCTION    => "MATCH($alias.Content)",
-                OPERATOR    => 'AGAINST',
-                VALUE       => "(". $dbh->quote($search_value) ." IN BOOLEAN MODE)",
-                QUOTEVALUE  => 0,
-            );
+            if ( $self->SingleTicketSearch && $self->_CanRegexpContent ) {
+                ( my $search_value = $value ) =~ s/^"(.+)"$/$1/s;
+                if ( $search_value !~ /\w/ ) {
+                    $self->Limit( %rest, FIELD => 'id', VALUE => 0 );
+                }
+                else {
+                    my @words = split ' ', $search_value;
+
+                    # As in general search, * works only on a lone unquoted word
+                    my $prefix = @words == 1 && $search_value eq $value && $words[0] =~ s/(\w)\*$/$1/;
+                    s/([\\.^\$|?*+()\[\]{}])/\\$1/g for @words;
+
+                    my $regexp = '(?<!\w)' . join( '\W+', @words ) . ( $prefix ? '' : '(?!\w)' );
+                    $self->Limit(
+                        %rest,
+                        FUNCTION   => "($alias.Content REGEXP " . $dbh->quote($regexp) . ")",
+                        OPERATOR   => '=',
+                        VALUE      => 1,
+                        QUOTEVALUE => 0,
+                    );
+                }
+            }
+            else {
+                # Wrap multi-word phrases in double quotes for exact phrase matching
+                my $search_value = $value =~ /\s/ && $value !~ /^".+"$/s ? qq{"$value"} : $value;
+                $self->Limit(
+                    %rest,
+                    FUNCTION    => "MATCH($alias.Content)",
+                    OPERATOR    => 'AGAINST',
+                    VALUE       => "(". $dbh->quote($search_value) ." IN BOOLEAN MODE)",
+                    QUOTEVALUE  => 0,
+                );
+            }
             # As with Oracle, above, this forces the LEFT JOINs into
             # JOINS, which allows the FULLTEXT index to be used.
             # Orthogonally, the IS NOT NULL clause also helps the
@@ -860,6 +945,8 @@ sub _AttachContentLimit {
 sub _TicketLimit {
     my ( $self, $field, $op, $value, %rest ) = @_;
     $field =~ s!^Ticket!!;
+
+    return if $self->IsHiddenTimeField($field);
 
     if ( $field eq 'Queue' && $value =~ /\D/ ) {
         if ( ref $value eq 'ARRAY' ) {

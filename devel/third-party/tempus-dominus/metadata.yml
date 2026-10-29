@@ -1,0 +1,35 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: tempus-dominus
+version: "6.9.4"
+
+upstream:
+  homepage: https://getdatepicker.com/
+  repository: https://github.com/Eonasdan/tempus-dominus
+
+license:
+  spdx: MIT
+  file: LICENSE
+
+purl: pkg:npm/@eonasdan/tempus-dominus@6.9.4
+cpe: ~
+
+description: >
+  Powerful and flexible date/time picker widget.
+
+shipped: true
+security-critical: true
+
+upgrade-instructions: ~
+
+artifacts: []
+
+patches: []
+
+notes: ~

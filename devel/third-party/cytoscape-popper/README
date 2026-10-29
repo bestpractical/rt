@@ -1,0 +1,43 @@
+Getting the source for the cytoscape-popper extension.
+
+cytoscape-popper is a small adapter that positions a DOM element (such as a
+tooltip) relative to a Cytoscape graph element. Cytoscape renders to a canvas,
+so its nodes and edges have no DOM elements of their own; this extension
+supplies a Popper-compatible reference that tracks an element's rendered
+position.
+
+The extension is "popper library agnostic": it bundles no Popper of its own and
+is handed a factory at registration time. We wire it to the Popper v2
+that RT already loads for Bootstrap, e.g.:
+
+    cytoscape.use( cytoscapePopper( function (ref, content, opts) {
+        return Popper.createPopper(ref, content, opts);
+    } ) );
+
+Version: 4.0.1
+
+1. Obtain the release.
+
+   NOTE: At the time of writing, the project's GitHub Releases page does not
+   have a 4.0.1 release, even though the 4.0.1 commits are present in the
+   repository. We therefore obtained the 4.0.1 build from the npm registry
+   rather than from GitHub Releases:
+
+       https://www.npmjs.com/package/cytoscape-popper
+       https://unpkg.com/cytoscape-popper@4.0.1/cytoscape-popper.js
+       https://unpkg.com/cytoscape-popper@4.0.1/LICENSE
+
+2. The npm package contains a single prebuilt UMD bundle,
+   cytoscape-popper.js (the global it defines is "cytoscapePopper"). There is
+   nothing to build. Copy it in as the development source:
+
+    cp cytoscape-popper.js ~/rt-dir/devel/third-party/cytoscape-popper/
+
+3. The package ships no minified build, so generate the served minified copy
+   ourselves. Use RT's own JS minifier (JavaScript::Minifier::XS, already an
+   RT dependency) so no extra tooling is needed:
+
+    perl -MJavaScript::Minifier::XS -e '
+        local $/; open my $in, "<", "cytoscape-popper.js" or die $!;
+        print JavaScript::Minifier::XS::minify(scalar <$in>);
+    ' > ~/rt-dir/share/static/js/cytoscape-popper.min.js

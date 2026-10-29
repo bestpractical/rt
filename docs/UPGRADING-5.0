@@ -760,4 +760,183 @@ whitelist Android apps now, e.g.
 
 =back
 
+=head1 UPGRADING FROM 5.0.10 AND EARLIER
+
+=over 4
+
+=item New C<$SecretKey> configuration option
+
+A new configuration option C<$SecretKey> has been added. This key is used
+as keying material for cryptographic operations such as password-reset
+tokens, MFA-reset tokens, and TOTP secret encryption. When empty (the
+default), RT falls back to C<$DatabasePassword>. We recommend setting
+this to a long, random value in F<RT_SiteConfig.pm> so that
+application-level crypto is not coupled to the database credential.
+Set it before any user enrolls in MFA: changing it later (or changing
+C<$DatabasePassword> while it is empty) makes stored TOTP secrets
+undecryptable, so all enrolled users have to reset MFA and re-enroll.
+
+=item Self-service password reset (RT::Extension::ResetPassword integrated)
+
+The extension C<RT::Extension::ResetPassword> has been integrated into core
+RT. If you previously used the extension, you can remove the C<Plugin> line
+from your RT configuration.
+
+RT now provides a self-service password reset flow that lets users request a
+reset link via email. Admins can also send reset emails from the user admin
+page. A new global template C<PasswordReset> is installed during the upgrade
+and is used for these emails.
+
+If you previously used the extension, the following configuration options
+have been renamed. Update your C<RT_SiteConfig.pm> accordingly:
+
+    AllowUsersWithoutPassword       => ResetPasswordAllowUsersWithoutPassword
+    CreateNewUserAndSetPassword     => ResetPasswordCreateNewUserAndSetPassword
+    CreateNewUserAsPrivileged       => ResetPasswordCreateNewUserAsPrivileged
+    PasswordChangeLinkExpirySeconds => ResetLinkExpirySeconds
+
+A new configuration option C<$ResetRequestCooldown> has been added
+to throttle consecutive reset emails for the same user (default: 300
+seconds, i.e. 5 minutes).
+
+C<$HidePasswordResetErrors> now defaults to C<1> (enabled). When enabled,
+all outcomes of a self-service reset request (user not found, user disabled,
+etc.) show the same generic success message, and every response takes at
+least one second, so the page doesn't reveal which addresses have active
+accounts. Set it to C<0> to restore the old behavior where specific error
+messages are shown.
+
+C<$DisableResetPasswordOnLogin> now defaults to C<1>, so self-service
+reset is disabled: the "Forgot password?" link is hidden on the login page
+and the reset request page is blocked. Admins can still send reset emails
+from the user admin page. Sites that offered self-service reset through
+RT::Extension::ResetPassword must set C<$DisableResetPasswordOnLogin> to
+C<0> to keep it.
+
+See the configuration documentation in F<etc/RT_Config.pm> for full details
+on all options.
+
+=item Enhanced password policy with per-group support
+
+The C<$MinimumPasswordLength> configuration option has been replaced by
+C<$PasswordPolicy>, a hash reference that supports richer password complexity
+requirements including minimum length, character class requirements (uppercase,
+lowercase, digits, symbols), and a check that the password does not contain
+the username.
+
+B<Important>: C<$MinimumPasswordLength> is no longer honored. Replace it
+with the new format:
+
+    # Old
+    Set($MinimumPasswordLength, 8);
+
+    # New
+    Set($PasswordPolicy, {
+        Default => {
+            MinLength => 8,
+        },
+    });
+
+C<$PasswordPolicy> supports separate policies for C<Privileged> and
+C<Unprivileged> users. In addition, individual user-defined groups can now
+have their own password policy set via the group admin page. When a user
+belongs to multiple groups with policies, the most restrictive settings
+across all groups are applied.
+
+=item New C<$ExistingPasswordPolicyAction> configuration option
+
+New configuration option C<$ExistingPasswordPolicyAction> controls how RT
+handles users whose existing password fails the current policy at login.
+Default is C<ignore> so behavior is unchanged on upgrade. Set to
+C<notify> to surface a flash message at login or C<force> to gate users
+to a compliance-change page until they update their password. See
+L<authentication/"Enforcing Policy on Existing Passwords"> for details.
+
+Under C<force>, REST 1.0 and REST 2.0 requests that log in with a username
+and password are rejected for users whose password fails the policy. API
+scripts for those users must switch to authentication tokens.
+
+=item TOTP multi-factor authentication
+
+RT now supports Time-based One-Time Password (TOTP) multi-factor
+authentication. When enabled, users can enroll using any standard
+authenticator app (Google Authenticator, Authy, etc.) by scanning a QR
+code. Enrolled users are prompted for a TOTP code after entering their
+password.
+
+This feature adds two new columns (C<TOTPSecret> and C<TOTPEnrolled>) to the
+C<Users> table. The database upgrade step adds these columns automatically.
+A new global template C<MFAReset> is also installed during the upgrade.
+
+The new C<$MFAPolicy> configuration option controls MFA requirements. Like
+C<$PasswordPolicy>, it supports separate settings for C<Default>,
+C<Privileged>, and C<Unprivileged> users:
+
+    Set($MFAPolicy, {
+        Privileged => {
+            Mode  => 'Required',
+            Drift => 0,
+        },
+    });
+
+C<Mode> can be C<Off>, C<Optional>, or C<Required>. C<Drift> sets the
+number of 30-second TOTP windows accepted on each side of the current
+one (default: 0, maximum: 5) to accommodate clock drift between the
+authenticator device and the server. Use C<1> to also accept one window
+before and after the current time.
+
+Individual user-defined groups can also have their own MFA policy. When a
+user belongs to multiple groups with MFA policies, the most restrictive
+mode wins (C<Required> beats C<Optional> beats C<Off>).
+
+MFA enforcement is bypassed for sessions authenticated via
+C<REMOTE_USER> or an L<RT::Authen::ExternalAuth> SSO cookie, since the
+external authentication system (e.g. a SAML identity provider) is
+expected to handle its own second-factor requirements.
+
+REST 1.0 and REST 2.0 requests that log in with a username and password are
+rejected for users whose MFA mode is C<Required>, or C<Optional> once they
+have enrolled. API scripts for those users must switch to authentication
+tokens.
+
+This feature requires additional Perl dependencies: C<Auth::GoogleAuth>,
+C<Crypt::URandom>, C<CryptX>, and C<Text::QRCode> (which in turn needs the
+C<libqrencode> system library). Run F<configure> with C<--enable-mfa>, then
+C<make testdeps>, to check for missing modules.
+
+=item Moving an Article Requires CreateArticle on the Destination Class
+
+Changing an article's class now requires the C<CreateArticle> right on the
+class the article is moved to, in addition to C<ModifyArticle> on the
+article itself. This matches tickets and assets, which have always required
+C<CreateTicket> on the new queue or C<CreateAsset> on the new catalog when
+they are moved.
+
+=item CSRF protection for cookie-authenticated REST 2.0 requests
+
+REST 2.0 accepts the ordinary web UI session cookie, and requests that
+rely on it are now checked for cross-site request forgery like the rest of
+the web UI. On a request that changes state, that is anything other than
+GET, HEAD, or OPTIONS, RT checks the C<Origin> header, falling back to
+C<Referer>, and rejects the request with a 403 unless it matches RT's own
+hostname or an entry in C<@ReferrerWhitelist>. As with the web UI, this is
+governed by C<$RestrictReferrer>.
+
+Requests that supply credentials explicitly in an C<Authorization> header,
+an authentication token or basic auth, are not affected.
+
+Scripts that drive REST 2.0 with a saved session cookie and send neither
+C<Origin> nor C<Referer> are now rejected. Change them to use an
+authentication token, which is the supported way for a script to
+authenticate. See F<docs/authentication.pod> for how to create one.
+
+=item Simple templates with CreateTickets directives are limited to their own queue
+
+A Simple template saved in a queue can now only create or update tickets in
+that same queue. Global templates are unaffected, as are users with
+ModifyTemplate granted globally. See the Rights section in
+L<RT::Action::CreateTickets>.
+
+=back
+
 =cut

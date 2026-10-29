@@ -10,7 +10,7 @@
 ##
 ##  The following variables must _all_ be set:
 ##	prefix exec_prefix bindir sbindir sysconfdir mandir libdir
-##	datadir htmldir localstatedir logfiledir masonstatedir fontdir
+##	datadir htmldir localstatedir logfiledir masonstatedir
 ##	sessionstatedir customdir customhtmldir customlexdir customstaticdir
 ##  (This can be seen in m4/rt_layout.m4.)
 ##
@@ -27,7 +27,6 @@
   libdir:		${prefix}/lib
   datadir:		${prefix}/share
   htmldir:		${datadir}/html
-  fontdir:		${datadir}/fonts
   lexdir:		${datadir}/po
   staticdir:	${datadir}/static
   manualdir:		${prefix}/docs
@@ -56,7 +55,6 @@
   htmldir:		${datadir}/html
   lexdir:		${datadir}/po
   staticdir:	${datadir}/static
-  fontdir:		${datadir}/fonts
   manualdir:		${prefix}/docs
   localstatedir:	${prefix}/var
   logfiledir:		${localstatedir}/log
@@ -86,7 +84,6 @@
   htmldir:		${datadir}/html
   lexdir:		${datadir}/po
   staticdir:	${datadir}/static
-  fontdir:		${datadir}/fonts
   manualdir:		${datadir}/doc
   localstatedir:	/var
   logfiledir:		${localstatedir}/log
@@ -115,7 +112,6 @@
   htmldir:		${datadir}/html
   lexdir:		${datadir}/po
   staticdir:	${datadir}/static
-  fontdir:		${datadir}/fonts
   manualdir:		${prefix}/share/doc+
   logfiledir:		/var/log
   localstatedir:	/var/run+
@@ -141,7 +137,6 @@
   libdir:               ${prefix}/lib/rt3
   datadir:              /var/rt3
   htmldir:		${datadir}/html
-  fontdir:		${datadir}/fonts
   lexdir:		${datadir}/po
   staticdir:	${datadir}/static
   manualdir:		${datadir}/doc
@@ -171,7 +166,6 @@
   libdir:		lib
   datadir:		share
   htmldir:		${datadir}/html
-  fontdir:		${datadir}/fonts
   lexdir:		${datadir}/po
   staticdir:	${datadir}/static
   manualdir:	docs
@@ -198,7 +192,6 @@
   datadir:		share/rt
   plugindir:	${datadir}/plugins
   htmldir:		${datadir}/html
-  fontdir:		${datadir}/fonts
   lexdir:		${datadir}/po
   staticdir:	${datadir}/static
   manualdir:	docs/rt

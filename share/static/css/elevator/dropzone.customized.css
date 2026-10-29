@@ -75,3 +75,7 @@
 .dropzone .dz-preview.dz-image-preview {
    background-color: #eee;
 }
+
+.ticket-info-attachments .dz-message {
+    margin: 1em;
+}

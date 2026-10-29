@@ -1,8 +1,49 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef;
+use RT::Test tests => undef, config => q{
+    Set(
+        %PageLayouts,
+        'RT::Ticket' => {
+            Display => {
+                'NY Layout' => [
+                    {
+                        Layout   => 'col-12',
+                        Elements => [ 'Basics', 'CustomFieldCustomGroupings:Specs' ],
+                    },
+                ],
+                'Foo & Bar' => [ { Layout => 'col-12', Elements => ['Basics'] } ],
+            },
+            Update => {
+                'No Preview Scrips' => [
+                    {
+                        Layout   => 'col-md-7,col-md-5',
+                        Elements => [ [ 'Recipients', 'Message', 'Submit' ], ['Basics'] ],
+                    },
+                ],
+            },
+        },
+    );
+
+    Set(
+        %PageLayoutMapping,
+        'RT::Ticket' => {
+            Update => [
+                {
+                    Type   => 'Queue',
+                    Layout => { 'TestQueue2' => 'No Preview Scrips' },
+                },
+                {
+                    Type   => 'Default',
+                    Layout => 'Default',
+                },
+            ],
+        },
+    );
+};
 use RT::Interface::Web;
+use URI;
+use URI::QueryParam;
 
 # Create two queues
 my $queue1 = RT::Test->load_or_create_queue(Name => 'TestQueue1');
@@ -41,7 +82,7 @@ my ($ret, $update_msg) = HTML::Mason::Commands::UpdateConfig(
 );
 ok($ret, "Updated PageLayoutMapping config");
 
-my ($baseurl, $m) = RT::Test->started_ok;
+my ($baseurl, $m) = RT::Test->started_ok( disable_config_cache => 1 );
 ok $m->login, 'logged in as root';
 
 {
@@ -58,6 +99,36 @@ ok $m->login, 'logged in as root';
         Subject => 'Test ticket in Queue2',
     );
     $m->goto_ticket($ticket2->Id);
+}
+
+diag "Testing PageLayoutHasWidget";
+{
+    my $ny_ticket = RT::Test->create_ticket(
+        Queue                   => $queue1->Name,
+        Subject                 => 'Test ticket in Queue1 with NY Layout',
+        'CustomField-' . $cf_id => 'New York',
+    );
+    my $ticket2 = RT::Test->create_ticket(
+        Queue   => $queue2->Name,
+        Subject => 'Test ticket in Queue2 with No Preview Scrips',
+    );
+
+    my @tests = (
+        [ $ny_ticket, 'Update',  'PreviewScrips',              1, 'Default Update layout has PreviewScrips' ],
+        [ $ny_ticket, 'Update',  'Recipients',                 1, 'Default Update layout has Recipients' ],
+        [ $ny_ticket, 'Update',  'History',                    0, 'Default Update layout has no History' ],
+        [ $ticket2,   'Update',  'PreviewScrips',              0, 'Queue-mapped Update layout has no PreviewScrips' ],
+        [ $ticket2,   'Update',  'Recipients',                 1, 'Queue-mapped Update layout has Recipients' ],
+        [ $ticket2,   'Display', 'History',                    1, 'Default Display layout has History' ],
+        [ $ticket2,   'Display', 'CustomFieldCustomGroupings', 1, 'Default Display layout has widget given as a hash' ],
+        [ $ny_ticket, 'Display', 'CustomFieldCustomGroupings', 1, 'CF-mapped Display layout has widget given with an argument' ],
+        [ $ny_ticket, 'Display', 'History',                    0, 'CF-mapped Display layout has no History' ],
+    );
+    for my $test (@tests) {
+        my ( $ticket, $page, $widget, $expected, $description ) = @$test;
+        is( HTML::Mason::Commands::PageLayoutHasWidget( Object => $ticket, Page => $page, Widget => $widget ),
+            $expected, $description );
+    }
 }
 
 diag "Testing CF widget ColumnWidth rendering";
@@ -101,6 +172,309 @@ diag "Testing CF widget ColumnWidth rendering";
     $m->goto_ticket($ticket->Id);
     $m->content_like(qr/class="show-custom-fields cf-columns-sm"/, 'ColumnWidth sm renders cf-columns-sm class');
     $m->content_unlike(qr/class="show-custom-fields[^"]*cf-columns-(?!sm)/, 'No other cf-columns classes present');
+}
+
+diag "Links widget applies a configured default filter (ticket)";
+{
+    my $q = RT::Test->load_or_create_queue( Name => 'General' );
+    my $active   = RT::Test->create_ticket( Queue => $q->Name, Subject => 'lw active dep' );
+    my $resolved = RT::Test->create_ticket( Queue => $q->Name, Subject => 'lw resolved dep' );
+    $resolved->SetStatus('resolved');
+    my $main = RT::Test->create_ticket( Queue => $q->Name, Subject => 'lw main' );
+    $main->AddLink( Type => 'DependsOn', Target => $active->id );
+    $main->AddLink( Type => 'DependsOn', Target => $resolved->id );
+
+    my ($ok, $msg) = HTML::Mason::Commands::UpdateConfig(
+        Name  => 'PageLayouts',
+        Value => {
+            'RT::Ticket' => {
+                'Display' => {
+                    Default => [
+                        { Layout => 'col-12', Elements => [ { Name => 'Links', HideInactive => 1 } ] },
+                    ],
+                },
+            },
+        },
+        CurrentUser => RT->SystemUser,
+    );
+    ok( $ok, "configured Links HideInactive default" ) or diag $msg;
+
+    $m->goto_ticket( $main->id );
+    $m->content_contains( 'lw active dep', 'active dependency is shown' );
+
+    # With LinksListCount set, the first render applies the default on the server and marks the
+    # list partial; the client loads the resolved row if the filter is cleared (util.js). The
+    # funnel pre-checks Hide-inactive to reflect the configured default.
+    $m->content_lacks( 'lw resolved dep', 'resolved dependency is held back by the default' );
+    $m->content_like( qr/data-links-partial="1"/, 'links list is marked partial' );
+    $m->content_like( qr/name="HideInactive"[^>]*\bchecked/, 'funnel Hide-inactive box reflects the default' );
+}
+
+diag "Links widget ListCount overrides LinksListCount";
+{
+    my $q    = RT::Test->load_or_create_queue( Name => 'General' );
+    my $main = RT::Test->create_ticket( Queue => $q->Name, Subject => 'lw list count main' );
+    for my $n ( 1 .. 4 ) {
+        my $dep = RT::Test->create_ticket( Queue => $q->Name, Subject => "lw list count dep $n" );
+        $main->AddLink( Type => 'DependsOn', Target => $dep->id );
+    }
+
+    my ($ok, $msg) = HTML::Mason::Commands::UpdateConfig(
+        Name  => 'PageLayouts',
+        Value => {
+            'RT::Ticket' => {
+                'Display' => {
+                    Default => [
+                        { Layout => 'col-12', Elements => [ { Name => 'Links', ListCount => 2 } ] },
+                    ],
+                },
+            },
+        },
+        CurrentUser => RT->SystemUser,
+    );
+    ok( $ok, "configured Links ListCount" ) or diag $msg;
+
+    $m->goto_ticket( $main->id );
+    my $section = $m->dom->at('#links-section-DependsOn');
+    is( $section->find('tbody tr')->size, 2, 'the layout ListCount caps the section' );
+    like( $section->at('button.links-show-all')->text, qr/Show all \(4\)/, 'and offers all of them' );
+    $m->content_like( qr{hx-get="[^"]*/Views/Component/ShowLinks\?[^"]*ListCount=2}, 'the refresh URL keeps the cap' );
+}
+
+diag "Add links default type: user preference, then page layout, then LinksDefaultType";
+{
+    my $main = RT::Test->create_ticket( Queue => 'General', Subject => 'lw default type main' );
+    my $selected = sub {
+        [ map { $_->attr('value') } $m->dom->find('.add-link-row .link-type-select option[selected]')->each ];
+    };
+    my $create_selected = sub {
+        my $option = $m->dom->at('#create-linked-ticket select[name="LinkType"] option[selected]');
+        return $option ? $option->attr('value') : '';
+    };
+    my $id = $main->id;
+
+    $m->goto_ticket($id);
+    is_deeply( $selected->(), [ "$id-RefersTo", "$id-RefersTo" ], 'both add rows default to Refers to' );
+    is( $create_selected->(), 'RefersTo-new', 'Create new defaults to Refers to too' );
+    is( $m->dom->find('.add-link-row .link-type-select option[data-default]')->map( attr => 'value' )->join(',')->to_string,
+        "$id-RefersTo,$id-RefersTo", 'each row marks the default for rows added in the browser' );
+
+    my ($ok, $msg) = HTML::Mason::Commands::UpdateConfig(
+        Name  => 'PageLayouts',
+        Value => {
+            'RT::Ticket' => {
+                'Display' => {
+                    Default => [
+                        { Layout => 'col-12', Elements => [ { Name => 'Links', DefaultType => 'DependsOn' } ] },
+                    ],
+                },
+            },
+        },
+        CurrentUser => RT->SystemUser,
+    );
+    ok( $ok, "configured Links DefaultType" ) or diag $msg;
+
+    $m->goto_ticket($id);
+    is_deeply( $selected->(), [ "$id-DependsOn", "$id-DependsOn" ], 'the page layout DefaultType selects Depends on' );
+    is( $create_selected->(), 'DependsOn-new', 'Create new follows the page layout DefaultType' );
+    $m->content_like( qr{hx-get="[^"]*/Views/Component/EditLinks\?[^"]*DefaultType=DependsOn}, 'the refresh URL keeps the default' );
+
+    $m->get_ok( "$baseurl/Prefs/Other.html", 'load preferences' );
+    $m->submit_form_ok( { form_name => 'ModifyPreferences', fields => { LinksDefaultType => 'MemberOf' }, button => 'Update' },
+        'set a Child of preference' );
+
+    $m->goto_ticket($id);
+    is_deeply( $selected->(), [ "$id-MemberOf", "$id-MemberOf" ], 'the user preference wins over the page layout' );
+    is( $create_selected->(), 'MemberOf-new', 'Create new follows the preference: the new ticket is the parent' );
+    $m->submit_form_ok( { form_name => 'SpawnLinkedTicket', button => 'SpawnLinkedTicket' }, 'create a linked ticket with the default' );
+    $m->submit_form_ok( { form_name => 'TicketCreate', fields => { Subject => 'lw default type parent' }, button => 'SubmitTicket' },
+        'create the new ticket' );
+    my $parents = $main->MemberOf;
+    my $parent  = $parents->First;
+    is( $parent && $parent->TargetObj->Subject, 'lw default type parent', 'the new ticket is the parent, matching a Child of default' );
+
+    $m->get_ok( "$baseurl/Ticket/ModifyAll.html?id=$id", 'load the Jumbo page' );
+    is_deeply( $selected->(), [ "$id-MemberOf", "$id-MemberOf" ], 'the preference applies outside the page layout too' );
+
+    $m->get_ok( "$baseurl/Prefs/Other.html", 'load preferences' );
+    $m->submit_form_ok( { form_name => 'ModifyPreferences', fields => { LinksDefaultType => '__empty_value__' }, button => 'Update' },
+        'clear the preference' );
+
+    $m->goto_ticket($id);
+    is_deeply( $selected->(), [ "$id-DependsOn", "$id-DependsOn" ], 'without a preference the page layout applies again' );
+    is( $create_selected->(), 'DependsOn-new', 'Create new follows the page layout again' );
+}
+
+diag "EditPageLayout renders the Links widget edit modal reflecting config";
+{
+    my ($ok, $msg) = HTML::Mason::Commands::UpdateConfig(
+        Name  => 'PageLayouts',
+        Value => {
+            'RT::Ticket' => {
+                'Display' => {
+                    Default => [
+                        { Layout => 'col-12',
+                          Elements => [ { Name => 'Links', HideInactive => 1, ShowObjectType => ['Ticket'], ListCount => 7, DefaultType => 'ReferredToBy' } ] },
+                    ],
+                },
+                'Create' => {
+                    Default => [ { Layout => 'col-12', Elements => ['Links'] } ],
+                },
+            },
+        },
+        CurrentUser => RT->SystemUser,
+    );
+    ok( $ok, "configured Links widget for the editor" ) or diag $msg;
+
+    $m->get_ok( "$baseurl/Admin/PageLayouts/Modify.html?Class=RT::Ticket&Page=Display&Name=Default",
+        'load the ticket Display page-layout editor' );
+
+    # The placed (configured) widget is element index 0; its modal checkboxes carry the -0 suffix,
+    # which distinguishes it from the always-all-checked palette modal (suffixed -Links).
+    $m->content_like( qr/id="pagelayout-links-hide-inactive-0"[^>]*\bchecked/, 'placed modal Hide-inactive reflects config' );
+    $m->content_like( qr/id="pagelayout-links-ot-Ticket-0"[^>]*\bchecked/, 'placed modal Ticket object-type checked' );
+    $m->content_unlike( qr/id="pagelayout-links-ot-Asset-0"[^>]*\bchecked/, 'placed modal Asset object-type unchecked' );
+    ok( $m->dom->at('#pagelayout-widget-0-modal input[name="ListCount"][value="7"]'), 'placed modal ListCount reflects config' );
+    ok( $m->dom->at('#pagelayout-widget-Links-modal input[name="ListCount"][value=""][placeholder="Default: 10"]'),
+        'palette modal ListCount is empty, showing the LinksListCount default' );
+    ok( $m->dom->at('#pagelayout-widget-0-modal select[name="DefaultType"] option[value="ReferredToBy"][selected]'),
+        'placed modal DefaultType reflects config' );
+    ok( $m->dom->at('#pagelayout-widget-Links-modal select[name="DefaultType"] option[value="__empty_value__"][selected]'),
+        'palette modal DefaultType uses the default' );
+    like( $m->dom->at('#pagelayout-widget-Links-modal select[name="DefaultType"] option[value="__empty_value__"]')->text,
+        qr/Default: Refers to/, 'and names the LinksDefaultType default' );
+
+    # The Links item in "Available Widgets" carries the edit pencil so a dragged-in widget is configurable.
+    $m->content_like( qr{data-bs-target="#pagelayout-widget-Links-modal"},
+        'Links palette item has the edit pencil' );
+
+    # The default filter applies to the Display layout only -- the Create editor offers no Links config.
+    $m->get_ok( "$baseurl/Admin/PageLayouts/Modify.html?Class=RT::Ticket&Page=Create&Name=Default",
+        'load the ticket Create page-layout editor' );
+    $m->content_lacks( 'pagelayout-links-hide-inactive', 'Create: no Links default-filter modal' );
+    $m->content_lacks( 'pagelayout-widget-Links-modal', 'Create: no Links edit pencil' );
+}
+
+diag "Testing page layout name validation";
+{
+    my $invalid_msg = 'Page Layout Name may only contain alphanumeric characters, underscores, dashes, and spaces';
+
+    for my $name ( 'Bad & Name', "Caf\x{e9}" ) {
+        $m->get_ok('/Admin/PageLayouts/Create.html');
+        $m->submit_form_ok(
+            {   form_name => 'CreatePageLayout',
+                fields    => { Name => $name, Class => 'RT::Ticket', Page => 'Display' },
+                button    => 'Create',
+            },
+            "Submitted create form for '$name'"
+        );
+        $m->text_contains( $invalid_msg, "Rejected page layout name '$name'" );
+    }
+
+    # Spaces are allowed, as RT ships a layout named "One Column"
+    for my $name ( 'One Column 2', 'Foo-Bar_1' ) {
+        $m->get_ok('/Admin/PageLayouts/Create.html');
+        $m->submit_form_ok(
+            {   form_name => 'CreatePageLayout',
+                fields    => { Name => $name, Class => 'RT::Ticket', Page => 'Display' },
+                button    => 'Create',
+            },
+            "Submitted create form for '$name'"
+        );
+        $m->text_contains( 'Page Layout created', "Created page layout '$name'" );
+    }
+
+    # Renaming is validated too
+    $m->submit_form_ok(
+        {   with_fields => { NewName => 'Bad & Name' },
+            button      => 'UpdatePage',
+        },
+        'Submitted rename form with an ampersand in the name'
+    );
+    $m->text_contains( $invalid_msg, 'Rejected a rename to a name containing an ampersand' );
+
+    $m->get_ok('/Admin/PageLayouts/?Class=RT::Ticket&Page=Display');
+    $m->text_contains( 'Foo-Bar_1', 'Layout kept its original name' );
+    $m->text_lacks( 'Bad &', 'Rejected name was not created' );
+}
+
+diag "Testing page layout names containing an ampersand";
+{
+    my $name = 'Foo & Bar';
+
+    # The list page links to each layout by name
+    $m->get_ok('/Admin/PageLayouts/?Class=RT::Ticket&Page=Display');
+    my $list_link = $m->find_link( text => $name, url_regex => qr{/Admin/PageLayouts/Modify\.html} );
+    ok( $list_link, "Found the list link for '$name'" );
+    is( $list_link->URI->query_param('Name'), $name, 'List link passes the name unmangled' );
+
+    # Load Modify.html directly with a correctly encoded name, so the page menu
+    # links below are tested independently of the list page
+    my $modify_uri = URI->new('/Admin/PageLayouts/Modify.html');
+    $modify_uri->query_form( Class => 'RT::Ticket', Page => 'Display', Name => $name );
+    $m->get_ok( $modify_uri->as_string );
+    $m->text_contains( "page layout: $name", 'Modify page loaded the right layout' );
+
+    for my $page (qw/Modify Advanced/) {
+        my $tab = $m->find_link( url_regex => qr{/Admin/PageLayouts/\Q$page\E\.html} );
+        ok( $tab, "Found the $page tab link" );
+        is( $tab->URI->query_param('Name'), $name, "$page tab link passes the name unmangled" );
+
+        next unless $page eq 'Advanced';
+        $m->get_ok( $tab->url );
+        $m->text_lacks( 'Invalid Page Layout', 'Advanced tab loaded the right layout' );
+        $m->text_contains( "page layout: $name", 'Advanced page shows the right layout name' );
+    }
+}
+
+diag "Page layout content only accepts available widgets";
+{
+    my $page_layouts = RT->Config->Get('PageLayouts');
+    for my $class ( sort keys %$page_layouts ) {
+        for my $page ( sort keys %{ $page_layouts->{$class} } ) {
+            for my $name ( sort keys %{ $page_layouts->{$class}{$page} } ) {
+                my $uri = URI->new('/Admin/PageLayouts/Advanced.html');
+                $uri->query_form( Class => $class, Page => $page, Name => $name );
+                $m->get_ok( $uri->as_string );
+                $m->submit_form_ok( { form_name => 'ModifyPageLayoutAdvanced', button => 'Validate' },
+                    "Validated $class $page page layout $name" );
+                $m->text_contains( 'Page Layout is valid', "$class $page page layout $name is valid" );
+            }
+        }
+    }
+
+    my %args       = ( Class => 'RT::Ticket', Page => 'Display', Name => 'Foo-Bar_1' );
+    my $layout_for = sub {
+        my $config = RT::Configuration->new( RT->SystemUser );
+        $config->LoadByCols( Name => 'PageLayouts', Disabled => 0 );
+        return $config->DecodedContent->{ $args{Class} }{ $args{Page} }{ $args{Name} };
+    };
+
+    my $valid = [ 'History', { Layout => 'col-6', Elements => [ ['Basics:foo'], [ { Name => 'People' } ] ] } ];
+    $m->post_ok( '/Admin/PageLayouts/Modify.html', { %args, Update => 1, Content => JSON::encode_json($valid) } );
+    $m->text_contains( 'Page Layout updated', 'Saved a layout with available widgets' );
+    is_deeply( $layout_for->(), $valid, 'Layout is saved' );
+
+    for my $invalid (
+        [ ['NoSuchWidget'],                                                  'NoSuchWidget' ],
+        [ [ { Name => '../../Elements/Foo:bar' } ],                          '../../Elements/Foo' ],
+        [ [ { Layout => 'col-12', Elements => [ [ 'History', 'Nope' ] ] } ], 'Nope' ],
+        [ [ { Layout => 'col-12', Elements => 'History' } ], '{"Elements":"History","Layout":"col-12"}' ],
+        )
+    {
+        my ( $content, $widget ) = @$invalid;
+        my $json = JSON::encode_json($content);
+
+        $m->post_ok( '/Admin/PageLayouts/Modify.html', { %args, Update => 1, Content => $json } );
+        $m->text_contains( "Invalid widget: $widget", "Modify.html rejected $json" );
+        $m->next_warning_like(qr/Rejecting RT::Ticket Display page layout Foo-Bar_1: Invalid widget/);
+
+        $m->post_ok( '/Admin/PageLayouts/Advanced.html', { %args, Update => 1, Config => $json } );
+        $m->text_contains( "Invalid widget: $widget", "Advanced.html rejected $json" );
+        $m->next_warning_like(qr/Rejecting RT::Ticket Display page layout Foo-Bar_1: Invalid widget/);
+
+        is_deeply( $layout_for->(), $valid, 'Layout is unchanged' );
+    }
 }
 
 done_testing;

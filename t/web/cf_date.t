@@ -187,8 +187,7 @@ diag 'check invalid inputs';
         [ @warnings ],
         [
             (
-                q{Couldn't parse date 'foodate' by Time::ParseDate},
-                q{Couldn't parse date 'foodate' by DateTime::Format::Natural}
+                q{Couldn't parse date 'foodate'}
             ) x 2
         ]
     );

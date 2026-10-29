@@ -327,4 +327,22 @@ diag 'groups can be role members' if $ENV{'TEST_VERBOSE'};
     ]);
 }
 
+diag 'LabelForRole resolves on a blank asset instance (bulk update)';
+{
+    # Asset/Search/Bulk.html calls LabelForRole on a freshly-constructed,
+    # catalog-less RT::Asset instance (so loc() can localize core role names).
+    # A role's label comes from its definition, so it resolves regardless of
+    # whether the role applies to this (context-free) object.
+    my $blank = RT::Asset->new( RT::CurrentUser->new($linus) );
+    ok( !$blank->id, 'asset instance is blank (no catalog context)' );
+
+    is( $blank->LabelForRole( $engineer->GroupType ),
+        $engineer->Name, 'custom role label resolves on a blank asset instance' );
+    is( $blank->LabelForRole( $sales->GroupType ),
+        $sales->Name, 'second custom role label resolves on a blank asset instance' );
+
+    # core roles carry no predicate, so they resolve the same way
+    is( $blank->LabelForRole('Owner'), 'Owner', 'core role label still resolves on a blank asset instance' );
+}
+
 done_testing;

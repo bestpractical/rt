@@ -378,6 +378,13 @@ sub Create {
 Override DBIx::SearchBuilder::LoadByCols to do case-insensitive loads if the 
 DB is case sensitive
 
+Values passed as hashrefs are handed to DBIx::SearchBuilder as is, i.e. without
+the C<LOWER()> wrapping:
+
+    $record->LoadByCols( Code => { value => $code, operator => '=' } );
+
+Do that for columns that are stored in a known case.
+
 =cut
 
 sub LoadByCols {
@@ -397,6 +404,7 @@ sub LoadByCols {
     # explicit loading
     my %hash = (@_);
     foreach my $key ( keys %hash ) {
+        next if ref $hash{$key} eq 'HASH';
 
         # If we've been passed an empty value, we can't do the lookup. 
         # We don't need to explicitly downcase integers or an id.
@@ -1379,8 +1387,8 @@ sub FormatLink {
                  @_
                );
     my $text = "URI " . $args{FallBack};
-    if ($args{Object} && $args{Object}->isa("RT::Ticket")) {
-        $text = "Ticket " . $args{Object}->id;
+    if ( $args{Object} && $args{Object}->isa('RT::Record') && $args{Object}->id ) {
+        $text = $args{Object}->RecordType . " " . $args{Object}->id;
     }
     return $text;
 }
@@ -1392,6 +1400,10 @@ Takes a paramhash of Type and one of Base or Target. Adds that link to this obje
 If Silent is true then no transactions will be recorded.  You can individually
 control transactions on both base and target and with SilentBase and
 SilentTarget respectively. By default both transactions are created.
+
+Schemes whose resolver reports L<RT::URI::base/IsInternalOnly> are refused,
+since they name records RT keeps for its own bookkeeping rather than records a
+caller links to. Pass AllowInternal to create such a link anyway.
 
 If the link destination is a local object and does the
 L<RT::Record::Role::Status> role, this method ensures object Status is not
@@ -1418,6 +1430,7 @@ sub _AddLink {
         Silent       => undef,
         SilentBase   => undef,
         SilentTarget => undef,
+        AllowInternal => 0,
         @_
     );
 
@@ -1445,6 +1458,9 @@ sub _AddLink {
 
     my $remote_uri = RT::URI->new( $self->CurrentUser );
     if ($remote_uri->FromURI( $remote_link )) {
+        return ( 0, $self->loc( "Can't link to '[_1]'", $remote_link ) )
+            if $remote_uri->Resolver->IsInternalOnly && !$args{'AllowInternal'};
+
         my $remote_obj = $remote_uri->IsLocal ? $remote_uri->Object : undef;
         if ($remote_obj and $remote_obj->id) {
             # Enforce the remote end of StrictLinkACL

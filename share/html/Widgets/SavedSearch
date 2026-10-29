@@ -112,8 +112,10 @@ if ( $args->{SavedSearchSave} || $args->{SavedSearchCopy} ) {
         $search->SetName( $args->{SavedSearchName} );
         $search->SetDescription( $args->{SavedSearchDescription} );
         $search->SetDisabled( $args->{SavedSearchEnabled} ? 0 : 1 ) if $args->{SavedSearchSetEnabled};
-        $search->SetContent($SearchParams);
-        push @actions, loc( '[_1] [_2] updated.', loc($self->{SearchType}), $args->{SavedSearchDescription} );
+        my ( $ret, $msg ) = $search->SetContent($SearchParams);
+        push @actions, $ret
+            ? loc( '[_1] [_2] updated.', loc($self->{SearchType}), $args->{SavedSearchDescription} )
+            : $msg;
     }
     else {
         # new saved search

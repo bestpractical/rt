@@ -90,22 +90,13 @@ our @SHORTENER_SEARCH_FIELDS
     = qw/Class ObjectType BaseQuery Query Format RowsPerPage Order OrderBy ExtraQueryParams ResultPage/;
 our @SHORTENER_CHART_FIELDS = qw/Width Height ChartStyle GroupBy ChartFunction StackedGroupBy ChartOrderBy ChartOrder ChartLimit ChartLimitType/;
 
-# Valid display modes for search results. CollectionList is the default table view.
-# These correspond to Mason components in /Search/Elements/.
-our @SEARCH_DISPLAY_MODES = qw/CollectionList Calendar/;
-
-=head2 IsValidSearchDisplayMode MODE
-
-Returns true if MODE is a valid search display mode, false otherwise.
-Valid modes are defined in @SEARCH_DISPLAY_MODES.
-
-=cut
-
-sub IsValidSearchDisplayMode {
-    my $mode = shift;
-    return 0 unless defined $mode && length $mode;
-    return scalar grep { $_ eq $mode } @SEARCH_DISPLAY_MODES;
-}
+# Arguments ExpandShortenerCode can set: the search and chart fields come from
+# the shortener content, the rest from the saved search that content names
+our @SHORTENER_ARGS = (
+    @SHORTENER_SEARCH_FIELDS,
+    @SHORTENER_CHART_FIELDS,
+    qw/SavedSearchId SavedChartSearchId SavedSearchLoad SearchType SearchFields/,
+);
 
 =head2 SquishedCSS $style
 
@@ -427,7 +418,16 @@ sub HandleRequest {
 
     MaybeRejectPrivateComponentRequest();
 
+    # Before MaybeShowNoAuthPage, which serves the /NoAuth/MFA/ pages
+    ExpireStaleMFAPending() unless RT->Config->Get('DisableMFA');
+
     MaybeShowNoAuthPage($ARGS);
+
+    # MFA enforcement must run after MaybeShowNoAuthPage so that the
+    # /NoAuth/MFA/ pages themselves (Enroll, Verify, Reset) can be
+    # served without being caught by the MFA redirect.
+    MaybeForceMFAPage() unless RT->Config->Get('DisableMFA');
+    MaybeForceExistingPasswordChange($ARGS);
 
     AttemptExternalAuth($ARGS) if RT->Config->Get('WebRemoteUserContinuous') or not _UserLoggedIn();
 
@@ -452,12 +452,19 @@ sub HandleRequest {
     unless ( _UserLoggedIn() ) {
         _ForceLogout();
 
-        # Authenticate if the user is trying to login via user/pass query args
-        my ($authed, $msg) = AttemptPasswordAuthentication($ARGS);
+        my $m = $HTML::Mason::Commands::m;
+
+        # Authenticate if the user is trying to login via user/pass query args,
+        # unless external auth already verified the password and MFA refused it
+        my ( $authed, $msg );
+        if ( my $mfa_msg = $m->notes('ExternalAuthMFARejected') ) {
+            ( $authed, $msg ) = ( 0, $mfa_msg );
+        }
+        else {
+            ( $authed, $msg ) = AttemptPasswordAuthentication($ARGS);
+        }
 
         unless ($authed) {
-            my $m = $HTML::Mason::Commands::m;
-
             # REST urls get a special 401 response
             if ($m->request_comp->path =~ m{^/REST/\d+\.\d+/}) {
                 $HTML::Mason::Commands::r->content_type("text/plain; charset=utf-8");
@@ -483,6 +490,8 @@ sub HandleRequest {
     }
 
     $HTML::Mason::Commands::m->notes( 'SystemWarnings', [] );
+    ExpandShortenerCode($ARGS);
+
     MaybeShowInterstitialCSRFPage($ARGS);
 
     # Process per-page global callbacks
@@ -750,9 +759,157 @@ sub MaybeShowNoAuthPage {
     Redirect(RT->Config->Get('WebURL'))
         if $m->base_comp->path eq '/NoAuth/Login.html' and _UserLoggedIn();
 
+    # MFA pages are not available when MFA is disabled
+    Redirect( RT->Config->Get('WebURL') )
+        if $m->base_comp->path =~ m{^/NoAuth/MFA/} and RT->Config->Get('DisableMFA');
+
     # If it's a noauth file, don't ask for auth.
     $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %$ARGS );
     $m->abort;
+}
+
+=head2 ExpireStaleMFAPending
+
+Discards the pending MFA state set by L</ApplyMFAPolicy> once it is older
+than C<$RT::MFA::TOTP::PENDING_TIMEOUT>, or once the user is disabled or
+gone, so an abandoned password step can't be completed later.
+
+=cut
+
+sub ExpireStaleMFAPending {
+    my $session    = \%HTML::Mason::Commands::session;
+    my $pending_id = $session->{MFAPendingUserID} or return;
+    require RT::MFA::TOTP;
+
+    my $user = RT::User->new( RT->SystemUser );
+    $user->Load($pending_id);
+
+    my $reason;
+    if ( !$user->Id || $user->Disabled ) {
+        $reason = 'user is missing or disabled';
+    }
+    elsif ( time - ( $session->{MFAPendingAt} || 0 ) > $RT::MFA::TOTP::PENDING_TIMEOUT ) {
+        $reason = 'timed out';
+    }
+    return unless $reason;
+
+    RT->Logger->info("Discarding pending MFA login for user #$pending_id: $reason");
+    RT::Interface::Web::Session::Delete( Key => $_ )
+        for qw/MFAPendingUserID MFAPendingAt MFAPendingNext MFAPendingPasswordViolation MFAPendingTOTPSecret/;
+}
+
+=head2 MaybeForceMFAPage
+
+If a session has C<MFAPendingUserID> set (password auth passed but TOTP
+not yet verified), redirect any non-NoAuth request to the appropriate
+MFA page. Called from the autohandler before other auth checks.
+
+=cut
+
+sub MaybeForceMFAPage {
+    my $pending_id = $HTML::Mason::Commands::session{MFAPendingUserID} or return;
+
+    # REMOTE_USER sessions handle auth externally; skip MFA enforcement
+    return if $HTML::Mason::Commands::session{'WebExternallyAuthed'};
+
+    # Use base_comp->path for the canonical Mason component path, matching
+    # MaybeShowNoAuthPage. $r->path_info is un-normalized and may include
+    # the WebPath prefix on non-root deployments.
+    my $path = $HTML::Mason::Commands::m->base_comp->path;
+
+    # Skip non-page requests that may be triggered by the browser in the
+    # background; redirecting them would regenerate the CSRF nonce and
+    # invalidate the form. Match exact prefixes only.
+    return if $path =~ m{^/\.well-known/};
+
+    # Load the user to determine whether to send to enroll or verify
+    my $user = RT::User->new( RT->SystemUser );
+    $user->Load($pending_id);
+
+    if ( $user->Id && !$user->TOTPEnrolled ) {
+        Redirect( RT->Config->Get('WebURL') . 'NoAuth/MFA/Enroll.html' );
+    }
+    else {
+        Redirect( RT->Config->Get('WebURL') . 'NoAuth/MFA/Verify.html' );
+    }
+}
+
+=head2 MaybeForceExistingPasswordChange
+
+If C<$ExistingPasswordPolicyAction> is C<force> and the current session
+has C<ExistingPasswordPolicyViolation> set, redirect any non-NoAuth,
+non-compliance-page request to the appropriate compliance-change page.
+Stashes the originally-requested URL in C<ExistingPasswordPolicyChangeNext>
+so the compliance page can return the user there after a successful
+change.
+
+Requests under C</REST/> are handled separately: rather than redirecting
+an API client to an HTML page, we abort with a plain-text 401 carrying
+the policy-violation message.
+
+=cut
+
+sub MaybeForceExistingPasswordChange {
+    my $ARGS = shift;
+
+    return unless _UserLoggedIn();
+    return unless RT->Config->Get('ExistingPasswordPolicyAction') eq 'force';
+    return unless $HTML::Mason::Commands::session{ExistingPasswordPolicyViolation};
+
+    my $path = $HTML::Mason::Commands::m->base_comp->path;
+
+    # Allow the compliance pages themselves, and background asset requests through.
+    return if $path eq '/Prefs/ExistingPasswordChange.html';
+    return if $path eq '/SelfService/ExistingPasswordChange.html';
+    return if $path =~ m{^/\.well-known/};
+
+    # REST: reject with a plain-text 401 instead of redirecting an API
+    # client to an HTML compliance page it cannot render.
+    if ( $path =~ m{^/REST/\d+\.\d+/} ) {
+        my $m   = $HTML::Mason::Commands::m;
+        my $msg = HTML::Mason::Commands::loc(
+            'Your password no longer meets the current password policy. Log in via the web interface to update it.'
+        );
+        RT->Logger->error(
+            "REST request rejected for @{[$HTML::Mason::Commands::session{CurrentUser}->Name]}: "
+                . "existing password violates policy" );
+        $HTML::Mason::Commands::r->content_type("text/plain; charset=utf-8");
+        $HTML::Mason::Commands::r->status(401);
+        $m->error_format("text");
+        $m->out("RT/$RT::VERSION 401 Credentials required\n\n$msg\n");
+        $m->abort;
+    }
+
+    my $user_obj = $HTML::Mason::Commands::session{CurrentUser}->UserObj;
+    my $target
+        = $user_obj->Privileged
+        ? '/Prefs/ExistingPasswordChange.html'
+        : '/SelfService/ExistingPasswordChange.html';
+
+    my ($is_csrf) = RT->Config->Get('RestrictReferrer') ? IsPossibleCSRF($ARGS) : 0;
+    if ($is_csrf) {
+        RT::Interface::Web::Session::Delete( Key => 'ExistingPasswordPolicyChangeNext' );
+    }
+    elsif ( $path ne $target ) {
+        # REQUEST_URI keeps the query string; strip URL-param credentials so
+        # the post-change redirect doesn't replay them.
+        my $next = RequestENV('REQUEST_URI');
+        if ( defined $next ) {
+            $next =~ s{^/+}{/};
+            my $uri = URI->new($next);
+            if ( defined $uri->query_param('user') && defined $uri->query_param('pass') ) {
+                $uri->query_param_delete('user');
+                $uri->query_param_delete('pass');
+            }
+            $next = $uri->as_string;
+        }
+        else {
+            $next = $path;
+        }
+        RT::Interface::Web::Session::Set( Key => 'ExistingPasswordPolicyChangeNext', Value => $next );
+    }
+
+    Redirect( RT->Config->Get('WebURL') . substr( $target, 1 ) );
 }
 
 =head2 MaybeRejectPrivateComponentRequest
@@ -811,8 +968,6 @@ sub ShowRequestedPage {
     # Ensure that the cookie that we send is up-to-date, in case the
     # session-id has been modified in any way
     SendSessionCookie();
-
-    ExpandShortenerCode($ARGS);
 
     # precache all system level rights for the current user
     $HTML::Mason::Commands::session{CurrentUser}->PrincipalObj->HasRights( Object => RT->System );
@@ -1023,6 +1178,16 @@ sub AttemptPasswordAuthentication {
     my $ARGS = shift;
     return unless defined $ARGS->{user} && defined $ARGS->{pass};
 
+    # Check RestrictLoginReferrer before authentication happens, so that a
+    # login which is not allowed never creates a session. /Elements/DoAuth
+    # does the same for the passwords external auth validates itself.
+
+    if ( RT->Config->Get('RestrictLoginReferrer') and not IsLoginPageReferer() ) {
+        RT->Logger->error( "REJECTED LOGIN for @{[$ARGS->{user}]} from @{[RequestENV('REMOTE_ADDR')]}: "
+                . "not from RT's login page (Referrer: @{[RequestENV('HTTP_REFERER') || 'none']})" );
+        return (0, HTML::Mason::Commands::loc("Use RT's login page to log in"));
+    }
+
     my $user_obj = RT::CurrentUser->new();
     $user_obj->Load( $ARGS->{user} );
 
@@ -1043,11 +1208,41 @@ sub AttemptPasswordAuthentication {
         return (0, HTML::Mason::Commands::loc('Your username or password is incorrect'));
     }
     else {
-        $RT::Logger->info("Successful login for @{[$ARGS->{user}]} from $remote_addr");
+        # PostLoadCheck guarantees 'ignore', 'notify' or 'force'
+        my $existing_action   = RT->Config->Get('ExistingPasswordPolicyAction');
+        my $password_violates = 0;
+        if ( $existing_action ne 'ignore' ) {
+            my ($ok) = $user_obj->ValidatePassword( $ARGS->{pass} );
+            $password_violates = !$ok;
+        }
 
-        # It's important to nab the next page from the session before we blow
-        # the session away
-        my $next = RemoveNextPage($ARGS->{'next'});
+        # REST clients can't reach the compliance page
+        if (   $password_violates
+            && $existing_action eq 'force'
+            && $m->request_comp->path =~ m{^/REST/} )
+        {
+            RT->Logger->error("REST login rejected for @{[$ARGS->{user}]}: existing password violates policy");
+            $m->callback( %$ARGS, CallbackName => 'FailedLogin', CallbackPage => '/autohandler' );
+            return (
+                0,
+                HTML::Mason::Commands::loc(
+                    'Your password no longer meets the current password policy. Log in via the web interface to update it.'
+                )
+            );
+        }
+
+        my ( $ret, $msg ) = ApplyMFAPolicy(
+            User             => $user_obj,
+            ARGS             => $ARGS,
+            PasswordViolates => $password_violates,
+        );
+        return ( 0, $msg ) unless $ret;
+
+        RT->Logger->info("Successful login for @{[$ARGS->{user}]} from $remote_addr");
+
+        # No MFA required: complete login normally. It's important to nab the next
+        # page from the session before we blow the session away
+        my $next = RemoveNextPage( $ARGS->{'next'} );
            $next = $next->{'url'} if ref $next;
 
         InstantiateNewSession();
@@ -1057,19 +1252,114 @@ sub AttemptPasswordAuthentication {
             Value => $user_obj,
         );
 
-        $m->callback( %$ARGS, CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler', RedirectTo => \$next );
+        # The notice is one-shot (PageLayout deletes it); the violation flag
+        # persists and drives the force gate.
+        if ($password_violates) {
+            RT::Interface::Web::Session::Set( Key => 'ExistingPasswordPolicyViolation', Value => 1 );
+            if ( $existing_action eq 'notify' ) {
+                RT::Interface::Web::Session::Set( Key => 'ExistingPasswordPolicyNotice', Value => 1 );
+            }
+        }
+
+        $m->callback(
+            %$ARGS, CallbackName => 'SuccessfulLogin',
+            CallbackPage => '/autohandler', RedirectTo => \$next
+        );
 
         # Really the only time we don't want to redirect here is if we were
         # passed user and pass as query params in the URL.
         if ($next) {
             Redirect($next);
         }
-        elsif ($ARGS->{'next'}) {
+        elsif ( $ARGS->{'next'} ) {
             # Invalid hash, but still wants to go somewhere, take them to /
-            Redirect(RT->Config->Get('WebURL'));
+            Redirect( RT->Config->Get('WebURL') );
         }
 
-        return (1, HTML::Mason::Commands::loc('Logged in'));
+        # URL-param logins (?user=&pass=) don't redirect, so gate now or the
+        # requested page renders before the gate runs.
+        MaybeForceExistingPasswordChange($ARGS);
+
+        return ( 1, HTML::Mason::Commands::loc('Logged in') );
+    }
+}
+
+=head2 ApplyMFAPolicy User => $user, ARGS => \%ARGS, Next => $url, PasswordViolates => 0|1
+
+Call after a user's password has been verified, before logging them in.
+If the user's effective MFA policy applies, starts a pending MFA session
+and redirects to the enroll or verify page.
+
+C<Next> is the URL to go to once MFA succeeds. If not given, it's taken
+from the session's next page for C<< $ARGS->{next} >>.
+
+Returns C<(1)> if MFA does not apply and the caller should log the user
+in. Returns C<(0, $message)> if the login must be refused: a REST login
+when MFA applies, or a user locked out of MFA.
+
+=cut
+
+sub ApplyMFAPolicy {
+    my %args = (
+        User             => undef,
+        ARGS             => {},
+        Next             => undef,
+        PasswordViolates => 0,
+        @_,
+    );
+    my $user_obj = $args{User};
+    my $ARGS     = $args{ARGS};
+
+    return 1 if RT->Config->Get('DisableMFA');
+
+    my $m           = $HTML::Mason::Commands::m;
+    my $remote_addr = RequestENV('HTTP_X_FORWARDED_FOR') || RequestENV('REMOTE_ADDR');
+    my $mode        = $user_obj->EffectiveMFAPolicy->{Mode} // 'Off';
+
+    my $enrolled = $user_obj->TOTPEnrolled;
+
+    # REST API: reject username+password when MFA applies
+    if (   ( $mode eq 'Required' || ( $mode eq 'Optional' && $enrolled ) )
+        && $m->request_comp->path =~ m{^/REST/} )
+    {
+        RT->Logger->error("REST login rejected for @{[$ARGS->{user}]}: MFA required, use an auth token");
+        $m->callback( %$ARGS, CallbackName => 'FailedLogin', CallbackPage => '/autohandler' );
+        return ( 0,
+            HTML::Mason::Commands::loc('MFA is required for your account. Use an authentication token for API access.')
+        );
+    }
+
+    return 1 if $mode eq 'Off' || ( $mode eq 'Optional' && !$enrolled );
+
+    # Refuse to start a new pending session while the user is locked out,
+    # so the per-user counter cannot be reset by repeated logins. Return
+    # the same generic credential failure to avoid leaking lockout state to
+    # an unauthenticated attacker.
+    my ($mfa_locked) = $user_obj->IsMFALockedOut;
+    if ($mfa_locked) {
+        RT->Logger->warning("Login blocked for @{[$ARGS->{user}]} from $remote_addr: MFA lockout active");
+        $m->callback( %$ARGS, CallbackName => 'FailedLogin', CallbackPage => '/autohandler' );
+        return ( 0, HTML::Mason::Commands::loc('Your username or password is incorrect') );
+    }
+
+    my $next = $args{Next} // RemoveNextPage( $ARGS->{'next'} );
+       $next = ref $next ? $next->{'url'} : $next;
+
+    RT->Logger->info("Password accepted for @{[$ARGS->{user}]} from $remote_addr; MFA verification pending");
+
+    InstantiateNewSession();
+    RT::Interface::Web::Session::Set( Key => 'MFAPendingUserID', Value => $user_obj->Id );
+    RT::Interface::Web::Session::Set( Key => 'MFAPendingAt',     Value => time );
+    RT::Interface::Web::Session::Set( Key => 'MFAPendingNext',   Value => $next );
+
+    # Verify/Enroll restore this after MFA succeeds
+    RT::Interface::Web::Session::Set( Key => 'MFAPendingPasswordViolation', Value => 1 ) if $args{PasswordViolates};
+
+    if ( $mode eq 'Required' && !$enrolled ) {
+        Redirect( RT->Config->Get('WebURL') . 'NoAuth/MFA/Enroll.html' );
+    }
+    else {
+        Redirect( RT->Config->Get('WebURL') . 'NoAuth/MFA/Verify.html' );
     }
 }
 
@@ -1382,6 +1672,41 @@ sub ComponentPathIsSafe {
     my $self = shift;
     my $path = shift;
     return($path !~ m{(?:^|/)\.} and $path !~ m{\0});
+}
+
+=head2 LinkPathIsSafe PATH
+
+Takes C<PATH>, a link target handed to a component to build its links from,
+and returns a boolean indicating whether it is an internal path that is safe
+to render into an C<href> or C<src> attribute.
+
+Safe means the path is internal: it carries no URI scheme, is not protocol
+relative, and holds nothing that could end the attribute it lands in. An
+undefined or empty path is safe, since components give those their own
+meaning.
+
+Components that take such a path from their arguments must run it through
+this and discard whatever fails.
+
+=cut
+
+sub LinkPathIsSafe {
+    my $self = shift;
+    my $path = shift;
+
+    return 1 unless defined $path and length $path;
+
+    # A scheme of any kind makes this someone else's URL rather than ours
+    return 0 if $path =~ m{^[a-z][a-z0-9.+-]*:}i;
+
+    # Protocol relative, including the backslash form browsers accept
+    return 0 if $path =~ m{^[/\\]{2}};
+
+    # Anything that could end the attribute we land in, and anything a
+    # browser might strip before it looks for a scheme
+    return 0 if $path =~ m{['"<>\s]|[^[:print:]]};
+
+    return 1;
 }
 
 =head2 PathIsSafe
@@ -1760,6 +2085,40 @@ sub StaticRoots {
     return grep { $_ and -d $_ } @static;
 }
 
+=head2 Themes
+
+Returns the names of the themes this instance of RT provides, i.e. the
+directories with a F<main.css> under F<css> in any of the L</StaticRoots>.
+C<$WebDefaultStylesheet> and the per-user theme preference name one of these.
+
+The list is cached for the life of the process, so a theme added on disk is
+not offered until RT is restarted.
+
+=cut
+
+sub Themes {
+    my $self = shift;
+
+    state @themes;
+    return @themes if @themes;
+
+    my %seen;
+    for my $root ( $self->StaticRoots ) {
+        my $path = "$root/css";
+        next unless -d $path;
+
+        if ( opendir my $dh, $path ) {
+            push @themes, grep { !/^\./ && -e "$path/$_/main.css" && !$seen{$_}++ } readdir $dh;
+            closedir $dh;
+        }
+        else {
+            RT->Logger->error("Can't read $path: $!");
+        }
+    }
+    @themes = sort { lc $a cmp lc $b } @themes;
+    return @themes;
+}
+
 our %IS_WHITELISTED_COMPONENT = (
     # The RSS feed embeds an auth token in the path, but query
     # information for the search.  Because it's a straight-up read, in
@@ -1769,11 +2128,10 @@ our %IS_WHITELISTED_COMPONENT = (
     # While these can be used for denial-of-service against RT
     # (construct a very inefficient query and trick lots of users into
     # running them against RT) it's incredibly useful to be able to link
-    # to a search result (or chart) or bookmark a result page.
+    # to a search result or bookmark a result page.
     '/Search/Results.html' => 1,
     '/Search/Simple.html'  => 1,
     '/m/tickets/search'    => 1,
-    '/Search/Chart.html'   => 1,
     '/User/Search.html'    => 1,
 
     # This page takes Attachment and Transaction argument to figure
@@ -1801,13 +2159,17 @@ our @GLOBAL_WHITELISTED_ARGS = (
 
     # The Shortener code
     'sc',
+
+    # Pagination, which only says which page of results to show
+    'Page',
+
+    # Search and chart arguments, which only say what to show and how
+    @SHORTENER_ARGS,
 );
 
 our %WHITELISTED_COMPONENT_ARGS = (
-    # SavedSearchLoad - This happens when you middle-(or ⌘ )-click "Edit" for a saved search on
-    # the homepage. It's not going to do any damage
     # NewQuery - This is simply to clear the search query
-    '/Search/Build.html' => ['SavedSearchLoad','NewQuery'],
+    '/Search/Build.html' => ['NewQuery'],
     # Happens if you try and reply to a message in the ticket history or click a number
     # of options on a tickets Action menu
     '/Ticket/Update.html' => ['QuoteTransaction', 'Action', 'DefaultStatus'],
@@ -1825,6 +2187,9 @@ our %WHITELISTED_COMPONENT_ARGS = (
 our %IS_BLACKLISTED_COMPONENT = (
     # Takes only id and toggles bookmark state
     '/Helpers/Toggle/TicketBookmark' => 1,
+
+    # Takes only id and revokes the named right
+    '/Helpers/RightsInspector/Revoke' => 1,
 );
 
 sub IsCompCSRFWhitelisted {
@@ -1925,6 +2290,45 @@ sub IsRefererCSRFWhitelisted {
     }
 
     return (0,$referer,$configs);
+}
+
+=head3 IsLoginPageReferer
+
+Returns true if the current request came from RT's login page.
+
+A request qualifies if it supplies a Referrer header, and that Referrer is one of
+the URLs where RT serves the login form, which is the login page itself, or the index
+page, which renders the form inline for a logged-out user.
+
+REST endpoints are exempt. Their clients are not browsers and send no
+Referrer, and with C<$RestrictReferrer> enabled L</IsPossibleCSRF> confines a
+session created by a REST request to REST endpoints, so such a session cannot
+be used to browse RT.
+
+=cut
+
+sub IsLoginPageReferer {
+    return 1 if $HTML::Mason::Commands::r->path_info =~ m{^/+REST/\d+\.\d+(/|$)};
+
+    my $referer = RequestENV('HTTP_REFERER') or return 0;
+    my $uri     = URI->new($referer);
+
+    # A Referrer with no host and port is never a page RT served.
+    # @ReferrerWhitelist can accept one anyway: android-app://com.slack/
+    # matches on authority, and its path of / would read as the index page.
+    return 0 unless $uri->can('host_port');
+
+    # The login form is served by RT itself, so the Referrer has to be a host
+    # RT answers to.
+    my ($host_ok) = IsRefererCSRFWhitelisted($referer);
+    return 0 unless $host_ok;
+
+    my $path    = $uri->path // '';
+    my $webpath = RT->Config->Get('WebPath') || '';
+    return 0 unless $path =~ s{^\Q$webpath\E}{};
+    $path = '/' unless length $path;
+
+    return $path =~ m{^(?:/(?:index\.html)?|/m/?(?:index\.html)?|/NoAuth/Login\.html)$} ? 1 : 0;
 }
 
 =head3 _NormalizeHost
@@ -2063,10 +2467,21 @@ sub StoreRequestToken {
     my $ARGS = shift;
 
     my $now   = time;
-    my $token = Digest::MD5::md5_hex($now . {} . $$ . rand(1024));
-    my $user  = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
-    my $data  = {
-        auth    => $user->GenerateAuthString( $token ),
+    my $token = RT::Util::random_hex(32);
+    unless ( defined $token ) {
+        RT->Logger->error("Couldn't generate a request token");
+        return;
+    }
+
+    my $user = $HTML::Mason::Commands::session{'CurrentUser'}->UserObj;
+    my $auth = $user->GenerateAuthString( $token );
+    unless ( defined $auth ) {
+        RT->Logger->error("Couldn't sign a request token for user " . $user->id);
+        return;
+    }
+
+    my $data = {
+        auth    => $auth,
         path    => $HTML::Mason::Commands::r->path_info,
         args    => $ARGS,
         created => $now,
@@ -2171,6 +2586,16 @@ sub MaybeShowInterstitialCSRFPage {
         $original_url
             = RT->Config->Get('WebBaseURL') . RT->Config->Get('WebPath') . $HTML::Mason::Commands::r->path_info;
         $token = StoreRequestToken($ARGS);
+
+        unless ( defined $token ) {
+            # The interstitial is what lets the user confirm this request, and it
+            # needs a token. Without one, refuse rather than wave the request
+            # through the check the interstitial exists to perform.
+            HTML::Mason::Commands::Abort(
+                HTML::Mason::Commands::loc("Your request could not be verified. Please try again, and contact your administrator if the problem persists."),
+                Code => HTTP::Status::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 
     $HTML::Mason::Commands::m->comp(
@@ -2542,6 +2967,71 @@ sub ExtractImages {
     return ( $content, @images );
 }
 
+=head2 ProcessExistingPasswordChangeRequest ARGSRef
+
+Shared handler for the privileged and unprivileged existing-password
+compliance-change pages. Loads the current user via C<RT::SystemUser>
+(the admin has opted into enforcement, so the page bypasses the usual
+C<ModifySelf> requirement). Silently redirects to C<WebURL> when the
+session marker is absent, regardless of request method.
+
+On a POST with C<Password>/C<PasswordConfirm>, checks C<CurrentPassword>,
+validates the new password against the policy, sets it on success, clears
+the marker, and redirects to C<ExistingPasswordPolicyChangeNext> (or
+C<WebURL>).
+Validation failures are returned to the caller for display.
+
+Returns C<($user, \@results, \@policy_requirements)>.
+
+=cut
+
+sub ProcessExistingPasswordChangeRequest {
+    my $ARGSRef = shift;
+
+    my $user = RT::User->new( RT->SystemUser );
+    $user->Load( $HTML::Mason::Commands::session{CurrentUser}->Id );
+
+    # Policy messages are localized for the object's current user
+    my $self_user = $HTML::Mason::Commands::session{CurrentUser}->UserObj;
+
+    unless ( $HTML::Mason::Commands::session{ExistingPasswordPolicyViolation} ) {
+        Redirect( RT->Config->Get('WebURL') );
+    }
+
+    my @results;
+
+    if ( RequestENV('REQUEST_METHOD') eq 'POST' && ( $ARGSRef->{Password} || $ARGSRef->{PasswordConfirm} ) ) {
+        if ( !$user->IsPassword( $ARGSRef->{CurrentPassword} // '' ) ) {
+            push @results, HTML::Mason::Commands::loc('Please enter your current password correctly.');
+        }
+        elsif ( ( $ARGSRef->{Password} // '' ) ne ( $ARGSRef->{PasswordConfirm} // '' ) ) {
+            push @results, HTML::Mason::Commands::loc("The two passwords you typed didn't match.");
+        }
+        else {
+            my ( $ok, $msg ) = $self_user->ValidatePassword( $ARGSRef->{Password} );
+            if ( !$ok ) {
+                push @results, $msg;
+            }
+            else {
+                ( $ok, $msg ) = $user->SetPassword( $ARGSRef->{Password} );
+                if ($ok) {
+                    my $next = $HTML::Mason::Commands::session{ExistingPasswordPolicyChangeNext}
+                        || RT->Config->Get('WebURL');
+                    RT::Interface::Web::Session::Delete( Key => $_ )
+                        for qw/ExistingPasswordPolicyViolation ExistingPasswordPolicyChangeNext/;
+                    Redirect($next);
+                }
+                else {
+                    push @results, $msg;
+                }
+            }
+        }
+    }
+
+    my @policy_requirements = $self_user->PasswordPolicyRequirements;
+    return ( $user, \@results, \@policy_requirements );
+}
+
 package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
@@ -2815,7 +3305,8 @@ sub MaybeRedirectToApproval {
         my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
         $ticket->Load($id);
 
-        if ($ticket and $ticket->id and lc($ticket->Type) eq 'approval') {
+        # Type is undef for a ticket the current user cannot see
+        if ($ticket and $ticket->id and lc($ticket->Type // '') eq 'approval') {
             MaybeRedirectForResults(
                 Path      => "/Approvals/Display.html",
                 Force     => 1,
@@ -2896,6 +3387,20 @@ sub CreateTicket {
     if ( $ARGS{'Attachments'} ) {
         push @attachments, grep $_, map $ARGS{Attachments}->{$_}, sort keys %{ $ARGS{'Attachments'} };
     }
+
+    if ( $ARGS{'AttachExisting'} ) {
+        for my $id ( ref $ARGS{'AttachExisting'} eq 'ARRAY' ? @{ $ARGS{'AttachExisting'} } : $ARGS{'AttachExisting'} ) {
+            my $attachment = RT::Attachment->new($current_user);
+            $attachment->Load($id);
+            if ( $attachment->Id && $attachment->Filename && $attachment->CurrentUserCanSee ) {
+                push @attachments, $attachment->ContentAsMIME;
+            }
+            else {
+                RT->Logger->warning("Invalid attachment #$id to attach");
+            }
+        }
+    }
+
     if ( @attachments ) {
         $MIMEObj->make_multipart( 'mixed', Force => 1 );
         $MIMEObj->add_part( $_ ) foreach @attachments;
@@ -3001,6 +3506,139 @@ sub LoadTicket {
     return $Ticket;
 }
 
+=head2 ProcessTicketAttachments TicketObj => $TicketObj, ARGSRef => $ARGSRef
+
+Takes paramhash with fields ARGSRef and TicketObj.
+
+=cut
+
+sub ProcessTicketAttachments {
+    my %args = (
+        ARGSRef   => undef,
+        TicketObj => undef,
+        @_
+    );
+
+    my @results;
+    if ( $args{ARGSRef}{AddAttachments} ) {
+        my @attachments;
+        if ( my $tmp = $session{'Attachments'}{ $args{'ARGSRef'}{'Token'} || '' } ) {
+            push @attachments, grep $_, map $tmp->{$_}, sort keys %$tmp;
+
+            RT::Interface::Web::Session::Delete(
+                Key    => 'Attachments',
+                SubKey => $args{'ARGSRef'}{'Token'} || '',
+            );
+        }
+
+        for my $attachment (@attachments) {
+            my ( $ret, $msg ) = $args{TicketObj}->AddAttachment( MIMEObj => $attachment );
+            push @results, $msg if $msg;
+        }
+    }
+
+    if ( $args{ARGSRef}{PinAttachments} ) {
+        for my $id (
+            ref $args{ARGSRef}{PinAttachments} eq 'ARRAY'
+            ? @{ $args{ARGSRef}{PinAttachments} }
+            : $args{ARGSRef}{PinAttachments}
+            )
+        {
+            my $attachment = RT::Attachment->new( $session{CurrentUser} );
+            $attachment->Load($id);
+            my $object = $attachment->Id ? $attachment->TransactionObj->Object : undef;
+            if (   $attachment->Id
+                && $attachment->Filename
+                && $attachment->CurrentUserCanSee
+                && $object
+                && $object->isa('RT::Ticket')
+                && $object->Id == $args{TicketObj}->Id )
+            {
+                my ( $ret, $msg ) = $object->PinAttachment($attachment);
+                push @results, $msg if $msg;
+            }
+            else {
+                push @results, loc( 'Invalid attachment #[_1]', $id );
+            }
+        }
+    }
+
+    if ( $args{ARGSRef}{UnpinAttachments} ) {
+        for my $id (
+            ref $args{ARGSRef}{UnpinAttachments} eq 'ARRAY'
+            ? @{ $args{ARGSRef}{UnpinAttachments} }
+            : $args{ARGSRef}{UnpinAttachments}
+            )
+        {
+            my $attachment = RT::Attachment->new( $session{CurrentUser} );
+            $attachment->Load($id);
+            my $object = $attachment->Id ? $attachment->TransactionObj->Object : undef;
+            if (   $attachment->Id
+                && $attachment->Filename
+                && $attachment->CurrentUserCanSee
+                && $object
+                && $object->isa('RT::Ticket')
+                && $object->Id == $args{TicketObj}->Id )
+            {
+                my ( $ret, $msg ) = $object->UnpinAttachment($attachment);
+                push @results, $msg if $msg;
+            }
+            else {
+                push @results, loc( 'Invalid attachment #[_1]', $id );
+            }
+        }
+    }
+
+    if ( $args{ARGSRef}{DeleteAttachments} ) {
+        for my $id (
+            ref $args{ARGSRef}{DeleteAttachments} eq 'ARRAY'
+            ? @{ $args{ARGSRef}{DeleteAttachments} }
+            : $args{ARGSRef}{DeleteAttachments}
+            )
+        {
+            my $attachment = RT::Attachment->new( $session{CurrentUser} );
+            $attachment->Load($id);
+            my $object = $attachment->Id ? $attachment->TransactionObj->Object : undef;
+            if (   $attachment->Id
+                && $attachment->Filename
+                && $attachment->CurrentUserCanSee
+                && $object
+                && $object->isa('RT::Ticket')
+                && $object->Id == $args{TicketObj}->Id )
+            {
+                my ( $ret, $msg ) = $object->DeleteAttachment($attachment);
+                push @results, $msg if $msg;
+            }
+            else {
+                push @results, loc( 'Invalid attachment #[_1]', $id );
+            }
+        }
+    }
+
+    for my $arg ( grep {/^RenameAttachment-\d+$/} sort keys %{ $args{ARGSRef} } ) {
+        my ($id)       = $arg =~ /^RenameAttachment-(\d+)/;
+        my $new_name   = $args{ARGSRef}{$arg};
+        my $attachment = RT::Attachment->new( $session{CurrentUser} );
+        $attachment->Load($id);
+        my $object = $attachment->Id ? $attachment->TransactionObj->Object : undef;
+        if (   $attachment->Id
+            && $attachment->Filename
+            && $attachment->CurrentUserCanSee
+            && $object
+            && $object->isa('RT::Ticket')
+            && $object->Id == $args{TicketObj}->Id )
+        {
+            # RenameAttachment migrates any pin to the new filename itself.
+            my ( $ret, $msg ) = $object->RenameAttachment( $attachment, $new_name );
+            push @results, $msg if $msg;
+        }
+        else {
+            push @results, loc( 'Invalid attachment #[_1]', $id );
+        }
+    }
+
+    return @results;
+}
 
 
 =head2 ProcessUpdateMessage
@@ -4031,7 +4669,9 @@ sub ProcessObjectCustomFieldUpdates {
         foreach my $id ( keys %{ $custom_fields_to_mod{$class} } ) {
             my $Object = $args{'Object'};
             $Object = $class->new( $session{'CurrentUser'} )
-                unless $Object && ref $Object eq $class;
+                unless $Object
+                    && ref $Object eq $class
+                    && ( !$id || ( $Object->id || 0 ) == $id );
 
             # skip if we have no object to update
             next unless $id || $Object->id;
@@ -4714,10 +5354,17 @@ sub ProcessLinksForCreate {
     foreach my $type ( keys %RT::Link::DIRMAP ) {
         for ([Base => "new-$type"], [Target => "$type-new"]) {
             my ($direction, $key) = @$_;
-            next unless $args{ARGSRef}->{$key};
-            $links{ $RT::Link::DIRMAP{$type}->{$direction} } = [
-                grep $_, split ' ', $args{ARGSRef}->{$key}
-            ];
+            my $val = $args{ARGSRef}->{$key};
+            next unless defined $val && ( ref $val ? @$val : length $val );
+
+            # The row-based Add-links UI posts one field per row, so repeated link
+            # types arrive as an arrayref; the legacy inputs post a space-separated
+            # scalar. Normalize both to a flat list of non-empty targets.
+            my @values = grep { defined && length } ( ref $val ? @$val : ($val) );
+            my @targets = grep { length } map { split ' ', $_ } @values;
+            next unless @targets;
+
+            $links{ $RT::Link::DIRMAP{$type}->{$direction} } = \@targets;
         }
     }
     return wantarray ? %links : \%links;
@@ -4904,6 +5551,24 @@ sub ProcessColumnMapValue {
         }
         return $value;
     }
+}
+
+=head2 CollectionColumnClass ATTRIBUTE
+
+Returns the CSS class that marks a collection table column showing
+ATTRIBUTE, a column's field such as C<Subject> or
+C<CustomField.{Serial Number}>, or an empty string for a column with
+no field. The class is ATTRIBUTE lowercased with anything other than
+letters and digits turned into dashes, after C<rt-collection-column->:
+C<rt-collection-column-subject>, C<rt-collection-column-customfield-serial-number>.
+
+=cut
+
+sub CollectionColumnClass {
+    my $attribute = shift // '';
+    ( my $name = lc $attribute ) =~ s/[^a-z0-9]+/-/g;
+    $name =~ s/^-+|-+$//g;
+    return length $name ? "rt-collection-column-$name" : '';
 }
 
 sub ProcessQuickCreate {
@@ -5465,37 +6130,6 @@ sub GetObjectSessionCacheKey {
         $args{'ShowAll'};
 
     return $cache_key;
-}
-
-=head2 _load_container_object ( $type, $id );
-
-Instantiate container object for saving searches.
-
-=cut
-
-sub _load_container_object {
-    my ( $obj_type, $obj_id ) = @_;
-    return RT::SavedSearch->new( $session{'CurrentUser'} )->_load_privacy_object( $obj_type, $obj_id );
-}
-
-=head2 _parse_saved_search ( $arg );
-
-Given a serialization string for saved search, and returns the
-container object and the search id.
-
-=cut
-
-sub _parse_saved_search {
-    my $spec = shift;
-    return unless $spec;
-    if ( $spec !~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
-        return;
-    }
-    my $obj_type  = $1;
-    my $obj_id    = $2;
-    my $search_id = $3;
-
-    return ( _load_container_object( $obj_type, $obj_id ), $search_id );
 }
 
 =head2 ScrubHTML Content => CONTENT, Permissive => 1|0, Restrictive => 1|0, SkipStructureCheck => 1|0
@@ -6684,6 +7318,64 @@ sub GetPageLayout {
     return;
 }
 
+=head2 ValidatePageLayoutName NAME
+
+Returns 1 if NAME is acceptable as a page layout name, otherwise
+C<(0, MESSAGE)>.
+
+Page layout names are the keys of L<RT_Config/%PageLayouts> and are passed
+in URLs, so they are limited to ASCII alphanumerics, underscores, dashes,
+and spaces.
+
+=cut
+
+sub ValidatePageLayoutName {
+    my $name = shift;
+
+    return ( 0, loc('Invalid Name') ) unless defined $name && length $name;
+
+    return ( 0, loc('Page Layout Name may only contain alphanumeric characters, underscores, dashes, and spaces') )
+        if $name =~ /[^A-Za-z0-9_ -]/;
+
+    return 1;
+}
+
+=head2 PageLayoutHasWidget Object => $Object, Page => $Page, Widget => $Widget
+
+Returns true if the page layout for the given C<$Object> and C<$Page>, as
+returned by L</GetPageLayout>, contains the widget named C<$Widget>.
+
+=cut
+
+sub PageLayoutHasWidget {
+    my %args = (
+        Object => '',
+        Page   => 'Display',
+        Widget => '',
+        @_,
+    );
+
+    my $config = GetPageLayout( Object => $args{Object}, Page => $args{Page} ) or return 0;
+    $config = $config->{Content} if ref $config eq 'HASH';
+    return _LayoutItemHasWidget( $config, $args{Widget} ) ? 1 : 0;
+}
+
+sub _LayoutItemHasWidget {
+    my ( $item, $widget ) = @_;
+
+    if ( ref $item eq 'ARRAY' ) {
+        return scalar grep { _LayoutItemHasWidget( $_, $widget ) } @$item;
+    }
+    elsif ( ref $item eq 'HASH' ) {
+        return _LayoutItemHasWidget( $item->{Elements} || $item->{Name}, $widget );
+    }
+    elsif ( defined $item ) {
+        my ($name) = split /:/, $item, 2;
+        return $name eq $widget;
+    }
+    return 0;
+}
+
 =head2 GetAvailableWidgets Class => $Class, Page => $Page
 
 Returns a list of available widgets for the given C<$Class> and C<$Page>.
@@ -6799,6 +7491,68 @@ sub GetAvailableWidgets {
         }
     }
     return sort keys %widget;
+}
+
+=head2 ValidateWidgets Class => $Class, Content => ARRAYREF, AvailableWidgets => ARRAYREF
+
+Checks that every widget in page layout or dashboard content is in the
+list L</GetAvailableWidgets> returned for the same class and page. Pass
+C<RT::Dashboard> as C<$Class> for dashboard content.
+
+Returns a tuple of (status, messages).
+
+=cut
+
+sub ValidateWidgets {
+    my %args = (
+        Class            => 'RT::Ticket',
+        Content          => undef,
+        AvailableWidgets => undef,
+        @_,
+    );
+
+    return ( 0, loc('Invalid Content') ) unless ref $args{Content} eq 'ARRAY';
+
+    my $is_dashboard = $args{Class} eq 'RT::Dashboard';
+    my $key_for      = sub {
+        my $item = shift;
+        if ($is_dashboard) {
+            return join '-', $item->{portlet_type} // '', $item->{component} || $item->{id} // ''
+                if ref $item eq 'HASH';
+        }
+        else {
+            my $name = ref $item eq 'HASH' ? $item->{Name} : $item;
+            return ( split /:/, $name, 2 )[0] // '' if defined $name && !ref $name;
+        }
+        return ref $item ? JSON::to_json( $item, { canonical => 1 } ) : $item // '';
+    };
+
+    my %available = map { $key_for->($_) => 1 } @{ $args{AvailableWidgets} || [] };
+
+    my @invalid;
+    my $check = sub {
+        my $key = $key_for->(shift);
+        push @invalid, $key unless $available{$key};
+    };
+
+    for my $row ( @{ $args{Content} } ) {
+        if ( !$is_dashboard && !( ref $row eq 'HASH' && exists $row->{Elements} ) ) {
+            $check->($row);
+            next;
+        }
+
+        unless ( ref $row eq 'HASH' && ref $row->{Elements} eq 'ARRAY' ) {
+            push @invalid, $key_for->($row);
+            next;
+        }
+
+        for my $element ( @{ $row->{Elements} } ) {
+            $check->($_) for ref $element eq 'ARRAY' ? @$element : $element;
+        }
+    }
+
+    return ( 0, map { loc( 'Invalid widget: [_1]', $_ ) } @invalid ) if @invalid;
+    return 1;
 }
 
 =head2 UpdateConfig Name => $Name, Value => $Value

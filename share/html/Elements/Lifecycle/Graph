@@ -45,68 +45,118 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="lifecycle-ui" id="lifecycle-<% $id %>" data-config="<% $Config %>" data-maps="<% $Maps %>" data-layout="<% $Layout || '' %>" >
-  <div id="lifeycycle-ui-edit-node" class="lifeycycle-ui-edit-node collapse card card-body">
-    <input type="hidden" name="id" />
-    <div class="alert alert-warning invalid-name hidden"><&|/l&>Invalid name</&></div>
-    <&| /Elements/LabeledValue, Label => loc('Name') &>
-      <input class="form-control" type="text" id="name" name="name" value="" />
-    </&>
+<div class="lifecycle-ui" id="lifecycle-<% $id %>" data-lifecycle="<% $Name %>" data-config="<% $Config %>" data-maps="<% $Maps %>" data-layout="<% $Layout || '' %>" >
+  <div class="modal" id="lifecycle-ui-edit-node" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><&|/l&>Status</&></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<&|/l&>Close</&>"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="id" />
+          <div class="alert alert-warning invalid-name hidden"><&|/l&>Invalid name</&></div>
+          <&| /Elements/LabeledValue, Label => loc('Name') &>
+            <input class="form-control" type="text" id="name" name="name" value="" />
+          </&>
 
-    <&| /Elements/LabeledValue, Label => loc('Type') &>
-        <select class="form-select selectpicker" id="type" name="type">
-          <option value="initial"><&|/l&>Initial</&></option>
-          <option value="active"><&|/l&>Active</&></option>
-          <option value="inactive"><&|/l&>Inactive</&></option>
-        </select>
-    </&>
+          <&| /Elements/LabeledValue, Label => loc('Type') &>
+              <select class="form-select selectpicker" id="type" name="type">
+                <option value="initial"><&|/l&>Initial</&></option>
+                <option value="active"><&|/l&>Active</&></option>
+                <option value="inactive"><&|/l&>Inactive</&></option>
+              </select>
+          </&>
 
-    <&| /Elements/LabeledValue, Label => loc('Color') &>
-      <div class="form-check mb-1">
-        <input class="form-check-input" type="checkbox" id="color-use" name="color-use" checked />
-        <label class="form-check-label" for="color-use"><% loc('Set status color') %></label>
-      </div>
-      <div class="input-group" id="color-inputs">
-        <input class="form-control form-control-color" type="color" id="color" name="color" value="#547CCC" />
-        <input class="form-control" type="text" id="color-hex" name="color-hex" value="#547CCC" placeholder="#000000" maxlength="7" />
-      </div>
-    </&>
-    <div class="row mt-2">
-      <div class="col-12 text-end">
-        <button class="btn btn-light" id="CancelNode"><&|/l&>Cancel</&></button>
-        <button class="btn btn-primary" id="SaveNode"><&|/l&>Save</&></button>
+          <&| /Elements/LabeledValue, Label => loc('Color') &>
+            <div class="d-flex align-items-center gap-3">
+              <div class="form-check mb-0">
+                <input class="form-check-input" type="checkbox" id="color-use" name="color-use" checked />
+                <label class="form-check-label" for="color-use"><% loc('Set status color') %></label>
+              </div>
+              <div class="input-group w-auto" id="color-inputs">
+                <input class="form-control form-control-color" type="color" id="color" name="color" value="#547CCC" />
+                <input class="form-control" type="text" id="color-hex" name="color-hex" value="#547CCC" placeholder="#000000" maxlength="7" />
+              </div>
+            </div>
+          </&>
+
+          <&| /Elements/LabeledValue, Label => loc('Description') &>
+            <textarea class="form-control" id="status-description" rows="2"></textarea>
+            <div class="form-text"><&|/l&>Short status description for users. Tooltip in the editor and ticket viewer.</&></div>
+          </&>
+
+          <&| /Elements/LabeledValue, Label => loc('Notes') &>
+            <textarea class="form-control" id="status-notes" rows="2"></textarea>
+            <div class="form-text"><&|/l&>Additional details for admins and API/AI agents. Not shown in the ticket viewer.</&></div>
+          </&>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-danger me-auto" id="DeleteNode"><&|/l&>Delete</&></button>
+          <button type="button" class="btn btn-primary" id="SaveNode"><&|/l&>Save</&></button>
+        </div>
       </div>
     </div>
+  </div>
+
+  <div class="modal" id="lifecycle-ui-edit-transition" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><&|/l&>Transition</&></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<&|/l&>Close</&>"></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-text mb-3"><&|/l&>Description is shown as a tooltip in the ticket viewer. Notes are details for admins and API/AI agents.</&></div>
+%         for my $dir (qw(forward reverse)) {
+          <div class="lifecycle-transition-dir mb-2" data-dir="<% $dir %>">
+            <div class="fw-bold small mb-1 lifecycle-transition-label"></div>
+            <&| /Elements/LabeledValue, Label => loc('Description') &>
+              <textarea class="form-control" data-field="description" rows="2"></textarea>
+            </&>
+            <&| /Elements/LabeledValue, Label => loc('Notes') &>
+              <textarea class="form-control" data-field="notes" rows="2"></textarea>
+            </&>
+          </div>
+%         }
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-danger me-auto" id="DeleteTransition"><&|/l&>Delete</&></button>
+          <button type="button" class="btn btn-primary" id="SaveTransition"><&|/l&>Save</&></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="my-3 alert alert-warning pending-changes hidden">
+    <&|/l&>New changes pending. Click "Save Changes" to update the lifecycle.</&>
   </div>
 
   <div class="row mt-2">
     <div class="col-12">
-      <svg></svg>
+      <div class="lifecycle-graph border rounded" style="width: 100%; height: 560px;"></div>
     </div>
   </div>
 
-  <div class="row">
+  <div class="row mt-2 mb-3">
     <div class="col-auto">
-      <span class="current-value form-control">
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="enableSimulation" name="enableSimulation" />
-          <label class="form-check-label" for="enableSimulation">
-            <span class="prev-icon-helper"><&|/l&>Auto Layout</&></span>\
-<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => loc("Auto layout automatically spaces out statuses. Uncheck to manually reposition your lifecycle."), Size => 12 ) |n %>
-          </label>
-        </div>
-      </span>
+      <button class="btn btn-light btn-sm" id="AutoArrange" type="button"><&|/l&>Auto-arrange</&></button>\
+<% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper ms-1', Title => loc("Automatically space out the statuses. Drag nodes to fine-tune, then Save to make the arrangement permanent for the viewer."), Size => 12 ) |n %>
     </div>
   </div>
   <div class="row">
-    <div class="col-auto">
-      <p>
+    <div class="col-md-6">
+      <p class="mb-0">
         <&|/l&>Click in the open space to <strong>add a status</strong>.<br>
-Click on the status text to <strong>edit</strong> the status.<br>
-Click and drag a status node to <strong>change the graph layout</strong>.<br>
-Control + click on a status and drag to another to <strong>add a transition</strong>.<br>
-Click on a status node to select it and press 'd' to <strong>delete</strong>.<br>
-<strong>Click on a transition line</strong> to delete.<br></&>
+Click on a status to <strong>edit</strong> or <strong>delete</strong> it.<br>
+Click and drag a status to <strong>change the graph layout</strong>.</&>
+      </p>
+    </div>
+    <div class="col-md-6">
+      <p class="mb-0">
+        <&|/l&>Shift + drag from one status to another to <strong>add a transition</strong>.<br>
+Click a transition to select it, then click again to <strong>change its direction</strong>.<br>
+Click the pencil on a transition to <strong>edit</strong> or <strong>delete</strong> it.</&>
       </p>
     </div>
   </div>

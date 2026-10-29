@@ -50,6 +50,11 @@ $DisplayFormat => undef
 $ObjectClass   => undef
 $MaxItems      => undef
 $InlineEdit    => undef
+$MarkInactive  => undef
+$LinkDeleteType => undef
+$LinkDeleteMode => undef
+$TreePrefix     => undef
+$Depth          => undef
 
 $i             => undef
 $ObjectId      => undef
@@ -66,6 +71,35 @@ my $record = $ObjectClass->new($session{CurrentUser});
 $record->Load($ObjectId);
 $m->abort unless $record->id;
 
+# In the Links portlet's edit mode the format carries a DeleteLinkCheckBox column that
+# reads these notes; restore them so a reloaded row keeps its removal checkbox.
+$m->notes( LinkDeleteType => $LinkDeleteType ) if defined $LinkDeleteType && length $LinkDeleteType;
+$m->notes( LinkDeleteMode => $LinkDeleteMode ) if defined $LinkDeleteMode && length $LinkDeleteMode;
+
+# Match CollectionList's inactive-status marking so a row reloaded after an inline
+# edit (e.g. a status change) gains or loses the strike-through accordingly.
+my $Classes = '';
+if ( $MarkInactive && $record->can('LifecycleObj') ) {
+    my $lifecycle = $record->LifecycleObj;
+    $Classes = 'record-inactive' if $lifecycle && $lifecycle->IsInactive( $record->Status );
+}
+
+my $first_column_prefix = '';
+my $row_attributes      = '';
+# Rebuild the tree guide on reload. Gate on Depth, NOT TreePrefix: a depth-1 direct child is a
+# flush-left root with an EMPTY prefix, so gating on TreePrefix would skip exactly those rows.
+if ( defined $Depth && length $Depth ) {
+    my $depth = int($Depth);
+    $first_column_prefix = $m->scomp( '/Elements/LinkTreeGuide', Code => ( $TreePrefix // '' ) );
+
+    my $safe_prefix = $m->interp->apply_escapes( $TreePrefix // '', 'h' );
+    $row_attributes = qq{data-depth="$depth" data-tree-prefix="$safe_prefix" aria-level="$depth"};
+}
+
+# The guide rides the id column; a leading delete-checkbox column (present in edit mode, signalled
+# by LinkDeleteType) shifts it to index 1.
+my $first_column_prefix_index = ( defined $LinkDeleteType && length $LinkDeleteType ) ? 1 : 0;
+
 $m->comp('/Elements/CollectionAsTable/Row',
     i          => $i,
     Format     => \@Format,
@@ -73,7 +107,11 @@ $m->comp('/Elements/CollectionAsTable/Row',
     maxitems   => $MaxItems,
     Class      => $record->ColumnMapClassName,
     Warning    => $Warning,
+    Classes           => $Classes,
     InlineEdit => $InlineEdit,
+    FirstColumnPrefix => $first_column_prefix,
+    FirstColumnPrefixIndex => $first_column_prefix_index,
+    RowAttributes     => $row_attributes,
 );
 $m->abort;
 </%INIT>

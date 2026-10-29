@@ -8,16 +8,20 @@ Assuming we are going to upgrade bootstrap to 5.3.1
 
 2. Copy source files to RT devel directory
 
-    cp bootstrap-5.3.1/dist/js/bootstrap.bundle.js RT_PATH/devel/third-party/bootstrap/dist/
+    cp bootstrap-5.3.1/dist/js/bootstrap.js RT_PATH/devel/third-party/bootstrap/dist/
     cp bootstrap-5.3.1/dist/css/bootstrap.css RT_PATH/devel/third-party/bootstrap/dist/
     rm -rf RT_PATH/devel/third-party/bootstrap/scss
     cp -r bootstrap-5.3.1/scss RT_PATH/devel/third-party/bootstrap/
 
 3. Copy minified js to RT
 
-    cp bootstrap-5.3.1/dist/js/bootstrap.bundle.min.js RT_PATH/share/static/js/bootstrap.bundle.min.js
+    RT uses the non-bundle build of Bootstrap because Popper is vendored
+    separately under devel/third-party/popper/. Copy bootstrap.min.js (not
+    bootstrap.bundle.min.js).
 
-Then manually remove the line of "/# sourceMappingURL=bootstrap.bundle.js.map", as RT doesn't serve .map file any way.
+    cp bootstrap-5.3.1/dist/js/bootstrap.min.js RT_PATH/share/static/js/bootstrap.min.js
+
+Then manually remove the line of "//# sourceMappingURL=bootstrap.min.js.map", as RT doesn't serve .map file any way.
 
 4. Generate customized version of bootstrap.css
 

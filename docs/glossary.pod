@@ -1,7 +1,88 @@
 =head1 RT Glossary
 
-This document is intended to be a glossary of terms used in RT.  Currently it
-doesn't even scratch the surface, but with time it should be expanded.
+This document is a glossary of terms used in RT.
+
+=head2 General terms
+
+=over 4
+
+=item Comment
+
+An internal note added to a ticket. In a default RT, a comment is not
+emailed to the ticket's Requestors or Ccs; AdminCcs do receive it. Administrators can
+change who is notified. Compare Reply.
+
+=item Lifecycle
+
+The set of statuses a ticket can have and the steps allowed between
+them. Each queue uses a lifecycle; RT ships with a default one, and administrators
+can define others.
+
+=item Owner
+
+The user responsible for working a ticket. A ticket has exactly one
+Owner. Owner is one of a ticket's roles.
+
+=item Portlet
+
+A box on an RT page: each panel on the homepage (a ticket list, the
+quick ticket-creation form) and each box on a ticket's display page (The Basics,
+People, Dates) is a portlet. Also called a widget.
+
+=item Queue
+
+A container that groups related tickets, like a shared inbox. Many
+organizations give each team its own queue, but a queue can be organized around
+anything: a product, a project, a stage of work.
+
+=item Reply
+
+A message on a ticket meant for the people the ticket is for. In a
+default RT, a reply is emailed to the ticket's Requestors and Ccs. Administrators can
+change who is notified. Also called correspondence. Compare Comment.
+
+=item Requestor
+
+The person who initiated the ticket, or on whose behalf it was
+created; the person the ticket is being worked for. A ticket can have more than one
+Requestor. Requestor is one of a ticket's roles.
+
+=item Resolve
+
+To mark a ticket done. In RT's default lifecycle this sets the
+ticket's status to C<resolved>; a customized lifecycle may use different statuses.
+
+=item Role
+
+A named connection between people and a ticket: Owner, Requestor, Cc,
+and AdminCc are the roles every ticket has, and administrators can add custom roles.
+Roles determine who receives email about the ticket. See
+L<Ticket metadata|docs/ticket_metadata.pod>.
+
+=item Status
+
+Where a ticket stands in its lifecycle, for example C<new>, C<open>,
+or C<resolved> in the default lifecycle. See
+L<Ticket metadata|docs/ticket_metadata.pod>.
+
+=item Ticket
+
+RT's record of a single request or task, from arrival to completion.
+
+=item Transaction
+
+One recorded change on a ticket: a reply, a comment, a status
+change, and so on. A ticket's history is its list of transactions.
+
+=item Watcher
+
+Someone who receives email about a ticket because of their role on
+it. Requestor, Cc, and AdminCc are a ticket's watcher roles: in a default RT,
+Requestors and Ccs are emailed replies, and AdminCcs are emailed replies and
+comments both. A queue can also have Cc and AdminCc watchers, who watch every
+ticket in that queue. Compare Role.
+
+=back
 
 =head2 Right names
 
@@ -11,20 +92,32 @@ are explained here.
 
 =over 4
 
-=item Admin - Create, modify, and delete
+=item Admin
 
-=item Create 
+Create, modify, and delete
+
+=item Create
 
 =item Delete
 
-=item Edit - Create, modify, and delete
+=item Edit
 
-=item Load - See/show
+Create, modify, and delete
 
-=item Modify - Change the content, details and/or metadata
+=item Load
 
-=item See - Allow viewing of
+See/show
 
-=item Show - Allow viewing of, or display in the interface
+=item Modify
+
+Change the content, details and/or metadata
+
+=item See
+
+Allow viewing of
+
+=item Show
+
+Allow viewing of, or display in the interface
 
 =back

@@ -58,9 +58,11 @@ $p->login();
         diag "Status displayed on ticket #$ticket_id: $display_status";
         is( $display_status, 'open', 'Ticket display shows status as open' );
 
-        # Click the "Create" link in the Links section (RefersTo-new)
-        my $create_link = $p->find_element(q{//div[contains(@class, 'ticket-info-links')]//a[text()='Create' and contains(@href, 'RefersTo-new')]});
-        $create_link->click();
+        # The Links widget "Create new" UI is a form (relationship + queue dropdowns, then a
+        # Create button), not per-type "Create" links. Click its Create button to clone.
+        my $create_button
+            = $p->find_element(q{//form[@name='SpawnLinkedTicket']//input[@type='submit' and @value='Create']});
+        $create_button->click();
 
         # Wait for the create page to load
         $p->find_element(q{//form[@name='TicketCreate']});

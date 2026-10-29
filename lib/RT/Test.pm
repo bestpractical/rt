@@ -336,6 +336,7 @@ Set( \@LexiconLanguages, qw(en zh_TW zh_CN fr ja));
 Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/i);
 Set( \$ShowHistory, "always");
 Set( \$WebSecureCookies, 0);
+Set( \$SecretKey, "rt-test-secret-key");
 };
     if ( $ENV{'RT_TEST_DB_SID'} ) { # oracle case
         print $config "Set( \$DatabaseName , '$ENV{'RT_TEST_DB_SID'}' );\n";
@@ -1121,6 +1122,50 @@ sub add_rights {
             my ($status, $msg) = $principal->GrantRight( %$e, Right => $right );
             $RT::Logger->debug($msg);
         }
+    }
+    return 1;
+}
+
+=head2 set_config NAME, CONTENT
+
+Create or update a config option as an C<RT::Configuration> row in the
+database, so changes propagate to forked server processes (such as
+under C<RT_TEST_WEB_HANDLER=plack>). C<CONTENT> may be a scalar or a
+reference; references are serialized by C<RT::Configuration>.
+
+If C<CONTENT> is undef, removes any existing override (the option falls
+back to whatever the file/site config or built-in default provides).
+
+A C<SetContent> call that returns C<"... Nothing changed"> is treated
+as success so callers can re-set the same value idempotently.
+
+Dies on any other failure.
+
+=cut
+
+sub set_config {
+    my $self = shift;
+    my ( $name, $content ) = @_;
+
+    my $config = RT::Configuration->new( RT->SystemUser );
+    $config->LoadByCols( Name => $name, Disabled => 0 );
+
+    if ( !defined $content ) {
+        if ( $config->Id ) {
+            my ( $ok, $msg ) = $config->Delete;
+            die "Couldn't delete config $name: $msg" unless $ok;
+        }
+        return 1;
+    }
+
+    if ( $config->Id ) {
+        my ( $ok, $msg ) = $config->SetContent($content);
+        die "Couldn't update config $name: $msg"
+            unless $ok || ( $msg // '' ) =~ /Nothing changed/;
+    }
+    else {
+        my ( $ok, $msg ) = $config->Create( Name => $name, Content => $content );
+        die "Couldn't create config $name: $msg" unless $ok;
     }
     return 1;
 }

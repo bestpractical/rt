@@ -54,7 +54,8 @@
   </div>
 </div>
 
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/d3.min.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/cytoscape.min.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/lifecycleui.js"></script>
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/lifecycleui-editor.js"></script>
 
 <form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Modify.html" name="ModifyLifecycle" method="post" enctype="multipart/form-data" class="mx-auto max-width-xl">
@@ -77,6 +78,7 @@ Abort( loc("Invalid lifecycle") ) unless $LifecycleObj->Name && $LifecycleObj->{
 
 $title = loc("Modify lifecycle [_1]", $LifecycleObj->Name);
 
+my ($failed, $layout_updated);
 if ( $Update ) {
     my ( $ok, $msg ) = RT::Lifecycle->UpdateLifecycleLayout(
         CurrentUser  => $session{CurrentUser},
@@ -87,6 +89,7 @@ if ( $Update ) {
 
     if ( $ok ) {
         push @results, loc('Lifecycle layout updated');
+        $layout_updated = 1;
     }
     elsif ($msg
         && $msg ne loc('That is already the current value')
@@ -94,6 +97,7 @@ if ( $Update ) {
     {
         # This is just svg layout change, no need to notify user if nothing changed.
         push @results, $msg;
+        $failed = 1;
     }
 
     my $lifecycle = JSON::from_json($Config);
@@ -113,29 +117,31 @@ if ( $Update ) {
             push @results, loc('Lifecycle updated');
         }
         else {
-            push @results, $msg;
+            my $unchanged = $msg eq loc( '[_1] update: Nothing changed', 'Lifecycles' );
+            push @results, $msg unless $unchanged && $layout_updated;
+            $failed = 1 unless $unchanged;
         }
     }
     else {
         push @results, @warnings;
+        $failed = 1;
     }
 }
 else {
     $Config ||= JSON( RT->Config->Get('Lifecycles')->{$Name} );
     $Maps ||= JSON( RT->Config->Get('Lifecycles')->{__maps__} || {} );
 
-    unless ($Layout) {
-        my $conf = RT::Configuration->new( $session{CurrentUser} );
-        $conf->LoadByCols( 'Name' => "LifecycleLayout-$Name", Disabled => 0 );
-        $Layout = $conf->Id ? JSON( $conf->_DeserializeContent( $conf->Content ) ) : '';
-    }
+    $Layout = JSON( RT::Lifecycle->LoadLifecycleLayout( LifecycleObj => $LifecycleObj ) )
+        unless $Layout;
 }
 
-# This code does automatic redirection if any updates happen.
+# Redirect unless a save failed, without Config: a large Config overflows the
+# web server's buffers (414), and the GET reloads it anyway. On failure,
+# rendering inline retains the submitted Config and layout.
 MaybeRedirectForResults(
     Actions   => \@results,
-    Arguments => { Name => $Name, Type => $Type, Config => $Config },
-);
+    Arguments => { Name => $Name, Type => $Type },
+) unless $failed;
 </%INIT>
 <%ARGS>
 $Name   => undef

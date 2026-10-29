@@ -79,7 +79,7 @@ use RT::Transaction;
 use MIME::Base64;
 use MIME::QuotedPrint;
 use MIME::Body;
-use RT::Util 'mime_recommended_filename';
+use RT::Util qw(mime_recommended_filename sanitize_filename);
 use URI;
 
 sub _OverlayAccessible {
@@ -141,11 +141,8 @@ sub Create {
     chomp ($MessageId);
     $MessageId =~ s/^<(.*?)>$/$1/o;
 
-    #Get the filename
-    my $Filename = mime_recommended_filename($Attachment);
-
-    # remove path part. 
-    $Filename =~ s!.*/!! if $Filename;
+    #Get the filename, then sanitize it to a safe basename
+    my $Filename = sanitize_filename( mime_recommended_filename($Attachment) );
 
     my $content;
     unless ( $head->get('Content-Length') ) {

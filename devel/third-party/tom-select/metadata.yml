@@ -1,0 +1,51 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: tom-select
+version: "2.5.2"
+
+upstream:
+  homepage: https://tom-select.js.org/
+  repository: https://github.com/orchidjs/tom-select
+
+license:
+  spdx: Apache-2.0
+  file: LICENSE
+
+purl: pkg:npm/tom-select@2.5.2
+cpe: ~
+
+description: >
+  A modern select with autocomplete and native-feeling keyboard navigation.
+
+shipped: true
+security-critical: true
+
+upgrade-instructions: README
+
+artifacts:
+  - from: dist/css/tom-select.bootstrap5.css
+    to: share/static/css/elevator/tom-select.bootstrap5.css
+  - from: dist/js/tom-select.complete.js
+    to: devel/third-party/tom-select/tom-select.complete.js
+  - from: dist/js/tom-select.complete.min.js
+    to: share/static/js/tom-select.complete.min.js
+
+patches:
+  - file: input-focus-override.patch
+    reason: >
+      Override tom-select's default focus border/shadow so the focused
+      control matches RT's bootstrap customizations.
+  - file: missing-caret.patch
+    reason: >
+      Wrap zero-valued defaults for --ts-pr-clear-button and --ts-pr-caret
+      in calc() so CSS::Minifier::XS does not strip the unit. Without the
+      unit max() becomes type-invalid and padding-right is dropped in
+      production builds. See README for full context.
+
+notes: ~

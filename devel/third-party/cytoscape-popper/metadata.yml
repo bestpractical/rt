@@ -1,0 +1,44 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: cytoscape-popper
+version: "4.0.1"
+
+upstream:
+  homepage: https://github.com/cytoscape/cytoscape.js-popper
+  repository: https://github.com/cytoscape/cytoscape.js-popper
+
+license:
+  spdx: MIT
+  file: LICENSE
+
+purl: pkg:npm/cytoscape-popper@4.0.1
+cpe: ~
+
+description: >
+  Positions DOM elements (e.g. tooltips) relative to Cytoscape graph elements.
+
+shipped: true
+security-critical: false
+
+upgrade-instructions: README
+
+artifacts:
+  - from: cytoscape-popper.js
+    to: devel/third-party/cytoscape-popper/cytoscape-popper.js
+  - from: cytoscape-popper.js
+    to: share/static/js/cytoscape-popper.min.js
+
+patches: []
+
+notes: |
+  GitHub Releases has no 4.0.1 tag even though the 4.0.1 commits are in the
+  repo, so the build was obtained from npm; the purl uses the npm form, which
+  resolves. The package ships only the UMD bundle (cytoscape-popper.js); the
+  served cytoscape-popper.min.js is minified locally. It is popper-agnostic
+  and is wired to the bundled popper at registration. See README for details.

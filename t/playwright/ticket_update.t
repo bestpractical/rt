@@ -1,7 +1,48 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef, playwright => 1;
+use RT::Test tests => undef, playwright => 1, config => q{
+    Set( $ArticleOnTicketCreate, 1 );
+
+    Set(
+        %PageLayouts,
+        'RT::Ticket' => {
+            Update => {
+                'No Preview Scrips' => [
+                    {
+                        Layout   => 'col-md-7,col-md-5',
+                        Elements => [ [ 'Recipients', 'Message', 'Submit' ], ['Basics'] ],
+                    },
+                ],
+                'No Recipients' => [
+                    {
+                        Layout   => 'col-md-7,col-md-5',
+                        Elements => [ [ 'Message', 'Submit', 'PreviewScrips' ], ['Basics'] ],
+                    },
+                ],
+            },
+        },
+    );
+
+    Set(
+        %PageLayoutMapping,
+        'RT::Ticket' => {
+            Update => [
+                {
+                    Type   => 'Queue',
+                    Layout => {
+                        'NoPreviewScrips' => 'No Preview Scrips',
+                        'NoRecipients'    => 'No Recipients',
+                    },
+                },
+                {
+                    Type   => 'Default',
+                    Layout => 'Default',
+                },
+            ],
+        },
+    );
+};
 
 my ( $url, $p ) = RT::Test->started_ok;
 
@@ -396,6 +437,69 @@ diag "Test simplied recipients";
     $popup->close();
 }
 
+diag "Test simplified recipients with different update page layouts";
+{
+    for my $name (qw(NoPreviewScrips NoRecipients)) {
+        my $queue = RT::Test->load_or_create_queue( Name => $name );
+        ok( $queue->Id, "Created $name queue" );
+    }
+
+    my %widget = (
+        General         => '.ticket-info-recipients',
+        NoPreviewScrips => '.ticket-info-recipients',
+        NoRecipients    => '.ticket-info-preview-scrips',
+    );
+
+    for my $queue (qw(General NoPreviewScrips NoRecipients)) {
+        diag "Unchecked recipients stay unchecked after adding a one-time Cc in queue $queue";
+
+        my $ticket = RT::Test->create_ticket(
+            Queue     => $queue,
+            Subject   => "Simplified recipients in $queue",
+            Requestor => 'alice@example.com',
+            Cc        => 'bob@example.com',
+        );
+
+        $p->get_ok( '/Ticket/Update.html?Action=Respond;id=' . $ticket->Id );
+
+        my $has_preview_scrips = $p->{page}->locator('.ticket-info-preview-scrips')->count() ? 1 : 0;
+        is( $has_preview_scrips, $queue eq 'NoPreviewScrips' ? 0 : 1,
+            'Scrips and Recipients widget presence matches layout' );
+        my $has_recipients = $p->{page}->locator('.ticket-info-recipients')->count() ? 1 : 0;
+        is( $has_recipients, $queue eq 'NoRecipients' ? 0 : 1, 'Recipients widget presence matches layout' );
+
+        # Scrips and Recipients is rolled up when SimplifiedRecipients is enabled
+        if ( $queue eq 'NoRecipients' ) {
+            $p->{page}->locator('.ticket-info-preview-scrips .titlebox-title .toggle')->first->dispatchEvent('click');
+            $p->wait_for_element('.ticket-info-preview-scrips .titlebox-content.show');
+        }
+
+        my $alice
+            = $p->{page}->locator(qq{$widget{$queue} input[name="TxnSendMailTo"][value="alice\@example.com"]})->first;
+        my $bob = $p->{page}->locator(qq{$widget{$queue} input[name="TxnSendMailTo"][value="bob\@example.com"]})->first;
+
+        ok( $alice->isChecked(), 'alice is checked initially' );
+        ok( $bob->isChecked(),   'bob is checked initially' );
+
+        $alice->click();
+        $bob->click();
+        ok( !$alice->isChecked(), 'alice is unchecked' );
+        ok( !$bob->isChecked(),   'bob is unchecked' );
+
+        my $update_cc = $p->{page}->locator('#UpdateCc');
+        $update_cc->fill('carol@example.com');
+        $update_cc->dispatchEvent('change');
+        $p->wait_for_htmx;
+
+        $p->text_contains( 'carol@example.com', 'One-time Cc shows up in refreshed recipients' );
+
+        ok( !$alice->isChecked(), 'alice is still unchecked after refresh' );
+        ok( !$bob->isChecked(),   'bob is still unchecked after refresh' );
+
+        is( $p->{page}->locator('input[name="TxnRecipients"]')->count(), 1, 'Exactly one TxnRecipients input' );
+    }
+}
+
 diag "Test quote selection feature";
 {
     $p->goto_ticket(1);
@@ -448,6 +552,303 @@ diag "Test include article feature";
     $p->text_contains('This is include article reply');
     $p->text_contains('This is article name');
     $p->text_contains('This is article summary');
+}
+
+diag "Test article SubjectOverride feature";
+{
+    # Build a class with a subject custom field and an article that fills it in.
+    my $class = RT::Class->new( RT->SystemUser );
+    ( $ret, $msg ) = $class->Create(
+        Name        => 'SubjectOverrideClass-' . $$,
+        Description => 'Class for the SubjectOverride test',
+    );
+    ok( $ret, "Created class: $msg" );
+    ( $ret, $msg ) = $class->AddToObject( RT::Queue->new( RT->SystemUser ) );
+    ok( $ret, "Applied class globally: $msg" );
+
+    my $subject_cf = RT::CustomField->new( RT->SystemUser );
+    ( $ret, $msg ) = $subject_cf->Create(
+        Name       => 'Subject-' . $$,
+        Type       => 'Text',
+        MaxValues  => 1,
+        LookupType => 'RT::Class-RT::Article',
+    );
+    ok( $ret, "Created subject custom field: $msg" );
+    ( $ret, $msg ) = $subject_cf->AddToObject($class);
+    ok( $ret, "Added subject custom field to class: $msg" );
+
+    my $override_article = RT::Article->new( RT->SystemUser );
+    ( $ret, $msg ) = $override_article->Create(
+        Name                             => 'Subject override article ' . $$,
+        Summary                          => 'Article that overrides the subject',
+        Class                            => $class->Id,
+        'CustomField-' . $subject_cf->Id => 'This clobbers your subject',
+    );
+    ok( $ret, "Created override article: $msg" );
+
+    my $ticket = RT::Ticket->new( RT->SystemUser );
+    $ticket->Load(1);
+
+    # Without SubjectOverride configured on the class, applying the article must
+    # not touch the subject.
+    {
+        my $reply = $p->{page}->locator('a:has-text("Reply")')->first();
+        my $href  = $reply->getAttribute('href');
+        $p->get_ok($href);
+
+        my $subject_input = $p->{page}->locator('input[name="UpdateSubject"]')->first();
+        is( $subject_input->inputValue(), $ticket->Subject, 'Subject starts as the ticket subject' );
+
+        is(
+            $p->{page}->locator('[name=IncludeArticleId]')->first->selectOption( $override_article->Id . '' )->[0],
+            $override_article->Id,
+            'Selected article with no SubjectOverride configured'
+        );
+        $p->wait_for_htmx;
+
+        $subject_input = $p->{page}->locator('input[name="UpdateSubject"]')->first();
+        is( $subject_input->inputValue(), $ticket->Subject,
+            'Subject not updated when class has no SubjectOverride' );
+    }
+
+    # Point the class at the subject custom field, then apply the article again.
+    ( $ret, $msg ) = $class->SetSubjectOverride( $subject_cf->Id );
+    ok( $ret, "Set SubjectOverride: $msg" );
+
+    {
+        my $reply = $p->{page}->locator('a:has-text("Reply")')->first();
+        my $href  = $reply->getAttribute('href');
+        $p->get_ok($href);
+
+        my $subject_input = $p->{page}->locator('input[name="UpdateSubject"]')->first();
+        is( $subject_input->inputValue(), $ticket->Subject, 'Subject starts as the ticket subject' );
+
+        is(
+            $p->{page}->locator('[name=IncludeArticleId]')->first->selectOption( $override_article->Id . '' )->[0],
+            $override_article->Id,
+            'Selected article with SubjectOverride configured'
+        );
+        $p->wait_for_htmx;
+
+        $subject_input = $p->{page}->locator('input[name="UpdateSubject"]')->first();
+        is( $subject_input->inputValue(), 'This clobbers your subject',
+            'Subject updated with the article SubjectOverride custom field value' );
+    }
+
+    # The same override must apply on the create screen, which renders its own
+    # message widget (Ticket/Widgets/Create/Message) rather than MessageDetails.
+    {
+        $p->goto_create_ticket(1);
+
+        my $subject_input = $p->{page}->locator('input[name="Subject"]')->first();
+        is( $subject_input->inputValue(), '', 'Subject starts empty on create' );
+
+        is(
+            $p->{page}->locator('[name=IncludeArticleId]')->first->selectOption( $override_article->Id . '' )->[0],
+            $override_article->Id,
+            'Selected article on create with SubjectOverride configured'
+        );
+        $p->wait_for_htmx;
+
+        $subject_input = $p->{page}->locator('input[name="Subject"]')->first();
+        is( $subject_input->inputValue(), 'This clobbers your subject',
+            'Subject updated on create with the article SubjectOverride custom field value' );
+
+        # Submitting must persist the overridden subject on the new ticket; the
+        # create page returns Display.html without re-rendering the widget, so
+        # this proves the override survives the round trip on its own.
+        $p->submit_form_ok(
+            {
+                form_name => 'TicketCreate',
+                fields    => { Content => 'create with subject override' },
+                button    => 'SubmitTicket',
+            },
+            'Create ticket with subject override'
+        );
+        $p->text_like(qr/Ticket \d+ created in queue/);
+
+        my $new_ticket = RT::Test->last_ticket;
+        is( $new_ticket->Subject, 'This clobbers your subject',
+            'New ticket persisted the overridden subject' );
+    }
+}
+
+diag "merged from ticket_merge.t";
+{
+    my $queue = RT::Test->load_or_create_queue( Name => 'General' );
+
+    diag "Merge via the Actions-menu modal lands on the surviving ticket";
+    {
+        my ($src)  = RT::Test->create_tickets( { Queue => $queue->id }, { Subject => 'merge src' } );
+        my ($dst)  = RT::Test->create_tickets( { Queue => $queue->id }, { Subject => 'merge dst' } );
+        my $src_id = $src->id;
+        my $dst_id = $dst->id;
+
+        $p->goto_ticket($src_id);
+
+        # The Actions submenu opens on hover (keyboard-shortcuts.js wires the page-menu
+        # dropdowns to mouseenter). Hover the Actions toggle so its dropdown -- holding
+        # the ModifyTicket-gated Merge link -- becomes visible, then click Merge. The link
+        # lazy-loads the modal body from /Helpers/MergeTicket into the shared #dynamic-modal.
+        $p->{page}->hover('#page-actions');
+        $p->wait_for_element( 'a.merge-ticket-modal-link', { state => 'visible' } );
+        $p->{page}->click('a.merge-ticket-modal-link');
+
+        # Wait for the dynamic modal to be visible (Bootstrap adds .show once it opens).
+        $p->wait_for_element( '#dynamic-modal.show', { state => 'visible' } );
+
+        # The MergeInto field (named "<src>-MergeInto") becomes a tom-select. Drive its visible
+        # control_input directly (same pattern as the Owner field in ticket_inline_edit.t).
+        $p->{handle}->await(
+            $p->{page}->waitForFunction(
+                qq{(function() {
+    const el = document.querySelector('#dynamic-modal input[name="$src_id-MergeInto"]');
+    return el && el.tomselect;
+})()}
+            )
+        );
+        $p->{page}->evaluate(
+            qq{return document.querySelector('#dynamic-modal input[name="$src_id-MergeInto"]').tomselect.control_input.focus()}
+        );
+        $p->{page}->keyboard->type("$dst_id");
+
+        # The Merge submit has NO data-bs-dismiss: on error the modal stays open; on success
+        # TicketUpdate sets HX-Redirect, navigating the browser to the survivor's Display page.
+        $p->{page}->click('#dynamic-modal form.ticket-merge-form button[type="submit"]');
+
+        $p->{handle}->await( $p->{page}
+                ->waitForFunction( qq{/[?&]id=$dst_id\\b/.test(window.location.href)}, {}, { timeout => 10000 } ) );
+
+        $p->wait_for_htmx;
+
+        $p->current_url_like( qr/[?&]id=\Q$dst_id\E\b/, 'browser landed on the surviving ticket' );
+        $p->content_contains( 'merge dst', "surviving ticket's subject is visible" );
+
+        DBIx::SearchBuilder::Record::Cachable->FlushCache;
+        my $reloaded = RT::Ticket->new( RT->SystemUser );
+        $reloaded->Load($src_id);
+        is( $reloaded->EffectiveId, $dst_id, 'source ticket merged into the target' );
+    }
+
+    diag "Cancel closes the modal without merging";
+    {
+        my ($lone) = RT::Test->create_tickets( { Queue => $queue->id }, { Subject => 'merge lone' } );
+        my $lone_id = $lone->id;
+
+        $p->goto_ticket($lone_id);
+
+        $p->{page}->hover('#page-actions');
+        $p->wait_for_element( 'a.merge-ticket-modal-link', { state => 'visible' } );
+        $p->{page}->click('a.merge-ticket-modal-link');
+        $p->wait_for_element( '#dynamic-modal.show', { state => 'visible' } );
+
+        $p->{page}->click('#dynamic-modal form.ticket-merge-form a.btn-secondary[data-bs-dismiss="modal"]');
+        $p->wait_for_element( '#dynamic-modal', { state => 'hidden' } );
+
+        $p->current_url_like( qr/[?&]id=\Q$lone_id\E\b/, 'Cancel leaves us on the source ticket' );
+
+        DBIx::SearchBuilder::Record::Cachable->FlushCache;
+        my $reloaded = RT::Ticket->new( RT->SystemUser );
+        $reloaded->Load($lone_id);
+        is( $reloaded->EffectiveId, $lone_id, 'Cancel did not merge the ticket' );
+    }
+
+    diag "Removing Merge from the Links portlet did not hide the Links inline-edit pencil";
+    {
+        # Moving Merge out of the Links inline-edit form dropped the only always-present
+        # input (the MergeInto field), leaving just the hidden id + Save submit. init.js
+        # downgrades a "link"/"click" panel to "hide" when its form has <= 2 inputs, which
+        # would permanently hide the Links edit pencil even though the link fields just
+        # lazy-load via htmx. Guard that the pencil stays visible/clickable.
+        my ($t) = RT::Test->create_tickets( { Queue => $queue->id }, { Subject => 'links pencil' } );
+        $p->goto_ticket( $t->id );
+
+        my $pencil_hidden
+            = $p->{page}->evaluate(
+            'return document.querySelector("div.ticket-info-links a.inline-edit-toggle.edit").classList.contains("hide")'
+            );
+        ok( !$pencil_hidden, 'Links inline-edit pencil is not hidden after removing the Merge block' );
+
+        $p->{page}->click('div.ticket-info-links a.inline-edit-toggle.edit');
+        $p->wait_for_element('div.ticket-info-links .edit-ticket-links .add-link-row');
+        ok( 1, 'clicking the Links pencil opens the lazy-loaded edit form' );
+    }
+}
+
+diag "Test Reply from a dashboard";
+{
+    my $root = RT::CurrentUser->new('root');
+
+    my $search = RT::SavedSearch->new($root);
+    my ( $ret, $msg ) = $search->Create(
+        Name    => 'Reply search',
+        Type    => 'Ticket',
+        Content => {
+            Format => q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
+                . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject',}
+                . q{Reply},
+            Query       => 'id = 1',
+            OrderBy     => 'id',
+            Order       => 'ASC',
+            RowsPerPage => 10,
+        },
+    );
+    ok( $ret, "Created saved search: $msg" );
+
+    my $dashboard = RT::Dashboard->new($root);
+    ( $ret, $msg ) = $dashboard->Create(
+        Name    => 'Reply dashboard',
+        Content => {
+            Elements => [
+                {   Layout   => 'col-12',
+                    Elements => [
+                        [   {   portlet_type => 'search',
+                                id           => $search->Id,
+                                description  => 'Ticket: Reply search'
+                            }
+                        ]
+                    ],
+                },
+            ],
+        },
+    );
+    ok( $ret, "Created dashboard: $msg" );
+
+    ( $ret, $msg ) = $root->UserObj->SetPreferences( DefaultDashboard => $dashboard->Id );
+    ok( $ret, "Set root's default dashboard: $msg" );
+
+    $p->get_ok('/');
+
+    ok( $p->{page}->locator('.htmx-indicator')->count > 0, 'Saved-search portlet renders a persistent htmx-indicator' );
+
+    $p->wait_for_element('table.inline-edit button.inline-edit-modal:has-text("Reply")');
+    $p->{page}->locator('table.inline-edit button.inline-edit-modal:has-text("Reply")')->first->click;
+
+    # TxnSendMailToAll comes only from ShowSimplifiedRecipients, so it proves the request fired.
+    $p->wait_for_element('#dynamic-modal input[name="TxnSendMailToAll"]');
+    ok( $p->{page}->locator('#dynamic-modal input[name="TxnSendMailToAll"]')->count > 0,
+        'Recipients list loaded in dashboard inline Reply modal' );
+    ok( $p->{page}
+            ->locator('#dynamic-modal input[type="checkbox"][name="TxnSendMailTo"][value="alice@example.com"]')->count
+            > 0,
+        'Cc recipient alice loaded in dashboard inline Reply modal'
+      );
+
+    my $reply_body = 'Reply sent from a dashboard';
+    $p->{page}->locator('#dynamic-modal textarea[name="UpdateContent"] + .ck-editor .ck-editor__editable')
+        ->first->fill($reply_body);
+    $p->{page}->locator('#dynamic-modal input.submit')->first->click;
+    $p->wait_for_element('.jGrowl-message:has-text("Correspondence added")');
+
+    DBIx::SearchBuilder::Record::Cachable->FlushCache;
+    my $ticket = RT::Ticket->new( RT->SystemUser );
+    $ticket->Load(1);
+    my $txns = $ticket->Transactions;
+    $txns->Limit( FIELD => 'Type', VALUE => 'Correspond' );
+    $txns->OrderByCols( { FIELD => 'id', ORDER => 'DESC' } );
+    my $reply = $txns->First;
+    ok( $reply, 'Reply from dashboard added a Correspond transaction' );
+    like( $reply->Content, qr/\Q$reply_body\E/, 'Reply body saved from dashboard inline Reply modal' );
 }
 
 $p->logout;

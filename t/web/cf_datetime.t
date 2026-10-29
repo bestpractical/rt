@@ -139,7 +139,16 @@ diag 'check valid inputs with various timezones in ticket create page';
 
 diag 'check ticket clone feature';
 {
-    $m->follow_link_ok( { text => 'Create', url_regex => qr/RefersTo-new=/ } );
+    # The Links widget "Create new" UI is a form (pick a relationship + queue, then Create)
+    # rather than per-type "Create" links; submit it to clone into a RefersTo-linked ticket.
+    $m->submit_form_ok(
+        {
+            form_name => 'SpawnLinkedTicket',
+            fields    => { LinkType => 'RefersTo-new' },
+            button    => 'SpawnLinkedTicket',
+        },
+        'spawned a RefersTo-linked clone',
+    );
     TODO: {
         local $TODO = $why;
         $m->text_contains( 'Wed May 05 19:00:01 2010',
@@ -257,8 +266,7 @@ diag 'check invalid inputs';
         [ @warnings ],
         [
             (
-                q{Couldn't parse date 'foodate' by Time::ParseDate},
-                q{Couldn't parse date 'foodate' by DateTime::Format::Natural}
+                q{Couldn't parse date 'foodate'}
             ) x 2
         ]
     );

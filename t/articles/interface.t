@@ -176,11 +176,12 @@ my $turi = "t:$ticket_id";
 my $a1uri = 'a:'.$article1->Id;
 $m->submit_form(form_name => 'EditArticle',
                 fields => { $article3->Id.'-RefersTo' => $turi,
-                            'RefersTo-'.$article3->Id => $a1uri }
+                            'RefersTo-'.$article3->Id => $a1uri },
+                button => 'Submit',
                 );
 
-$m->content_like(qr/Ticket.*$ticket_id/, "Ticket linkto was created");
-$m->content_like(qr/URI.*$a1uri/, "Article linkfrom was created");
+$m->content_contains("Article " . $article3->Id . " refers to Ticket $ticket_id.", "Ticket linkto was created");
+$m->content_contains("Article " . $article1->Id . " refers to Article " . $article3->Id . ".", "Article linkfrom was created");
 }
 
 # Now try to extract an article from a link.
@@ -198,7 +199,7 @@ $m->form_number(3);
 $m->set_visible([option => $answerCF->Name]);
 $m->click();
 $m->title_like(qr/Create a new article/, "got edit page from extraction");
-$m->submit_form(form_name => 'EditArticle', fields => { Name => 'more testing' });
+$m->submit_form(form_name => 'EditArticle', fields => { Name => 'more testing' }, button => 'Submit');
 $m->title_like(qr/Modify article/);
 $m->follow_link_ok( { text => 'Display' }, '-> Display' );
 $m->content_like(qr/Africa/, "Article content exist");
@@ -224,7 +225,7 @@ diag "Test a basic article create";
     $m->follow_link_ok( { text => 'Create', url_regex => qr!^/Articles/Article/Edit.html! },
         'Load create article page' );
     $m->title_like(qr/Create/);
-    $m->submit_form(form_name => 'EditArticle', fields => { Name => 'Testing Basic Create', Class =>$class2->Id });
+    $m->submit_form(form_name => 'EditArticle', fields => { Name => 'Testing Basic Create', Class =>$class2->Id }, button => 'Submit');
     $m->title_like(qr/Modify article/);
     is( $m->dom->at('select[name=Class]')->val, $class2->Id, "Current class is selected" );
 }

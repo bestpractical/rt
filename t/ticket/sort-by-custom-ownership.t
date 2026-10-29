@@ -1,6 +1,6 @@
 
 use RT;
-use RT::Test nodata => 1, tests => 7;
+use RT::Test nodata => 1, tests => 9;
 
 
 use strict;
@@ -58,6 +58,7 @@ for (@tickets) {
               Subject => $_->[0],
               Owner => $_->[2]->Id,
               Priority => $_->[1],
+              Requestor => 'requestor@example.com',
             );
 }
 
@@ -96,6 +97,13 @@ $youtx->FromSQL(qq[queue="$queue"] );
 $youtx->OrderBy( FIELD => "Custom.Ownership", ORDER => 'ASC' );
 is($youtx->Count,6);
 check_order( $youtx, qw[4 3 6 5 2 1]);
+
+# A watcher condition joins role groups, so the search is DISTINCT.
+$metx = RT::Tickets->new( $cme );
+$metx->FromSQL(qq[queue="$queue" AND Requestor.EmailAddress = 'requestor\@example.com'] );
+$metx->OrderBy( FIELD => "Custom.Ownership", ORDER => 'ASC' );
+is($metx->Count,6);
+check_order( $metx, qw[2 1 6 5 4 3]);
 
 __END__
 

@@ -62,7 +62,7 @@
   <&| /Widgets/TitleBox, title => loc('Content'), content_class => 'mx-auto width-sm' &>
   <div class="row mt-2">
     <span class="col-12">
-      <textarea class="form-control" rows="30" name="Config" data-type="json"><% $Config |n %></textarea>
+      <textarea class="form-control" rows="30" name="Config" data-type="json"><% $Config %></textarea>
     </span>
   </div>
 
@@ -110,26 +110,15 @@ if ( $Validate || $Update ) {
         unless $session{CurrentUser}->HasRight( Right => 'SuperUser', Object => RT->System );
 
     my $content = JSON::from_json($Config);
-    my ( $valid, @warnings );
-    my %available_widgets = map { $_ => 1 } GetAvailableWidgets( Class => $Class, Page => $Page );
-    for my $item ( @$content ) {
-        if ( ref $item ) {
-            for my $element ( @{$item->{Elements}} ) {
-                for my $item ( ref $element eq 'ARRAY' ? @$element : $element ) {
-                    my $name = ref $item ? $item->{Name} : $item;
-                    if ( $name =~ /^([^:]*)/ && !$available_widgets{$1} ) {
-                        push @warnings, loc('Invalid widget: [_1]', $name);
-                        $valid = 0;
-                    }
-                }
-            }
-        }
-        elsif ( $item =~ /^([^:]*)/ && !$available_widgets{$1} ) {
-            push @warnings, loc('Invalid widget: [_1]', $item);
-            $valid = 0;
-        }
+    my ( $valid, @warnings ) = ValidateWidgets(
+        Class            => $Class,
+        Content          => $content,
+        AvailableWidgets => [ GetAvailableWidgets( Class => $Class, Page => $Page ) ],
+    );
+
+    if ( !$valid && $Update ) {
+        RT->Logger->warning("Rejecting $Class $Page page layout $Name: $_") for @warnings;
     }
-    $valid //= 1;
 
     my $updated;
     if ($valid) {

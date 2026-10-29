@@ -314,6 +314,18 @@ ok($subject_inner_div, 'Subject cell contains inner div');
 like($subject_inner_div->attr('class'), qr/ticket-subject-cell/,
      'Subject cell inner div has ticket-subject-cell class from /CLASS: modifier');
 
+# /CLASS: adds to the default class, and every column is marked with its field
+my %subject_classes = map { $_ => 1 } split ' ', $subject_inner_div->attr('class');
+ok($subject_classes{'collection-as-table'}, '/CLASS: keeps the default collection-as-table class');
+ok($subject_classes{'rt-collection-column-subject'}, 'Subject cell inner div is marked with its column');
+like($headers[0]->attr('class'), qr/\brt-collection-column-id\b/, 'id header is marked with its column');
+like($headers[1]->attr('class'), qr/\brt-collection-column-subject\b/, 'Subject header is marked with its column');
+
+is(HTML::Mason::Commands::CollectionColumnClass('QueueName'), 'rt-collection-column-queuename', 'column class is lowercased');
+is(HTML::Mason::Commands::CollectionColumnClass('CustomField.{Serial Number}'), 'rt-collection-column-customfield-serial-number',
+   'column class turns other characters into dashes');
+is(HTML::Mason::Commands::CollectionColumnClass(''), '', 'a column with no field gets no class');
+
 # Test /CLASS: XSS prevention - malicious class values should be escaped
 diag "Test /CLASS: XSS prevention";
 $m->get_ok("/Search/Results.html?Query=" . uri_escape("id = $ticket1_id") .

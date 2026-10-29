@@ -3,6 +3,17 @@ use warnings;
 use RT;
 use RT::Test tests => undef, config => q{
 Set($DefaultQueue, 1); # General
+
+# The groupings two extensions and a site config might each add, in three of
+# the shapes %CustomFieldGroupings accepts.
+Set(%CustomFieldGroupings, 'RT::Ticket' => [ 'Helpdesk Information' => ['Severity'] ]);
+Set(%CustomFieldGroupings, 'RT::Ticket' => { 'General' => { 'Zebra' => ['Stripes'] } });
+Set(%CustomFieldGroupings,
+    'RT::Ticket' => {
+        'Default' => [ 'Helpdesk Information' => ['Location'] ],
+        'General' => { 'Alpha' => ['First'] },
+    },
+);
 };
 use Test::Warn;
 
@@ -45,6 +56,52 @@ RT::Config->Set( WebDefaultStylesheet => 'non-existent-skin-name' );
 warning_like {RT::Config->PostLoadCheck} qr{elevator},
     'Correct warning for default stylesheet';
 
+my $disable_mfa = RT::Config->Get('DisableMFA');
+RT::Config->Set( DisableMFA => 1 );
+
+RT::Config->Set( SecretKey => '' );
+RT::Config->Set( DatabasePassword => 'rt_pass' );
+warning_like { RT::Config->PostLoadCheck } qr{SecretKey is empty or the default database password},
+    'Warning for SecretKey falling back to the default database password';
+
+RT::Config->Set( SecretKey => '' );
+RT::Config->Set( DatabasePassword => '' );
+warning_like { RT::Config->PostLoadCheck } qr{SecretKey is empty or the default database password},
+    'Warning for empty SecretKey';
+
+RT::Config->Set( SecretKey => '' );
+RT::Config->Set( DatabasePassword => 'a-db-password' );
+warnings_are { RT::Config->PostLoadCheck } [],
+    'No warning for SecretKey falling back to the database password with MFA disabled';
+
+RT::Config->Set( SecretKey => 'a-long-random-secret' );
+warnings_are { RT::Config->PostLoadCheck } [], 'No warning for a dedicated SecretKey';
+
+SKIP: {
+    skip 'RT::MFA::TOTP is not available', 3 unless eval { require RT::MFA::TOTP };
+
+    RT::Config->Set( DisableMFA => 0 );
+
+    RT::Config->Set( SecretKey => '' );
+    RT::Config->Set( DatabasePassword => 'a-db-password' );
+    warning_like { RT::Config->PostLoadCheck } qr{SecretKey is not set or matches \$DatabasePassword},
+        'Warning for SecretKey falling back to the database password with MFA enabled';
+
+    RT::Config->Set( SecretKey => '' );
+    RT::Config->Set( DatabasePassword => 'rt_pass' );
+    warnings_like { RT::Config->PostLoadCheck }
+        [
+            qr{SecretKey is empty or the default database password},
+            qr{SecretKey is not set or matches \$DatabasePassword},
+        ],
+        'Both warnings for SecretKey falling back to the default database password with MFA enabled';
+
+    RT::Config->Set( SecretKey => 'a-long-random-secret' );
+    warnings_are { RT::Config->PostLoadCheck } [], 'No warning for a dedicated SecretKey with MFA enabled';
+}
+
+RT::Config->Set( DisableMFA => $disable_mfa );
+
 my @canonical_encodings = RT::Config->Get('EmailInputEncodings');
 is_deeply(\@encodings, \@canonical_encodings, 'Got correct encoding list');
 
@@ -56,6 +113,32 @@ is_deeply(\@encodings, \@canonical_encodings, 'Got correct encoding list');
     ok( $ret, 'Created DefaultQueue config' );
     is( $msg, q{DefaultQueue changed from "General" to "Test"}, 'Created message' );
 }
+my $password_policy = RT->Config->Get('PasswordPolicy');
+
+RT->Config->Set( PasswordPolicy => { Bogus => { MinLength => 8 }, Default => { MinLength => 8 } } );
+warning_like { RT::Config->PostLoadCheck } qr{Invalid \$PasswordPolicy key 'Bogus'}, 'Warning for invalid PasswordPolicy role';
+is_deeply( RT->Config->Get('PasswordPolicy'), { Default => { MinLength => 8 } }, 'Invalid role dropped' );
+
+RT->Config->Set( PasswordPolicy => { Default => 'strict' } );
+warning_like { RT::Config->PostLoadCheck } qr{Invalid \$PasswordPolicy->\{Default\} value \(must be a HASH ref\)},
+    'Warning for non-hash PasswordPolicy value';
+is_deeply( RT->Config->Get('PasswordPolicy'), {}, 'Non-hash value dropped' );
+
+RT->Config->Set( PasswordPolicy => { Default => { MinLength => 'long' } } );
+warning_like { RT::Config->PostLoadCheck } qr{Invalid \$PasswordPolicy->\{Default\}\{MinLength\} value 'long'},
+    'Warning for non-integer MinLength';
+is_deeply( RT->Config->Get('PasswordPolicy'), { Default => { MinLength => 0 } }, 'Bad MinLength falls back to 0' );
+
+RT->Config->Set( PasswordPolicy => { Default => { MinLength => 8, RequireUpper => 'yes', Bogus => 1 } } );
+warning_like { RT::Config->PostLoadCheck } qr{Unknown \$PasswordPolicy->\{Default\}\{Bogus\} key},
+    'Warning for unknown PasswordPolicy field';
+is_deeply(
+    RT->Config->Get('PasswordPolicy'),
+    { Default => { MinLength => 8, RequireUpper => 1 } },
+    'Unknown field dropped and flag normalized to 1'
+);
+
+RT->Config->Set( PasswordPolicy => $password_policy );
 
 RT->Config->Set(
     ExternalSettings => {
@@ -75,5 +158,137 @@ is( $external_settings->{My_LDAP}{user}, 'rt_ldap_username',     'plain value' )
 is( $external_settings->{My_LDAP}{pass}, 'Password not printed', 'obfuscated password' );
 is( $external_settings->{My_LDAP}{net_ldap_args}[ 1 ], qr/^givenName/, 'regex correct' );
 is( ref $external_settings->{My_LDAP}{subroutine},     'CODE',         'subroutine type correct' );
+
+diag "CustomFieldGroupings of every config file are merged as RT loads them";
+is_deeply(
+    scalar RT->Config->Get('CustomFieldGroupings'),
+    {   'RT::Ticket' => {
+            'Default' => [ 'Helpdesk Information' => ['Severity'] ],
+            'General' => [ 'Alpha' => ['First'], 'Zebra' => ['Stripes'] ],
+        },
+    },
+    'groupings set by each config file are merged, and unordered ones sorted'
+);
+
+# Run some additional config permutations through the same config processing
+# RT runs during startup. Those steps are different from calling the Set
+# method, so we need this helper.
+
+my $merge = sub {
+    RT::Config->Set( CustomFieldGroupings => () );
+    for my $config (@_) {
+        RT::Config->SetFromConfig(
+            Option => \'CustomFieldGroupings',
+            Value  => [%$config],
+            File   => __FILE__,
+            Line   => __LINE__,
+        );
+    }
+    RT::Config->Meta('CustomFieldGroupings')->{PostLoadCheck}->('RT::Config');
+    return scalar RT::Config->Get('CustomFieldGroupings');
+};
+
+diag "CustomFieldGroupings merges the accepted class-level shapes";
+{
+    # The shapes two extensions and a site config might each use for the same
+    # class: a flat list of groupings, a hash keyed by queue name, and a hash
+    # keyed by queue name with the groupings as a hash.
+    my %helpdesk = ( 'RT::Ticket' => [ 'Helpdesk Information' => [ 'Severity', 'Service Impacted' ] ] );
+    my %rtir     = (
+        'RT::Ticket' => {
+            'Incidents'        => [ 'Networking' => [ 'IP', 'Domain' ] ],
+            'Incident Reports' => [ 'Networking' => [ 'IP', 'Domain' ] ],
+        },
+    );
+    my %site = (
+        'RT::Ticket' => {
+            'Default'   => { 'Helpdesk Information' => ['Location'] },
+            'Incidents' => [ 'Networking'           => ['ASN'] ],
+        },
+        'RT::User' => [ 'Extra' => ['Nickname'] ],
+    );
+
+    # Groupings only one config provides are all kept. Where two configs name
+    # the same grouping, the one loaded first wins its list of custom fields,
+    # and a site config is loaded before any extension config.
+    is_deeply(
+        $merge->( \%site, \%helpdesk, \%rtir ),
+        {   'RT::Ticket' => {
+                'Default'          => [ 'Helpdesk Information' => ['Location'] ],
+                'Incidents'        => [ 'Networking'           => ['ASN'] ],
+                'Incident Reports' => [ 'Networking'           => [ 'IP', 'Domain' ] ],
+            },
+            'RT::User' => { 'Default' => [ 'Extra' => ['Nickname'] ] },
+        },
+        'groupings of all three configs are merged, site config winning shared groupings'
+    );
+
+    my %expected = (
+        'RT::Ticket' => {
+            'Default'          => [ 'Helpdesk Information' => [ 'Severity', 'Service Impacted' ] ],
+            'Incidents'        => [ 'Networking'           => [ 'IP', 'Domain' ] ],
+            'Incident Reports' => [ 'Networking'           => [ 'IP', 'Domain' ] ],
+        },
+        'RT::User' => { 'Default' => [ 'Extra' => ['Nickname'] ] },
+    );
+
+    is_deeply( $merge->( \%helpdesk, \%rtir, \%site ), \%expected,
+        'the extensions win the shared groupings when they are loaded first' );
+
+    # PostLoadCheck runs on config the merger has already normalized, and on
+    # config that never went through it, so it has to be idempotent.
+    RT::Config->Meta('CustomFieldGroupings')->{PostLoadCheck}->('RT::Config');
+    is_deeply( scalar RT::Config->Get('CustomFieldGroupings'), \%expected,
+        'PostLoadCheck leaves merged groupings unchanged' );
+
+    RT::Config->Set( CustomFieldGroupings => () );
+}
+
+diag "CustomFieldGroupings orders groupings by how each config wrote them";
+{
+    # Groupings given as a hash are displayed alphabetically, and that ordering
+    # covers the groupings of every config file, not those of each file on its
+    # own.
+    my %zebra = ( 'RT::Ticket' => { 'Zebra' => ['Stripes'] } );
+    my %alpha = (
+        'RT::Ticket' => {
+            'Alpha'    => ['First'],
+            'Mongoose' => ['Snakes'],
+        },
+    );
+
+    my %expected = (
+        'RT::Ticket' => {
+            'Default' => [
+                'Alpha'    => ['First'],
+                'Mongoose' => ['Snakes'],
+                'Zebra'    => ['Stripes'],
+            ],
+        },
+    );
+
+    is_deeply( $merge->( \%zebra, \%alpha ), \%expected,
+        'hash-form groupings of two configs are sorted together' );
+
+    is_deeply( $merge->( \%alpha, \%zebra ), \%expected,
+        'same sorted groupings when the configs load in a different order' );
+
+    # Groupings given as an array are displayed in the order they are written,
+    # so the first config's order is kept and later groupings are appended.
+    is_deeply(
+        $merge->( { 'RT::Ticket' => [ 'Zebra' => ['Stripes'] ] }, \%alpha ),
+        {   'RT::Ticket' => {
+                'Default' => [
+                    'Zebra'    => ['Stripes'],
+                    'Alpha'    => ['First'],
+                    'Mongoose' => ['Snakes'],
+                ],
+            },
+        },
+        'explicitly ordered groupings keep their order and take later ones after them'
+    );
+
+    RT::Config->Set( CustomFieldGroupings => () );
+}
 
 done_testing;

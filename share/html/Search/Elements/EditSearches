@@ -469,11 +469,14 @@ return @results;
   </p>
   <ul class="saved-search-depended-on-by-list list-group-compact">
 % while ( my $link = $links->Next ) {
+%   my $resolver = $link->BaseURI->Resolver;
+%   my $base     = $resolver->Object;
+%   next unless $base && $base->isa('RT::Dashboard');
     <li class="list-group-item">
-%   if ( $link->BaseObj->isa('RT::Dashboard') ) {
-      <a href="<% $link->BaseURI->Resolver->HREF %>" target="_blank"><% $link->BaseURI->AsString %></a>
+%   if ( $base->CurrentUserCanSee ) {
+      <a href="<% $resolver->HREF %>" target="_blank"><% $resolver->AsString %></a>
 %   } else {
-      <% $link->BaseObj->ObjectType %>: #<% $link->BaseObj->ObjectId %>
+      <% $resolver->AsString %>
 %   }
     </li>
 % }

@@ -2,6 +2,7 @@ requires 'perl', '5.26.3';
 
 # Core dependencies
 requires 'Apache::Session', '>= 1.53';
+requires 'Archive::Zip';
 requires 'Business::Hours';
 requires 'CGI', ($] >= 5.019003 ? '>= 4.00' : '>= 3.38');
 requires 'CGI::Cookie', '>= 1.20';
@@ -12,6 +13,7 @@ requires 'Clone';
 requires 'Convert::Color';
 requires 'Imager';
 requires 'Crypt::Eksblowfish';
+requires 'Crypt::URandom', '>= 0.55';
 requires 'CSS::Minifier::XS';
 requires 'CSS::Squish', '>= 0.06';
 requires 'CSS::Inliner', '>= 4027';
@@ -25,7 +27,7 @@ requires 'DateTime::Format::Natural', '>= 0.67';
 requires 'DateTime::Locale', '>= 0.40, != 1.00, != 1.01';
 requires 'DateTime::Set';
 requires 'DBI', '>= 1.37';
-requires 'DBIx::SearchBuilder', '>= 1.85';
+requires 'DBIx::SearchBuilder', '>= 1.86';
 requires 'Devel::GlobalDestruction';
 requires 'Devel::StackTrace', '>= 1.19, != 1.28, != 1.29';
 requires 'Digest::base';
@@ -47,7 +49,7 @@ requires 'HTML::Entities';
 requires 'HTML::FormatExternal';
 requires 'HTML::FormatText::WithLinks', '>= 0.14';
 requires 'HTML::FormatText::WithLinks::AndTables', '>= 0.06';
-requires 'HTML::Gumbo';
+requires 'HTML::Gumbo', '>= 0.19';
 requires 'HTML::Mason', '>= 1.43';
 requires 'HTML::Mason::PSGIHandler', '>= 0.52';
 requires 'HTML::Quoted';
@@ -65,7 +67,7 @@ requires 'Log::Dispatch', '>= 2.30';
 requires 'LWP::Simple';
 requires 'Mail::Header', '>= 2.12';
 requires 'Mail::Mailer', '>= 1.57';
-requires 'MIME::Entity', '>= 5.504';
+requires 'MIME::Tools', '>= 5.522';
 requires 'MIME::Types';
 requires 'Module::Refresh', '>= 0.03';
 requires 'Module::Runtime';
@@ -74,7 +76,7 @@ requires 'Net::CIDR';
 requires 'Net::IP';
 requires 'Parallel::ForkManager';
 requires 'Plack', '>= 1.0002';
-requires 'Plack::Handler::Starlet';
+requires 'Starlet', '>= 0.33';
 requires 'Regexp::Common';
 requires 'Regexp::Common::net::CIDR';
 requires 'Regexp::IPv6';
@@ -102,7 +104,7 @@ requires 'XML::RSS', '>= 1.05';
 requires 'Getopt::Long';
 requires 'LWP::Protocol::https';
 requires 'LWP::UserAgent', '>= 6.02';
-requires 'Mozilla::CA';
+requires 'Mozilla::CA', '>= 20261020';
 requires 'Pod::Usage';
 
 # CLI
@@ -182,7 +184,6 @@ feature 'mariadb' => sub {
 
 feature 'oracle' => sub {
     requires 'DBD::Oracle', '!= 1.23';
-    requires 'DBIx::SearchBuilder', '!= 1.81';
 };
 
 feature 'pg' => sub {
@@ -212,6 +213,13 @@ feature 'graphviz' => sub {
     requires 'IPC::Run', '>= 0.90';
 };
 
+feature 'mfa' => sub {
+    requires 'Auth::GoogleAuth', '>= 1.09';
+    requires 'Crypt::URandom';
+    requires 'CryptX';
+    requires 'Text::QRCode';
+};
+
 feature 'externalauth' => sub {
     requires 'Net::SSLeay';
     requires 'Net::LDAP';
@@ -221,7 +229,7 @@ feature 'externalauth' => sub {
 };
 
 feature 'dashboard-chart-emails' => sub {
-    requires 'WWW::Mechanize::Chrome';
+    requires 'File::Which';
 };
 
 # External attachment storage

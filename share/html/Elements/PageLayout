@@ -60,6 +60,15 @@
 % # Close div for rt-header-container started in Header
 </div>
 <div id="body" role="main">
+% # One-shot: deleted here so only the first page after login shows it
+% if (   $session{CurrentUser} && $session{CurrentUser}->Id
+%     && $session{ExistingPasswordPolicyNotice} ) {
+%     RT::Interface::Web::Session::Delete( Key => 'ExistingPasswordPolicyNotice' );
+%     my $pwpolicy_change_url = RT->Config->Get('WebPath') . ( $session{CurrentUser}->Privileged ? '/Prefs/ExistingPasswordChange.html' : '/SelfService/ExistingPasswordChange.html' );
+<div class="alert alert-warning mt-3">
+<% loc('Your password no longer meets the current password policy. Please [_1]update it[_2].', sprintf('<a href="%s">', $pwpolicy_change_url), '</a>') | n %>
+</div>
+% }
 % $m->callback( %ARGS, CallbackName => 'BeforeBody' );
 <& /Elements/SystemWarnings &>
 % $m->flush_buffer(); # we've got the page laid out, let's flush the buffer;

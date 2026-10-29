@@ -305,7 +305,7 @@ sub SignEncrypt {
     # Work around https://rt.cpan.org/Public/Bug/Display.html?id=87835
     for my $part (grep {$_->is_multipart and $_->preamble and @{$_->preamble}} $newmime->parts_DFS) {
         $part->preamble->[-1] .= "\n"
-            if $part->preamble->[-1] =~ /\r$/;
+            if $part->preamble->[-1] =~ /\r\z/;
     }
 
     $entity->parts([$newmime]);
@@ -531,28 +531,45 @@ sub Verify {
         return %res;
     }
 
-    my $signer;
-    if ( my $key = do { $keyfh->seek(0, 0); local $/; readline $keyfh } ) {{
-        my %info = $self->GetCertificateInfo( Certificate => $key );
+    my $key = do { $keyfh->seek(0, 0); local $/; readline $keyfh };
+    my %info = $key ? $self->GetCertificateInfo( Certificate => $key ) : ();
+    my $signer = $info{info}[0];
 
-        $signer = $info{info}[0];
-        last unless $signer and $signer->{User}[0]{String};
+    # openssl was run with -noverify above, so it checked the signature but
+    # not the certificate chain; the trust decision is made here instead.
+    # Every path from here to a success status must pass through it, so keep
+    # it out of the block below, which uses last to skip the optional work of
+    # recording the certificate on a user.
 
-        unless ( $info{info}[0]{TrustLevel} > 0 or $opts->{AcceptUntrustedCAs}) {
-            # We don't trust it; give it the finger
-            $res{exit_code} = 1;
-            $res{'message'} = "Validation failed";
-            $res{'status'} = $self->FormatStatus({
-                Operation => "Verify", Status => "BAD",
-                Message => "The signing CA was not trusted",
-                Serial => $signer->{'Serial Number'} || 'unknown',
-                UserString => $signer->{User}[0]{String},
-                ExpireTimestamp => $signer->{Expire}->Unix(),
-                CreatedTimestamp => $signer->{Created}->Unix(),
-                Trust => "NONE",
-            });
-            return %res;
-        }
+    unless ( $signer ) {
+        $res{exit_code} = 1;
+        $res{'message'} = "Validation failed";
+        $res{'status'} = $self->FormatStatus({
+            Operation => "Verify", Status => "BAD",
+            Message => "No signer certificate was found",
+            Trust => "NONE",
+        });
+        return %res;
+    }
+
+    unless ( $signer->{TrustLevel} > 0 or $opts->{AcceptUntrustedCAs} ) {
+        # We don't trust it, mark validation as failed
+        $res{exit_code} = 1;
+        $res{'message'} = "Validation failed";
+        $res{'status'} = $self->FormatStatus({
+            Operation => "Verify", Status => "BAD",
+            Message => "The signing CA was not trusted",
+            Serial => $signer->{'Serial Number'} || 'unknown',
+            UserString => $signer->{User}[0]{String} || 'unknown',
+            ExpireTimestamp => $signer->{Expire}->Unix(),
+            CreatedTimestamp => $signer->{Created}->Unix(),
+            Trust => "NONE",
+        });
+        return %res;
+    }
+
+    {
+        last unless length( $signer->{User}[0]{String} // '' );
 
         my ($address) = Email::Address->parse($signer->{User}[0]{String});
         last unless $address;
@@ -571,7 +588,7 @@ sub Verify {
         my ($status, $msg) = $user->SetSMIMECertificate( $key );
         $RT::Logger->error("Couldn't set SMIME certificate for user #". $user->id .": $msg")
             unless $status;
-    }}
+    }
 
     my $res_entity = _extract_msg_from_buf( \$buf );
     unless ( $res_entity ) {
@@ -596,11 +613,11 @@ sub Verify {
 
     $res{'status'} = $self->FormatStatus({
         Operation => "Verify", Status => "DONE",
-        Message => "The signature is good, signed by ".$signer->{User}[0]{String}.", assured by " . $signer->{Issuer}[0]{String} . ", trust is ".$signer->{TrustTerse},
+        Message => "The signature is good, signed by ". ( $signer->{User}[0]{String} || 'unknown' ) .", assured by " . ( $signer->{Issuer}[0]{String} || 'unknown' ) . ", trust is ".$signer->{TrustTerse},
         Serial => $signer->{'Serial Number'} || 'unknown',
-        UserString => $signer->{User}[0]{String},
+        UserString => $signer->{User}[0]{String} // '',
         Trust => uc($signer->{TrustTerse}),
-        Issuer => $signer->{Issuer}[0]{String},
+        Issuer => $signer->{Issuer}[0]{String} || 'unknown',
         ExpireTimestamp => $signer->{Expire}->Unix(),
         CreatedTimestamp => $signer->{Created}->Unix(),
     });
@@ -628,7 +645,7 @@ sub Decrypt {
     # Work around https://rt.cpan.org/Public/Bug/Display.html?id=87835
     for my $part (grep {$_->is_multipart and $_->preamble and @{$_->preamble}} $res_entity->parts_DFS) {
         $part->preamble->[-1] .= "\n"
-            if $part->preamble->[-1] =~ /\r$/;
+            if $part->preamble->[-1] =~ /\r\z/;
     }
 
     $args{'Data'}->make_multipart( 'mixed', Force => 1 );
@@ -1155,7 +1172,8 @@ sub RunOpenSSLVerify
         $res->{info}[0]{TrustTerse} = "unknown";
         $res->{info}[0]{TrustLevel} = 0;
     }
-    $res->{info}[0]{Formatted} = $res->{info}[0]{User}[0]{String} . " (issued by $res->{info}[0]{Issuer}[0]{String})";
+    $res->{info}[0]{Formatted} = ( $res->{info}[0]{User}[0]{String} || 'unknown' )
+        . " (issued by " . ( $res->{info}[0]{Issuer}[0]{String} || 'unknown' ) . ")";
 }
 
 # Extract the subject email address from an S/MIME certificate.

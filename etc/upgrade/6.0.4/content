@@ -1,0 +1,158 @@
+use strict;
+use warnings;
+use URI;
+
+# The TOTP columns and templates also come with 5.0.11, so these steps skip
+# whatever an upgrade from 5.0.11 or later already has.
+our @Initial = (
+    sub {
+        my %args      = @_;
+        my $admin_dbh = $args{admin_dbh};
+        my $db_type   = RT->Config->Get('DatabaseType');
+        return if $db_type eq 'SQLite';
+
+        my $table = $db_type eq 'Oracle' ? RT->Config->Get('DatabaseUser') . '.Users' : 'Users';
+        {
+            local $admin_dbh->{RaiseError} = 0;
+            local $admin_dbh->{PrintError} = 0;
+            if ( $admin_dbh->do("SELECT TOTPSecret FROM $table WHERE 1=0") ) {
+                RT->Logger->debug("TOTP columns already exist, skipping");
+                return;
+            }
+        }
+
+        my @sql;
+        if ( $db_type eq 'Pg' ) {
+            @sql = (
+                "ALTER TABLE $table ADD COLUMN TOTPSecret VARCHAR(255) NULL",
+                "ALTER TABLE $table ADD COLUMN TOTPEnrolled smallint NOT NULL DEFAULT 0",
+            );
+        }
+        elsif ( $db_type eq 'mysql' ) {
+            @sql = (
+                "ALTER TABLE $table ADD COLUMN TOTPSecret VARCHAR(255) CHARACTER SET ascii NULL",
+                "ALTER TABLE $table ADD COLUMN TOTPEnrolled int2 NOT NULL DEFAULT 0",
+            );
+        }
+        elsif ( $db_type eq 'Oracle' ) {
+            @sql = (
+                "ALTER TABLE $table ADD TOTPSecret VARCHAR2(255) NULL",
+                "ALTER TABLE $table ADD TOTPEnrolled NUMBER(11,0) DEFAULT 0 NOT NULL",
+            );
+        }
+
+        for my $statement (@sql) {
+            $admin_dbh->do($statement) or die "Couldn't run SQL query: $statement: " . $admin_dbh->errstr;
+        }
+    },
+    sub {
+        my %templates = (
+            PasswordReset => {
+                Description => 'Password reset request email',
+                Content     => 'Subject: RT Password Reset Request
+
+Greetings,
+
+Someone at { eval { RT::Interface::Web::RequestENV(\'REMOTE_ADDR\') } // \'\' } has requested
+that RT send you this message allowing you to reset your password. If you
+didn\'t request this message, please notify your RT administrator immediately.
+
+To reset your password, click on the following URL and enter your new
+password:
+
+{ RT->Config->Get(\'WebURL\') }NoAuth/ResetPassword/Reset/{ $Token }/{ $User->id }',
+            },
+            MFAReset => {
+                Description => 'MFA reset request email',
+                Content     => 'Subject: RT MFA Reset Request
+
+Greetings,
+
+Someone has requested that RT send you this message allowing you to reset
+your multi-factor authentication enrollment. If you didn\'t request this
+message, please notify your RT administrator immediately.
+
+To reset your MFA enrollment, click on the following URL:
+
+{ RT->Config->Get(\'WebURL\') }NoAuth/MFA/Reset/{ $Token }/{ $User->id }
+
+After following the link, you will be asked to confirm clearing your MFA
+enrollment. If your account requires MFA, you will be prompted to re-enroll
+on your next login.',
+            },
+        );
+
+        for my $name ( sort keys %templates ) {
+            my $template = RT::Template->new( RT->SystemUser );
+            $template->LoadGlobalTemplate($name);
+            if ( $template->Id ) {
+                RT->Logger->debug("$name template already exists, skipping");
+                next;
+            }
+
+            my ( $ret, $msg ) = $template->Create( ObjectId => 0, Name => $name, %{ $templates{$name} } );
+            RT->Logger->error("Unable to create $name template: $msg") unless $ret;
+        }
+    },
+);
+
+our @Final = (
+    sub {
+        RT->Logger->debug('Migrating transaction display-URL links to transaction:// URIs');
+
+        my $org       = RT->Config->Get('Organization');
+        my $web_uri   = URI->new( RT->Config->Get('WebURL') );      # scheme://host:port/<path>/
+        my $base_path = $web_uri->path;                             # /<path>/
+        my $txn_path  = $base_path . 'Transaction/Display.html';    # /<path>/Transaction/Display.html
+
+        # Before RT::URI::transaction, a transaction could only be "linked" by pasting a display
+        # URL, stored verbatim as an external-URL link. Two forms were possible:
+        #   * the standalone transaction page:    <WebURL>Transaction/Display.html?id=<txn>
+        #   * a history permalink with an anchor: <WebURL><Object>/Display.html?id=<obj>#txn-<txn>
+        # Convert both, but only when the URL points at *this* RT (scheme/host/port match WebURL
+        # and the path is under it), so links to a different RT are left alone.
+        for my $field (qw/Base Target/) {
+            my $links = RT::Links->new( RT->SystemUser );
+            $links->Limit( FIELD => $field, OPERATOR => 'LIKE', VALUE => '%/Transaction/Display.html?id=%' );
+            $links->Limit( FIELD => $field, OPERATOR => 'LIKE', VALUE => '%#txn-%', ENTRYAGGREGATOR => 'OR' );
+
+            while ( my $link = $links->Next ) {
+                my $stored = $link->$field // '';
+                my $uri    = URI->new($stored);
+
+                next unless $uri->can('host') && defined $uri->host;
+                next
+                    unless lc( $uri->host ) eq lc( $web_uri->host // '' )
+                    && $uri->port == $web_uri->port
+                    && $uri->scheme eq $web_uri->scheme;
+
+                # The transaction id is the #txn-<id> anchor or, for the standalone page, the id
+                # query param. Match the fragment last so its $1 isn't clobbered by the path check.
+                my $txn_id;
+                my $fragment = $uri->can('fragment') ? ( $uri->fragment // '' ) : '';
+                if ( $uri->path =~ m{^\Q$base_path\E} && $fragment =~ /^txn-(\d+)$/ ) {
+                    $txn_id = $1;
+                }
+                elsif ( $uri->path eq $txn_path ) {
+                    my %query = $uri->query_form;
+                    $txn_id = $query{id};
+                }
+                next unless defined $txn_id && $txn_id =~ /^\d+$/;
+
+                # And only when that transaction actually exists here.
+                my $txn = RT::Transaction->new( RT->SystemUser );
+                $txn->Load($txn_id);
+                next unless $txn->id;
+
+                my $new_uri = "transaction://$org/$txn_id";
+                my ( $ret, $msg ) = $link->_Set( Field => $field, Value => $new_uri );
+                if ($ret) {
+                    RT->Logger->info( "Migrated link #" . $link->id . " $field: $stored -> $new_uri" );
+                }
+                else {
+                    RT->Logger->error( "Couldn't migrate transaction link #" . $link->id . " ($field): $msg" );
+                }
+            }
+        }
+        },
+);

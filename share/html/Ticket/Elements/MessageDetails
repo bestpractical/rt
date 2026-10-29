@@ -88,6 +88,8 @@ jQuery("#UpdateCc, #UpdateBcc").change(ticketSyncOneTimeCheckboxes).change(ticke
 </script>
 
 <%INIT>
+$m->comp( '/Articles/Elements/SubjectOverride', Ticket => $TicketObj, ARGSRef => \%ARGS );
+
 my $gnupg_widget = $m->comp( '/Elements/Crypt/SignEncryptWidget:new', Arguments => \%ARGS );
 $m->comp(
     '/Elements/Crypt/SignEncryptWidget:Process',

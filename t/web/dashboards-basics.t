@@ -188,6 +188,29 @@ like($searches[1]->Name, qr/My Tickets/, "correct new search name");
 is($searches[2]->Name, 'first chart',      "correct existing search name");
 is($searches[3]->Name, 'first txn search', "correct new search name");
 
+for my $invalid (
+    [ { portlet_type => 'component', component => 'NoSuchComponent' }, 'component-NoSuchComponent' ],
+    [ { portlet_type => 'search',    id        => 999999 },            'search-999999' ],
+    )
+{
+    my ( $widget, $key ) = @$invalid;
+    my $invalid_content = [ { Layout => 'col-12', Elements => [ [ $searches{'Unowned Tickets'}, $widget ] ] } ];
+
+    for my $page (qw/Queries Advanced/) {
+        $m->post_ok( $url . "Dashboards/$page.html?id=$id",
+            { Update => 1, Content => JSON::encode_json($invalid_content) } );
+        $m->text_contains( "Invalid widget: $key", "$page.html rejected $key" );
+        $m->next_warning_like(qr/Rejecting content for dashboard #$id: Invalid widget: \Q$key\E/);
+
+        $dashboard->LoadById($id);
+        is( scalar $dashboard->Searches, 4, 'dashboard content is unchanged' );
+    }
+}
+
+$m->post_ok( $url . "Dashboards/Queries.html?id=$id", { Update => 1, Content => JSON::encode_json( ['History'] ) } );
+$m->text_contains( 'Invalid widget: History', 'rejected a widget outside of rows' );
+$m->next_warning_like(qr/Rejecting content for dashboard #$id: Invalid widget: History/);
+
 my $ticket = RT::Ticket->new(RT->SystemUser);
 $ticket->Create(
     Queue     => $queue->Id,
@@ -303,12 +326,13 @@ for my $page (qw/Modify Queries Render Subscription/) {
     $m->next_warning_like(qr/Could not load dashboard $bad_id/);
 }
 
-diag "Test IsValidSearchDisplayMode";
+diag "Test SearchDisplayMode validation";
 {
-    ok(RT::Interface::Web::IsValidSearchDisplayMode('CollectionList'), 'CollectionList is valid');
-    ok(RT::Interface::Web::IsValidSearchDisplayMode('Calendar'), 'Calendar is valid');
-    ok(!RT::Interface::Web::IsValidSearchDisplayMode('InvalidMode'), 'InvalidMode is not valid');
-    ok(!RT::Interface::Web::IsValidSearchDisplayMode('../etc/passwd'), 'Path traversal is not valid');
+    my $search = RT::SavedSearch->new( RT->SystemUser );
+    ok($search->ValidateOption('SearchDisplayMode', 'CollectionList'), 'CollectionList is valid');
+    ok($search->ValidateOption('SearchDisplayMode', 'Calendar'), 'Calendar is valid');
+    ok(!$search->ValidateOption('SearchDisplayMode', 'InvalidMode'), 'InvalidMode is not valid');
+    ok(!$search->ValidateOption('SearchDisplayMode', '../etc/passwd'), 'Path traversal is not valid');
 }
 
 done_testing();

@@ -1575,6 +1575,37 @@ my @tests = (
             is( $configuration->Content, "1", 'EnablePriorityAsString content is correct' );
         },
     },
+    {
+        name        => 'User MFA enrollment is not exported',
+        export_args => { AllUsers => 1 },
+        create      => sub {
+            my $user = RT::User->new( RT->SystemUser );
+            my ( $ok, $msg ) = $user->Create(
+                Name         => 'mfa_export',
+                EmailAddress => 'mfa_export@example.com',
+                Privileged   => 1,
+            );
+            ok( $ok, $msg );
+            $user->__Set( Field => 'TOTPSecret',   Value => 'gcm:00:00:00' );
+            $user->__Set( Field => 'TOTPEnrolled', Value => 1 );
+        },
+        raw => sub {
+            my $json = shift;
+            my ($user) = grep { $_->{Name} eq 'mfa_export' } @{ $json->{Users} };
+            ok( $user, 'User mfa_export is exported' );
+            ok( !exists $user->{TOTPSecret},   'TOTPSecret is not exported' );
+            ok( !exists $user->{TOTPEnrolled}, 'TOTPEnrolled is not exported' );
+        },
+        present => sub {
+            my $imported = shift;
+            my $user     = RT::User->new( RT->SystemUser );
+            $user->Load('mfa_export');
+            ok( $user->Id, 'Loaded user mfa_export' );
+            return unless $imported;
+            ok( !$user->TOTPEnrolled,              'Imported user is not enrolled' );
+            ok( !$user->__Value('TOTPSecret'), 'Imported user has no TOTP secret' );
+        },
+    },
 );
 
 my $id = 0;

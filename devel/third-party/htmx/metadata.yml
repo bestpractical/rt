@@ -1,0 +1,36 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: htmx
+version: "2.0.3"
+
+upstream:
+  homepage: https://htmx.org/
+  repository: https://github.com/bigskysoftware/htmx
+
+license:
+  spdx: 0BSD
+  file: LICENSE
+
+purl: pkg:npm/htmx.org@2.0.3
+cpe: ~
+
+description: >
+  Access to AJAX, CSS transitions, WebSockets and Server-Sent Events directly
+  in HTML via element attributes. Drives a lot of RT's modern interactivity.
+
+shipped: true
+security-critical: true
+
+upgrade-instructions: ~
+
+artifacts: []
+
+patches: []
+
+notes: ~

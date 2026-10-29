@@ -55,7 +55,6 @@ use base 'RT::Record';
 
 require RT::User;
 require RT::Util;
-use Digest::SHA 'sha512_hex';
 
 =head1 NAME
 
@@ -113,12 +112,22 @@ sub Create {
             || $self->CurrentUserHasRight('AdminUsers');
 
     my $token = $self->_GenerateToken;
+    unless ( defined $token ) {
+        RT->Logger->error("Couldn't generate an auth token for user $args{Owner}");
+        return (0, $self->loc("Could not generate a secure token"));
+    }
+
+    my $crypted = $self->_CryptToken($token);
+    unless ( defined $crypted ) {
+        RT->Logger->error("Couldn't hash an auth token for user $args{Owner}");
+        return (0, $self->loc("Could not generate a secure token"));
+    }
 
     # delete Expires arg if it is empty
     delete $args{Expires} unless $args{Expires};
 
     my ( $id, $msg ) = $self->SUPER::Create(
-        Token => $self->_CryptToken($token),
+        Token => $crypted,
         map { $_ => $args{$_} } grep {exists $args{$_}}
             qw(Owner Description Expires),
     );
@@ -273,7 +282,11 @@ sub IsToken {
 
     # We got here by validating successfully, but with a legacy
     # password form.  Update to the most recent form.
-    $self->_Set(Field => 'Token', Value => $self->_CryptToken($value));
+    # The token was valid; if it cannot be rehashed right now, leave it in its
+    # old form rather than replacing a working token with nothing.
+    if ( defined( my $rehashed = $self->_CryptToken($value) ) ) {
+        $self->_Set( Field => 'Token', Value => $rehashed );
+    }
     return 1;
 }
 
@@ -350,16 +363,7 @@ Generates an unpredictable auth token
 
 sub _GenerateToken {
     my $class = shift;
-    require Time::HiRes;
-
-    my $input = join '',
-                    Time::HiRes::time(), # subsecond-precision time
-                    {},                  # unpredictable memory address
-                    rand();              # RNG
-
-    my $digest = sha512_hex($input);
-
-    return substr($digest, 0, 32);
+    return RT::Util::random_hex(32);
 }
 
 =head2 _BuildAuthString

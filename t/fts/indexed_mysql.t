@@ -156,4 +156,136 @@ run_tests(
 
 @tickets = ();
 
+diag "Checking single ticket history search";
+
+my ( $history, $other ) = RT::Test->create_tickets(
+    { Queue   => $q->id },
+    { Subject => 'history', Content => 'opening message' },
+    { Subject => 'other',   Content => 'widget on another ticket' },
+);
+( $ret, $msg ) = $history->Correspond( Content => "Please check the\nWIDGET on this invoice" );
+ok( $ret, 'Corresponded' ) or diag $msg;
+my $widget_txn_id = $ret;
+( $ret, $msg ) = $history->Correspond( Content => 'Take 50% off, report saved to C:\\temp\\report' );
+ok( $ret, 'Corresponded' ) or diag $msg;
+my $special_txn_id = $ret;
+( $ret, $msg ) = $history->Correspond( Content => "You wrote:\n> Please ship the order,\n> label attached" );
+ok( $ret, 'Corresponded' ) or diag $msg;
+my $quoted_txn_id = $ret;
+RT::Test::FTS->sync_index();
+
+sub history_search {
+    my %args = @_;
+    my $txns = RT::Transactions->new( RT->SystemUser );
+    $txns->SingleTicketSearch(1) if $args{single_ticket_search};
+    ( my $term = $args{term} ) =~ s/(['\\])/\\$1/g;
+    my ( $ok, $msg )
+        = $txns->FromSQL(
+            "Content LIKE '$term' AND TicketId = " . $args{ticket}->id . " AND ObjectType = 'RT::Ticket'" );
+    ok( $ok, "Parsed history search for '$args{term}'" ) or diag $msg;
+    return $txns;
+}
+
+if ( RT->DatabaseHandle->_IsMariaDB ) {
+    ok( RT::Transactions->_CanRegexpContent, 'MariaDB can scan with REGEXP' );
+}
+else {
+    my $limit = RT->DatabaseHandle->FetchResult('SELECT @@regexp_time_limit');
+    is( !!RT::Transactions->_CanRegexpContent,
+        $limit eq '0',
+        "MySQL can scan with REGEXP only if regexp_time_limit ($limit) is 0"
+      );
+}
+
+if ( RT::Transactions->_CanRegexpContent ) {
+    $txns = history_search( ticket => $history, term => 'widget', single_ticket_search => 1 );
+    like(
+        $txns->BuildSelectQuery( PreferBind => 0 ),
+        qr/AttachmentsIndex_\d+\.Content REGEXP '\(\?<!\\\\w\)widget\(\?!\\\\w\)'/,
+        'Single ticket search matches whole words with REGEXP on the index table'
+    );
+    unlike( $txns->BuildSelectQuery( PreferBind => 0 ), qr/MATCH\(/, 'Single ticket search does not use MATCH' );
+    is_deeply( [ map { $_->id } @{ $txns->ItemsArrayRef } ],
+        [$widget_txn_id], 'Single ticket search finds the WIDGET transaction, ignoring case' );
+
+    $txns = history_search( ticket => $history, term => 'widget' );
+    like(
+        $txns->BuildSelectQuery( PreferBind => 0 ),
+        qr/MATCH\(AttachmentsIndex_\d+\.Content\) AGAINST/,
+        'Search without the flag uses MATCH'
+    );
+    is_deeply( [ map { $_->id } @{ $txns->ItemsArrayRef } ], [$widget_txn_id], 'MATCH finds the same transaction' );
+
+    $txns = history_search( ticket => $history, term => '"check the widget"', single_ticket_search => 1 );
+    like(
+        $txns->BuildSelectQuery( PreferBind => 0 ),
+        qr/Content REGEXP '\(\?<!\\\\w\)check\\\\W\+the\\\\W\+widget\(\?!\\\\w\)'/,
+        'Quotes around a phrase are removed and words match across any non-word characters'
+    );
+    is_deeply( [ map { $_->id } @{ $txns->ItemsArrayRef } ],
+        [$widget_txn_id], 'Single ticket search finds the phrase broken across lines' );
+
+    $txns = history_search( ticket => $history, term => 'order label attached', single_ticket_search => 1 );
+    is_deeply( [ map { $_->id } @{ $txns->ItemsArrayRef } ],
+        [$quoted_txn_id], 'Single ticket search finds a phrase across a comma and a quoted line break' );
+
+    $txns = history_search( ticket => $history, term => 'order label attached' );
+    is_deeply( [ map { $_->id } @{ $txns->ItemsArrayRef } ], [$quoted_txn_id], 'MATCH finds the same phrase' );
+
+    $txns = history_search( ticket => $history, term => 'check the widget', single_ticket_search => 1 );
+    is_deeply( [ map { $_->id } @{ $txns->ItemsArrayRef } ],
+        [$widget_txn_id], 'Single ticket search finds an unquoted phrase' );
+
+    $txns = history_search( ticket => $history, term => 'check widget', single_ticket_search => 1 );
+    is( $txns->Count, 0, 'Single ticket search does not match words that are not adjacent' );
+
+    $txns = history_search( ticket => $history, term => 'check th. widget', single_ticket_search => 1 );
+    is( $txns->Count, 0, 'Regular expression characters in a phrase match literally' );
+
+    $txns = history_search( ticket => $history, term => '" "', single_ticket_search => 1 );
+    is( $txns->Count, 0, 'Single ticket search finds nothing without a word character, as MATCH does' );
+
+    $txns = history_search( ticket => $other, term => 'widget', single_ticket_search => 1 );
+    is_deeply(
+        [ map { $_->id } @{ $txns->ItemsArrayRef } ],
+        [ $other->Transactions->First->id ],
+        'Single ticket search finds only the other ticket\'s transaction'
+    );
+
+    $txns = history_search( ticket => $history, term => 'invoic', single_ticket_search => 1 );
+    is( $txns->Count, 0, 'Single ticket search does not match part of a word' );
+
+    $txns = history_search( ticket => $history, term => 'invoic*' );
+    is_deeply( [ map { $_->id } @{ $txns->ItemsArrayRef } ], [$widget_txn_id],
+        'MATCH treats a trailing * as a prefix' );
+
+    $txns = history_search( ticket => $history, term => 'invoic*', single_ticket_search => 1 );
+    is_deeply( [ map { $_->id } @{ $txns->ItemsArrayRef } ],
+        [$widget_txn_id], 'Single ticket search treats a trailing * as a prefix' );
+
+    $txns = history_search( ticket => $history, term => 'check the wid*', single_ticket_search => 1 );
+    is( $txns->Count, 0, 'Single ticket search matches * in a phrase literally, as MATCH does' );
+
+    $txns = history_search( ticket => $history, term => '50%', single_ticket_search => 1 );
+    is_deeply( [ map { $_->id } @{ $txns->ItemsArrayRef } ],
+        [$special_txn_id], 'Single ticket search matches a word ending in a non-word character' );
+
+    $txns = history_search( ticket => $history, term => 'C:\\temp\\report', single_ticket_search => 1 );
+    is_deeply( [ map { $_->id } @{ $txns->ItemsArrayRef } ],
+        [$special_txn_id], 'Single ticket search matches backslashes literally' );
+}
+else {
+    $txns = history_search( ticket => $history, term => 'widget', single_ticket_search => 1 );
+    like( $txns->BuildSelectQuery( PreferBind => 0 ), qr/MATCH\(/, 'Single ticket search uses MATCH' );
+}
+
+diag "Checking the ticket history page search";
+
+my ( $baseurl, $m ) = RT::Test->started_ok;
+ok( $m->login, 'Logged in' );
+
+$m->get_ok( "/Helpers/TicketHistoryPage?id=" . $history->id . "&SearchHistory=widget" );
+is_deeply( [ map { $_->attr('data-transaction-id') } $m->dom->find('div[data-transaction-id]')->each ],
+    [$widget_txn_id], 'History page search finds the WIDGET transaction' );
+
 done_testing;

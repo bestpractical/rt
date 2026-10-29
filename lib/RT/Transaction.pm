@@ -81,7 +81,7 @@ with "RT::Record::Role::ObjectContent" => { -rename   => { SetContent => '_SetCo
 use vars qw( %_BriefDescriptions $PreferredContentType @TxnTypeTicketList @TxnTypeAssetList );
 
 # Default list of common transaction types for short filter lists
-@TxnTypeTicketList = qw(Create Correspond Comment CommentEmailRecord Status Set EmailRecord CustomField AddLink DeleteLink AddWatcher DelWatcher SetWatcher);
+@TxnTypeTicketList = qw(Create Correspond Comment CommentEmailRecord Status Set EmailRecord CustomField AddLink DeleteLink AddWatcher DelWatcher SetWatcher AddAttachment DeleteAttachment RenameAttachment PinAttachment UnpinAttachment);
 push @TxnTypeTicketList, 'Forward Ticket', 'Forward Transaction';
 
 # Default list of transaction types for asset filter lists
@@ -95,10 +95,13 @@ use RT::Util 'InlineCSS';
 use HTML::FormatText::WithLinks::AndTables;
 use HTML::Scrubber;
 use Encode;
+use MIME::Base64;
+use URI::Escape ();
 
 # For EscapeHTML() and decode_entities()
 require RT::Interface::Web;
 require HTML::Entities;
+require RT::URI::transaction;
 
 sub Table {'Transactions'}
 
@@ -214,21 +217,50 @@ sub Create {
     }
 
     my $max_length = 0;
+    my %is_binary;
     for my $field ( qw/OldValue NewValue/ ) {
         next unless $params{$field};
-        my $length = length encode( 'UTF-8', $params{$field} );
+        my $value = $params{$field};
+
+        # Other than an attachment's raw binary content (stored by
+        # RT::Ticket::DeleteAttachment), OldValue/NewValue are decoded UTF-8
+        # character strings, which RT::ObjectContent carries as JSON. Only
+        # undecoded bytes (no UTF-8 flag) containing a NUL or a non-ASCII
+        # byte are treated as binary and base64-encoded below; a character
+        # string is never binary, so encode_base64 can't choke on wide
+        # characters.
+        if ( !utf8::is_utf8($value) && $value =~ /[\x00\x80-\xff]/ ) {
+            $is_binary{$field} = 1;
+            next;
+        }
+
+        my $length = length encode( 'UTF-8', $value );
         $max_length = $length if $max_length < $length;
     }
 
     my %content;
-    if ( $max_length > 255 ) {
+    if ( $max_length > 255 || %is_binary ) {
         if ( $params{'ReferenceType'} ) {
-            RT->Logger->error("Long OldValue/NewValue and ReferenceType can not coexist");
-            return (0, $self->loc('Long OldValue/NewValue and ReferenceType can not coexist'));
+            RT->Logger->error("Long or binary OldValue/NewValue and ReferenceType can not coexist");
+            return ( 0, $self->loc('Long or binary OldValue/NewValue and ReferenceType can not coexist') );
         }
         else {
             $params{'ReferenceType'} = 'RT::ObjectContent';
-            $content{$_} = delete $params{$_} for qw/OldValue NewValue/;
+            for my $field ( qw/OldValue NewValue/ ) {
+                next unless defined $params{$field};
+                if ( $is_binary{$field} ) {
+                    # JSON can't carry arbitrary bytes; wrap binary
+                    # values so the reader knows to base64-decode.
+                    $content{$field} = {
+                        ContentEncoding => 'base64',
+                        Content         => encode_base64( $params{$field}, '' ),
+                    };
+                    delete $params{$field};
+                }
+                else {
+                    $content{$field} = delete $params{$field};
+                }
+            }
         }
     }
 
@@ -1070,6 +1102,29 @@ sub _FormatUser {
     ];
 }
 
+sub _AttachmentLink {
+    my $self = shift;
+    my $text = shift;
+
+    my $att_id = $self->Field;
+    return $text unless $att_id;
+
+    my $attachment = RT::Attachment->new( $self->CurrentUser );
+    $attachment->Load($att_id);
+    return $text unless $attachment->Id && $attachment->Filename && $attachment->CurrentUserCanSee;
+
+    my $path = $self->CurrentUser->Privileged ? 'Ticket' : 'SelfService';
+    my $url  = join '/',
+        RT->Config->Get('WebPath'),
+        $path,
+        'Attachment',
+        $attachment->TransactionId,
+        $attachment->Id,
+        URI::Escape::uri_escape_utf8( $attachment->Filename );
+
+    return [ \'<a target="_blank" href="', $url, \'">', $text, \'</a>' ];
+}
+
 sub _CanonicalizeRoleName {
     my $self = shift;
     my $role_name = shift;
@@ -1434,6 +1489,17 @@ sub _CanonicalizeRoleName {
         if ( $self->Field eq 'Password' ) {
             return ('Password changed');    #loc()
         }
+        elsif ( $self->Field eq 'TOTPSecret' ) {
+            return ('TOTP secret changed');    #loc()
+        }
+        elsif ( $self->Field eq 'TOTPEnrolled' ) {
+            if ( $self->NewValue ) {
+                return ('MFA enrollment enabled');    #loc()
+            }
+            else {
+                return ('MFA enrollment cleared');    #loc()
+            }
+        }
         elsif ( $self->Field eq 'Queue' ) {
             my $q1 = RT::Queue->new( $self->CurrentUser );
             $q1->Load( $self->OldValue );
@@ -1734,7 +1800,31 @@ sub _CanonicalizeRoleName {
             return 'Image deleted';
         }
     },
-
+    AddAttachment => sub {
+        my $self = shift;
+        return ( "Attachment '[_1]' added", $self->_AttachmentLink( $self->Data ) ); #loc()
+    },
+    DeleteAttachment => sub {
+        my $self = shift;
+        # No _AttachmentLink wrapper: the attachment row is gone by the time history renders.
+        return ( "Attachment '[_1]' deleted", $self->Data ); #loc()
+    },
+    RenameAttachment => sub {
+        my $self = shift;
+        return (
+            "Attachment renamed from '[_1]' to '[_2]'",
+            $self->OldValue,
+            $self->_AttachmentLink( $self->NewValue ),
+        ); #loc()
+    },
+    PinAttachment => sub {
+        my $self = shift;
+        return ( "Attachment '[_1]' pinned", $self->_AttachmentLink( $self->Data ) ); #loc()
+    },
+    UnpinAttachment => sub {
+        my $self = shift;
+        return ( "Attachment '[_1]' unpinned", $self->_AttachmentLink( $self->Data ) ); #loc()
+    },
 );
 
 =head2 GetTransactionTypes
@@ -1830,6 +1920,8 @@ sub _Value {
         return undef;
     }
 
+    return undef if $self->IsTimeField($field) && !$self->CurrentUserCanSeeTime;
+
     return $self->SUPER::_Value( $field );
 }
 
@@ -1860,12 +1952,100 @@ sub CurrentUserCanSee {
         return 0 unless $cf->CurrentUserCanSee;
     }
 
+    # A transaction that only records a change to a hidden time field has nothing else to show
+    return 0 if $self->IsHiddenTimeFieldChange;
+
+    # Attachment management transactions are only as visible as the
+    # transaction the attachment came from, e.g. a comment
+    if ( $type =~ /^(?:Delete|Rename|Pin|Unpin)Attachment$/ ) {
+        $self->{_attachment_source_visible} //= $self->_AttachmentSourceVisible;
+        return 0 unless $self->{_attachment_source_visible};
+    }
+
     # Transactions that might have changed the ->Object's visibility to
     # the current user are marked readable
     return 1 if $self->{ _object_is_readable };
 
     # Defer to the object in question
     return $self->Object->CurrentUserCanSee("Transaction", $self);
+}
+
+=head2 CurrentUserCanSeeTime
+
+Returns true if the current user can see the time values recorded on this
+transaction, deferring to L<RT::Ticket/CurrentUserCanSeeTime> for ticket
+transactions.
+
+=cut
+
+sub CurrentUserCanSeeTime {
+    my $self = shift;
+
+    return 1 unless RT->Config->Get('HideTimeFieldsFromUnprivilegedUsers');
+
+    my $object = $self->Object;
+    return 1 unless $object && $object->can('CurrentUserCanSeeTime');
+    return $object->CurrentUserCanSeeTime;
+}
+
+=head2 IsTimeField FIELD
+
+Returns true if FIELD is one of the transaction time columns governed by
+C<$HideTimeFieldsFromUnprivilegedUsers>. Callable as a class method.
+
+=cut
+
+sub IsTimeField {
+    my $self  = shift;
+    my $field = shift;
+
+    return 0 unless defined $field;
+    return $field =~ /^(?:TimeTaken|TimeWorker|TimeWorkedDate)$/ ? 1 : 0;
+}
+
+=head2 IsHiddenTimeFieldChange
+
+Returns true if this transaction records a change to one of the time fields
+the current user is not allowed to see.
+
+=cut
+
+sub IsHiddenTimeFieldChange {
+    my $self = shift;
+
+    return 0 unless RT::Ticket->IsTimeField( $self->__Value('Field') );
+    return $self->CurrentUserCanSeeTime ? 0 : 1;
+}
+
+sub _AttachmentSourceVisible {
+    my $self = shift;
+
+    my $source_id;
+    if ( $self->__Value('Type') eq 'DeleteAttachment' ) {
+        my $txn = RT::Transaction->new( RT->SystemUser );
+        $txn->Load( $self->Id );
+        $source_id = $txn->NewValue;
+    }
+    else {
+        my $attachment = RT::Attachment->new( RT->SystemUser );
+        $attachment->Load( $self->__Value('Field') );
+        if ( $attachment->Id ) {
+            $source_id = $attachment->TransactionId;
+        }
+        else {
+            # The attachment was deleted later; its DeleteAttachment records the source
+            my $txns = RT::Transactions->new( RT->SystemUser );
+            $txns->Limit( FIELD => 'Type',  VALUE => 'DeleteAttachment' );
+            $txns->Limit( FIELD => 'Field', VALUE => $self->__Value('Field') );
+            my $delete = $txns->First;
+            $source_id = $delete->NewValue if $delete;
+        }
+    }
+    return 0 unless $source_id;
+
+    my $source = RT::Transaction->new( $self->CurrentUser );
+    $source->Load($source_id);
+    return $source->Id && $source->CurrentUserCanSee ? 1 : 0;
 }
 
 
@@ -1907,7 +2087,7 @@ sub OldValue {
         return $Object->Content;
     }
     elsif ( ( $self->ReferenceType // '' ) eq 'RT::ObjectContent' ) {
-        return ( $self->_Content || {} )->{OldValue};
+        return $self->_DecodedContent('OldValue');
     }
     else {
         return $self->_Value('OldValue');
@@ -1920,11 +2100,21 @@ sub NewValue {
         return $Object->Content;
     }
     elsif ( ( $self->ReferenceType // '' ) eq 'RT::ObjectContent' ) {
-        return ( $self->_Content || {} )->{NewValue};
+        return $self->_DecodedContent('NewValue');
     }
     else {
         return $self->_Value('NewValue');
     }
+}
+
+sub _DecodedContent {
+    my $self  = shift;
+    my $field = shift;
+    my $value = ( $self->_Content || {} )->{$field};
+    if ( ref $value eq 'HASH' && ( $value->{ContentEncoding} // '' ) eq 'base64' ) {
+        return decode_base64( $value->{Content} );
+    }
+    return $value;
 }
 
 =head2 Object
@@ -2635,8 +2825,13 @@ sub Serialize {
         $store{NewValue} = \( join '-', 'RT::Ticket', $RT::Organization, $store{NewValue} );
     }
 
-    if ( $store{TimeWorker} && $store{TimeWorker} != $store{Creator} ) {
-        $store{TimeWorker} = \$args{serializer}{_uid}{user}{ $store{TimeWorker} };
+    if ( $self->CurrentUserCanSeeTime ) {
+        if ( $store{TimeWorker} && $store{TimeWorker} != $store{Creator} ) {
+            $store{TimeWorker} = \$args{serializer}{_uid}{user}{ $store{TimeWorker} };
+        }
+    }
+    else {
+        delete $store{$_} for qw/TimeTaken TimeWorker TimeWorkedDate/;
     }
 
     return %store;
@@ -2673,7 +2868,7 @@ Returns an RT::User object with the RT account of the TimeWorker of this row
 sub TimeWorkerObj {
     my $self = shift;
     unless ( exists $self->{'TimeWorkerObj'} ) {
-        if ( $self->TimeTaken == 0 ) {
+        unless ( $self->TimeTaken ) {
             $self->{'TimeWorkerObj'} = undef;
         }
         else {
@@ -2682,6 +2877,18 @@ sub TimeWorkerObj {
         }
     }
     return ( $self->{'TimeWorkerObj'} );
+}
+
+=head2 URI
+
+Returns this transaction's URI.
+
+=cut
+
+sub URI {
+    my $self = shift;
+    my $uri = RT::URI::transaction->new( $self->CurrentUser );
+    return $uri->URIForObject($self);
 }
 
 RT::Base->_ImportOverlays();

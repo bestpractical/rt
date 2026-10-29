@@ -110,12 +110,6 @@ div.editable>form.editor .row {
     border: solid transparent;
 }
 
-/* Align tomselect dropdown to the right to make sure options have enough space */
-.inline-edit-right .ts-dropdown {
-    right: 0;
-    left: auto;
-}
-
 /* make inline add message recipients look like ticket update one time cc/bcc */
 /* These colors match tom-select multi-item styling (tom-select.bootstrap5.css line 51-53) */
 div.inline-add-message-recipients div,

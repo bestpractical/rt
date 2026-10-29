@@ -326,6 +326,20 @@ fi
 AC_SUBST(RT_SMIME_DEPS)
 AC_SUBST(RT_SMIME)
 
+dnl TOTP multi-factor authentication
+AC_ARG_WITH(mfa,[],RT_MFA=$withval,RT_MFA="0")
+AC_ARG_ENABLE(mfa,
+            AS_HELP_STRING([--enable-mfa],
+                           [Add dependencies needed for TOTP multi-factor authentication]),
+            RT_MFA=$enableval,
+            RT_MFA=$RT_MFA)
+if test "$RT_MFA" = yes; then
+        RT_MFA="1"
+else
+        RT_MFA="0"
+fi
+AC_SUBST(RT_MFA)
+
 dnl Dependencies for external auth
 AC_ARG_WITH(externalauth,[],RT_EXTERNALAUTH=$withval,RT_EXTERNALAUTH="0")
 AC_ARG_ENABLE(externalauth,
@@ -387,7 +401,6 @@ AC_SUBST([RT_BIN_PATH],			${exp_bindir})
 AC_SUBST([RT_SBIN_PATH],		${exp_sbindir})
 AC_SUBST([RT_VAR_PATH],			${exp_localstatedir})
 AC_SUBST([RT_MAN_PATH],			${exp_mandir})
-AC_SUBST([RT_FONT_PATH],			${exp_fontdir})
 AC_SUBST([RT_PLUGIN_PATH],			${exp_plugindir})
 AC_SUBST([MASON_DATA_PATH],		${exp_masonstatedir})
 AC_SUBST([MASON_SESSION_PATH],		${exp_sessionstatedir})
@@ -411,7 +424,6 @@ AC_SUBST([RT_BIN_PATH_R],			${exp_prefix}/${exp_bindir})
 AC_SUBST([RT_SBIN_PATH_R],		${exp_prefix}/${exp_sbindir})
 AC_SUBST([RT_VAR_PATH_R],			${exp_prefix}/${exp_localstatedir})
 AC_SUBST([RT_MAN_PATH_R],			${exp_prefix}/${exp_mandir})
-AC_SUBST([RT_FONT_PATH_R],			${exp_prefix}/${exp_fontdir})
 AC_SUBST([RT_LEXICON_PATH_R],			${exp_prefix}/${exp_lexdir})
 AC_SUBST([RT_STATIC_PATH_R],			${exp_prefix}/${exp_staticdir})
 AC_SUBST([RT_PLUGIN_PATH_R],		${exp_prefix}/${exp_plugindir})
@@ -439,7 +451,6 @@ AC_SUBST([RT_BIN_PATH_R],			${exp_bindir})
 AC_SUBST([RT_SBIN_PATH_R],		${exp_sbindir})
 AC_SUBST([RT_VAR_PATH_R],			${exp_localstatedir})
 AC_SUBST([RT_MAN_PATH_R],			${exp_mandir})
-AC_SUBST([RT_FONT_PATH_R],			${exp_fontdir})
 AC_SUBST([MASON_DATA_PATH_R],		${exp_masonstatedir})
 AC_SUBST([MASON_SESSION_PATH_R],		${exp_sessionstatedir})
 AC_SUBST([MASON_HTML_PATH_R],		${exp_htmldir})

@@ -46,7 +46,14 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox, title => loc('Select User')&>
-<form method="get" action="<% $ARGS{From} || ( RT->Config->Get('WebPath') . $m->request_path ) %>" class="mx-auto max-width-sm">
+%# The action has to resolve to whichever page htmx swapped this component
+%# into, so it is left to the browser rather than built from a request
+%# argument: "?" resolves against the current document URL and clears its
+%# query, which is what this GET submit needs, and it does so identically
+%# on every htmx 2.0.x. Leaving the action off entirely relies on a fix
+%# added in htmx 2.0.4, so it would tie this template to the bundled htmx
+%# version for no gain. Keep the "?".
+<form method="get" action="?" class="mx-auto max-width-sm">
 <div class="row mt-2 text-center">
   <div class="col-12">
     <p><&|/l&>Find a user and submit to set the __SelectedUser__ placeholder in saved searches.</&></p>

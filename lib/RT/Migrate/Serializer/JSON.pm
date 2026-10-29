@@ -359,6 +359,8 @@ sub CanonicalizeUsers {
 
         delete $user->{Password};
         delete $user->{AuthToken};
+        delete $user->{TOTPSecret};
+        delete $user->{TOTPEnrolled};
 
         my $object = RT::User->new(RT->SystemUser);
         $object->Load($user->{id});

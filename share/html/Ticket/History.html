@@ -70,7 +70,10 @@ $id => undef
 my $Ticket = LoadTicket ($id);
 
 unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
-    Abort("No permission to view ticket");
+    Abort(
+        loc("No permission to view ticket"),
+        Code => HTTP::Status::HTTP_FORBIDDEN,
+    );
 }
 
 $Ticket->CurrentUser->AddRecentlyViewedTicket($Ticket);

@@ -137,9 +137,18 @@ sub produces_dashboard_mail_ok { # {{{
     is($mail->head->get('X-RT-Dashboard-Id'), "$dashboard_id\n");
     is($mail->head->get('X-RT-Dashboard-Subscription-Id'), "$subscription_id\n");
 
+    # With no inline images to relate, the mail stays a plain text/html
+    # message rather than a multipart/related (the multipart/related wrapper
+    # is used only when there are cid-referenced resources to carry).
+    is($mail->mime_type, 'text/html',
+        'dashboard mail with no inline images is plain text/html');
+
     my $body = $mail->bodyhandle->as_string;
     like($body, qr{My dashboards}) if !$body_like && !$body_unlike;
     like($body, qr{<a href="http://[^/]+/Dashboards/\d+/Testing!\d+">Testing!\d+</a>});
+
+    like($body, qr{<style[\s>]}, 'CSS retained in a <style> block');
+    unlike($body, qr{<script[\s>]}, '<script> scrubbed from dashboard email');
 
     if ($body_like) {
         for my $re (ref($body_like) eq 'ARRAY' ? @$body_like : $body_like) {
@@ -455,5 +464,93 @@ produces_no_dashboard_mail_ok(
     Name    => "mail should never get sent",
     Time    => $bad_time,
 );
+
+diag 'Test searches run as subscriber or each recipient' if $ENV{'TEST_VERBOSE'};
+{
+    my $root  = RT::Test->load_or_create_user( Name => 'root' );
+    my $alice = RT::Test->load_or_create_user( Name => 'alice', EmailAddress => 'alice@example.com', Privileged => 1 );
+    my $bob   = RT::Test->load_or_create_user( Name => 'bob', EmailAddress => 'bob@example.com', Privileged => 1 );
+
+    ok( RT::Test->set_rights( { Principal => 'Privileged', Right => [qw(ShowTicket OwnTicket SeeSavedSearch)] } ),
+        'granted rights' );
+
+    for my $user ( $root, $alice, $bob ) {
+        RT::Test->create_ticket(
+            Queue   => 'General',
+            Subject => 'Ticket owned by ' . $user->Name,
+            Owner   => $user->Id,
+        );
+    }
+    RT::Test->clean_caught_mails;
+
+    my $search = RT::SavedSearch->new( RT->SystemUser );
+    $search->LoadByCols( Name => 'My Tickets', PrincipalId => RT->System->Id );
+    ok( $search->Id, 'loaded My Tickets saved search' );
+
+    my $dashboard = RT::Dashboard->new($root);
+    my ( $ok, $msg ) = $dashboard->Create(
+        Name        => 'Context test',
+        PrincipalId => $root->Id,
+        Content     => {
+            Elements => [
+                {
+                    Layout   => 'col-md-8, col-md-4',
+                    Elements => [
+                        [
+                            {
+                                portlet_type => 'search',
+                                id           => $search->Id,
+                                description  => 'Ticket: My Tickets',
+                            }
+                        ],
+                        [],
+                    ],
+                }
+            ],
+        },
+    );
+    ok( $ok, $msg );
+
+    my $subscription = RT::DashboardSubscription->new($root);
+    ( $ok, $msg ) = $subscription->Create(
+        UserId      => $root->Id,
+        DashboardId => $dashboard->Id,
+        Content     => {
+            Frequency  => 'daily',
+            Hour       => '06:00',
+            Recipients => { Users => [ $alice->Id, $bob->Id ], Groups => [] },
+        },
+    );
+    ok( $ok, $msg );
+
+    my $mail_dashboard = sub {
+        RT::Dashboard::Mailer->MailDashboards( All => 1, Dashboards => $dashboard->Id );
+        my %content;
+        for my $mail ( RT::Test->fetch_caught_mails ) {
+            my $entity = parse_mail($mail);
+            $content{ $entity->head->get('To') =~ s/\s+$//r } = $entity->bodyhandle->as_string;
+        }
+        return %content;
+    };
+
+    my %content = $mail_dashboard->();
+    is_deeply( [ sort keys %content ], [ 'alice@example.com', 'bob@example.com' ], 'mailed both recipients' );
+    for my $email ( sort keys %content ) {
+        like( $content{$email}, qr/Ticket owned by root/, "$email gets root's ticket" );
+        unlike( $content{$email}, qr/Ticket owned by (?:alice|bob)/, "$email does not get recipients' tickets" );
+    }
+
+    ( $ok, $msg ) = $subscription->SetContent( { %{ $subscription->Content }, Context => 'recipient' } );
+    ok( $ok, $msg );
+
+    %content = $mail_dashboard->();
+    is_deeply( [ sort keys %content ], [ 'alice@example.com', 'bob@example.com' ], 'mailed both recipients' );
+
+    like( $content{'alice@example.com'},   qr/Ticket owned by alice/,          'alice gets own ticket' );
+    unlike( $content{'alice@example.com'}, qr/Ticket owned by (?:root|bob)/, "alice does not get others' tickets" );
+
+    like( $content{'bob@example.com'},   qr/Ticket owned by bob/,             'bob gets own ticket' );
+    unlike( $content{'bob@example.com'}, qr/Ticket owned by (?:root|alice)/, "bob does not get others' tickets" );
+}
 
 done_testing;

@@ -102,7 +102,6 @@ RT_LIB_PATH		=	@RT_LIB_PATH_R@
 RT_MAN_PATH		=	@RT_MAN_PATH_R@
 RT_VAR_PATH		=	@RT_VAR_PATH_R@
 RT_DOC_PATH		=	@RT_DOC_PATH_R@
-RT_FONT_PATH		=	@RT_FONT_PATH_R@
 RT_LEXICON_PATH		=	@RT_LEXICON_PATH_R@
 RT_STATIC_PATH		=	@RT_STATIC_PATH_R@
 RT_LOCAL_PATH		=	@RT_LOCAL_PATH_R@
@@ -244,7 +243,7 @@ RT_TEST_PARALLEL_NUM ?= 5
 all: default
 
 default:
-	@echo "Please read RT's README before beginning your installation."
+	@echo "Please read RT's README.md before beginning your installation."
 
 
 
@@ -346,7 +345,6 @@ fixperms:
 
 dirs:
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LOG_PATH)
-	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_FONT_PATH)
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LEXICON_PATH)
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_STATIC_PATH)
 	$(INSTALL) -m 0770 -d $(DESTDIR)$(MASON_DATA_PATH)
@@ -369,7 +367,7 @@ clean-mason-cache:
 
 install: testdeps config-install dirs files-install fixperms instruct
 
-files-install: libs-install etc-install config-install bin-install sbin-install html-install doc-install font-install po-install static-install
+files-install: libs-install etc-install config-install bin-install sbin-install html-install doc-install po-install static-install
 
 config-install:
 @COMMENT_INPLACE_LAYOUT@	$(INSTALL) -m 0755 -o $(BIN_OWNER) -g $(RTGROUP) -d $(DESTDIR)$(CONFIG_FILE_PATH)
@@ -424,13 +422,6 @@ html-install:
 @COMMENT_INPLACE_LAYOUT@	done
 @COMMENT_INPLACE_LAYOUT@	$(MAKE) clean-mason-cache
 
-font-install:
-@COMMENT_INPLACE_LAYOUT@	[ -d $(DESTDIR)$(RT_FONT_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_FONT_PATH)
-@COMMENT_INPLACE_LAYOUT@	-( cd share/fonts && find . -type f -print ) | while read file ; do \
-@COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "share/fonts/$$file" "$(DESTDIR)$(RT_FONT_PATH)/$$file" ; \
-@COMMENT_INPLACE_LAYOUT@	done
-
-
 po-install:
 @COMMENT_INPLACE_LAYOUT@	[ -d $(DESTDIR)$(RT_LEXICON_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LEXICON_PATH)
 @COMMENT_INPLACE_LAYOUT@	-( cd share/po && find . -type f -print ) | while read file ; do \
@@ -457,7 +448,7 @@ doc-install:
 @COMMENT_INPLACE_LAYOUT@	-( cd docs && find . -type f -print ) | while read file ; do \
 @COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "docs/$$file" "$(DESTDIR)$(RT_DOC_PATH)/$$file" ; \
 @COMMENT_INPLACE_LAYOUT@	done
-@COMMENT_INPLACE_LAYOUT@	-$(INSTALL) -m 0644 ./README $(DESTDIR)$(RT_DOC_PATH)/
+@COMMENT_INPLACE_LAYOUT@	-$(INSTALL) -m 0644 ./README.md $(DESTDIR)$(RT_DOC_PATH)/
 
 
 etc-install:

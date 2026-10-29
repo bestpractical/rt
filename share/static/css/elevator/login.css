@@ -42,3 +42,16 @@
 #login-box .titlebox-title .left {
     padding-left: 0em
 }
+
+#mfa-code-inputs {
+    gap: 0.5rem;
+}
+
+#mfa-code-inputs .mfa-digit {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 3rem;
+    height: 3rem;
+    font-size: 1.5rem;
+    padding: 0;
+}

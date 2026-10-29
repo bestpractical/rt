@@ -1,0 +1,21 @@
+Bootstrap Icons in RT
+=====================
+
+Unlike most entries under devel/third-party/, this directory does not hold a
+local copy of the upstream source. RT ships a curated subset of the Bootstrap
+Icons SVG files directly under share/static/images/.
+
+The list of icons RT actually uses lives in the %SVG configuration variable
+in etc/RT_Config.pm.in. That hash is the canonical reference for which icons
+need to be present.
+
+To update to a new release of Bootstrap Icons:
+
+1. Download the release archive from
+   https://github.com/twbs/icons/releases (or `npm install bootstrap-icons`).
+
+2. For each icon name listed in %SVG, copy the matching SVG file from the
+   release's `icons/` directory into share/static/images/.
+
+3. Update the `version:` field in metadata.yml and regenerate the top-level
+   devel/third-party/README.

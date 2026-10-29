@@ -1,0 +1,10 @@
+use strict;
+use warnings;
+
+$RT::Handle->MakeSureIndexExists(
+    Table   => 'Shorteners',
+    Columns => ['Code'],
+    Unique  => 1,
+);
+
+1;

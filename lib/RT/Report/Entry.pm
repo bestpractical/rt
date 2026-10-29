@@ -91,14 +91,20 @@ sub LabelValue {
     my $raw = $self->RawValue( $name, @_ );
     if ( my $code = $self->Report->LabelValueCode( $name ) ) {
         $raw = $code->( $self, %{ $self->Report->ColumnInfo( $name ) }, VALUE => $raw, FORMAT => $format );
-        return $self->loc('(no value)') unless defined $raw && length $raw;
+        unless ( defined $raw && length $raw ) {
+            $raw = $self->loc('(no value)');
+            RT::Interface::Web::EscapeHTML( \$raw ) if $format eq 'html';
+        }
         return $raw;
     }
 
     unless ( ref $raw ) {
-        return $self->loc('(no value)') unless defined $raw && length $raw;
-        return $self->loc($raw) if $self->Report->ColumnInfo( $name )->{'META'}{'Localize'};
-        return $raw;
+        my $value
+            = !( defined $raw && length $raw )                         ? $self->loc('(no value)')
+            : $self->Report->ColumnInfo( $name )->{'META'}{'Localize'} ? $self->loc($raw)
+            :                                                            $raw;
+        RT::Interface::Web::EscapeHTML( \$value ) if $format eq 'html';
+        return $value;
     } else {
         my $loc = $self->Report->ColumnInfo( $name )->{'META'}{'Localize'};
         my %res = %$raw;
@@ -107,6 +113,7 @@ sub LabelValue {
             $_ = $self->loc($_) foreach values %res;
         }
         $_ = $self->loc('(no value)') foreach grep !defined || !length, values %res;
+        RT::Interface::Web::EscapeHTML( \$_ ) foreach $format eq 'html' ? values %res : ();
         return \%res;
     }
 }

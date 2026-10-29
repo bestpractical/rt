@@ -1,0 +1,267 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+% if ( $total && ( length $content || @show_urls || $hidden ) ) {
+<div class="links-section" id="links-section-<% $Type %>">
+  <h3 class="links-section-heading h6 fw-semibold"><& /Elements/ShowRelationLabel, Object => $Object, Label => $Label, Relation => $Type &></h3>
+<% $content |n %>
+%   if (@show_urls) {
+%# URLs are external, not RT records, so they can't go through CollectionList; render a matching
+%# collection-as-table by hand so the shared table CSS and client-side filter still apply.
+  <div class="links-type-table" data-links-object-type="URL"<% $emit_delete ? qq{ data-link-delete-type="$canonical_type" data-link-delete-mode="$mode"} : '' |n %>>
+  <div class="table-responsive">
+  <table cellspacing="0" class="table <% RT->Config->Get('TableAccent') %> collection collection-as-table">
+    <thead>
+      <tr class="collection-as-table">
+%     if ($emit_delete) {
+        <th class="collection-as-table"><span class="title"><% GetSVGImage( Name => 'trash', Title => loc('Remove') ) |n %></span></th>
+%     }
+        <th class="collection-as-table"><span class="title"><&|/l&>Web Link</&></span></th>
+      </tr>
+    </thead>
+    <tbody>
+%     for my $link (@show_urls) {
+%       my $url_val  = $link->$mode;
+%       my $del_name = ( $mode eq 'Target' )
+%           ? "DeleteLink--${canonical_type}-${url_val}"
+%           : "DeleteLink-${url_val}-${canonical_type}-";
+      <tr class="list-item">
+%       if ($emit_delete) {
+        <td class="collection-as-table"><div class="collection-as-table"><& /Elements/DeleteCheckBox, Name => $del_name, Label => loc( 'Remove link to [_1]', $url_val ) &></div></td>
+%       }
+        <td class="collection-as-table"><div class="collection-as-table"><span class="external-link-icon"><% GetSVGImage(Name => 'link') |n %></span> <& /Elements/ShowLink, URI => $link->$ModeURI &></div></td>
+      </tr>
+%     }
+    </tbody>
+  </table>
+  </div>
+  </div>
+%   }
+%   if ($hidden) {
+%# Rows are held back only once the cap is full, so the rows shown number exactly $cap.
+  <div class="links-show-more text-center">
+    <button type="button" class="btn btn-primary btn-sm links-show-all" data-links-show-all-url="<% $show_all_url %>"><% loc( 'Show all ([_1])', $cap + $hidden ) %></button>
+  </div>
+%   }
+</div>
+% }
+<%init>
+# Type names the method called on $Object below, and this component is reachable by URL.
+return unless $RT::Link::TYPEMAP{$Type} && $Object->can($Type);
+
+my %labels = (
+    DependsOn    => loc('Depends on'),
+    DependedOnBy => loc('Depended on by'),
+    MemberOf     => loc('Parents'),
+    Members      => loc('Children'),
+    RefersTo     => loc('Refers to'),
+    ReferredToBy => loc('Referred to by'),
+);
+$Label   //= $labels{$Type} // $Type;
+
+my $links = $Object->$Type;
+my $total = $links->Count;
+return unless $total;
+
+# Without ShowAll, render at most $ListCount rows. That first render also applies the widget's
+# default filters on the server, so the rows it spends the cap on are ones the client filter would
+# show. Rows held back by a default filter set $Partial; the client fetches everything with
+# ShowAll once a search or filter change could reveal them.
+my $cap = ( defined $ListCount && !$ShowAll ) ? $ListCount : undef;
+my %show_type = map { $_ => 1 } @ShowObjectType;
+my $type_hidden = sub { defined $cap && %show_type && !$show_type{ $_[0] } };
+if ( defined $cap && @ShowRelationship && !grep { $_ eq $Type } @ShowRelationship ) {
+    $$Partial = 1 if $Partial;
+    return;
+}
+
+my $mode           = $RT::Link::TYPEMAP{$Type}{Mode};                                           # 'Target' or 'Base'
+my $ModeURI        = "${mode}URI";
+my $canonical_type = $RT::Link::TYPEMAP{$Type}{Type};
+my @type_order     = qw(RT::Ticket RT::Transaction RT::Asset RT::Article RT::User RT::Group);
+
+my %ids;     # class => [ local ids in encounter order ]
+my @urls;    # link objects whose target is an external URL
+
+$links->GotoFirstItem;
+while ( my $link = $links->Next ) {
+    my ( $class, $id ) = RT::URI->ParseObjectURI( $link->$mode );
+    if ($class) {
+        push @{ $ids{$class} ||= [] }, $id;
+    }
+    else {
+        push @urls, $link;
+    }
+}
+
+my %show_ids;
+my @show_urls = @urls;
+my $room      = $cap;
+my $hidden    = 0;
+
+# The ticket Children section renders as a recursive tree only when every member is a local
+# ticket; mixed/url members fall back to the flat per-type tables.
+my $emit_delete = $Edit || $DualMode;
+
+my $use_tree
+    = $Type eq 'Members'
+    && ( $DualMode || !$Edit )
+    && $Object->isa('RT::Ticket')
+    && !@urls
+    && ( keys(%ids) == 1 && exists $ids{'RT::Ticket'} ) ? 1 : 0;
+
+# Render the children tree (or the per-type tables) up front so the whole section -- label
+# included -- can be skipped when it has no content.
+my $content = '';
+if ($use_tree) {
+    if ( $type_hidden->('Ticket') ) {
+        $$Partial = 1 if $Partial;
+    }
+    else {
+        $content = $m->scomp(
+            '/Elements/ShowLinksTree',
+            Object       => $Object,
+            Edit         => $emit_delete,
+            ListCount    => $cap,
+            HideInactive => ( defined $cap && $HideInactive ),
+            Hidden       => \$hidden,
+            Partial      => $Partial,
+        ) // '';
+    }
+}
+else {
+    for my $class (@type_order) {
+        next unless $ids{$class} && @{ $ids{$class} };
+        ( my $object_type = $class ) =~ s/^RT:://;
+        if ( $type_hidden->($object_type) ) {
+            $$Partial = 1 if $Partial;
+            next;
+        }
+
+        my @show = @{ $ids{$class} };
+        if ( defined $cap ) {
+            # Count through the same collection the table renders, so ACL and the listing's
+            # filters are applied before the cap and the "Show all" count matches what loads.
+            my $collection = RT::Links->FilterLinkListing(
+                CurrentUser      => $session{CurrentUser},
+                Class            => $class,
+                Ids              => \@show,
+                RelationshipType => $Type,
+            );
+            @show = ();
+            while ( my $record = $collection ? $collection->Next : undef ) {
+                if ( $HideInactive && $record->can('LifecycleObj') ) {
+                    my $lifecycle = $record->LifecycleObj;
+                    if ( $lifecycle && $lifecycle->IsInactive( $record->Status ) ) {
+                        $$Partial = 1 if $Partial;
+                        next;
+                    }
+                }
+                push @show, $record->id;
+            }
+            if ( @show > $room ) {
+                $hidden += @show - $room;
+                splice @show, $room;
+            }
+            $room -= @show;
+        }
+        $show_ids{$class} = \@show;
+        next unless @show;
+        my ( $format, $format_name ) = RT::Links->LinkListingFormat( Object => $Object, Class => $class );
+        $content .= $m->scomp(
+            '/Elements/ShowLinksTableOfType',
+            Class            => $class,
+            Ids              => $show_ids{$class},
+            RelationshipType => $Type,
+            Format           => $format,
+            FormatName       => $format_name,
+            Edit             => $emit_delete,
+            Embedded         => $Embedded,
+        ) // '';
+    }
+}
+
+if ( defined $cap && @show_urls ) {
+    if ( $type_hidden->('URL') ) {
+        $$Partial = 1 if $Partial;
+        @show_urls = ();
+    }
+    elsif ( @show_urls > $room ) {
+        $hidden += @show_urls - $room;
+        splice @show_urls, $room;
+    }
+}
+
+my $show_all_url = '';
+$show_all_url = RT->Config->Get('WebPath') . '/Views/Component/ShowLinksSection?' . $m->comp(
+    '/Elements/QueryString',
+    ObjectType => ref $Object,
+    ObjectId   => $Object->id,
+    Type       => $Type,
+    ShowAll    => 1,
+    ( $Edit     ? ( Edit     => 1 ) : () ),
+    ( $DualMode ? ( DualMode => 1 ) : () ),
+    ( $Embedded ? ( Embedded => 1 ) : () ),
+) if $hidden;
+</%init>
+<%args>
+$Object
+$Type
+$Label            => undef
+$Edit             => 0
+$DualMode         => 0
+$Embedded         => 0
+$ListCount        => undef
+$ShowAll          => 0
+$HideInactive     => 0
+@ShowRelationship => ()
+@ShowObjectType   => ()
+$Partial          => undef
+</%args>
+<%attr>
+directly_accessible => 1
+</%attr>

@@ -51,7 +51,7 @@ $Collection
 $Format
 $PreserveNewLines => 0
 $Filename  => undef
-$RowsPerPage => 100
+$RowsPerPage => RT->Config->Get('ProgressiveSearchResultRows')
 </%ARGS>
 <%ONCE>
 my $no_html = HTML::Scrubber->new( deny => '*' );
@@ -131,16 +131,16 @@ else {
 }
 
 for (@columns) {
-    $m->out(join("\t", map { $_->{header} } @$_)."\n");
+    # To prevent injection, add a leading space to make sure excel-ish applications treat it like a literal
+    $m->out(join("\t", map { s/^(?=-|\+|=|\@|")/ /; $_ } map { $_->{header} } @$_)."\n");
 }
 
 my $i = 0;
 my $ii = 0;
 
-$RowsPerPage = 1000 if !$RowsPerPage || $RowsPerPage > 1000;
-$Collection->RowsPerPage($RowsPerPage);
+$Collection->RowsPerPage($RowsPerPage) if $RowsPerPage;
 
-while ( my $row = ( $Collection->Next || ( $Collection->NextPage && $Collection->Next ) ) ) {
+while ( my $row = $RowsPerPage ? ( $Collection->Next || ( $Collection->NextPage && $Collection->Next ) ) : $Collection->Next ) {
     for my $col (@columns) {
         $m->out(join("\t", map {
             my $val = ProcessColumnMapValue($_->{map}, Arguments => [$row, $ii++], Escape => 0);

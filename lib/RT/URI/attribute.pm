@@ -93,6 +93,16 @@ sub LocalURIPrefix {
     return $self->Scheme . "://" . RT->Config->Get('Organization');
 }
 
+=head2 IsInternalOnly
+
+Returns true. Attributes are RT's own storage, not records a user links to;
+the C<attribute:> links RT keeps between dashboards and the searches they
+include are created by L<RT::Attribute/_SyncLinks>.
+
+=cut
+
+sub IsInternalOnly {1}
+
 =head2 IsLocal
 
 Returns a true value, the attribute ID, if this object represents a local attribute,

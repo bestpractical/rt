@@ -66,7 +66,6 @@ use vars qw($BasePath
  $BinPath
  $SbinPath
  $VarPath
- $FontPath
  $LexiconPath
  $StaticPath
  $PluginPath
@@ -380,8 +379,18 @@ sub InitLogging {
 # Output them here.
 
 sub ProcessPreInitMessages {
+    my %levels = map { $_ => 1 } qw(debug info notice warning error critical alert emergency);
+
     foreach my $message ( @RT::Config::PreInitLoggerMessages ){
-        RT->Logger->debug($message);
+        # Messages are either plain strings, logged at debug level, or a
+        # hashref recording the level they were reported at.
+        my $level = 'debug';
+        my $text  = $message;
+        if ( ref $message eq 'HASH' ) {
+            $level = $message->{Level} if $levels{ $message->{Level} // '' };
+            $text  = $message->{Message};
+        }
+        RT->Logger->$level($text);
     }
 }
 
@@ -964,6 +973,7 @@ our %CORED_PLUGINS = (
     'RT::Extension::FormattedTransactions' => '5.0.1',
     'RT::Extension::TimeTracking' => '6.0',
     'RT::Extension::ArticleTemplates' => '6.0',
+    'RT::Extension::ResetPassword' => '5.0.11',
 );
 
 sub InitPlugins {
@@ -1035,7 +1045,7 @@ sub CanonicalizeGeneratedPaths {
 
         for my $path (
                     qw/EtcPath BinPath SbinPath VarPath LocalPath StaticPath LocalEtcPath
-                    LocalLibPath LexiconPath LocalLexiconPath PluginPath FontPath
+                    LocalLibPath LexiconPath LocalLexiconPath PluginPath
                     LocalPluginPath LocalStaticPath MasonComponentRoot MasonLocalComponentRoot
                     MasonDataDir MasonSessionDir/
                      )

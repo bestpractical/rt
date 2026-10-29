@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test tests => 14;
+use RT::Test tests => undef;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok($m->login, "Logged in");
@@ -15,23 +15,22 @@ my ($tid, $txn, $msg) = $ticket->Create(
         );
 ok $tid, 'created a ticket #'. $tid or diag "error: $msg";
 
-$m->goto_ticket($tid);
-
-$m->follow_link_ok( { id => 'page-jumbo' }, "Followed link to Modify All" );
-
-ok $m->form_with_fields("$tid-DependsOn"), "found the form";
+# A non-ticket (external) URL can be linked in either direction for every relationship. The
+# row-based Links editor is JS-driven, so add the links via the API, then verify the display.
 my $not_a_ticket_url = "http://example.com/path/to/nowhere";
-$m->field("$tid-DependsOn", $not_a_ticket_url);
-$m->field("DependsOn-$tid", $not_a_ticket_url);
-$m->field("$tid-MemberOf", $not_a_ticket_url);
-$m->field("MemberOf-$tid", $not_a_ticket_url);
-$m->field("$tid-RefersTo", $not_a_ticket_url);
-$m->field("RefersTo-$tid", $not_a_ticket_url);
-$m->submit;
-
-foreach my $type ("depends on", "member of", "refers to") {
-    $m->content_like(qr/$type.+$not_a_ticket_url/,"base for $type");
-    $m->content_like(qr/$not_a_ticket_url.+$type/,"target for $type");
+for my $type (qw/DependsOn MemberOf RefersTo/) {
+    my ($ok, $msg) = $ticket->AddLink( Type => $type, Target => $not_a_ticket_url );
+    ok $ok, "$type: ticket -> URL: $msg";
+    ( $ok, $msg ) = $ticket->AddLink( Type => $type, Base => $not_a_ticket_url );
+    ok $ok, "$type: URL -> ticket: $msg";
 }
 
 $m->goto_ticket($tid);
+
+$m->content_like( qr{<a[^>]+href="\Q$not_a_ticket_url\E"}, 'URL is rendered as a clickable external link' );
+for my $section (qw/DependsOn DependedOnBy MemberOf Members RefersTo ReferredToBy/) {
+    ok $m->dom->at(qq{#links-section-$section .links-type-table[data-links-object-type="URL"] a[href="$not_a_ticket_url"]}),
+        "URL appears in the $section section";
+}
+
+done_testing;

@@ -33,7 +33,7 @@ my $root = RT::CurrentUser->new(RT->SystemUser);
 $root->Load('root');
 is_deeply(
     $root->{fetched},
-    { 'emailaddress' => 1, 'password' => 1, 'lang' => 1, 'realname' => 1, 'gecos' => 1, 'name' => 1, 'id' => 1, },
+    { 'emailaddress' => 1, 'password' => 1, 'lang' => 1, 'realname' => 1, 'gecos' => 1, 'name' => 1, 'id' => 1, 'totpenrolled' => 1, },
     'Fetched limited columns'
 );
 

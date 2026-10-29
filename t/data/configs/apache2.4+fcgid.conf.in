@@ -25,6 +25,8 @@ LogLevel debug
 
 AddDefaultCharset UTF-8
 
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
 FcgidMaxRequestLen 1073741824
 FcgidConnectTimeout 20
 FcgidProcessTableFile %%tmp_dir%%/shm

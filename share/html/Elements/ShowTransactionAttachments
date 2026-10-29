@@ -127,6 +127,9 @@ $WarnUnsigned => 0
 $displayed_inline => {}
 </%ARGS>
 <%INIT>
+$AttachmentPath //= RT->Config->Get('WebPath')
+    . ( $HTML::Mason::Commands::r->path_info =~ m{^/SelfService/} ? '/SelfService/Attachment' : '/Ticket/Attachment' );
+
 my @DisplayHeaders=qw(_all);
 if ( $Transaction->Type =~ /EmailRecord$/ ) {
     @DisplayHeaders = qw(To Cc Bcc);
@@ -161,18 +164,20 @@ my $render_attachment = sub {
 
         # provide a clear download link for meeting invitations
         if ( $content_type eq 'text/calendar' ) {
+            my $escape = sub { $m->interp->apply_escapes( $_[0], 'h' ) };
+
             # A named attachment will already have a download button
             $m->out('<div class="downloadattachment">');
             if (my $url = RT->System->ExternalStorageURLFor($message)) {
-                $m->out('<a href="' . $url . '"');
+                $m->out('<a href="' . $escape->($url) . '"');
             }
             else {
-                $m->out('<a href="' . $AttachmentPath . '/' . $Transaction->Id . '/' . $message->Id . '/meeting.ics' . '" target="_blank"');
+                $m->out('<a href="' . $escape->( $AttachmentPath . '/' . $Transaction->Id . '/' . $message->Id . '/meeting.ics' ) . '" target="_blank"');
             }
-            my $download_alt = loc( 'Download Meeting Invitation' );
+            my $download_alt = $escape->( loc( 'Download Meeting Invitation' ) );
             $m->out('alt="' . $download_alt . '" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="' . $download_alt . '">');
             $m->out(GetSVGImage( Name => 'calendar' ));
-            $m->out('<span class="downloadfilename">' . ( $name || 'meeting.ics' ) . '</span>');
+            $m->out('<span class="downloadfilename">' . $escape->( $name || 'meeting.ics' ) . '</span>');
             $m->out('</a>');
             $m->out('</div>');
         }
@@ -214,8 +219,20 @@ my $render_attachment = sub {
             # it's a toplevel object
             !$ParentObj
 
-            # or its parent isn't a multipart alternative
-            || ( $ParentObj->ContentType !~ m{^multipart/(?:alternative|related)$}i )
+            # or it isn't part of a multipart/alternative grouping.  A
+            # multipart/related is only an alternative representation when it
+            # is itself nested inside a multipart/alternative (e.g. the rich
+            # side of alternative -> [text/plain, related -> text/html]); a
+            # standalone multipart/related is not an alternative container per
+            # RFC 2387, so its root textual part must always be displayed.
+            || (
+                $ParentObj->ContentType !~ m{^multipart/alternative$}i
+                && !(
+                    $ParentObj->ContentType =~ m{^multipart/related$}i
+                    && $ParentObj->ParentObj
+                    && $ParentObj->ParentObj->ContentType =~ m{^multipart/alternative$}i
+                )
+            )
 
             # or it's of our prefered alterative type
             || (
@@ -340,10 +357,11 @@ my $render_attachment = sub {
 
         my $url = RT->System->ExternalStorageURLFor($message)
                || $AttachmentPath .'/'. $Transaction->Id .'/'. $message->Id .'/'
-                . $m->interp->apply_escapes( $filename, 'u', 'h' );
+                . $m->interp->apply_escapes( $filename, 'u' );
+        my $eurl = $m->interp->apply_escapes( $url, 'h' );
 
         $m->out(
-            qq{<img alt="$efilename" title="$efilename" src="$url" loading="lazy" />}
+            qq{<img alt="$efilename" title="$efilename" src="$eurl" loading="lazy" />}
         );
     }
     elsif ( $message->ContentLength && $message->ContentLength > 0 ) {

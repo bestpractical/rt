@@ -61,7 +61,7 @@ requires 'base_uri';
 with 'RT::REST2::Resource::Record::WithETag';
 
 use JSON ();
-use RT::REST2::Util qw( serialize_record );
+use RT::REST2::Util qw( serialize_record serialize_record_lifecycle );
 use Scalar::Util qw( blessed );
 
 sub serialize {
@@ -83,6 +83,16 @@ sub serialize {
             }
         }
         $data->{$field} = $result;
+    }
+
+    # Tickets and assets can include their access-filtered lifecycle inline via
+    # ?fields=Lifecycle, so an agent gets the record and its valid next moves in
+    # a single request. Added after the loop above so it isn't treated as an
+    # object field to expand (the record has a LifecycleObj accessor too).
+    my %top_fields = map { $_ => 1 }
+        split /,/, ( $self->request->param('fields') // '' );
+    if ( $top_fields{Lifecycle} && $record->DOES('RT::Record::Role::Status') ) {
+        $data->{Lifecycle} = serialize_record_lifecycle($record);
     }
 
     if ($self->does('RT::REST2::Resource::Record::Hypermedia')) {

@@ -24,25 +24,16 @@ diag "add ticket links for timeworked tests"; {
     );
     my $id = $parent_id = $ticket->id;
 
-    $m->goto_ticket($id);
-    $m->follow_link_ok( { id => 'page-jumbo' }, "Followed link to Modify All" );
-
-    ok( $m->form_with_fields("MemberOf-$id"), "found the form" );
-    $m->field( "MemberOf-$id", "$child1_id $child2_id" );
-
-    $m->submit;
-
-    $m->content_like(
-        qr{"DeleteLink-.*?ticket/$child1_id-MemberOf-"},
-        "base for MemberOf: has child1 ticket",
-    );
-    $m->content_like(
-        qr{"DeleteLink-.*?ticket/$child2_id-MemberOf-"},
-        "base for MemberOf: has child2 ticket",
-    );
+    # Make child1 and child2 children of the parent. The row-based Links editor is JS-driven,
+    # so link via the API.
+    for my $child_id ( $child1_id, $child2_id ) {
+        my ( $ok, $msg ) = $ticket->AddLink( Type => 'MemberOf', Base => $child_id );
+        ok $ok, "linked child #$child_id under the parent: $msg";
+    }
 
     $m->goto_ticket($id);
-    $m->content_like( qr{$child1_id:.*?\[new\]}, "has active ticket", );
+    $m->content_like( qr{Display\.html\?id=$child1_id\b}, "parent links to child1" );
+    $m->content_like( qr{Display\.html\?id=$child2_id\b}, "parent links to child2" );
 }
 
 diag "adding timeworked values for child tickets"; {
@@ -144,6 +135,65 @@ diag "checking child ticket 2 for expected timeworked data"; {
         qr{(?s)user_b:.+?value">1\.5 hours \(90 minutes\)},
         "found expected user_b TimeWorked in child ticket 2"
     );
+}
+
+diag "TimeWorkedReport queue filter works for both queue id and name";
+{
+    my $other_queue = RT::Test->load_or_create_queue( Name => 'Other' );
+    ok $other_queue && $other_queue->id, 'loaded or created Other queue';
+
+    my $other_ticket = RT::Test->create_ticket(
+        Queue => $other_queue->id, Subject => 'worked ticket in Other', TimeWorked => 20,
+    );
+    ok $other_ticket->id, 'created ticket with time worked in Other queue';
+    my $other_tid = $other_ticket->id;
+
+    my $root = RT::User->new( RT->SystemUser );
+    $root->Load('root');
+
+    my $report_url = "$baseurl/Reports/TimeWorkedReport.html";
+    my $start_date = '2020-01-01';
+    my $end_date   = '2035-12-31';
+
+    my $run_report = sub {
+        my $queue_value = shift;
+        $m->get_ok( $report_url, 'fetched TimeWorkedReport form' );
+        ok( $m->form_with_fields(qw(StartDate EndDate Queue)), 'found report form' );
+        $m->set_fields(
+            StartDate => $start_date,
+            EndDate   => $end_date,
+            Queue     => $queue_value,
+        );
+        $m->click_button( value => 'See Time' );
+    };
+
+    diag 'Queue filter by id (default drop-down)';
+    $run_report->( $queue->id );
+    $m->content_like( qr{/Ticket/Display\.html\?id=\Q$child1_id\E"},
+        'report by queue id includes a General ticket' );
+    $m->content_unlike( qr{/Ticket/Display\.html\?id=\Q$other_tid\E"},
+        'report by queue id excludes the Other-queue ticket' );
+    $m->content_unlike( qr/No tickets found/, 'report by queue id is not empty' );
+
+    diag 'Queue filter by name (AutocompleteQueues preference enabled)';
+    $root->SetPreferences( $RT::System =>
+            { %{ $root->Preferences($RT::System) || {} }, AutocompleteQueues => 1 } );
+
+    $m->get_ok( $report_url, 'fetched TimeWorkedReport form with autocomplete' );
+    ok( $m->form_with_fields(qw(StartDate EndDate Queue)), 'found report form' );
+    is( $m->current_form->find_input('Queue')->type, 'text',
+        'Queue field is a text input when AutocompleteQueues is enabled' );
+
+    $run_report->( $queue->Name );
+    $m->content_like( qr{/Ticket/Display\.html\?id=\Q$child1_id\E"},
+        'report by queue name includes a General ticket' );
+    $m->content_unlike( qr{/Ticket/Display\.html\?id=\Q$other_tid\E"},
+        'report by queue name excludes the Other-queue ticket' );
+    $m->content_unlike( qr/No tickets found/, 'report by queue name is not empty' );
+
+    # Restore the default so later additions to this file are unaffected.
+    $root->SetPreferences( $RT::System =>
+            { %{ $root->Preferences($RT::System) || {} }, AutocompleteQueues => 0 } );
 }
 
 done_testing();

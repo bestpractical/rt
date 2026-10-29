@@ -1,0 +1,58 @@
+# Metadata for a third-party library vendored into RT.
+#
+# This file is the single source of truth for the library's metadata. The
+# top-level devel/third-party/README is generated from these files. Narrative
+# upgrade/build instructions live in the per-directory file pointed at by
+# upgrade-instructions: below. See devel/third-party/SCHEMA.md for the full
+# field reference.
+
+name: ckeditor5
+version: "44.2.0"
+
+upstream:
+  homepage: https://ckeditor.com/ckeditor-5/
+  repository: https://github.com/ckeditor/ckeditor5
+
+license:
+  spdx: GPL-2.0-or-later
+  # CKEditor 5 is dual-licensed; RT uses the GPL option. COPYING.GPL is the
+  # operative license text. LICENSE.md is the upstream-shipped summary that
+  # describes the dual-licensing arrangement (GPL or commercial from CKSource).
+  file: COPYING.GPL
+
+purl: pkg:npm/ckeditor5@44.2.0
+cpe: ~
+
+description: >
+  WYSIWYG rich-text editor. Parses and renders user-supplied HTML, so any
+  vulnerability here is a direct XSS exposure in RT's ticket UI.
+
+shipped: true
+security-critical: true
+
+upgrade-instructions: README
+
+artifacts:
+  - from: dist/browser/ckeditor5.umd.js
+    to: share/static/RichText5/ckeditor5.umd.min.js
+  - from: dist/browser/ckeditor5.css
+    to: share/static/css/elevator/ckeditor5.css
+  - from: dist/translations/
+    to: share/static/RichText5/translations/
+
+patches: []
+
+notes: |
+  Plugin selection is controlled at runtime via the
+  %MessageBoxRichTextInitArguments configuration variable in RT, not by
+  customizing the build. The emoji feature additionally requires
+  share/static/RichText5/en.json (or other locale file), fetched separately
+  from `https://cdn.ckeditor.com/ckeditor5/data/emoji/<n>/` -- this is under
+  the same GPL-2.0-or-later license as CKEditor itself. See README for
+  the upstream issue tracking native packaging of that file.
+
+  Dual-license note: CKSource offers CKEditor 5 under either GPL-2.0-or-later
+  or a commercial license. RT uses the GPL option, so we keep both
+  COPYING.GPL (the actual GPL v2 text) and LICENSE.md (the upstream summary
+  that describes the dual-license arrangement and lists embedded third-party
+  components and their licenses).

@@ -63,6 +63,8 @@ use HTML::Scrubber;
 use URI::QueryParam;
 use List::MoreUtils qw( any none uniq );
 use RT::Util 'InlineCSS';
+use MIME::Base64 'decode_base64';
+use JSON ();
 
 sub MailDashboards {
     my $self = shift;
@@ -576,7 +578,7 @@ sub EmailDashboard {
     $RT::Logger->debug("Done sending dashboard to ".$currentuser->Name." <$email>");
 }
 
-my $chrome;
+my $chrome_home;
 
 sub BuildEmail {
     my $self = shift;
@@ -638,123 +640,102 @@ sub BuildEmail {
     # inline_css above, which is distinct from the work done by CSS::Inliner
     # below) and before all of the scripts are scrubbed away.
     if ( RT->Config->Get('EmailDashboardIncludeCharts') && $content =~ /<div class="chart-wrapper">/ ) {
-        # WWW::Mechanize::Chrome uses Log::Log4perl and calls trace sometimes.
-        # Here we merge trace to debug.
-        my $is_debug;
-        for my $type (qw/LogToSyslog LogToSTDERR LogToFile/) {
-            my $log_level = RT->Config->Get($type) or next;
-            if ( $log_level eq 'debug' ) {
-                $is_debug = 1;
-                last;
-            }
-        }
 
-        local *Log::Dispatch::is_trace = sub { $is_debug || 0 };
-        local *Log::Dispatch::trace    = sub {
-            my $self = shift;
-            return $self->debug(@_);
-        };
+        # Already resolved and validated by the EmailDashboardIncludeCharts
+        # PostLoadCheck, so use it directly.
+        my $chrome = RT->Config->Get('ChromePath');
+        if ($chrome) {
 
-        my ( $width, $height );
-        my @launch_arguments = RT->Config->Get('ChromeLaunchArguments');
-
-        for my $arg (@launch_arguments) {
-            if ( $arg =~ /^--window-size=(\d+)x(\d+)$/ ) {
-                $width  = $1;
-                $height = $2;
-                last;
-            }
-        }
-
-        $width  ||= 2560;
-        $height ||= 1440;
-
-        $chrome ||= WWW::Mechanize::Chrome->new(
-            autodie          => 0,
-            headless         => 1,
-            autoclose        => 1,
-            separate_session => 1,
-            log              => RT->Logger,
-            launch_arg       => \@launch_arguments,
-            launch_exe       => RT->Config->Get('ChromePath') || 'chromium',
-        );
-
-        # copy the content
-        my $content_with_script = $content;
-
-        # copy in the text of the linked js
-        $content_with_script
-            =~ s{<script type="text/javascript" src="([^"]+)"></script>}{<script type="text/javascript">@{ [(GetResource( $1 ))[0]] }</script>}g;
-
-        # write the complete content to a temp file
-        my $temp_fh = File::Temp->new(
-            UNLINK   => 1,
-            TEMPLATE => 'email-dashboard-XXXXXX',
-            SUFFIX   => '.html',
-            TMPDIR   => 1,
-        );
-        print $temp_fh Encode::encode( 'UTF-8', $content_with_script );
-        close $temp_fh;
-
-        $chrome->viewport_size( { width => $width, height => $height } );
-        $chrome->get_local( $temp_fh->filename );
-        $chrome->wait_until_visible( selector => 'div.dashboard' );
-
-        # grab the list of canvas elements
-        my @canvases = $chrome->selector('div.chart canvas');
-        if (@canvases) {
-
-            my $max_extent = 0;
-
-            # ... and their coordinates
-            foreach my $canvas_data (@canvases) {
-                my $coords = $canvas_data->{coords} = $chrome->element_coordinates($canvas_data);
-                if ( $max_extent < $coords->{top} + $coords->{height} ) {
-                    $max_extent = int( $coords->{top} + $coords->{height} ) + 1;
+            # Window size for consistent layout; accept WxH or Chrome's W,H.
+            my ( $width, $height );
+            my @launch_arguments = RT->Config->Get('ChromeLaunchArguments');
+            for my $arg (@launch_arguments) {
+                if ( $arg =~ /^--window-size=(\d+)[x,](\d+)$/ ) {
+                    ( $width, $height ) = ( $1, $2 );
+                    last;
                 }
             }
+            $width  ||= 2560;
+            $height ||= 1440;
 
-            # make sure that all of them are "visible" in the headless instance
-            if ( $height < $max_extent ) {
-                $chrome->viewport_size( { width => $width, height => $max_extent } );
+            # Chromium refuses to run as root without --no-sandbox; add it
+            # when we're root and it isn't already set.
+            if ( $> == 0 && !grep { $_ eq '--no-sandbox' } @launch_arguments ) {
+                push @launch_arguments, '--no-sandbox';
             }
 
-            # capture the entire page as an image
-            my $page_image = $chrome->_content_as_png( undef, { width => $width, height => $height } )->get;
+            # Inline the linked JS (so no network is needed), then append the
+            # harvest script that exports each chart canvas.
+            my $content_with_script = $content;
+            $content_with_script
+                =~ s{<script type="text/javascript" src="([^"]+)"></script>}{<script type="text/javascript">@{ [(GetResource( $1 ))[0]] }</script>}g;
+            $content_with_script = _InjectChartHarvestScript($content_with_script);
 
-            my $cid = time() . $$;
-            foreach my $canvas_data (@canvases) {
-                $cid++;
+            # write the complete content to a temp file
+            my $temp_fh = File::Temp->new(
+                UNLINK   => 1,
+                TEMPLATE => 'email-dashboard-XXXXXX',
+                SUFFIX   => '.html',
+                TMPDIR   => 1,
+            );
+            print $temp_fh Encode::encode( 'UTF-8', $content_with_script );
+            close $temp_fh;
 
-                my $coords       = $canvas_data->{coords};
-                my $canvas_image = $page_image->crop(
-                    left   => $coords->{left},
-                    top    => $coords->{top},
-                    width  => $coords->{width},
-                    height => $coords->{height},
-                );
-                my $canvas_data;
-                $canvas_image->write( data => \$canvas_data, type => 'png' );
+            # Render once: load the page, dump the resulting DOM (carrying our
+            # exported data: URLs), and exit. No persistent browser.
+            my @command = (
+                $chrome, ( grep { !/^--window-size=/ } @launch_arguments ),
+                '--headless',                   '--disable-gpu',
+                "--window-size=$width,$height", '--virtual-time-budget=30000',
+                '--dump-dom',                   'file://' . $temp_fh->filename,
+            );
 
-                # replace each canvas in the original content with an image tag
-                $content =~ s{<canvas [^>]+>}{<img src="cid:$cid"/>};
+            # Chromium needs a writable HOME; if the current one is unset or
+            # unwritable (common under a daemon), use a private temp dir. Leave
+            # a usable HOME alone (e.g. macOS needs the real one).
+            local $ENV{HOME}
+                = ( $ENV{HOME} && -d $ENV{HOME} && -w _ )
+                ? $ENV{HOME}
+                : ( $chrome_home ||= tempdir( CLEANUP => 1 ) );
 
-                push @parts,
-                    MIME::Entity->build(
-                        Top          => 0,
-                        Data         => $canvas_data,
-                        Type         => 'image/png',
-                        Encoding     => 'base64',
-                        Disposition  => 'inline',
-                        'Content-Id' => "<$cid>",
-                    );
+            # Returns undef (already logged) on any failure.
+            my $dom = _RunHeadlessBrowser( \@command );
+            if ( defined $dom ) {
+                my %image_of = _ExtractChartImagesFromDOM($dom);
+                RT->Logger->warning("No chart images were produced by $chrome")
+                    unless grep {defined} values %image_of;
+
+                my $cid_base = time() . $$;
+                my $cid_seq  = 0;
+
+                # Replace each chart <canvas> with its rendered image, matched
+                # by id (not document order). Unmatched canvases are left alone;
+                # a matched canvas with no image is dropped.
+                $content =~ s{(<canvas\b([^>]*)>(?:\s*</canvas>)?)}{
+                    my ( $whole, $attrs ) = ( $1, $2 );
+                    my ($id) = $attrs =~ /\bid="([^"]*)"/;
+                    if ( defined $id && exists $image_of{$id} ) {
+                        my $png  = $image_of{$id};
+                        my $repl = '';
+                        if ( defined $png && length $png ) {
+                            my $cid = $cid_base . ++$cid_seq;
+                            push @parts, MIME::Entity->build(
+                                Top          => 0,
+                                Data         => $png,
+                                Type         => 'image/png',
+                                Encoding     => 'base64',
+                                Disposition  => 'inline',
+                                'Content-Id' => "<$cid>",
+                            );
+                            $repl = qq{<img src="cid:$cid"/>};
+                        }
+                        $repl;
+                    }
+                    else {
+                        $whole;
+                    }
+                }ge;
             }
-        }
-
-        # Shut down chrome if it's a test email from web UI, to reduce memory usage.
-        # Unset $chrome so next time it can re-create a new one.
-        if ( $args{Test} ) {
-            undef $chrome;
         }
     }
 
@@ -769,11 +750,14 @@ sub BuildEmail {
 
     $content = ScrubContent($content);
 
+    # Set message body to multipart/related. The HTML is the root and the
+    # parts (images) are the resources it pulls in.
+    # With no parts, make_singlepart below collapses back to plain text/html.
     my $entity = MIME::Entity->build(
         From    => Encode::encode("UTF-8", $args{From}),
         To      => Encode::encode("UTF-8", $args{To}),
         Subject => RT::Interface::Email::EncodeToMIME( String => $args{Subject} ),
-        Type    => "multipart/mixed",
+        Type    => "multipart/related",
     );
 
     $entity->attach(
@@ -790,7 +774,185 @@ sub BuildEmail {
 
     $entity->make_singlepart;
 
+    # multipart/related names its root part's type; the root is the HTML we
+    # attached first. (Skip it if make_singlepart collapsed us to text/html.)
+    $entity->head->mime_attr( 'content-type.type' => 'text/html' )
+        if $entity->is_multipart;
+
     return $entity;
+}
+
+# Append a script that, after load, exports each chart canvas as a PNG data:
+# URL. The {id, url} pairs are stored in a JSON <script> node that BuildEmail
+# reads back from the dumped DOM, keying each image to its canvas by id.
+sub _InjectChartHarvestScript {
+    my $content = shift;
+
+    my $harvest = <<'END_HARVEST';
+<script type="text/javascript">
+window.addEventListener('load', function () {
+    const images = [];
+    const canvases = document.querySelectorAll('div.chart canvas');
+    for (const canvas of canvases) {
+        // Record the id so BuildEmail can match images by id, not by order.
+        const entry = { id: canvas.id, url: '' };
+        try {
+            // Force the chart to its final, un-animated state: the DOM is
+            // dumped at load, before animation frames run, so it would
+            // otherwise be captured mid-animation.
+            if (window.Chart && Chart.getChart) {
+                const chart = Chart.getChart(canvas);
+                if (chart) {
+                    chart.stop();
+                    chart.options.animation = false;
+                    chart.update('none');
+                }
+            }
+            // Canvases are transparent; flatten onto white (the dashboard
+            // background) before exporting.
+            const flattened = document.createElement('canvas');
+            flattened.width = canvas.width;
+            flattened.height = canvas.height;
+            const ctx = flattened.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, flattened.width, flattened.height);
+            ctx.drawImage(canvas, 0, 0);
+            entry.url = flattened.toDataURL('image/png');
+        } catch (e) {
+            // leave entry.url empty
+        }
+        images.push(entry);
+    }
+    const node = document.createElement('script');
+    node.type = 'application/json';
+    node.id = 'rt-chart-images';
+    node.appendChild(document.createTextNode(JSON.stringify(images)));
+    document.body.appendChild(node);
+}, false);
+</script>
+END_HARVEST
+
+    # Insert before the final </body>. A greedy match skips any "</body>"
+    # embedded in inlined scripts (e.g. the editor bundle) to reach the real one.
+    if ( $content =~ m{</body>}i ) {
+        $content =~ s{(.*)</body>}{$1$harvest</body>}is;
+    }
+    else {
+        $content .= $harvest;
+    }
+    return $content;
+}
+
+# Pull the harvested images back out of the dumped DOM. Returns a hash keyed by
+# canvas id; each value is the PNG bytes, or undef where a canvas produced none.
+# Only harvested canvases (div.chart canvas) are included.
+sub _ExtractChartImagesFromDOM {
+    my $dom = shift;
+    return unless defined $dom;
+
+    my ($json) = $dom =~ m{<script[^>]*\bid="rt-chart-images"[^>]*>(.*?)</script>}s;
+    return unless defined $json;
+
+    my $entries = eval { JSON::decode_json($json) };
+    if ( ref $entries ne 'ARRAY' ) {
+        RT->Logger->error("Couldn't parse chart images from headless browser output: $@");
+        return;
+    }
+
+    my %image_of;
+    for my $entry (@$entries) {
+        next unless ref $entry eq 'HASH';
+        my $id = $entry->{id};
+        next unless defined $id && length $id;
+
+        my $url = $entry->{url};
+        if ( defined $url && $url =~ m{^data:image/png;base64,(.+)$}s ) {
+            $image_of{$id} = decode_base64($1);
+        }
+        else {
+            $image_of{$id} = undef;
+        }
+    }
+    return %image_of;
+}
+
+# Run the headless browser as a one-shot child and return the DOM it dumps. It
+# runs in its own process group under a wall-clock deadline; if it hangs, the
+# group is killed (TERM then KILL) and reaped. Returns the DOM, or undef on
+# failure.
+sub _RunHeadlessBrowser {
+    my $command = shift;
+
+    require File::Spec;
+
+    # Capture the browser's stdout (the dumped DOM) and stderr via temp files.
+    my $dom_fh = File::Temp->new(
+        UNLINK   => 1,
+        TEMPLATE => 'email-dashboard-dom-XXXXXX',
+        SUFFIX   => '.html',
+        TMPDIR   => 1,
+    );
+    my $err_fh = File::Temp->new(
+        UNLINK   => 1,
+        TEMPLATE => 'email-dashboard-err-XXXXXX',
+        TMPDIR   => 1,
+    );
+
+    my $pid = fork;
+    if ( !defined $pid ) {
+        RT->Logger->error("Couldn't fork to render dashboard charts: $!");
+        return;
+    }
+    elsif ( $pid == 0 ) {
+
+        # Child: new process group (so the browser and its helpers can be
+        # killed as a group), then exec with stdio pointed at the temp files.
+        # On any redirection or exec failure, _exit (not die) so the parent's
+        # END/DESTROY blocks don't run; the parent then sees an empty DOM.
+        setpgrp( 0, 0 );
+        open( STDIN,  '<', File::Spec->devnull ) or POSIX::_exit(127);
+        open( STDOUT, '>', $dom_fh->filename )   or POSIX::_exit(127);
+        open( STDERR, '>', $err_fh->filename )   or POSIX::_exit(127);
+
+        exec { $command->[0] } @$command or POSIX::_exit(127);
+    }
+
+    # Parent: wait up to the deadline. On timeout, signal the process group
+    # (TERM then KILL) and reap it, so we never block forever or orphan it.
+    my $timed_out;
+    eval {
+        local $SIG{ALRM} = sub { die "timeout\n" };
+        alarm 120;
+        waitpid $pid, 0;
+        alarm 0;
+    };
+    if ($@) {
+        $timed_out = 1;
+        kill 'TERM', -$pid;
+        eval {
+            local $SIG{ALRM} = sub { die "timeout\n" };
+            alarm 5;
+            waitpid $pid, 0;
+            alarm 0;
+        };
+        if ($@) {
+            kill 'KILL', -$pid;
+            waitpid $pid, 0;
+        }
+    }
+    alarm 0;
+
+    seek $err_fh, 0, 0;
+    my $stderr = do { local $/; <$err_fh> };
+    RT->Logger->debug("Chrome output while rendering charts: $stderr") if defined $stderr && length $stderr;
+
+    if ($timed_out) {
+        RT->Logger->error("Timed out rendering dashboard charts with $command->[0], killed the browser");
+        return;
+    }
+
+    seek $dom_fh, 0, 0;
+    return do { local $/; <$dom_fh> };
 }
 
 {
@@ -853,6 +1015,8 @@ sub BuildEmail {
                 },
             );
 
+            # Allow style as it's off by default
+            $scrubber->style(1);
         }
         return $scrubber;
     }
