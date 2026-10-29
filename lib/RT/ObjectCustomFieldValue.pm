@@ -84,7 +84,7 @@ sub Create {
         @_,
     );
 
-    $args{'ContentType'} = CanonicalizeContentType( $args{'ContentType'} );
+    $args{'ContentType'} = CanonicalizeContentType( $args{'ContentType'} ) if defined $args{'ContentType'};
 
     my $cf = RT::CustomField->new( $self->CurrentUser );
     $cf->Load( $args{CustomField} );
