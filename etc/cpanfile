@@ -97,7 +97,7 @@ requires 'XML::RSS', '>= 1.05';
 requires 'Getopt::Long';
 requires 'LWP::Protocol::https';
 requires 'LWP::UserAgent', '>= 6.02';
-requires 'Mozilla::CA';
+requires 'Mozilla::CA', '>= 20261020';
 requires 'Pod::Usage';
 
 # CLI
