@@ -1311,6 +1311,14 @@ sub _SplitQuery {
     return '(' . join( ' INTERSECT ', @union_queries ) . ')';
 }
 
+# Wrap multi-word phrases in double quotes for exact phrase matching
+sub _MySQLFullTextValue {
+    my $self  = shift;
+    my $value = shift;
+
+    return $value =~ /\s/ && $value !~ /^".+"$/s ? qq{"$value"} : $value;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

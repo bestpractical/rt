@@ -888,8 +888,7 @@ sub _AttachContentLimit {
                 }
             }
             else {
-                # Wrap multi-word phrases in double quotes for exact phrase matching
-                my $search_value = $value =~ /\s/ && $value !~ /^".+"$/s ? qq{"$value"} : $value;
+                my $search_value = $self->_MySQLFullTextValue($value);
                 $self->Limit(
                     %rest,
                     FUNCTION    => "MATCH($alias.Content)",
