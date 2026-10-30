@@ -53,7 +53,7 @@ use warnings;
 use RT::Base;
 
 use base 'Exporter';
-our @EXPORT_OK = qw(GetCurrentUser debug loc Init);
+our @EXPORT_OK = qw(GetCurrentUser debug loc Init DecodeArgs);
 
 =head1 NAME
 
@@ -173,11 +173,31 @@ sub ShowHelp {
     );
 }
 
+=head2 DecodeArgs LIST
+
+Decodes command line arguments from UTF-8 in place, as RT works with
+character strings.  It leaves them alone when perl has already decoded
+C<@ARGV> because of C<-CA> or C<PERL_UNICODE>.  L</Init> calls it on
+C<@ARGV>; a script which parses its own options calls it on the values
+it passes to RT.
+
+=cut
+
+sub DecodeArgs {
+    my $unicode = ${^UNICODE};
+    # the A flag decodes @ARGV, and with L only in a UTF-8 locale
+    return if $unicode & 0x20 and ( !( $unicode & 0x40 ) or ${^UTF8LOCALE} );
+
+    require Encode;
+    $_ = Encode::decode( 'UTF-8', $_ ) for grep defined, @_;
+    return;
+}
+
 =head2 Init
 
 A shim for L<Getopt::Long/GetOptions> which automatically adds a
 C<--help> option if it is not supplied.  It then calls L<RT/LoadConfig>
-and L<RT/Init>.
+and L<RT/Init>.  The arguments are decoded with L</DecodeArgs> first.
 
 It sets the C<LogToSTDERR> setting to C<warning>, to ensure that the
 user sees all relevant warnings.  It also adds C<--quiet> and
@@ -257,6 +277,7 @@ sub Init {
 
     push @args, "config=s%" => \($hash->{config}) unless $exists{config};
 
+    DecodeArgs(@ARGV);
     my $ok = Getopt::Long::GetOptions( @args );
     Pod::Usage::pod2usage(1) if not $ok and not defined wantarray;
 

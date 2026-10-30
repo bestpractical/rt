@@ -137,7 +137,6 @@ elsif ( $action eq 'edit' ) {
             my $type  = $meta->{Type} || 'SCALAR';
             my $value = $opt{value};
             if ( defined $value ) {
-                $value = decode( 'UTF-8', $value );
                 if ( $type ne 'SCALAR' ) {
                     require JSON;
                     eval { $value = JSON::from_json($value) };

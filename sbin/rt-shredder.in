@@ -153,6 +153,7 @@ use RT -init;
 require RT::Shredder;
 
 use Getopt::Long qw(GetOptions);
+use RT::Interface::CLI qw(DecodeArgs);
 use File::Spec ();
 
 use RT::Shredder::Plugin ();
@@ -268,6 +269,7 @@ sub parse_args
 
     my @plugins = ();
     if( GetOptions( 'plugin=s' => \@plugins ) && @plugins ) {
+        DecodeArgs(@plugins);
         $opt{'plugin'} = \@plugins;
         foreach my $str( @plugins ) {
             if( $str =~ /^\s*list\s*$/ ) {

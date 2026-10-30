@@ -108,4 +108,29 @@ diag "reset a config not set in database";
     like( $stderr, qr/is not set in database/, 'not in database error message' );
 }
 
+diag "non-ASCII arguments";
+{
+    my $address = "\x{17C}\x{F3}\x{142}w\@example.com";
+    my @args = ( '--config', Encode::encode( 'UTF-8', "CorrespondAddress=$address" ), 'show', 'CorrespondAddress' );
+
+    my ( $stdout, $stderr, $exit ) = run_rt_config(@args);
+    is( $exit, 0, 'show with a non-ASCII --config exited 0' );
+    is( Encode::decode( 'UTF-8', $stdout ), "$address\n", 'shows the non-ASCII --config value as given' );
+
+    {
+        local $ENV{PERL_UNICODE} = 'A';
+        ( $stdout, $stderr, $exit ) = run_rt_config(@args);
+    }
+    is( $exit, 0, 'show with PERL_UNICODE=A exited 0' );
+    is( Encode::decode( 'UTF-8', $stdout ), "$address\n", 'arguments perl decoded itself are not decoded again' );
+
+    my $subject = "\x{17B}\x{F3}\x{142}w %s";
+    ( $stdout, $stderr, $exit )
+        = run_rt_config( 'edit', 'DashboardSubject', '--value', Encode::encode( 'UTF-8', $subject ) );
+    is( $exit, 0, 'edit DashboardSubject with a non-ASCII value exited 0' );
+
+    ($stdout) = run_rt_config( 'show', 'DashboardSubject' );
+    is( Encode::decode( 'UTF-8', $stdout ), "$subject\n", 'show reflects the non-ASCII edited value' );
+}
+
 done_testing;
