@@ -340,4 +340,29 @@ like $killed_output, qr/rt-crontool was killed by signal 9\b/,
 is $killed_process->SubValue('Counter'), 0,
     'Counter did not advance for a run killed by a signal';
 
+# Disable it so the process below is exercised in isolation
+my ( $killed_off_ok, $killed_off_msg ) = $killed_process->SetSubValues( Disabled => 1 );
+ok $killed_off_ok, "disabled the killed process: $killed_off_msg";
+
+diag 'A process finds its ticket by non-ASCII text in the search';
+
+# The search reaches rt-crontool as a command line argument
+my $subject = "Scheduled \x{17C}\x{F3}\x{142}w";
+my $unicode_ticket = RT::Test->create_ticket(
+    Queue    => $queue->id,
+    Subject  => $subject,
+    Priority => 0,
+);
+ok $unicode_ticket && $unicode_ticket->id, 'created ticket with a non-ASCII subject';
+
+my $unicode_process = create_scheduled_process(
+    Description     => 'Add priority to a ticket found by its subject',
+    SearchModuleArg => 'id = ' . $unicode_ticket->id . " AND Subject = '$subject'",
+    Frequency       => 'daily',
+);
+
+run_scheduled_processes($day1);
+reload( $unicode_ticket, $unicode_process );
+is $unicode_ticket->Priority, 1, 'the search found the ticket by its non-ASCII subject';
+
 done_testing;

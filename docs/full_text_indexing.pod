@@ -102,12 +102,14 @@ C<cron>:
 
 =head3 Caveats
 
-Searching is done in "boolean mode."  As such, the TicketSQL query
-C<Content LIKE 'winter 2014'> will return tickets with transactions that
-contain I<either> word.  To find transactions which contain both (but
-not necessarily adjacent), use C<Content LIKE '+winter +2014'>.  To find
-transactions containing the precise phrase, use C<Content LIKE '"winter
-2014">.
+Searching is done in "boolean mode."  A value of several words, or one
+which MySQL splits into several words such as C<example.com>, is searched
+as a phrase, so the TicketSQL query C<Content LIKE 'winter 2014'> will
+return tickets with transactions that contain the precise phrase.  A value
+with double quotes, or a single word with a trailing C<*> wildcard, is
+passed to MySQL unchanged.
+To find both words, not necessarily adjacent, use
+C<Content LIKE 'winter' AND Content LIKE '2014'>.
 
 See the MySQL documentation, at
 L<http://dev.mysql.com/doc/refman/5.6/en/fulltext-boolean.html>, for a

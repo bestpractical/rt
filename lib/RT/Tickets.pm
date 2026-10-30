@@ -847,8 +847,7 @@ sub _FullTextStringLimit {
     }
     elsif ( $db_type eq 'mysql' ) {
         my $dbh = $RT::Handle->dbh;
-        # Wrap multi-word phrases in double quotes for exact phrase matching
-        my $search_value = $value =~ /\s/ && $value !~ /^".+"$/s ? qq{"$value"} : $value;
+        my $search_value = $self->_MySQLFullTextValue($value);
         $self->Limit(
             %rest,
             FUNCTION    => "MATCH(main.$field)",
@@ -1150,8 +1149,7 @@ sub _TransContentLimit {
         }
         elsif ( $db_type eq 'mysql' ) {
             my $dbh = $RT::Handle->dbh;
-            # Wrap multi-word phrases in double quotes for exact phrase matching
-            my $search_value = $value =~ /\s/ && $value !~ /^".+"$/s ? qq{"$value"} : $value;
+            my $search_value = $self->_MySQLFullTextValue($value);
             $self->Limit(
                 %rest,
                 FUNCTION    => "MATCH($alias.Content)",
@@ -1752,8 +1750,7 @@ sub _CustomFieldContentLimit {
             TABLE2 => $config->{'CFTable'},
             FIELD2 => 'id',
         );
-        # Wrap multi-word phrases in double quotes for exact phrase matching
-        my $search_value = $value =~ /\s/ && $value !~ /^".+"$/s ? qq{"$value"} : $value;
+        my $search_value = $self->_MySQLFullTextValue($value);
         $self->Limit(
             %rest,
             FUNCTION    => "MATCH($ocfv_index_alias.Content,$ocfv_index_alias.LargeContent)",

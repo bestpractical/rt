@@ -70,7 +70,9 @@ BEGIN {    # BEGIN RT CMD BOILERPLATE
 # Read in the options
 my %opts;
 use Getopt::Long;
+use RT::Interface::CLI qw(DecodeArgs);
 GetOptions( \%opts, "help|h", "search=s", "replacement=s", 'tickets=s', 'transactions=s', 'skip-headers', 'skip-content' );
+DecodeArgs( $opts{'search'}, $opts{'replacement'} );
 
 if ( $opts{'help'} || !$opts{'search'} ) {
     require Pod::Usage;
@@ -123,8 +125,8 @@ if ( $opts{'transactions'} ) {
 my ( $ret, $msg ) = $attachments->ReplaceAttachments(
     Headers     => $headers,
     Content     => $content,
-    Search      => Encode::decode( 'UTF-8', $search ),
-    Replacement => Encode::decode( 'UTF-8', $replacement ),
+    Search      => $search,
+    Replacement => $replacement,
     $opts{tickets} || $opts{transactions} ? ( FilterBySearchString => 0 ) : (),
 );
 print STDERR $msg . "\n";
