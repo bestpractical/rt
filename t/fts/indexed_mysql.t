@@ -6,6 +6,7 @@ use RT::Test tests => undef;
 plan skip_all => 'Not mysql' unless RT->Config->Get('DatabaseType') eq 'mysql';
 
 use RT::Test::FTS;
+use IPC::Run3 'run3';
 
 RT->Config->Set( FullTextSearch => Enable => 1, Indexed => 1, Table => 'AttachmentsIndex', CFTable => 'OCFVsIndex' );
 
@@ -152,9 +153,91 @@ run_tests(
     "Content LIKE 'alpha beta'" => { 'phrase match' => 1, 'phrase reverse' => 0 },
     "Content LIKE 'beta alpha'" => { 'phrase match' => 0, 'phrase reverse' => 1 },
     "Content LIKE 'alpha'" => { 'phrase match' => 1, 'phrase reverse' => 1 },
+    "Content LIKE 'alpha - beta'"  => { 'phrase match' => 1, 'phrase reverse' => 0 },
+    "Content LIKE 'alpha -- beta'" => { 'phrase match' => 1, 'phrase reverse' => 0 },
+    "Content LIKE 'alpha-'"        => { 'phrase match' => 1, 'phrase reverse' => 1 },
+    "Content LIKE '+\"alpha beta\" +gamma'" => { 'phrase match' => 1, 'phrase reverse' => 0 },
 );
 
 @tickets = ();
+
+diag "Checking values MySQL splits into words";
+
+@tickets = RT::Test->create_tickets(
+    { Queue => $q->id },
+    {   Subject      => 'domain',
+        Content      => 'write to john@example.com',
+        Description  => 'hosted at example.com',
+        CustomFields => { short => 'example.com' },
+    },
+    {   Subject      => 'other domain',
+        Content      => 'write to john@example.org',
+        Description  => 'hosted at example.org',
+        CustomFields => { short => 'example.org' },
+    },
+    { Subject => 'hyphen', Content => 'the foo-bar widget' },
+    { Subject => 'words',  Content => 'foo and bar, for example' },
+    { Subject => 'phone',  Content => 'call +44 20 7946 0958, build with -fPIC or use --force' },
+);
+RT::Test::FTS->sync_index();
+
+run_tests(
+    "Content LIKE 'example.com'" => { domain => 1, 'other domain' => 0, hyphen => 0, words => 0, phone => 0 },
+    "Content LIKE 'john\@example.com'" => { domain => 1, 'other domain' => 0, hyphen => 0, words => 0, phone => 0 },
+    "Content LIKE 'foo-bar'"     => { domain => 0, 'other domain' => 0, hyphen => 1, words => 0, phone => 0 },
+    "Content LIKE 'exam*'"       => { domain => 1, 'other domain' => 1, hyphen => 0, words => 1, phone => 0 },
+    "Description LIKE 'example.com'"        => { domain => 1, 'other domain' => 0, hyphen => 0, words => 0, phone => 0 },
+    "CustomFieldContent LIKE 'example.com'" => { domain => 1, 'other domain' => 0, hyphen => 0, words => 0, phone => 0 },
+    "Content LIKE '+44 20 7946 0958'" => { domain => 0, 'other domain' => 0, hyphen => 0, words => 0, phone => 1 },
+    "Content LIKE '-fPIC'"            => { domain => 0, 'other domain' => 0, hyphen => 0, words => 0, phone => 1 },
+    "Content LIKE '--force'"          => { domain => 0, 'other domain' => 0, hyphen => 0, words => 0, phone => 1 },
+);
+
+$txns = RT::Transactions->new( RT->SystemUser );
+$txns->FromSQL(q{Content LIKE 'example.com'});
+is_deeply(
+    [ map { $_->ObjectId } @{ $txns->ItemsArrayRef } ],
+    [ $tickets[0]->id ],
+    'Transaction search for example.com finds only the domain ticket'
+);
+
+@tickets = ();
+
+diag "Checking command line searches for a non-ASCII prefix";
+
+my $root = RT::User->new( RT->SystemUser );
+$root->Load('root');
+$root->SetGecos( ( getpwuid($<) )[0] );
+
+my $unicode = RT::Test->create_ticket(
+    Queue   => $q->id,
+    Subject => 'unicode',
+    Content => "za\x{17C}\x{F3}\x{142}\x{107} g\x{119}\x{15B}l\x{105}",
+);
+RT::Test::FTS->sync_index();
+
+my $unicode_id = $unicode->id;
+run3(
+    [   "$RT::BinPath/rt-crontool", '--search', 'RT::Search::FromSQL', '--search-arg',
+        Encode::encode( 'UTF-8', "id = $unicode_id AND Content LIKE 'za\x{17C}*'" ),
+        '--action', 'RT::Action', '--verbose'
+    ],
+    \undef,
+    \my $stdout,
+    \my $stderr
+);
+like( $stdout, qr/^$unicode_id:/m, 'rt-crontool finds the ticket by a non-ASCII prefix' );
+
+run3(
+    [   "$RT::SbinPath/rt-shredder", '--plugin',
+        Encode::encode( 'UTF-8', "Tickets=query,id = $unicode_id AND Content LIKE 'za\x{17C}*'" ),
+        '--no-sqldump'
+    ],
+    \"n\n",
+    \$stdout,
+    \$stderr
+);
+like( $stdout, qr/^\tRT::Ticket-.*-$unicode_id object$/m, 'rt-shredder finds the ticket by a non-ASCII prefix' );
 
 diag "Checking single ticket history search";
 

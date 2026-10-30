@@ -1311,12 +1311,14 @@ sub _SplitQuery {
     return '(' . join( ' INTERSECT ', @union_queries ) . ')';
 }
 
-# Wrap multi-word phrases in double quotes for exact phrase matching
+# MATCH splits a value into words at any non-word character: search it as a
+# phrase, unless it has its own quotes or is one word with a trailing *
 sub _MySQLFullTextValue {
     my $self  = shift;
     my $value = shift;
 
-    return $value =~ /\s/ && $value !~ /^".+"$/s ? qq{"$value"} : $value;
+    return $value if $value !~ /\W/ || $value =~ /"/ || $value =~ /^\w+\*$/;
+    return qq{"$value"};
 }
 
 RT::Base->_ImportOverlays();
