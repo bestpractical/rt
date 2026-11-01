@@ -1250,15 +1250,21 @@ sub InsertData {
                 $obj = $obj->();
             }
             elsif ( !ref $obj ) {
-                my $class = RT::Class->new(RT->SystemUser);
-                $class->Load($obj);
-                if ( $class->id ) {
-                    $obj = $class;
+                # Global topics are dumped with an Object of "RT::System"
+                if ( ( $obj // '' ) eq 'RT::System' ) {
+                    $obj = RT->System;
+                }
+                else {
+                    my $class = RT::Class->new(RT->SystemUser);
+                    $class->Load($obj);
+                    if ( $class->id ) {
+                        $obj = $class;
+                    }
                 }
             }
 
-            if ( !$obj ) {
-                $RT::Logger->error( "Invalid class $obj" );
+            if ( !ref $obj ) {
+                $RT::Logger->error( "Invalid class " . ( $obj // '' ) );
                 next;
             }
 
