@@ -16,12 +16,15 @@ jobs:
           echo "DOCKER_BUILDKIT=0" >> $GITHUB_ENV
       - name: Check out RT
         uses: actions/checkout@v4
-      - name: Cache .prove state
+      - name: Cache prove state
         id: cache-prove-state
         uses: actions/cache@v4
         with:
-          path: .prove
-          key: ${{ runner.os }}-sqlite
+          path: |
+            .prove-main
+            .prove-playwright
+          key: ${{ runner.os }}-sqlite-prove-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-sqlite-prove-
       - name: Build RT
         shell: bash
         run: |
@@ -69,12 +72,15 @@ jobs:
           echo "DOCKER_BUILDKIT=0" >> $GITHUB_ENV
       - name: Checkout RT
         uses: actions/checkout@v4
-      - name: Cache .prove state
+      - name: Cache prove state
         id: cache-prove-state
         uses: actions/cache@v4
         with:
-          path: .prove
-          key: ${{ runner.os }}-mariadb
+          path: |
+            .prove-main
+            .prove-playwright
+          key: ${{ runner.os }}-mariadb-prove-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-mariadb-prove-
       - name: Build RT
         shell: bash
         run: |
@@ -124,12 +130,15 @@ jobs:
           echo "DOCKER_BUILDKIT=0" >> $GITHUB_ENV
       - name: Checkout RT
         uses: actions/checkout@v4
-      - name: Cache .prove state
+      - name: Cache prove state
         id: cache-prove-state
         uses: actions/cache@v4
         with:
-          path: .prove
-          key: ${{ runner.os }}-mysql8
+          path: |
+            .prove-main
+            .prove-playwright
+          key: ${{ runner.os }}-mysql8-prove-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-mysql8-prove-
       - name: Build RT
         shell: bash
         run: |
@@ -178,12 +187,15 @@ jobs:
           echo "DOCKER_BUILDKIT=0" >> $GITHUB_ENV
       - name: Checkout RT
         uses: actions/checkout@v4
-      - name: Cache .prove state
+      - name: Cache prove state
         id: cache-prove-state
         uses: actions/cache@v4
         with:
-          path: .prove
-          key: ${{ runner.os }}-pg-fcgid
+          path: |
+            .prove-main
+            .prove-playwright
+          key: ${{ runner.os }}-pg-fcgid-prove-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-pg-fcgid-prove-
       - name: Build RT
         shell: bash
         run: |

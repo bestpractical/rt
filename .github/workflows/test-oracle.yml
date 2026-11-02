@@ -13,12 +13,15 @@ jobs:
           echo "DOCKER_BUILDKIT=0" >> $GITHUB_ENV
       - name: Checkout RT
         uses: actions/checkout@v4
-      - name: Cache .prove state
+      - name: Cache prove state
         id: cache-prove-state
         uses: actions/cache@v4
         with:
-          path: .prove
-          key: ${{ runner.os }}-oracle
+          path: |
+            .prove-main
+            .prove-playwright
+          key: ${{ runner.os }}-oracle-prove-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-oracle-prove-
       - name: Build RT
         shell: bash
         run: |
