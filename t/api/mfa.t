@@ -177,8 +177,8 @@ diag 'ClearTOTPEnrollment clears both columns';
 
     my ( $ok, $msg ) = $user->ClearTOTPEnrollment;
     ok( $ok, "ClearTOTPEnrollment succeeded: $msg" );
-    is( $user->TOTPEnrolled,          0,  'TOTPEnrolled is 0 after clear' );
-    is( $user->__Value('TOTPSecret'), '', 'TOTPSecret is empty after clear' );
+    is( $user->TOTPEnrolled,                0,  'TOTPEnrolled is 0 after clear' );
+    is( $user->__Value('TOTPSecret') // '', '', 'TOTPSecret is empty after clear' );
 }
 
 diag 'VerifyCode replay protection rejects reused code';
