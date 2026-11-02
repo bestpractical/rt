@@ -589,7 +589,8 @@ diag "Testing custom fields grouping inline edit";
     );
 
     $p->wait_for_notifications(2);
-    $p->wait_for_element('div.ticket-info-cfs-Bar .inline-edit-display div.custom-field-bar1:has-text("B")');
+    $p->wait_for_element('div.ticket-info-cfs-Bar .inline-edit-display div.custom-field-bar1 .current-value:text-is("B")');
+    $p->wait_for_element('div.ticket-info-cfs-Bar .inline-edit-display div.custom-field-bar2 .current-value:text-is("C")');
 
     my $dom = $p->dom;
     like( $dom->at('div.custom-field-bar1 div.col div.rt-value .current-value')->text, qr/^\s*B\s*$/, 'Got updated cf bar1' );
@@ -619,7 +620,7 @@ diag "Testing custom fields inline edit";
     );
 
     $p->wait_for_notifications();
-    $p->wait_for_element('div.custom-field-baz .current-value:has-text("E")');
+    $p->wait_for_element('div.custom-field-baz .current-value:text-is("E")');
 
     my $dom = $p->dom;
     like( $dom->at('div.custom-field-baz div.col div.rt-value .current-value')->text, qr/^\s*E\s*$/, 'Got updated cf baz' );
@@ -644,7 +645,7 @@ diag "Testing custom fields inline edit";
         'Submit cf inline edit'
     );
     $p->wait_for_notifications(2);
-    $p->wait_for_element('div.custom-field-baz .current-value:has-text("F")');
+    $p->wait_for_element('div.custom-field-baz .current-value:text-is("F")');
 
     $dom = $p->dom;
     like( $dom->at('div.custom-field-baz div.col div.rt-value .current-value')->text, qr/^\s*F\s*$/, 'Got updated cf baz' );
@@ -703,7 +704,7 @@ diag "Testing basics inline edit";
     );
 
     $p->wait_for_notifications();
-    $p->wait_for_element('div.ticket-info-basics .inline-edit-display div.queue:has-text("Foo")');
+    $p->wait_for_element('div.ticket-info-basics .inline-edit-display div.queue .current-value a:text-is("Foo")');
 
     my $dom = $p->dom;
     is( $dom->at('div.queue div.col div.rt-value .current-value a')->text, 'Foo', 'Got updated queue' );
