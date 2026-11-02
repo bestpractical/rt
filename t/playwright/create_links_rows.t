@@ -30,12 +30,24 @@ $p->{handle}->await(
 my $ta_id = '' . $ta->id;
 my $tb_id = '' . $tb->id;
 
+my $wait_for_row_value = sub {
+    my ( $nth, $value ) = @_;
+    $p->{handle}->await(
+        $p->{page}->waitForFunction(
+            qq{document.querySelector("div.ticket-info-links .add-link-row:nth-child($nth) .link-value").value === "$value"}
+        )
+    );
+};
+
+# Blurring commits the typed id. On a loaded machine, moving to the next
+# row before that lands can leave this row empty.
 my $row1_ts = 'div.ticket-info-links .add-link-row:first-child .link-value + .ts-wrapper .ts-control input';
 $p->{page}->locator($row1_ts)->click();
 $p->{page}->locator($row1_ts)->fill($ta_id);
 $p->{page}->evaluate(
     'document.querySelector("div.ticket-info-links .add-link-row:first-child .link-value + .ts-wrapper .ts-control input").blur()'
 );
+$wait_for_row_value->( 1, $ta_id );
 
 my $row2_ts = 'div.ticket-info-links .add-link-row:nth-child(2) .link-value + .ts-wrapper .ts-control input';
 $p->{page}->locator($row2_ts)->click();
@@ -43,6 +55,7 @@ $p->{page}->locator($row2_ts)->fill($tb_id);
 $p->{page}->evaluate(
     'document.querySelector("div.ticket-info-links .add-link-row:nth-child(2) .link-value + .ts-wrapper .ts-control input").blur()'
 );
+$wait_for_row_value->( 2, $tb_id );
 
 $p->wait_for_element('div.ticket-info-links .add-link-row:nth-child(3)');
 
