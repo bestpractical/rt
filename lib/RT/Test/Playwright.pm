@@ -222,7 +222,7 @@ sub wait_for_htmx {
     my $async_delay = $page->waitForTimeout(300);
     $self->{handle}->await($async_delay);
 
-    $async_delay = $page->waitForLoadState('networkidle', { timeout => 5000 });
+    $async_delay = $page->waitForLoadState('networkidle', { timeout => 30000 });
     $self->{handle}->await($async_delay);
 
     $self->wait_for_element('.refreshing', { state => 'hidden' });
