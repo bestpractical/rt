@@ -1021,7 +1021,9 @@ diag "merged from links_children_tree_edit.t";
     $p->{page}->locator('.ts-dropdown .option[data-value=resolved]')->first()->click();
     $p->wait_for_htmx;
 
-    $p->wait_for_element( 'div.ticket-info-links .links-tree tr[data-record-id="' . $grand_id . '"][data-depth="2"]' );
+    # The update response only triggers the row refresh, so the original row is
+    # still in place at first. Wait for the re-rendered, inactive row.
+    $p->wait_for_element( 'div.ticket-info-links .links-tree tr[data-record-id="' . $grand_id . '"][data-depth="2"].record-inactive' );
     is( $p->{page}
             ->locator( 'div.ticket-info-links .links-tree tr[data-record-id="' . $grand_id . '"] .links-tree-guide' )
             ->count(),
