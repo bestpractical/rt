@@ -4,8 +4,13 @@ use RT;
 use RT::Test nodata => 1, tests => 34;
 
 
+# runid can't be an integer (why? not sure, maybe casting when stored in the database causes issues?)
+# we need to ensure we don't have a long floating number number as there can be mismatching precision
+# levels between Perl and the database.
+my $runid = int(rand(200) * 100) / 100;
 
-my $runid = rand(200);
+# Make sure we always have a decimal, SQLite (at least) barfs if it is an integer.
+if ($runid == int($runid)) { $runid += .1 };
 
 my $attribute = "squelch-$runid";
 
