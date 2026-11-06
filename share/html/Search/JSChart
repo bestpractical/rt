@@ -135,7 +135,7 @@ var searchChart = new Chart(ctx, {
                 stacked: <% $stacked ? 'true' : 'false' %>,
                 title: {
                     display: true,
-                    text: <% $report->Label( $columns{'Functions'}[0] ) |n,j %>
+                    text: <% $y_title |n,j %>
                 },
                 grid: {
                     drawTicks: true,
@@ -143,16 +143,13 @@ var searchChart = new Chart(ctx, {
                 },
                 ticks: {
                     beginAtZero: true,
+%                   unless ( $duration_unit ) {
                     callback: function(value, index, values) {
-%                       my $info = $report->ColumnInfo($columns{'Functions'}[0]);
-%                       if ( $info->{META} && ($info->{META}{Display}//'') eq 'DurationAsString' ) {
-                            return;
-%                       } else {
-                            if (Math.floor(value) === value) {
-                                return value;
-                            }
-%                       }
+                        if (Math.floor(value) === value) {
+                            return value;
+                        }
                     }
+%                   }
                 }
             }
         }
@@ -319,6 +316,50 @@ if ( $StackedGroupBy && $ChartStyle =~ /\bbar\b/ ) {
             RT->Logger->warning("Invalid StackedGroupBy: $StackedGroupBy");
         }
     }
+}
+
+my $y_info  = $report->ColumnInfo( $columns{'Functions'}[0] );
+my $y_title = $report->Label( $columns{'Functions'}[0] );
+my $duration_unit;
+if ( $ChartStyle =~ /\b(?:bar|line)\b/ && ( $y_info->{META}{Display} // '' ) eq 'DurationAsString' ) {
+    my @duration_data;
+    if ($stacked) {
+        @duration_data = @data[ 1 .. $#data ];
+    }
+    else {
+        my $index = 1;
+        for my $column ( @{ $columns{'Functions'} } ) {
+            my $info  = $report->ColumnInfo($column);
+            my $count = $info->{META}{SubValues}
+                ? () = $report->FindImplementationCode( $info->{META}{SubValues} )->($report)
+                : 1;
+            push @duration_data, @data[ $index .. $index + $count - 1 ]
+                if ( $info->{META}{Display} // '' ) eq 'DurationAsString';
+            $index += $count;
+        }
+    }
+
+    my $max = 0;
+    for my $i ( 0 .. $#{ $data[0] } ) {
+        my @values = map { abs( $_->[$i] || 0 ) } @duration_data;
+        for my $value ( $stacked ? List::Util::sum( 0, @values ) : @values ) {
+            $max = $value if $value > $max;
+        }
+    }
+
+    # Same 2x threshold RT::Date::DurationAsString uses to pick a unit
+    my @units = ( [ 1, loc('seconds') ], [ 60, loc('minutes') ], [ 3600, loc('hours') ], [ 86400, loc('days') ] );
+    pop @units if ref $y_info->{INFO}[-1] && $y_info->{INFO}[-1]{business_time};
+    $duration_unit = $units[0];
+    for my $unit ( @units[ 1 .. $#units ] ) {
+        last if $max < 2 * $unit->[0];
+        $duration_unit = $unit;
+    }
+
+    for my $values (@duration_data) {
+        $_ = sprintf( '%.2f', $_ / $duration_unit->[0] ) + 0 for grep { defined && length } @$values;
+    }
+    $y_title .= " ($duration_unit->[1])";
 }
 
 my $scheme = RT->Config->Get('JSChartColorScheme', $session{CurrentUser}) || 'brewer.Paired12';
