@@ -125,7 +125,7 @@ var searchChart = new Chart(ctx, {
                 stacked: <% $stacked ? 'true' : 'false' %>,
                 title: {
                     display: true,
-                    labelString: <% join(' - ', map $report->Label( $_), @{ $columns{'Groups'} }) |n,j %>
+                    text: <% join(' - ', map $report->Label( $_), @{ $columns{'Groups'} }) |n,j %>
                 },
                 grid: {
                     display: false
@@ -135,7 +135,7 @@ var searchChart = new Chart(ctx, {
                 stacked: <% $stacked ? 'true' : 'false' %>,
                 title: {
                     display: true,
-                    labelString: <% $report->Label( $columns{'Functions'}[0] ) |n,j %>
+                    text: <% $report->Label( $columns{'Functions'}[0] ) |n,j %>
                 },
                 grid: {
                     drawTicks: true,
