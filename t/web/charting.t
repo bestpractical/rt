@@ -112,6 +112,15 @@ $m->content_like( qr{Group: core team\s*</th>\s*<th[^>]*>24 hours</th>\s*<td[^>]
 $m->content_like( qr{root0\@localhost\s*</th>\s*<td[^>]*>\s*<a[^>]*>3</a>}, "Found results in table" );
 ok( $m->dom->at('div.chart.image canvas'), "Found image");
 
+$m->get_ok("/Search/Chart.html?Query=id>0");
+$m->content_contains( q{text: 'Status'},          'Found x-axis title' );
+$m->content_contains( q{text: 'Ticket\x20count'}, 'Found y-axis title' );
+$m->content_like( qr{data: \["?7"?\]}, 'Found count data' );
+
+$m->get_ok("/Search/Chart.html?Query=id>0&ChartFunction=AVG(Starts+to+Started)");
+$m->content_contains( q{text: 'Average\x20Starts\x20to\x20Started\x20\x28hours\x29'}, 'Found y-axis title with unit' );
+$m->content_contains( 'data: [24]', 'Found duration data in hours' );
+
 diag "Confirm subnav links use Query param before saved search in session.";
 
 $m->get_ok( "/Search/Chart.html?Query=id>0" );
