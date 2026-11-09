@@ -836,6 +836,29 @@ push @CHECKS, 'Transactions -> other' => sub {
             delete_record( 'Transactions', $id );
         },
     );
+    my %reference_tables = (
+        'RT::Attribute'              => 'Attributes',
+        'RT::Configuration'          => 'Configurations',
+        'RT::ObjectCustomFieldValue' => 'ObjectCustomFieldValues',
+    );
+    for my $type ( sort keys %reference_tables ) {
+        for my $column (qw/OldReference NewReference/) {
+            $res *= check_integrity(
+                'Transactions', $column => $reference_tables{$type}, 'id',
+                condition   => 's.ReferenceType = ?',
+                bind_values => [ $type ],
+                action => sub {
+                    my $id = shift;
+                    return unless prompt(
+                        'Delete', "Found a transaction referencing an $type record,"
+                        ." but the record with id stored in $column column doesn't exist anymore."
+                    );
+
+                    delete_record( 'Transactions', $id );
+                },
+            );
+        }
+    }
     # type = Take, Untake, Force, Steal or Give
     # or, type = Set, SetWatcher, field = Owner
     $res *= check_integrity(
