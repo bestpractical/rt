@@ -29,26 +29,28 @@ diag "Pick two assets from the autocomplete, then add them";
     for my $asset ( $laptop, $monitor ) {
         $p->{page}->evaluate("return document.querySelector('$input_selector').tomselect.control_input.focus()");
         $p->{page}->keyboard->type( $asset->Name );
-        my $option = $p->{page}->locator( 'div.ticket-assets .ts-dropdown .option', { hasText => $asset->Name } );
-        $p->{handle}->await( $option->waitFor( { timeout => 5000 } ) );
-        $option->click;
+        my $option = 'div.ticket-assets .ts-dropdown .option:has-text("' . $asset->Name . '")';
+        $p->wait_for_element($option);
+        $p->{page}->locator($option)->click;
     }
 
+    $p->{handle}->await(
+        $p->{page}->waitForFunction(
+            'document.querySelectorAll("div.ticket-assets .ts-control .item").length === 2')
+    );
     my $items = $p->{page}->locator('div.ticket-assets .ts-control .item');
     is( $items->count, 2, 'Both picked assets are shown' );
 
     my $value = $p->{page}->evaluate("return document.querySelector('$input_selector').value");
     like( $value, qr/^\Q@{[$laptop->id]}\E\s+\Q@{[$monitor->id]}\E$/, 'Both picked asset ids are in the field' );
 
-    # Let the dropdown finish closing before clicking Add, then wait for
-    # the Add request to complete before checking the page.
+    # Let the dropdown finish closing before clicking Add.
     $p->wait_for_element( 'div.ticket-assets .ts-dropdown', { state => 'hidden' } );
-    my $update = $p->{page}->waitForResponse('**/Helpers/TicketUpdate*');
     $p->{page}->locator('div.ticket-assets button[name=AddAsset]')->click;
-    $p->{handle}->await($update);
 
-    # The assets box reloads via htmx once the links are added; wait for
-    # both assets to show up there before reading the database.
+    # The TicketUpdate response only triggers ticketAssetsChanged; the assets
+    # box reloads in a second request, so waiting on that response isn't enough.
+    $p->wait_for_htmx;
     $p->wait_for_element( '#accordion-asset-' . $_->id . '-title' ) for $laptop, $monitor;
 
     DBIx::SearchBuilder::Record::Cachable->FlushCache;

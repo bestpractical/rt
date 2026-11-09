@@ -66,6 +66,8 @@
 /config.pld
 /nytprof.out*
 /.prove
+/.prove-main
+/.prove-playwright
 *~
 *.swp
 *.swo

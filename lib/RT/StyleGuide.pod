@@ -919,6 +919,36 @@ which will be significantly faster:
 
     make test-parallel
 
+Set C<RT_TEST_PARALLEL_NUM> to change the number of parallel jobs. The
+default is 5.
+
+    RT_TEST_PARALLEL_NUM=8 make test-parallel
+
+C<make test-parallel> runs all tests except Playwright tests, which need
+to use a virtual browser. Those will run in serial after all of the other
+tests complete. On a machine with CPU to spare, you can run them
+at the same time as the rest of the suite instead:
+
+    make test-parallel-all
+
+This runs two C<prove> processes at once. One runs every test outside of
+F<t/playwright/> in parallel with C<RT_TEST_PARALLEL_NUM> jobs, and the other
+runs the Playwright tests one at a time, so up to C<RT_TEST_PARALLEL_NUM> + 1
+tests run at once. Output from the two processes is interleaved, and
+each prints its own summary at the end. You can also run either half on its
+own:
+
+    make test-parallel-main
+    make test-parallel-playwright
+
+Each half keeps its own C<prove> state file, F<.prove-main> and
+F<.prove-playwright>, which C<--state=slow> uses to start the slowest tests
+first.
+
+Playwright tests are sensitive to timing. If the machine is short on CPU, the
+extra load from the other tests can make them fail, so use
+C<make test-parallel> on smaller machines such as CI runners.
+
 If you want to run a subset of the tests in parallel, you can pass the C<-j>
 flag to C<prove> with the number of processes to use. Make sure to also set the
 C<RT_TEST_PARALLEL> environment variable to a true value to tell RT you're
@@ -926,7 +956,9 @@ running the tests in parallel.
 
     RT_TEST_PARALLEL=1 prove -l -j4 t/customfields/*.t
 
-To run playwright tests sequentially and others in parallel:
+To run playwright tests sequentially and others in parallel, as
+C<make test-parallel> does (the Playwright tests start only after all others
+have finished):
 
     RT_TEST_PARALLEL=1 prove -l -j4 --rules='seq=t/playwright/*.t' --rules='par=**' t
 
