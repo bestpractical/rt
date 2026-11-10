@@ -404,6 +404,24 @@ diag 'Test methods that return all links recursively';
 }
 
 {
+    diag "The edit format adds the delete column to every row";
+
+    # Columns as /Elements/CollectionAsTable/ParseFormat returns them, with
+    # only the keys the method reads.
+    my $column  = sub { { original_string => $_[0] } };
+    my $newline = sub { { original_string => $_[0], title => 'NEWLINE' } };
+
+    is( RT::Links->LinkListingEditFormat( $column->("'__id__'"), $column->("'__Subject__'") ),
+        "'__DeleteLinkCheckBox__', '__id__', '__Subject__'", 'a one-row format gets the column in front' );
+    is( RT::Links->LinkListingEditFormat(
+            $column->("'__id__'"), $newline->(q{"__NEWLINE__"}), $column->('Status'),
+            $newline->('NEWLINE'), $column->('Owner')
+        ),
+        q{'__DeleteLinkCheckBox__', '__id__', "__NEWLINE__", '__NBSP__', Status, NEWLINE, '__NBSP__', Owner},
+        'each later row starts with an empty column, and columns keep their original text' );
+}
+
+{
     diag "Link listing formats come from the ticket's queue, then Default";
 
     my %orig     = %{ RT->Config->Get('LinksFormat') };

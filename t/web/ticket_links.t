@@ -1724,10 +1724,34 @@ diag "A queue's LinksFormat entry sets the columns on its tickets' Links";
     RT::Test->stop_server;
     RT->Config->Set(
         LinksFormat => %orig,
-        General     => { 'RT::Ticket' => "'__id__', '__Subject__', '__QueueName__'" },
+        General     => {
+            'RT::Ticket' => "'__id__', '__Subject__', '__Status__', '__OwnerName__', '__NEWLINE__', '__NBSP__', '__NBSP__', '<small>__QueueName__</small>'"
+        },
     );
     ( $baseurl, $m ) = RT::Test->started_ok;
     ok( $m->login, 'logged in' );
+
+    # Returns, for each body row of the section's table, the classes of each
+    # cell's stacked values, so a test can see which column each value is in.
+    my $cell_columns = sub {
+        my $section = shift;
+        my $dom     = $m->dom;    # the found nodes only hold weak references to it
+        my @rows = $dom->find("#links-section-$section tbody tr")->each;
+        return [
+            map {
+                [   map {
+                        [ map { ( ( $_->attr('class') // '' ) =~ /\b(rt-collection-column-\S+)/ )[0] // '' }
+                                $_->children('div')->each ]
+                    } $_->children('td')->each
+                ]
+            } @rows
+        ];
+    };
+    my $header_counts = sub {
+        my $section = shift;
+        my $dom     = $m->dom;
+        return [ map { scalar $_->children('th')->each } $dom->find("#links-section-$section thead tr")->each ];
+    };
 
     my $queue_cells = sub {
         my $section = shift;
@@ -1742,6 +1766,25 @@ diag "A queue's LinksFormat entry sets the columns on its tickets' Links";
     ok( $m->dom->at('#links-section-DependsOn .links-type-table[data-links-format="' . $general->Queue . '"]'), 'the table names the General format by queue id' );
     ok( $m->dom->at('#links-section-Members table.links-tree[data-links-format="' . $general->Queue . '"]'), 'the children tree names the General format by queue id' );
     ok( $m->dom->at('#links-section-DependsOn th.rt-collection-column-queuename'), 'the Queue column is marked for CSS' );
+
+    my @two_rows = (
+        [ 'rt-collection-column-id',        '' ],
+        [ 'rt-collection-column-subject',   '' ],
+        [ 'rt-collection-column-status',    'rt-collection-column-queuename' ],
+        [ 'rt-collection-column-ownername', '' ],
+    );
+    is_deeply( $cell_columns->('DependsOn'), [ \@two_rows ], 'the second row stacks Queue under Status' );
+    is_deeply( $header_counts->('DependsOn'), [ 4, 4 ], 'both header rows have four columns' );
+    is_deeply( $cell_columns->('Members'), [ \@two_rows ], 'the children tree stacks Queue under Status' );
+    is_deeply( $header_counts->('Members'), [ 4, 4 ], 'the children tree is as wide as its widest row' );
+
+    $m->get_ok( $baseurl . '/Views/Component/EditLinks?ObjectType=RT::Ticket&ObjectId=' . $general->id,
+        'render the General ticket listing for editing' );
+    my @edit_rows = ( [ 'rt-collection-column-deletelinkcheckbox', '' ], @two_rows );
+    is_deeply( $cell_columns->('DependsOn'), [ \@edit_rows ], 'in edit mode, Queue stays under Status' );
+    is_deeply( $header_counts->('DependsOn'), [ 5, 5 ], 'in edit mode, both header rows have five columns' );
+    is_deeply( $cell_columns->('Members'), [ \@edit_rows ], 'in edit mode, the children tree keeps Queue under Status' );
+    is_deeply( $header_counts->('Members'), [ 5, 5 ], 'in edit mode, the children tree has five columns' );
 
     $m->get_ok( $baseurl . '/Views/Component/ShowLinks?ObjectType=RT::Ticket&ObjectId=' . $other->id,
         'render the other ticket listing' );
