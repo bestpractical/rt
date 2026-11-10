@@ -320,6 +320,13 @@ foreach my $col ( @Format ) {
     }
     $m->out('</th>');
 }
+
+# Fill up the last row, as NEWLINE does above, so each column gets the header's
+# bottom border.
+while ( $item < ( $maxitems // 0 ) ) {
+    $m->out(qq{<th class="collection-as-table">&nbsp;</th>\n});
+    $item++;
+}
 </%PERL>
   </tr>
 </thead>
