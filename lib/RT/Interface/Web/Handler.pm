@@ -84,27 +84,28 @@ sub DefaultHandlerArgs  { (
 ) };
 
 sub InitSessionDir {
-    # Activate the following if running httpd as root (the normal case).
-    # Resets ownership of all files created by Mason at startup.
-    # Note that mysql uses DB for sessions, so there's no need to do this.
-    unless ( RT->Config->Get('DatabaseType') =~ /(?:mysql|Pg)/ ) {
+    return unless RT::Interface::Web::Session->Class->isa('Apache::Session::File');
 
-        # Clean up our umask to protect session files
-        umask(0077);
+    my $attributes = RT::Interface::Web::Session->Attributes;
+    my $dir        = $attributes->{Directory};
+    my $lock_dir   = $attributes->{LockDirectory};
 
-        if ($CGI::MOD_PERL and $CGI::MOD_PERL < 1.9908 ) {
-
-            chown( Apache->server->uid, Apache->server->gid,
-                $RT::MasonSessionDir )
-            if Apache->server->can('uid');
-        }
-
-        # Die if WebSessionDir doesn't exist or we can't write to it
-        stat($RT::MasonSessionDir);
-        die "Can't read and write $RT::MasonSessionDir"
-        unless ( ( -d _ ) and ( -r _ ) and ( -w _ ) );
+    unless ( $dir && $lock_dir ) {
+        my $missing
+            = !$dir && !$lock_dir ? 'Directory and LockDirectory are'
+            : !$dir               ? 'Directory is'
+            :                       'LockDirectory is';
+        RT->Logger->error(
+            "$missing not set in WebSessionProperties, so session files may be written to /tmp."
+            . " Unset WebSessionProperties or set Directory and LockDirectory to an appropriate"
+            . " directory for session files."
+        );
     }
 
+    die "Can't read and write session directory $dir"
+        if $dir && !( -d $dir && -r _ && -w _ );
+    die "Can't read and write session lock directory $lock_dir"
+        if $lock_dir && !( -d $lock_dir && -r _ && -w _ );
 }
 
 
