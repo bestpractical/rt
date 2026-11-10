@@ -29,6 +29,7 @@ SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 
 FcgidMaxRequestLen 1073741824
 FcgidConnectTimeout 20
+FcgidMaxProcessesPerClass 1
 FcgidProcessTableFile %%tmp_dir%%/shm
 FcgidIPCDir %%tmp_dir%%
 FcgidInitialEnv RT_TESTING 1
