@@ -462,6 +462,31 @@ sub LinkListingFormat {
     return wantarray ? () : undef;
 }
 
+=head2 LinkListingEditFormat COLUMNS
+
+Takes the columns of a links listing format, as
+F</Elements/CollectionAsTable/ParseFormat> returns them, and returns the format
+as the listing shows it in edit mode: with the checkbox column for deleting
+links added in front. A format with C<__NEWLINE__> gets an empty column at the
+start of each later row as well, so each row's columns stay under the same
+headers.
+
+    my $edit_format = RT::Links->LinkListingEditFormat(
+        $m->comp( '/Elements/CollectionAsTable/ParseFormat', Format => $format ) );
+
+=cut
+
+sub LinkListingEditFormat {
+    my $self    = shift;
+    my @columns = @_;
+
+    return join ', ', "'__DeleteLinkCheckBox__'", map {
+        (   $_->{original_string},
+            ( defined $_->{title} && $_->{title} eq 'NEWLINE' ) ? "'__NBSP__'" : ()
+        )
+    } @columns;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

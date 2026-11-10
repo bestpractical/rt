@@ -104,7 +104,8 @@ $format =~ s{(['"])(.*?)\1}{$1 . $2 . "/TITLE:$type_label/CLASS:links-tree-id" .
 if ($Edit) {
     $m->notes( LinkDeleteType => 'MemberOf' );
     $m->notes( LinkDeleteMode => 'Base' );
-    $format = "'__DeleteLinkCheckBox__', " . $format;
+    $format = RT::Links->LinkListingEditFormat(
+        $m->comp( '/Elements/CollectionAsTable/ParseFormat', Format => $format ) );
 }
 
 my @parsed_format = $m->comp( '/Elements/CollectionAsTable/ParseFormat', Format => $format );
