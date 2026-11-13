@@ -1270,7 +1270,7 @@ sub InsertData {
 
             if ( $item->{Parent} && $item->{Parent} =~ /\D/ ) {
                 my $topic = RT::Topic->new( RT->SystemUser );
-                $topic->LoadByCols( Name => $item->{Parent} );
+                $topic->LoadByCols( Name => $item->{Parent}, ObjectType => ref $obj, ObjectId => $obj->id );
                 if ( $topic->id ) {
                     $item->{Parent} = $topic->id;
                 }
@@ -1865,16 +1865,20 @@ sub InsertData {
                 $obj = $obj->();
             }
 
+            my $owner = delete $item->{TopicObject};
             my $topic = RT::Topic->new( RT->SystemUser );
             if ( $item->{Topic} =~ /\D/ ) {
-                $topic->LoadByCols( Name => $item->{Topic} );
+                $topic = $self->_LoadTopicByName( Name => $item->{Topic}, Owner => $owner, Object => $obj );
             }
             else {
                 $topic->Load( $item->{Topic} );
             }
 
             if ( !$topic->id ) {
-                $RT::Logger->error( "Couldn't load topic $item->{Topic}" );
+                $RT::Logger->error( "Couldn't load topic $item->{Topic}"
+                        . ( defined $owner ? " in $owner" : '' ) . " for "
+                        . ref($obj) . " "
+                        . ( $obj->can('Name') && $obj->Name ? $obj->Name : '#' . $obj->id ) );
                 next;
             }
 
@@ -3359,6 +3363,50 @@ sub _CanonilizeAttributeContent {
         }
         $item->{Content} = \%value;
     }
+}
+
+sub _LoadTopicByName {
+    my $self = shift;
+    my %args = (
+        Name   => undef,
+        Owner  => undef,    # class name, or "RT::System" for a global topic
+        Object => undef,    # the article the topic is added to
+        @_,
+    );
+
+    my $topic = RT::Topic->new( RT->SystemUser );
+
+    my @owners;
+    if ( defined $args{Owner} ) {
+        if ( $args{Owner} eq 'RT::System' ) {
+            push @owners, RT->System;
+        }
+        else {
+            my $class = RT::Class->new( RT->SystemUser );
+            $class->Load( $args{Owner} );
+            push @owners, $class if $class->Id;
+        }
+    }
+    else {
+        # Older exports name only the topic, so prefer the topics an article
+        # is offered first: its own class's, then global ones.
+        push @owners, $args{Object}->ClassObj if $args{Object} && $args{Object}->can('ClassObj');
+        push @owners, RT->System;
+    }
+
+    for my $owner (@owners) {
+        $topic->LoadByCols( Name => $args{Name}, ObjectType => ref $owner, ObjectId => $owner->Id );
+        return $topic if $topic->Id;
+    }
+    return $topic if defined $args{Owner};
+
+    my $topics = RT::Topics->new( RT->SystemUser );
+    $topics->Limit( FIELD => 'Name', VALUE => $args{Name} );
+    my $count = $topics->Count;
+    return $topics->First if $count == 1;
+
+    RT->Logger->error("Topic name $args{Name} matches $count topics in other classes") if $count > 1;
+    return $topic;
 }
 
 sub _CanonilizeObjectCustomFieldValue {
