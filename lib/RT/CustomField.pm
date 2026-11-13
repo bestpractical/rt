@@ -1953,8 +1953,16 @@ sub _ScrubHTML {
 
     for my $field (qw/Content LargeContent/) {
         next unless $args->{$field};
-        $args->{$field}
-            = HTML::Mason::Commands::ScrubHTML( Content => $args->{$field}, Permissive => $self->_ContentIsPermissive );
+
+        # LargeContent is bytes (see RT::ObjectCustomFieldValue::Create), but
+        # ScrubHTML needs characters: it replaces bytes 0x80-0x9F with U+FFFD.
+        # Decoding bytes that aren't valid UTF-8 would replace them with U+FFFD,
+        # so scrub those unchanged.
+        my $value    = $args->{$field};
+        my $is_bytes = $field eq 'LargeContent' && !utf8::is_utf8($value) && utf8::decode($value);
+
+        $value = HTML::Mason::Commands::ScrubHTML( Content => $value, Permissive => $self->_ContentIsPermissive );
+        $args->{$field} = $is_bytes ? Encode::encode( 'UTF-8', $value ) : $value;
     }
     return 1;
 }
