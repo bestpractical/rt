@@ -446,9 +446,18 @@ sub CanonicalizeObjectCustomFieldValues {
         next unless $cf && $cf->{Name}; # disabled CF on live object
         $record->{CustomField} = $cf->{Name};
 
-        if ( $cf->{Type} =~ /^(?:Binary|Image)$/ && $record->{LargeContent} ) {
-            $record->{ContentEncoding} = 'base64';
-            $record->{LargeContent} = MIME::Base64::encode_base64($record->{LargeContent} );
+        if ( $record->{LargeContent} ) {
+            # LargeContent is always bytes, while other columns are
+            # characters when the JSON encoder is in utf8 mode (see JSON).
+            # Bytes that aren't valid UTF-8 can't be written as text either way.
+            my $decoded = $record->{LargeContent};
+            if ( $cf->{Type} =~ /^(?:Binary|Image)$/ || !utf8::decode($decoded) ) {
+                $record->{ContentEncoding} = 'base64';
+                $record->{LargeContent}    = MIME::Base64::encode_base64( $record->{LargeContent} );
+            }
+            elsif ( $self->JSON->get_utf8 ) {
+                $record->{LargeContent} = $decoded;
+            }
         }
 
         delete $record->{id} unless $self->{Sync};
