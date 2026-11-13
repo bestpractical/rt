@@ -490,6 +490,11 @@ sub CanonicalizeObjectTopics {
         }
         $record->{Topic} = $topic->{Name};
 
+        # Topic names are only unique within a class, and an article can
+        # use topics from other classes and global topics.
+        $record->{TopicObject}
+            = ref $topic->{Object} ? $self->CanonicalizeReference( $topic->{Object} ) : $topic->{Object};
+
         delete $record->{id} unless $self->{Sync};
 
         delete $record->{ObjectType}; # unnecessary as it's always RT::Article for now
