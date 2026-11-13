@@ -620,12 +620,24 @@ function positionTomSelectDropdown(dropdown) {
     }, 0);
 }
 
+// Tom Select's throttled refresh still fires after blur, reopening the dropdown and stealing focus
+TomSelect.define('rt_blur_cancel_refresh', function () {
+    this.on('blur', () => {
+        if (this.refreshTimeout) {
+            window.clearTimeout(this.refreshTimeout);
+            this.refreshTimeout = null;
+        }
+    });
+});
+
 // Initialize the tom-select library
 function initializeSelectElement(elt) {
     let settings = {
         allowEmptyOption: true,
         maxOptions: null,
-        plugins: {},
+        plugins: {
+            rt_blur_cancel_refresh: {}
+        },
         render: {
             loading: function(data,escape) {
                 return '<div class="spinner-border spinner-border-sm ms-3"></div>';
