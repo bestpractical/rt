@@ -475,7 +475,19 @@ sub CanonicalizeObjectTopics {
 
         my $object = $self->_GetSerializedByRef(delete $record->{ObjectId});
 
-        my $topic = $self->_GetSerializedByRef(delete $record->{Topic});
+        my $topic_ref = delete $record->{Topic};
+        my $topic     = $self->_GetSerializedByRef($topic_ref);
+        unless ($topic) {
+            # A topic that no longer exists stays a plain id rather than a UID
+            # reference, unless RT::Record::Serialize already cached the UID class.
+            my ($topic_id) = ( ref $topic_ref ? $$topic_ref : $topic_ref ) =~ /(\d+)$/;
+            RT->Logger->info( "Skipping topic #"
+                    . ( $topic_id // '' )
+                    . " on article "
+                    . ( $object->{Name} // '' )
+                    . ": the topic was not exported" );
+            next;
+        }
         $record->{Topic} = $topic->{Name};
 
         delete $record->{id} unless $self->{Sync};
