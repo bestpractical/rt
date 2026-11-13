@@ -1063,6 +1063,85 @@ my @tests = (
         },
     },
     {
+        name => 'Topics with the same names in different classes',
+        create => sub {
+            my %topics;
+            for my $class_name ('Class A', 'Class B') {
+                my $class = RT::Class->new(RT->SystemUser);
+                my ($ok, $msg) = $class->Create(Name => $class_name);
+                ok($ok, $msg);
+
+                my $network = RT::Topic->new(RT->SystemUser);
+                ($ok, $msg) = $network->Create(Name => 'Network', ObjectType => 'RT::Class', ObjectId => $class->Id);
+                ok($ok, $msg);
+                my $vpn = RT::Topic->new(RT->SystemUser);
+                ($ok, $msg) = $vpn->Create(
+                    Name       => 'VPN',
+                    Parent     => $network->Id,
+                    ObjectType => 'RT::Class',
+                    ObjectId   => $class->Id,
+                );
+                ok($ok, $msg);
+                $topics{$class_name} = { Network => $network, VPN => $vpn };
+            }
+
+            my $global = RT::Topic->new(RT->SystemUser);
+            my ($gok, $gmsg) = $global->Create(Name => 'Network', ObjectType => 'RT::System', ObjectId => RT->System->Id);
+            ok($gok, $gmsg);
+
+            my $article = RT::Article->new(RT->SystemUser);
+            my ($ok, $msg) = $article->Create(
+                Class  => 'General',
+                Name   => 'Cross-class topics',
+                Topics => [ $topics{'Class A'}{Network}->Id, $topics{'Class B'}{VPN}->Id, $global->Id ],
+            );
+            ok($ok, $msg);
+        },
+        raw => sub {
+            my $json = shift;
+            my ($article) = grep { $_->{Name} eq 'Cross-class topics' } @{ $json->{Articles} };
+            ok($article, 'found the article');
+            is_deeply(
+                [ sort { $a->{TopicObject} cmp $b->{TopicObject} } @{ $article->{Topics} } ],
+                [
+                    { Topic => 'Network', TopicObject => 'Class A' },
+                    { Topic => 'VPN',     TopicObject => 'Class B' },
+                    { Topic => 'Network', TopicObject => 'RT::System' },
+                ],
+                'article topics name the class that owns each topic'
+            );
+        },
+        present => sub {
+            my %topics;
+            for my $class_name ('Class A', 'Class B') {
+                my $class = RT::Class->new(RT->SystemUser);
+                $class->Load($class_name);
+                ok($class->Id, "loaded $class_name");
+                for my $name ('Network', 'VPN') {
+                    my $topic = RT::Topic->new(RT->SystemUser);
+                    $topic->LoadByCols(Name => $name, ObjectType => 'RT::Class', ObjectId => $class->Id);
+                    ok($topic->Id, "loaded $name in $class_name");
+                    $topics{$class_name}{$name} = $topic;
+                }
+                is($topics{$class_name}{VPN}->Parent, $topics{$class_name}{Network}->Id,
+                    "VPN's parent is Network in $class_name");
+            }
+
+            my $global = RT::Topic->new(RT->SystemUser);
+            $global->LoadByCols(Name => 'Network', ObjectType => 'RT::System');
+            ok($global->Id, 'loaded global Network');
+
+            my $article = RT::Article->new(RT->SystemUser);
+            $article->LoadByCols(Name => 'Cross-class topics');
+            ok($article->Id, 'loaded Cross-class topics');
+            is_deeply(
+                [ sort { $a <=> $b } map { $_->Topic } @{ $article->Topics->ItemsArrayRef } ],
+                [ sort { $a <=> $b } $topics{'Class A'}{Network}->Id, $topics{'Class B'}{VPN}->Id, $global->Id ],
+                'article is linked to Network in Class A, VPN in Class B and global Network'
+            );
+        },
+    },
+    {
         name => 'Article linked to a deleted topic',
         create => sub {
             my $class = RT::Class->new(RT->SystemUser);
@@ -1095,7 +1174,7 @@ my @tests = (
             my $json = shift;
             my ($article) = grep { $_->{Name} eq 'Topical' } @{ $json->{Articles} };
             ok($article, 'found the article');
-            is_deeply($article->{Topics}, [ { Topic => 'Kept Topic' } ], 'only the existing topic is exported');
+            is_deeply($article->{Topics}, [ { Topic => 'Kept Topic', TopicObject => 'General' } ], 'only the existing topic is exported');
         },
         present => sub {
             my $imported = shift;
@@ -1376,6 +1455,60 @@ for my $test (@tests) {
         });
     };
 }
+
+subtest 'Article topics named without TopicObject' => sub {
+    autorollback(sub {
+        my %topics;
+        for my $class_name ('Legacy A', 'Legacy B', 'Legacy C') {
+            my $class = RT::Class->new(RT->SystemUser);
+            my ($ok, $msg) = $class->Create(Name => $class_name);
+            ok($ok, $msg);
+            for my $name ('Shared', $class_name eq 'Legacy B' ? () : 'Elsewhere') {
+                my $topic = RT::Topic->new(RT->SystemUser);
+                ($ok, $msg) = $topic->Create(Name => $name, ObjectType => 'RT::Class', ObjectId => $class->Id);
+                ok($ok, $msg);
+                $topics{$class_name}{$name} = $topic;
+            }
+        }
+
+        my $directory = File::Spec->catdir(RT::Test->temp_directory, 'legacy-topics');
+        mkdir $directory;
+        open my $fh, '>:encoding(UTF-8)', File::Spec->catfile($directory, 'initialdata.json') or die $!;
+        print $fh JSON->new->encode({
+            Articles => [
+                {
+                    Name   => 'Legacy topics',
+                    Class  => 'Legacy B',
+                    Topics => [ { Topic => 'Shared' }, { Topic => 'Elsewhere' } ],
+                },
+            ],
+        });
+        close $fh;
+
+        my @warnings;
+        {
+            local $SIG{__WARN__} = sub { push @warnings, $_[0] };
+            import_initialdata($directory);
+        }
+        is_deeply(
+            [ map { /^(.*)$/m } @warnings ],
+            [
+                'Topic name Elsewhere matches 2 topics in other classes',
+                'Couldn\'t load topic Elsewhere for RT::Article Legacy topics',
+            ],
+            'ambiguous topic name is reported with the article'
+        );
+
+        my $article = RT::Article->new(RT->SystemUser);
+        $article->LoadByCols(Name => 'Legacy topics');
+        ok($article->Id, 'loaded Legacy topics');
+        is_deeply(
+            [ map { $_->Topic } @{ $article->Topics->ItemsArrayRef } ],
+            [ $topics{'Legacy B'}{Shared}->Id ],
+            "topic is resolved in the article's class"
+        );
+    });
+};
 
 RT::Test::done_testing();
 
