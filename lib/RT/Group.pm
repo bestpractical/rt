@@ -184,10 +184,20 @@ sub LoadUserDefinedGroup {
             id     => $identifier,
         );
     } else {
-        return $self->LoadByCols(
+        # Try the exact name first, so a group created before names were
+        # trimmed still loads by its stored name.
+        my @ret = $self->LoadByCols(
             Domain => 'UserDefined',
             Name   => $identifier,
         );
+
+        unless ( $self->Id ) {
+            my $name = $self->CanonicalizeName($identifier);
+            @ret = $self->LoadByCols( Domain => 'UserDefined', Name => $name )
+                if length $name && $name ne $identifier;
+        }
+
+        return wantarray ? @ret : $ret[0];
     }
 }
 
