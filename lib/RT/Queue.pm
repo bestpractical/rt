@@ -240,7 +240,14 @@ sub Load {
         $self->SUPER::LoadById($identifier);
     }
     else {
+        # Try the exact name first, so a queue created before names were
+        # trimmed still loads by its stored name.
         $self->LoadByCols( Name => $identifier );
+
+        unless ( $self->Id ) {
+            my $name = $self->CanonicalizeName($identifier);
+            $self->LoadByCols( Name => $name ) if length $name && $name ne $identifier;
+        }
     }
 
     return ( $self->Id );
