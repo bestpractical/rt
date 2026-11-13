@@ -385,6 +385,49 @@ my @tests = (
     },
 
     {
+        name => 'Custom field non-ASCII LargeContent',
+        create => sub {
+            my $cf = RT::CustomField->new(RT->SystemUser);
+            my ($ok, $msg) = $cf->Create(
+                Name => "Group Text CF",
+                Type => "Text",
+                LookupType => RT::Group->CustomFieldLookupType,
+            );
+            ok($ok, $msg);
+
+            ($ok, $msg) = $cf->AddToObject(RT::Group->new(RT->SystemUser));
+            ok($ok, $msg);
+
+            my $group = RT::Group->new(RT->SystemUser);
+            ($ok, $msg) = $group->CreateUserDefinedGroup(Name => 'Text Group');
+            ok($ok, $msg);
+
+            ($ok, $msg) = $group->AddCustomFieldValue(
+                Field => $cf->Id,
+                Value => scalar("“Café” naïve – 日本語 " x 30),
+            );
+            ok($ok, $msg);
+        },
+        present => sub {
+            my $group = RT::Group->new(RT->SystemUser);
+            $group->LoadUserDefinedGroup('Text Group');
+            ok($group->Id, 'loaded Text Group');
+            is($group->FirstCustomFieldValue('Group Text CF'), scalar("“Café” naïve – 日本語 " x 30), "CF LargeContent");
+        },
+        raw => sub {
+            my $json = shift;
+            my ($group) = grep { $_->{Name} eq 'Text Group' } @{ $json->{Groups} };
+            ok($group, 'found the group');
+            my ($ocfv) = @{ $group->{CustomFields} };
+            ok($ocfv, 'found the OCFV');
+
+            is($ocfv->{CustomField}, 'Group Text CF', 'CustomField');
+            is($ocfv->{LargeContent}, scalar("“Café” naïve – 日本語 " x 30), 'LargeContent is exported as text');
+            is($ocfv->{ContentEncoding}, undef, 'no ContentEncoding');
+        }
+    },
+
+    {
         name => 'Scrips including Disabled',
         export_args => { FollowDisabled => 1 },
         create => sub {
