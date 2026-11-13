@@ -115,4 +115,17 @@ ok ($group->Id, "Found the AdminCc object for this Queue");
     is($WithSLA->SLA, 'standard', 'SLA is updated');
 }
 
+diag "Load by name with leading/trailing spaces";
+{
+    my $queue = RT::Queue->new(RT->SystemUser);
+    my ($id, $msg) = $queue->Create(Name => 'Spaced Queue');
+    ok($id, $msg);
+
+    for my $name ('Spaced Queue ', ' Spaced Queue', ' Spaced Queue ') {
+        my $loaded = RT::Queue->new(RT->SystemUser);
+        $loaded->Load($name);
+        is($loaded->Id, $id, "Load('$name') finds Spaced Queue");
+    }
+}
+
 done_testing;
