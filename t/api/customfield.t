@@ -492,4 +492,27 @@ $ocf = RT::ObjectCustomField->new( RT->SystemUser );
 ok( $ok, "Found OCF for " . $cf->Name );
 is( $ocf->SortOrder, 5, 'Sort order is 5, CF moved to bottom of list on re-enable');
 
+diag "Scrubbing non-ASCII LargeContent";
+{
+    my $cf = RT::CustomField->new( RT->SystemUser );
+    my ( $ok, $msg ) = $cf->Create(
+        Name       => 'Scrubbed LargeContent',
+        Type       => 'Text',
+        LookupType => RT::Ticket->CustomFieldLookupType,
+    );
+    ok( $ok, $msg );
+    ( $ok, $msg ) = $cf->AddToObject($queue);
+    ok( $ok, $msg );
+
+    my $text   = "\x{201C}Caf\x{E9}\x{201D} \x{2013} \x{65E5}\x{672C}\x{8A9E} " x 30;
+    my $ticket = RT::Test->create_ticket( Queue => 'General', Subject => 'LargeContent scrubbing' );
+    ( $ok, $msg ) = $ticket->AddCustomFieldValue(
+        Field        => $cf->Id,
+        LargeContent => Encode::encode( 'UTF-8', "$text<script>alert(1)</script>" ),
+        ContentType  => 'text/plain',
+    );
+    ok( $ok, $msg );
+    is( $ticket->FirstCustomFieldValue( $cf->Id ), $text, 'LargeContent keeps non-ASCII text and is scrubbed' );
+}
+
 done_testing;
