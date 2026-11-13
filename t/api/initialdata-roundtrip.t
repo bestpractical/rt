@@ -1063,6 +1063,55 @@ my @tests = (
         },
     },
     {
+        name => 'Article linked to a deleted topic',
+        create => sub {
+            my $class = RT::Class->new(RT->SystemUser);
+            $class->Load('General');
+            ok($class->Id, 'loaded General class');
+
+            my %topics;
+            for my $name ('Kept Topic', 'Deleted Topic') {
+                my $topic = RT::Topic->new(RT->SystemUser);
+                my ($ok, $msg) = $topic->Create(Name => $name, ObjectType => 'RT::Class', ObjectId => $class->Id);
+                ok($ok, $msg);
+                $topics{$name} = $topic;
+            }
+
+            my $article = RT::Article->new(RT->SystemUser);
+            my ($ok, $msg) = $article->Create(
+                Class  => 'General',
+                Name   => 'Topical',
+                Topics => [ map { $_->Id } values %topics ],
+            );
+            ok($ok, $msg);
+
+            # RT::Topic::Delete leaves the article's ObjectTopics row behind
+            $topics{'Deleted Topic'}->Delete;
+            my $deleted = RT::Topic->new(RT->SystemUser);
+            $deleted->Load($topics{'Deleted Topic'}->Id);
+            ok(!$deleted->Id, 'Deleted Topic is gone');
+        },
+        raw => sub {
+            my $json = shift;
+            my ($article) = grep { $_->{Name} eq 'Topical' } @{ $json->{Articles} };
+            ok($article, 'found the article');
+            is_deeply($article->{Topics}, [ { Topic => 'Kept Topic' } ], 'only the existing topic is exported');
+        },
+        present => sub {
+            my $imported = shift;
+            return unless $imported;
+
+            my $article = RT::Article->new(RT->SystemUser);
+            $article->LoadByCols(Name => 'Topical');
+            ok($article->Id, 'loaded Topical');
+            is_deeply(
+                [ map { $_->TopicObj->Name } @{ $article->Topics->ItemsArrayRef } ],
+                ['Kept Topic'],
+                'imported article has the existing topic'
+            );
+        },
+    },
+    {
         name => 'Articles',
         create => sub {
             my $class = RT::Class->new(RT->SystemUser);
