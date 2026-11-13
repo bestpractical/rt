@@ -95,7 +95,7 @@ window.RT.Autocomplete.bind = function(from) {
             }
             new TomSelect(input.get(0),
                 {
-                    plugins: ['remove_button', 'rt_drag_drop'],
+                    plugins: ['remove_button', 'rt_drag_drop', 'rt_blur_cancel_refresh'],
                     options: options ? JSON.parse(options) : null,
                     items: items ? JSON.parse(items) : null,
                     valueField: 'value',
@@ -190,11 +190,12 @@ window.RT.Autocomplete.bind = function(from) {
             else {
                 options.delimiter = '  '; // Intentionally use 2 spaces so we can search things with spaces in them
             }
-            options.plugins = ['remove_button'];
+            options.plugins = ['remove_button', 'rt_blur_cancel_refresh'];
         }
         else {
             options.maxItems = 1;
             options.plugins = {
+                rt_blur_cancel_refresh: {},
                 clear_button: {
                     html: function () {
                         return '<div class="clear-button" title="' + RT.I18N.Catalog['remove'] + '">×</div>';

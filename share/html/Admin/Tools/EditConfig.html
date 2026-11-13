@@ -284,6 +284,7 @@ jQuery(function() {
     const input = document.querySelector('input.option-search');
     new TomSelect(input,
         {
+            plugins: ['rt_blur_cancel_refresh'],
             closeAfterSelect: true,
             allowEmptyOption: false,
             openOnFocus: false,
