@@ -134,6 +134,12 @@ is($u->PrincipalObj->PrincipalType , 'Group' , "Principal 4 is a group");
     ( $ret, $msg ) = $group->SetName(' Coders and Testers ');
     ok( $ret, "Update to the a new name" );
     is( $group->Name, 'Coders and Testers', 'leading/trailing spaces are removed on update with multiple word name' );
+
+    for my $name ( 'Coders and Testers ', ' Coders and Testers', ' Coders and Testers ' ) {
+        my $loaded = RT::Group->new( RT->SystemUser );
+        $loaded->LoadUserDefinedGroup($name);
+        is( $loaded->Id, $group->Id, "LoadUserDefinedGroup('$name') finds Coders and Testers" );
+    }
 }
 
 diag "Ticket role group members";
