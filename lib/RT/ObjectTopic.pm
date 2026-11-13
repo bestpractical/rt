@@ -205,7 +205,8 @@ sub FindDependencies {
 
     $self->SUPER::FindDependencies($walker, $deps);
 
-    $deps->Add( out => $self->TopicObj );
+    # RT::Topic::Delete leaves ObjectTopics rows behind
+    $deps->Add( out => $self->TopicObj ) if $self->TopicObj->Id;
 
     my $obj = $self->ObjectType->new( $self->CurrentUser );
     $obj->Load( $self->ObjectId );
