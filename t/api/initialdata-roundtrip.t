@@ -428,6 +428,79 @@ my @tests = (
     },
 
     {
+        name => 'Queue and group names with trailing spaces',
+        create => sub {
+            my $queue = RT::Queue->new(RT->SystemUser);
+            my ($ok, $msg) = $queue->Create(Name => 'Legacy Queue');
+            ok($ok, $msg);
+            my $group = RT::Group->new(RT->SystemUser);
+            ($ok, $msg) = $group->CreateUserDefinedGroup(Name => 'Legacy Group');
+            ok($ok, $msg);
+
+            # Names created before RT trimmed them can end in a space
+            ($ok, $msg) = $queue->__Set(Field => 'Name', Value => 'Legacy Queue ');
+            ok($ok, $msg);
+            ($ok, $msg) = $group->__Set(Field => 'Name', Value => 'Legacy Group ');
+            ok($ok, $msg);
+
+            my $cf = RT::CustomField->new(RT->SystemUser);
+            ($ok, $msg) = $cf->Create(
+                Name       => 'Legacy CF',
+                Type       => 'FreeformSingle',
+                LookupType => RT::Ticket->CustomFieldLookupType,
+            );
+            ok($ok, $msg);
+            ($ok, $msg) = $cf->AddToObject($queue);
+            ok($ok, $msg);
+
+            my $template = RT::Template->new(RT->SystemUser);
+            ($ok, $msg) = $template->Create(Name => 'Legacy Template', Queue => $queue->Id, Content => "\nHello\n");
+            ok($ok, $msg);
+
+            my $scrip = RT::Scrip->new(RT->SystemUser);
+            ($ok, $msg) = $scrip->Create(
+                Queue          => $queue->Id,
+                Description    => 'Legacy Scrip',
+                ScripCondition => 'On Create',
+                ScripAction    => 'Notify Owner',
+                Template       => 'Legacy Template',
+            );
+            ok($ok, $msg);
+
+            ($ok, $msg) = $group->PrincipalObj->GrantRight(Object => $queue, Right => 'SeeQueue');
+            ok($ok, $msg);
+        },
+        present => sub {
+            my $imported = shift;
+            return unless $imported;
+
+            my $queue = RT::Queue->new(RT->SystemUser);
+            $queue->LoadByCols(Name => 'Legacy Queue');
+            ok($queue->Id, 'Imported queue name is trimmed');
+
+            my $group = RT::Group->new(RT->SystemUser);
+            $group->LoadByCols(Domain => 'UserDefined', Name => 'Legacy Group');
+            ok($group->Id, 'Imported group name is trimmed');
+
+            my $cf = RT::CustomField->new(RT->SystemUser);
+            $cf->LoadByName(Name => 'Legacy CF', LookupType => RT::Ticket->CustomFieldLookupType);
+            ok($cf->IsAdded($queue->Id), 'Legacy CF is applied to Legacy Queue');
+
+            my $template = RT::Template->new(RT->SystemUser);
+            $template->LoadByName(Name => 'Legacy Template', Queue => $queue->Id);
+            ok($template->Id, 'Legacy Template is in Legacy Queue');
+
+            my $scrips = RT::Scrips->new(RT->SystemUser);
+            $scrips->Limit(FIELD => 'Description', VALUE => 'Legacy Scrip');
+            is($scrips->Count, 1, 'Imported Legacy Scrip');
+            ok($scrips->First->IsAdded($queue->Id), 'Legacy Scrip is applied to Legacy Queue');
+
+            ok($group->PrincipalObj->HasRight(Object => $queue, Right => 'SeeQueue'),
+                'Legacy Group has SeeQueue on Legacy Queue');
+        },
+    },
+
+    {
         name => 'Scrips including Disabled',
         export_args => { FollowDisabled => 1 },
         create => sub {
