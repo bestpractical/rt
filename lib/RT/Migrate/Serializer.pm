@@ -477,6 +477,10 @@ sub Process {
             return if !$obj->Object->isa('RT::System')
                    && $obj->Object->Disabled;
         }
+
+        return if $obj->isa('RT::Topic')
+               && $obj->ObjectType eq 'RT::Class'
+               && $obj->Object->Disabled;
     }
 
     return $self->SUPER::Process( @_ );
@@ -556,6 +560,10 @@ sub Observe {
             return 0 if $grp->Disabled
                      || $obj->MemberObj->Disabled;
         }
+    } elsif ($obj->isa("RT::Topic")) {
+        return 0 if !$self->{FollowDisabled}
+                 && $obj->ObjectType eq 'RT::Class'
+                 && $obj->Object->Disabled;
     }
 
     return 1;
