@@ -404,4 +404,27 @@ diag "Delete and DeleteAll require AdminTopics";
     is( object_topic_count( $topic->Id ), 1, 'ObjectTopics row still exists' );
 }
 
+diag "rt-validator deletes ObjectTopics rows that reference a missing topic";
+{
+    my $topic   = create_topic( Name => 'ValidatorOrphan' );
+    my $article = create_article_with_topic( 'ValidatorOrphanArticle', $topic );
+    my $topic_id = $topic->Id;
+    my $object_topic_id = $article->Topics->First->Id;
+
+    RT::Test->db_is_valid;
+
+    $RT::Handle->dbh->do( "DELETE FROM Topics WHERE id = ?", undef, $topic_id );
+
+    my ( $ecode, $res ) = RT::Test->run_validator( resolve => 1 );
+    isnt( $ecode, 0, 'rt-validator exits non-zero' );
+    like(
+        $res,
+        qr/^Record #$object_topic_id in ObjectTopics references a nonexistent record in Topics$/m,
+        'rt-validator reports the orphaned ObjectTopics row'
+    );
+    is( object_topic_count($topic_id), 0, 'rt-validator deleted the orphaned ObjectTopics row' );
+
+    RT::Test->db_is_valid;
+}
+
 done_testing();
