@@ -1330,7 +1330,7 @@ sub InsertData {
         for my $item (@Articles) {
             if ( $item->{_Original} ) {
                 $self->_UpdateOrDeleteObject( 'RT::Article', $item,
-                    { CustomFields => \@OCFVs, Attributes => \@Attributes, ObjectTopics => \@ObjectTopics } );
+                    { CustomFields => \@OCFVs, Attributes => \@Attributes, Topics => \@ObjectTopics } );
                 next;
             }
 
@@ -2616,28 +2616,36 @@ sub _UpdateObject {
             }
             elsif ( $type eq 'Topics' ) {
                 my @new_items;
-                my %old = map { $_->Topic->Name => 1 } @{ $object->Topics->ItemsArrayRef || [] };
-                my %new = map { $_->{Topic} => 1 } @$items;
+                my %old = map { $_->Topic => 1 } @{ $object->Topics->ItemsArrayRef || [] };
+                my %new;
 
                 for my $item ( @$items ) {
-                    next if $old{ $item->{Topic} };
+                    my $topic = RT::Topic->new( RT->SystemUser );
+                    if ( $item->{Topic} =~ /\D/ ) {
+                        $topic = $self->_LoadTopicByName(
+                            Name   => $item->{Topic},
+                            Owner  => $item->{TopicObject},
+                            Object => $object,
+                        );
+                    }
+                    else {
+                        $topic->Load( $item->{Topic} );
+                    }
+
+                    # Unresolved topics go on to ObjectTopics, which logs them.
+                    if ( $topic->Id ) {
+                        $new{ $topic->Id } = 1;
+                        next if $old{ $topic->Id };
+                    }
                     push @new_items, $item;
                 }
 
-                for my $name ( keys %old ) {
-                    next if $new{$name};
+                for my $topic_id ( keys %old ) {
+                    next if $new{$topic_id};
 
-                    my $topic = RT::Topic->new( RT->SystemUser );
-                    $topic->Load( $name );
-                    if ( $topic->id ) {
-                        my ( $ret, $msg ) = $object->DeleteTopic( Topic => $topic->id );
-                        unless ( $ret ) {
-                            RT->Logger->error(
-                                "Couldn't delete topic#" . $topic->id . "from object#" . $object->id . ": $msg" );
-                        }
-                    }
-                    else {
-                        RT->Logger->error( "Couldn't load topic $name" );
+                    my ( $ret, $msg ) = $object->DeleteTopic( Topic => $topic_id );
+                    unless ( $ret ) {
+                        RT->Logger->error( "Couldn't delete topic #$topic_id from article #" . $object->id . ": $msg" );
                     }
                 }
 
