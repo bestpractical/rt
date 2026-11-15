@@ -102,25 +102,41 @@ sub Create {
 
 =head2 Delete
 
-Deletes this topic, re-parenting all sub-topics to this one's parent.
+Deletes this topic and its links to articles, re-parenting all
+sub-topics to this one's parent.
+
+Returns (1, 'Status message') on success and (0, 'Error Message') on
+failure.
 
 =cut
 
 sub Delete {
     my $self = shift;
-    
+
     unless ( $self->CurrentUserHasRight('AdminTopics') ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
+    $RT::Handle->BeginTransaction;
+
     my $kids = RT::Topics->new($self->CurrentUser);
     $kids->LimitToKids($self->Id);
     while (my $topic = $kids->Next) {
-        $topic->setParent($self->Parent);
+        my ( $ok, $msg ) = $topic->SetParent($self->Parent);
+        unless ($ok) {
+            $RT::Handle->Rollback;
+            return ( 0, $msg );
+        }
     }
 
-    $self->SUPER::Delete(@_);
-    return (0, "Topic deleted");
+    my ( $ok, $msg ) = $self->_DeleteWithObjectTopics;
+    unless ($ok) {
+        $RT::Handle->Rollback;
+        return ( 0, $msg );
+    }
+
+    $RT::Handle->Commit;
+    return ( 1, $self->loc("Topic deleted") );
 }
 
 # }}}
@@ -130,25 +146,59 @@ sub Delete {
 
 =head2 DeleteAll
 
-Deletes this topic, and all of its descendants.
+Deletes this topic, all of its descendants, and their links to
+articles.
+
+Returns (1, 'Status message') on success and (0, 'Error Message') on
+failure.
 
 =cut
 
 sub DeleteAll {
     my $self = shift;
-    
+
     unless ( $self->CurrentUserHasRight('AdminTopics') ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    $self->SUPER::Delete(@_);
+    $RT::Handle->BeginTransaction;
+
+    my ( $ok, $msg ) = $self->_DeleteTree;
+    unless ($ok) {
+        $RT::Handle->Rollback;
+        return ( 0, $msg );
+    }
+
+    $RT::Handle->Commit;
+    return ( 1, $self->loc("Topic tree deleted") );
+}
+
+# Runs inside the caller's transaction and does no rights check; the
+# caller checks AdminTopics and rolls back on failure.
+sub _DeleteTree {
+    my $self = shift;
+
     my $kids = RT::Topics->new($self->CurrentUser);
     $kids->LimitToKids($self->Id);
     while (my $topic = $kids->Next) {
-        $topic->DeleteAll;
+        my ( $ok, $msg ) = $topic->_DeleteTree;
+        return ( 0, $msg ) unless $ok;
     }
 
-    return (0, "Topic tree deleted");
+    return $self->_DeleteWithObjectTopics;
+}
+
+sub _DeleteWithObjectTopics {
+    my $self = shift;
+
+    my $object_topics = RT::ObjectTopics->new($self->CurrentUser);
+    $object_topics->LimitToTopic($self->Id);
+    while (my $object_topic = $object_topics->Next) {
+        my ( $ok, $msg ) = $object_topic->Delete;
+        return ( 0, $msg ) unless $ok;
+    }
+
+    return $self->SUPER::Delete;
 }
 
 # }}}
