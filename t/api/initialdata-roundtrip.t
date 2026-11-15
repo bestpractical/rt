@@ -1543,6 +1543,85 @@ subtest 'Article topics named without TopicObject' => sub {
     });
 };
 
+subtest 'Article topics updated from changes' => sub {
+    autorollback(sub {
+        my %classes;
+        for my $class_name ('Sync Topics', 'Other Topics') {
+            my $class = RT::Class->new(RT->SystemUser);
+            my ($ok, $msg) = $class->Create(Name => $class_name);
+            ok($ok, $msg);
+            $classes{$class_name} = $class;
+        }
+
+        my %topics;
+        for my $spec (
+            [ 'Sync Topics',  'Billing' ],
+            [ 'Sync Topics',  'Shipping' ],
+            [ 'Other Topics', 'Billing' ],
+            [ 'RT::System',   'Urgent' ],
+        ) {
+            my ($owner, $name) = @$spec;
+            my $object = $owner eq 'RT::System' ? RT->System : $classes{$owner};
+            my $topic = RT::Topic->new(RT->SystemUser);
+            my ($ok, $msg) = $topic->Create(Name => $name, ObjectType => ref $object, ObjectId => $object->Id);
+            ok($ok, $msg);
+            $topics{$owner}{$name} = $topic;
+        }
+
+        my $article = RT::Article->new(RT->SystemUser);
+        my ($ok, $msg) = $article->Create(
+            Name   => 'Refunds',
+            Class  => $classes{'Sync Topics'}->Id,
+            Topics => [ $topics{'Sync Topics'}{Billing}->Id, $topics{'RT::System'}{Urgent}->Id ],
+        );
+        ok($ok, $msg);
+
+        my $directory = File::Spec->catdir(RT::Test->temp_directory, 'topic-changes');
+        mkdir $directory;
+        open my $fh, '>:encoding(UTF-8)', File::Spec->catfile($directory, 'initialdata.json') or die $!;
+        print $fh JSON->new->encode({
+            Articles => [
+                {
+                    Topics => [
+                        { Topic => 'Billing',  TopicObject => 'Sync Topics' },
+                        { Topic => 'Billing',  TopicObject => 'Other Topics' },
+                        { Topic => 'Shipping', TopicObject => 'Sync Topics' },
+                    ],
+                    _Updated  => 1,
+                    _Original => {
+                        Name   => 'Refunds',
+                        Class  => 'Sync Topics',
+                        Topics => [
+                            { Topic => 'Billing', TopicObject => 'Sync Topics' },
+                            { Topic => 'Urgent',  TopicObject => 'RT::System' },
+                        ],
+                    },
+                },
+            ],
+        });
+        close $fh;
+
+        my @warnings;
+        {
+            local $SIG{__WARN__} = sub { push @warnings, $_[0] };
+            import_initialdata($directory);
+        }
+        is_deeply(\@warnings, [], 'no warnings applying topic changes');
+
+        $article = RT::Article->new(RT->SystemUser);
+        $article->LoadByCols(Name => 'Refunds');
+        ok($article->Id, 'loaded Refunds');
+        is_deeply(
+            [ sort { $a <=> $b } map { $_->Topic } @{ $article->Topics->ItemsArrayRef } ],
+            [
+                sort { $a <=> $b } map { $_->Id } $topics{'Sync Topics'}{Billing}, $topics{'Other Topics'}{Billing},
+                $topics{'Sync Topics'}{Shipping}
+            ],
+            'article topics match the changes'
+        );
+    });
+};
+
 RT::Test::done_testing();
 
 sub autorollback {
