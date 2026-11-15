@@ -1142,6 +1142,39 @@ my @tests = (
         },
     },
     {
+        name => 'Topics in a disabled class',
+        create => sub {
+            my $class = RT::Class->new(RT->SystemUser);
+            my ($ok, $msg) = $class->Create(Name => 'Retired Class');
+            ok($ok, $msg);
+            my $topic = RT::Topic->new(RT->SystemUser);
+            ($ok, $msg) = $topic->Create(Name => 'Retired Topic', ObjectType => 'RT::Class', ObjectId => $class->Id);
+            ok($ok, $msg);
+
+            my $article = RT::Article->new(RT->SystemUser);
+            ($ok, $msg) = $article->Create(Class => 'General', Name => 'Uses retired topic', Topics => [ $topic->Id ]);
+            ok($ok, $msg);
+
+            ($ok, $msg) = $class->SetDisabled(1);
+            ok($ok, $msg);
+        },
+        raw => sub {
+            my $json = shift;
+            ok(!grep({ $_->{Name} eq 'Retired Class' } @{ $json->{Classes} }), 'disabled class is not exported');
+            ok(!grep({ $_->{Name} eq 'Retired Topic' } @{ $json->{Topics} || [] }), 'its topic is not exported');
+            my ($article) = grep { $_->{Name} eq 'Uses retired topic' } @{ $json->{Articles} };
+            ok($article, 'found the article');
+            ok(!$article->{Topics}, 'article has no link to the topic');
+        },
+        present => sub {
+            my $imported = shift;
+            my $article = RT::Article->new(RT->SystemUser);
+            $article->LoadByCols(Name => 'Uses retired topic');
+            ok($article->Id, 'loaded Uses retired topic');
+            is($article->Topics->Count, $imported ? 0 : 1, 'article topics');
+        },
+    },
+    {
         name => 'Article linked to a deleted topic',
         create => sub {
             my $class = RT::Class->new(RT->SystemUser);
