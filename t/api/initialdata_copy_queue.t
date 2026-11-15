@@ -277,4 +277,79 @@ my $new_changes;
 
 is_deeply( JSON::decode_json($new_changes), JSON::decode_json($changes), 'Generated changes look good' );
 
+diag "Verify repeated dumps produce no false changes";
+
+my $baseline_dir = File::Spec->catdir( $parent_dir, 'baseline' );
+ok(
+    RT::Test->run_singleton_command(
+        'sbin/rt-dump-initialdata', '--quiet', '--dir', $baseline_dir, '--sync',
+    ),
+    'Dump baseline initialdata'
+);
+
+for my $run ( 1 .. 3 ) {
+    my $run_dir = File::Spec->catdir( $parent_dir, "run$run" );
+    ok(
+        RT::Test->run_singleton_command(
+            'sbin/rt-dump-initialdata', '--quiet', '--dir', $run_dir, '--sync', '--base',
+            File::Spec->catfile( $baseline_dir, 'initialdata.json' ),
+        ),
+        "Dump run $run with --base"
+    );
+
+    my $changes_file = File::Spec->catfile( $run_dir, 'changes.json' );
+    ok( !-e $changes_file, "Run $run: no changes.json generated (no false changes)" );
+}
+
+diag "Removing an article's last topic";
+
+my $topic = RT::Topic->new( RT->SystemUser );
+ok( ( $topic->Create( Name => 'Billing', ObjectType => 'RT::Class', ObjectId => $class->Id ) )[0],
+    'Created topic Billing' );
+
+my $article = RT::Article->new( RT->SystemUser );
+ok( ( $article->Create( Name => 'Refunds', Class => $class->Id, Topics => [ $topic->Id ] ) )[0],
+    'Created article Refunds' );
+
+my $topic_base_dir = File::Spec->catdir( $parent_dir, 'topic-base' );
+ok(
+    RT::Test->run_singleton_command( 'sbin/rt-dump-initialdata', '--quiet', '--dir', $topic_base_dir, '--sync' ),
+    'Dump initialdata with the article topic'
+);
+
+ok( ( $article->DeleteTopic( Topic => $topic->Id ) )[0], 'Removed topic Billing from Refunds' );
+
+my $topic_changes_dir = File::Spec->catdir( $parent_dir, 'topic-changes' );
+ok(
+    RT::Test->run_singleton_command(
+        'sbin/rt-dump-initialdata', '--quiet', '--dir', $topic_changes_dir, '--sync', '--base',
+        File::Spec->catfile( $topic_base_dir, 'initialdata.json' ),
+    ),
+    'Dump changes without the article topic'
+);
+
+my $topic_changes_file = File::Spec->catfile( $topic_changes_dir, 'changes.json' );
+ok( -e $topic_changes_file, 'changes.json generated' );
+my $topic_changes = do {
+    local $/;
+    open my $fh, '<', $topic_changes_file or die "Can't read $topic_changes_file: $!";
+    JSON::decode_json(<$fh>);
+};
+
+is_deeply( [ keys %$topic_changes ], ['Articles'], 'only Articles changed' );
+is( scalar @{ $topic_changes->{Articles} }, 1, 'one article changed' );
+my $article_change = $topic_changes->{Articles}[0];
+is_deeply( [ sort keys %$article_change ], [qw/Topics _Original _Updated/], 'only Topics changed on the article' );
+is_deeply( $article_change->{Topics}, [], 'Topics is an empty list' );
+is( $article_change->{_Original}{Name}, 'Refunds', 'change is for Refunds' );
+is_deeply(
+    $article_change->{_Original}{Topics},
+    [ { Topic => 'Billing', TopicObject => 'FAQ' } ],
+    'original Topics lists Billing'
+);
+
+ok( ( $article->AddTopic( Topic => $topic->Id ) )[0], 'Restored topic Billing on Refunds' );
+ok( RT->DatabaseHandle->InsertData( $topic_changes_file, undef, disconnect_after => 0 ), 'Applied topic changes' );
+is( $article->Topics->Count, 0, 'Refunds has no topics after applying changes' );
+
 done_testing;
