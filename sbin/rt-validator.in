@@ -139,6 +139,8 @@ $redo_on{'Delete'} = {
 
     Links => [],
 
+    ObjectTopics => [],
+
     CustomFields => [],
     CustomFieldValues => [],
     ObjectCustomFields => [],
@@ -1022,6 +1024,21 @@ push @CHECKS, Scrips => sub {
         'ObjectScrips', 'ObjectId' => 'Queues', 'id',
     );
     return $res;
+};
+
+push @CHECKS, 'ObjectTopics -> Topics' => sub {
+    my $msg = "A record in ObjectTopics links an article to a topic that doesn't exist."
+        ." Deleting a topic in older RT versions left these records behind."
+        ." It's safe to delete such records.";
+    return check_integrity(
+        'ObjectTopics', 'Topic' => 'Topics', 'id',
+        action => sub {
+            my $id = shift;
+            return unless prompt( 'Delete', $msg );
+
+            delete_record( 'ObjectTopics', $id );
+        },
+    );
 };
 
 push @CHECKS, Attributes => sub {
