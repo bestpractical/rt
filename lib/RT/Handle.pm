@@ -2584,7 +2584,10 @@ sub _UpdateObject {
                     push @{ $new{ $item->{CustomField} } }, $item;
                 }
 
-                for my $name ( keys %new ) {
+                # A custom field whose values were all removed appears only
+                # in the original record.
+                my %names = map { $_->{CustomField} => 1 } @$items, @{ $original->{CustomFields} || [] };
+                for my $name ( keys %names ) {
                     my $cf = $object->LoadCustomFieldByIdentifier( $name );
                     if ( $cf->id ) {
                         $old{$name} = $object->CustomFieldValues( $cf );
@@ -2604,7 +2607,7 @@ sub _UpdateObject {
                         next if grep {
                             ( $ocfv->Content // '' ) eq ( $_->{Content} // '' )
                               && ( $ocfv->LargeContent // '' ) eq ( $_->{LargeContent} // '' )
-                        } @{ $new{$name} };
+                        } @{ $new{$name} || [] };
 
                         my ( $ret, $msg ) = $ocfv->Delete();
                         unless ( $ret ) {

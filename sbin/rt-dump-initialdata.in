@@ -321,9 +321,11 @@ sub find_differences {
             delete $base_record->{id};
             next if $JSON->encode( $base_record ) eq $JSON->encode( $edited_record );
 
-            # The export leaves out Topics when an article has none, so an
-            # empty list is the only way to remove its last topic.
-            $edited_record->{Topics} = [] if $base_record->{Topics} && !$edited_record->{Topics};
+            # The export leaves out Topics and CustomFields when a record has
+            # none, so an empty list is the only way to remove the last one.
+            for my $field (qw/Topics CustomFields/) {
+                $edited_record->{$field} = [] if $base_record->{$field} && !$edited_record->{$field};
+            }
 
             for my $field ( keys %$edited_record ) {
 
