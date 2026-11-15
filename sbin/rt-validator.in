@@ -1026,6 +1026,20 @@ push @CHECKS, Scrips => sub {
     return $res;
 };
 
+push @CHECKS, 'Topics -> Parent topic' => sub {
+    my $msg = "A topic's Parent refers to a topic that doesn't exist."
+        ." The script can move such topics to the top level of their topic tree.";
+    return check_integrity(
+        'Topics', 'Parent' => 'Topics', 'id',
+        action => sub {
+            my $id = shift;
+            return unless prompt( 'Reparent', $msg );
+
+            update_records( 'Topics', { id => $id }, { Parent => 0 } );
+        },
+    );
+};
+
 push @CHECKS, 'ObjectTopics -> Topics' => sub {
     my $msg = "A record in ObjectTopics links an article to a topic that doesn't exist."
         ." Deleting a topic in older RT versions left these records behind."
