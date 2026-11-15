@@ -427,6 +427,11 @@ sub __DependsOn {
     $objs->LimitToTopic( $self->Id );
     push( @$list, $objs );
 
+    # Child topics
+    $objs = RT::Topics->new( $self->CurrentUser );
+    $objs->LimitToKids( $self->Id );
+    push( @$list, $objs );
+
     $deps->_PushDependencies(
         BaseObject    => $self,
         Flags         => RT::Shredder::Constants::DEPENDS_ON,
