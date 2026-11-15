@@ -352,4 +352,135 @@ ok( ( $article->AddTopic( Topic => $topic->Id ) )[0], 'Restored topic Billing on
 ok( RT->DatabaseHandle->InsertData( $topic_changes_file, undef, disconnect_after => 0 ), 'Applied topic changes' );
 is( $article->Topics->Count, 0, 'Refunds has no topics after applying changes' );
 
+diag "Removing all values of an article custom field";
+
+my %article_cfs;
+for my $name (qw/Product Region/) {
+    my $cf = RT::CustomField->new( RT->SystemUser );
+    ok( ( $cf->Create( Name => $name, Type => 'FreeformSingle', LookupType => RT::Article->CustomFieldLookupType ) )[0],
+        "Created article custom field $name" );
+    ok( ( $cf->AddToObject($class) )[0], "Applied $name to FAQ" );
+    $article_cfs{$name} = $cf;
+}
+
+my %cf_articles;
+for my $spec ( [ 'Two Fields', Product => 'Widget', Region => 'West' ], [ 'One Field', Product => 'Gadget' ] ) {
+    my ( $name, %values ) = @$spec;
+    my $cf_article = RT::Article->new( RT->SystemUser );
+    ok( ( $cf_article->Create( Name => $name, Class => $class->Id ) )[0], "Created article $name" );
+    for my $field ( sort keys %values ) {
+        ok( ( $cf_article->AddCustomFieldValue( Field => $article_cfs{$field}->Id, Value => $values{$field} ) )[0],
+            "Set $field on $name" );
+    }
+    $cf_articles{$name} = $cf_article;
+}
+
+my $cf_base_dir = File::Spec->catdir( $parent_dir, 'cf-base' );
+ok(
+    RT::Test->run_singleton_command( 'sbin/rt-dump-initialdata', '--quiet', '--dir', $cf_base_dir, '--sync' ),
+    'Dump initialdata with article custom field values'
+);
+
+for my $name ( 'Two Fields', 'One Field' ) {
+    ok( ( $cf_articles{$name}->DeleteCustomFieldValue( Field => $article_cfs{Product}->Id, Value => $name eq 'Two Fields' ? 'Widget' : 'Gadget' ) )[0],
+        "Removed Product from $name" );
+}
+
+my $cf_changes_dir = File::Spec->catdir( $parent_dir, 'cf-changes' );
+ok(
+    RT::Test->run_singleton_command(
+        'sbin/rt-dump-initialdata', '--quiet', '--dir', $cf_changes_dir, '--sync', '--base',
+        File::Spec->catfile( $cf_base_dir, 'initialdata.json' ),
+    ),
+    'Dump changes without the Product values'
+);
+
+my $cf_changes_file = File::Spec->catfile( $cf_changes_dir, 'changes.json' );
+ok( -e $cf_changes_file, 'changes.json generated' );
+my $cf_changes = do {
+    local $/;
+    open my $fh, '<', $cf_changes_file or die "Can't read $cf_changes_file: $!";
+    JSON::decode_json(<$fh>);
+};
+
+is_deeply( [ keys %$cf_changes ], ['Articles'], 'only Articles changed' );
+my %cf_article_changes = map { $_->{_Original}{Name} => $_ } @{ $cf_changes->{Articles} };
+is_deeply( [ sort keys %cf_article_changes ], [ 'One Field', 'Two Fields' ], 'both articles changed' );
+for my $name ( 'Two Fields', 'One Field' ) {
+    my $change = $cf_article_changes{$name};
+    is_deeply( [ sort keys %$change ], [qw/CustomFields _Original _Updated/], "only CustomFields changed on $name" );
+    is_deeply( $change->{CustomFields}, [], "CustomFields is an empty list for $name" );
+    is_deeply(
+        [ map { [ $_->{CustomField}, $_->{Content} ] } @{ $change->{_Original}{CustomFields} } ],
+        [ [ 'Product', $name eq 'Two Fields' ? 'Widget' : 'Gadget' ] ],
+        "original CustomFields lists only the removed Product value for $name"
+    );
+}
+
+for my $name ( 'Two Fields', 'One Field' ) {
+    ok( ( $cf_articles{$name}->AddCustomFieldValue( Field => $article_cfs{Product}->Id, Value => $name eq 'Two Fields' ? 'Widget' : 'Gadget' ) )[0],
+        "Restored Product on $name" );
+}
+ok( RT->DatabaseHandle->InsertData( $cf_changes_file, undef, disconnect_after => 0 ), 'Applied custom field changes' );
+
+is( $cf_articles{'Two Fields'}->CustomFieldValues( $article_cfs{Product}->Id )->Count,
+    0, 'Two Fields has no Product value after applying changes' );
+is( $cf_articles{'Two Fields'}->FirstCustomFieldValue( $article_cfs{Region}->Id ),
+    'West', 'Two Fields keeps its Region value' );
+is( $cf_articles{'One Field'}->CustomFieldValues( $article_cfs{Product}->Id )->Count,
+    0, 'One Field has no Product value after applying changes' );
+
+diag "Removing the last custom field value row of an article";
+
+my $no_cf_article = RT::Article->new( RT->SystemUser );
+ok( ( $no_cf_article->Create( Name => 'No Rows', Class => $class->Id ) )[0], 'Created article No Rows' );
+ok( ( $no_cf_article->AddCustomFieldValue( Field => $article_cfs{Product}->Id, Value => 'Gizmo' ) )[0],
+    'Set Product on No Rows' );
+
+my $no_rows_base_dir = File::Spec->catdir( $parent_dir, 'no-rows-base' );
+ok(
+    RT::Test->run_singleton_command( 'sbin/rt-dump-initialdata', '--quiet', '--dir', $no_rows_base_dir, '--sync' ),
+    'Dump initialdata with the No Rows custom field value'
+);
+
+# Deleting the value only disables its row, which the export still lists,
+# so remove the row to leave the article with no CustomFields at all.
+ok(
+    RT->DatabaseHandle->dbh->do(
+        'DELETE FROM ObjectCustomFieldValues WHERE ObjectType = ? AND ObjectId = ?',
+        undef, 'RT::Article', $no_cf_article->Id
+    ),
+    'Removed the custom field value rows of No Rows'
+);
+
+my $no_rows_changes_dir = File::Spec->catdir( $parent_dir, 'no-rows-changes' );
+ok(
+    RT::Test->run_singleton_command(
+        'sbin/rt-dump-initialdata', '--quiet', '--dir', $no_rows_changes_dir, '--sync', '--base',
+        File::Spec->catfile( $no_rows_base_dir, 'initialdata.json' ),
+    ),
+    'Dump changes without the No Rows custom field value rows'
+);
+
+my $no_rows_changes_file = File::Spec->catfile( $no_rows_changes_dir, 'changes.json' );
+ok( -e $no_rows_changes_file, 'changes.json generated' );
+my $no_rows_changes = do {
+    local $/;
+    open my $fh, '<', $no_rows_changes_file or die "Can't read $no_rows_changes_file: $!";
+    JSON::decode_json(<$fh>);
+};
+
+is_deeply( [ keys %$no_rows_changes ], ['Articles'], 'only Articles changed' );
+is( scalar @{ $no_rows_changes->{Articles} }, 1, 'one article changed' );
+my $no_rows_change = $no_rows_changes->{Articles}[0];
+is( $no_rows_change->{_Original}{Name}, 'No Rows', 'change is for No Rows' );
+is_deeply( $no_rows_change->{CustomFields}, [], 'CustomFields is an empty list' );
+
+ok( ( $no_cf_article->AddCustomFieldValue( Field => $article_cfs{Product}->Id, Value => 'Gizmo' ) )[0],
+    'Restored Product on No Rows' );
+ok( RT->DatabaseHandle->InsertData( $no_rows_changes_file, undef, disconnect_after => 0 ),
+    'Applied No Rows custom field changes' );
+is( $no_cf_article->CustomFieldValues( $article_cfs{Product}->Id )->Count,
+    0, 'No Rows has no Product value after applying changes' );
+
 done_testing;
