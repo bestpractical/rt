@@ -273,4 +273,135 @@ ok ($trans->Field eq 'Summary', "it is about setting the Summary");
 is  ($trans->NewValue , 'testFoo', "The new content is 'foo'");
 is ($trans->OldValue,$s, "the old value was preserved");
 
+sub create_topic {
+    my %args  = @_;
+    my $topic = RT::Topic->new( RT->SystemUser );
+    my ( $id, $msg ) = $topic->Create(
+        ObjectType => 'RT::Class',
+        ObjectId   => $class->Id,
+        Parent     => 0,
+        %args,
+    );
+    ok( $id, "Created topic $args{Name}: $msg" );
+    return $topic;
+}
+
+sub object_topic_count {
+    my $topic_id = shift;
+    my $object_topics = RT::ObjectTopics->new( RT->SystemUser );
+    $object_topics->LimitToTopic($topic_id);
+    return $object_topics->Count;
+}
+
+sub create_article_with_topic {
+    my ( $name, $topic ) = @_;
+    my $article = RT::Article->new( RT->SystemUser );
+    my ( $id, $msg ) = $article->Create( Class => $class->Id, Name => $name );
+    ok( $id, "Created article $name: $msg" );
+    ( $id, $msg ) = $article->AddTopic( Topic => $topic->Id );
+    ok( $id, "Added topic " . $topic->Name . " to article $name: $msg" );
+    return $article;
+}
+
+diag "DeleteAll on a topic linked to an article";
+{
+    my $topic   = create_topic( Name => 'DeleteAllLinked' );
+    my $article = create_article_with_topic( 'DeleteAllLinkedArticle', $topic );
+    my $topic_id = $topic->Id;
+
+    my ( $ok, $msg ) = $topic->DeleteAll;
+    is( $ok,  1,                    'DeleteAll returns success' );
+    is( $msg, 'Topic tree deleted', 'DeleteAll returns the success message' );
+
+    my $deleted = RT::Topic->new( RT->SystemUser );
+    $deleted->Load($topic_id);
+    ok( !$deleted->Id, 'Topic is gone' );
+    is( object_topic_count($topic_id), 0, 'No ObjectTopics rows reference the deleted topic' );
+    is( $article->Topics->Count,       0, 'Article has no topics' );
+}
+
+diag "DeleteAll on a parent whose child topic is linked to an article";
+{
+    my $parent = create_topic( Name => 'DeleteAllParent' );
+    my $child  = create_topic( Name => 'DeleteAllChild', Parent => $parent->Id );
+    my $parent_article = create_article_with_topic( 'DeleteAllParentArticle', $parent );
+    my $child_article  = create_article_with_topic( 'DeleteAllChildArticle',  $child );
+    my ( $parent_id, $child_id ) = ( $parent->Id, $child->Id );
+
+    my ( $ok, $msg ) = $parent->DeleteAll;
+    is( $ok,  1,                    'DeleteAll returns success' );
+    is( $msg, 'Topic tree deleted', 'DeleteAll returns the success message' );
+
+    for my $id ( $parent_id, $child_id ) {
+        my $deleted = RT::Topic->new( RT->SystemUser );
+        $deleted->Load($id);
+        ok( !$deleted->Id, "Topic $id is gone" );
+        is( object_topic_count($id), 0, "No ObjectTopics rows reference topic $id" );
+    }
+    is( $parent_article->Topics->Count, 0, 'Parent article has no topics' );
+    is( $child_article->Topics->Count,  0, 'Child article has no topics' );
+}
+
+diag "Delete re-parents children and removes the topic's ObjectTopics rows";
+{
+    my $grandparent = create_topic( Name => 'DeleteGrandparent' );
+    my $parent      = create_topic( Name => 'DeleteParent', Parent => $grandparent->Id );
+    my $child       = create_topic( Name => 'DeleteChild',  Parent => $parent->Id );
+    my $parent_article = create_article_with_topic( 'DeleteParentArticle', $parent );
+    my $child_article  = create_article_with_topic( 'DeleteChildArticle',  $child );
+    my $parent_id = $parent->Id;
+
+    my ( $ok, $msg ) = $parent->Delete;
+    is( $ok,  1,               'Delete returns success' );
+    is( $msg, 'Topic deleted', 'Delete returns the success message' );
+
+    my $deleted = RT::Topic->new( RT->SystemUser );
+    $deleted->Load($parent_id);
+    ok( !$deleted->Id, 'Topic is gone' );
+    is( object_topic_count($parent_id), 0, 'No ObjectTopics rows reference the deleted topic' );
+    is( $parent_article->Topics->Count, 0, 'Article of the deleted topic has no topics' );
+
+    $child->Load( $child->Id );
+    ok( $child->Id, 'Child topic still exists' );
+    is( $child->Parent, $grandparent->Id, 'Child topic moved up to the grandparent' );
+    is( $child_article->Topics->Count, 1, 'Child article keeps its topic' );
+    is( $child_article->Topics->First->Topic, $child->Id, 'Child article topic is the child topic' );
+}
+
+diag "Delete on a top-level topic moves its children to the top level";
+{
+    my $parent = create_topic( Name => 'DeleteTopLevelParent' );
+    my $child  = create_topic( Name => 'DeleteTopLevelChild', Parent => $parent->Id );
+
+    my ( $ok, $msg ) = $parent->Delete;
+    is( $ok,  1,               'Delete returns success' );
+    is( $msg, 'Topic deleted', 'Delete returns the success message' );
+
+    $child->Load( $child->Id );
+    ok( $child->Id, 'Child topic still exists' );
+    is( $child->Parent, 0, 'Child topic is now a top-level topic' );
+}
+
+diag "Delete and DeleteAll require AdminTopics";
+{
+    my $topic   = create_topic( Name => 'DeleteNoRight' );
+    my $article = create_article_with_topic( 'DeleteNoRightArticle', $topic );
+
+    my $user = RT::Test->load_or_create_user( Name => 'topic-no-admin' );
+    my $topic_as_user = RT::Topic->new( RT::CurrentUser->new($user) );
+    $topic_as_user->Load( $topic->Id );
+    is( $topic_as_user->Id, $topic->Id, 'Loaded topic as unprivileged user' );
+
+    for my $method (qw(Delete DeleteAll)) {
+        my ( $ok, $msg ) = $topic_as_user->$method;
+        is( $ok,  0,                   "$method returns failure without AdminTopics" );
+        is( $msg, 'Permission Denied', "$method returns the permission message" );
+    }
+
+    my $still_there = RT::Topic->new( RT->SystemUser );
+    $still_there->Load( $topic->Id );
+    is( $still_there->Id, $topic->Id, 'Topic still exists' );
+    is( object_topic_count( $topic->Id ), 1, 'ObjectTopics row still exists' );
+}
+
 done_testing();
