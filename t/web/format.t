@@ -959,4 +959,19 @@ my $italic_small_format = $m->form_name('BuildQuery')->value('Format');
 like($italic_small_format, qr/<span class="fst-italic"><small>__Status__<\/small><\/span>/,
      'Combining Face=Italic and Size=Small generates Bootstrap span with <small>');
 
+diag "Test header row borders with a three-row format";
+{
+    my $format
+        = q{'__id__', '__Subject__', '__Status__', '__NEWLINE__', '__NBSP__', '__QueueName__', '__NEWLINE__', '__NBSP__', '__Created__'};
+    $m->get_ok(
+        '/Search/Results.html?Query=' . uri_escape( 'id = ' . $ticket1_id ) . '&Format=' . uri_escape($format) );
+    my $dom  = $m->dom;
+    my @rows = $dom->find('table.collection-as-table thead tr')->each;
+    is_deeply(
+        [ map { ( $_->attr('class') // '' ) =~ /\bhide-tr-borders\b/ ? 1 : 0 } @rows ],
+        [ 1, 1, 0 ],
+        'only the last header row keeps its bottom border'
+    );
+}
+
 done_testing;
