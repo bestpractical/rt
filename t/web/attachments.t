@@ -552,4 +552,57 @@ diag "Calendar attachments";
     $m->content_contains( '<b><u>这是说明</u></b>', 'found html description' );
 }
 
+diag "Image attachments are shown by SHA";
+{
+    my @tickets;
+    for ( 1 .. 2 ) {
+        my $mime = MIME::Entity->build(
+            Type    => 'multipart/mixed',
+            From    => 'root@localhost',
+            Subject => 'SHA image',
+        );
+        $mime->attach( Type => 'text/plain', Data => 'Some content' );
+        $mime->attach(
+            Type        => 'image/png',
+            Path        => LogoFile,
+            Filename    => 'bpslogo.png',
+            Disposition => 'inline',
+            Encoding    => 'base64',
+        );
+        push @tickets, RT::Test->create_ticket( Queue => $queue, Subject => 'SHA image', MIMEObj => $mime );
+    }
+
+    my @shas;
+    for my $ticket (@tickets) {
+        my $attachments = $ticket->Attachments;
+        $attachments->Limit( FIELD => 'ContentType', VALUE => 'image/png' );
+        is( $attachments->Count, 1, 'Found the image attachment' );
+        push @shas, $attachments->First->SHA;
+
+        my $texts = $ticket->Attachments;
+        $texts->Limit( FIELD => 'ContentType', VALUE => 'text/plain' );
+        is( $texts->First->SHA, undef, 'Text attachment has no SHA' );
+    }
+    like( $shas[0], qr/^[0-9a-f]{64}$/, 'Image attachment has a SHA' );
+    is( $shas[1], $shas[0], 'Identical images share the same SHA' );
+
+    for my $ticket (@tickets) {
+        $m->goto_ticket( $ticket->id );
+        my $img = $m->dom->at('img[alt="bpslogo.png"]');
+        ok( $img, 'Found the image in history' );
+        is( $img->attr('src'), "Attachment/$shas[0]", 'Image is loaded by SHA' );
+    }
+
+    $m->get_ok("/Ticket/Attachment/$shas[0]");
+    is( $m->content_type, 'image/png', 'Content-Type is image/png' );
+    is( $m->content, RT::Test->file_content(LogoFile), 'Binary content matches' );
+
+    RT::Test->load_or_create_user( Name => 'no-rights', Password => 'password', Privileged => 1 );
+    my $m3 = RT::Test::Web->new;
+    ok( $m3->login( 'no-rights', 'password' ), 'Logged in as user without rights' );
+    $m3->get("/Ticket/Attachment/$shas[0]");
+    is( $m3->status, 404, 'User who cannot see the ticket gets 404' );
+    $m3->next_warning_like( qr/Attachment $shas[0] could not be loaded/, 'Got not found warning' );
+}
+
 done_testing;

@@ -362,8 +362,15 @@ my $render_attachment = sub {
         my $efilename = $m->interp->apply_escapes( $filename, 'h' );
 
         my $url = RT->System->ExternalStorageURLFor($message)
-               || $AttachmentPath .'/'. $Transaction->Id .'/'. $message->Id .'/'
-                . $m->interp->apply_escapes( $filename, 'u' );
+            || (
+                $AttachmentPath . '/' . (
+                    $message->SHA || (
+                          $Transaction->Id . '/'
+                        . $message->Id . '/'
+                        . $m->interp->apply_escapes( $filename, 'u' )
+                    )
+                )
+            );
         my $eurl = $m->interp->apply_escapes( $url, 'h' );
 
         $m->out(
