@@ -1,6 +1,8 @@
 use strict;
 use warnings;
 use RT::Test::REST2 tests => undef;
+use JSON qw(encode_json);
+use URI::Escape qw(uri_escape);
 
 my $mech = RT::Test::REST2->mech;
 my $auth = RT::Test::REST2->authorization_header;
@@ -135,6 +137,30 @@ my $bravo_id = $bravo->Id;
         is($content->{message}, 'Query must be an array of objects');
     }
     is($content->{message}, 'JSON object must be a ARRAY');
+}
+
+# JSON in the query parameter
+{
+    my $query = uri_escape(encode_json([{ field => 'Name', value => 'General' }]));
+    my $res = $mech->get("$rest_base_path/queues?query=$query",
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+    is($mech->json_response->{count}, 1);
+}
+
+# Invalid JSON
+{
+    my $res = $mech->get("$rest_base_path/queues?query=[not json",
+        'Authorization' => $auth,
+    );
+    is($res->code, 400, 'invalid JSON in query parameter');
+
+    $res = $mech->post("$rest_base_path/queues",
+        'Authorization' => $auth,
+        Content         => '[not json',
+    );
+    is($res->code, 400, 'invalid JSON in form-encoded body');
 }
 
 # Sorted search
