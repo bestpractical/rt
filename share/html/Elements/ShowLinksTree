@@ -104,11 +104,22 @@ $format =~ s{(['"])(.*?)\1}{$1 . $2 . "/TITLE:$type_label/CLASS:links-tree-id" .
 if ($Edit) {
     $m->notes( LinkDeleteType => 'MemberOf' );
     $m->notes( LinkDeleteMode => 'Base' );
-    $format = "'__DeleteLinkCheckBox__', " . $format;
+    $format = RT::Links->LinkListingEditFormat(
+        $m->comp( '/Elements/CollectionAsTable/ParseFormat', Format => $format ) );
 }
 
 my @parsed_format = $m->comp( '/Elements/CollectionAsTable/ParseFormat', Format => $format );
-my $maxitems      = grep { !( defined $_->{title} && $_->{title} eq 'NEWLINE' ) } @parsed_format;
+
+# A format with __NEWLINE__ stacks its rows in the same cells, so the table is as
+# wide as its widest row, as in CollectionList.
+my ( $maxitems, $item ) = ( 0, 0 );
+for my $column (@parsed_format) {
+    if ( defined $column->{title} && $column->{title} eq 'NEWLINE' ) {
+        $item = 0;
+        next;
+    }
+    $maxitems = $item if ++$item > $maxitems;
+}
 
 my $inline_edit = $InlineEdit ? 1 : 0;
 

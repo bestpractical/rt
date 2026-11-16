@@ -94,7 +94,8 @@ if ($Edit) {
     $m->notes( LinkDeleteMode => $link_delete_mode );
 
     # Keep the delete column first: boxes.css finds it, and the id column after it, by position.
-    $format = "'__DeleteLinkCheckBox__', " . $format;
+    $format = RT::Links->LinkListingEditFormat(
+        $m->comp( '/Elements/CollectionAsTable/ParseFormat', Format => $format ) );
 }
 
 my $collection = RT::Links->FilterLinkListing(
