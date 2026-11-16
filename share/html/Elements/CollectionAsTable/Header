@@ -125,10 +125,6 @@ for my $i ( 0 .. $#OrderBy ) {
 
 my $tr_count = 1;
 foreach my $col ( @Format ) {
-    $hide_tr_borders = 0;
-    $hide_tr_borders = 1 if $tr_count < $newline_count;
-    $tr_count++;
-
     my $attr = $col->{'attribute'} || $col->{'last_attribute'};
 
     my $title = $col->{'title'} || '';
@@ -139,7 +135,8 @@ foreach my $col ( @Format ) {
         }
 
         $item = 0;
-        $m->out(qq{</tr>\n<tr class="collection-as-table} . ($hide_tr_borders ? 'hide-tr-borders' : '') . qq{">});
+        $tr_count++;
+        $m->out( qq{</tr>\n<tr class="collection-as-table} . ( $tr_count <= $newline_count ? ' hide-tr-borders' : '' ) . qq{">} );
         next;
     } elsif ( $title eq 'NBSP' ) {
         $item++;
