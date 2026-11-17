@@ -4883,7 +4883,7 @@ sub _UploadedFile {
     my $fh          = $cgi_object->upload($arg) or return undef;
     my $upload_info = $cgi_object->uploadInfo($fh);
 
-    my $filename = "$fh";
+    my $filename = Encode::decode( "UTF-8", "$fh" );
     $filename =~ s#^.*[\\/]##;
     binmode($fh);
     my $content = do { local $/; scalar <$fh>; };

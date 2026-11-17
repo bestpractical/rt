@@ -134,7 +134,7 @@ sub create_record {
                 }
                 $data->{MIMEObj}->attach(
                     Type     => $attachment->{FileType},
-                    Filename => $attachment->{FileName},
+                    Filename => Encode::encode( 'UTF-8', $attachment->{FileName} ),
                     Data     => MIME::Base64::decode_base64($attachment->{FileContent}));
             }
             delete $data->{Attachments};

@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use utf8;
 use RT::Test::REST2 tests => undef;
 use Test::Deep;
 
@@ -928,6 +929,36 @@ my $json = JSON->new->utf8;
     my $image_ocfv = $ticket->CustomFieldValues('Image CF')->First;
     is($image_ocfv->Content, $image_name);
     is($image_ocfv->ContentType, 'image/png');
+    is($image_ocfv->LargeContent, $image_content);
+}
+
+# Ticket Creation with non-ASCII image CF filename through multipart/form-data
+{
+    my $utf8_image_name = "λογότυπο.png";
+    my $payload = {
+        Subject => 'Ticket creation with non-ASCII image CF filename',
+        Queue   => 'General',
+        CustomFields => {
+            $image_cf_id => { UploadField => 'IMAGE' },
+        },
+    };
+
+    my $res = $mech->post("$rest_base_path/ticket",
+        'Authorization' => $auth,
+        'Content_Type'  => 'form-data',
+        'Content'       => [
+            'JSON'  => $json->encode($payload),
+            'IMAGE' => [$image_path, Encode::encode('UTF-8', $utf8_image_name), 'Content-Type' => 'image/png'],
+        ]
+    );
+    is($res->code, 201);
+    my ($utf8_ticket_id) = $res->header('location') =~ qr[/ticket/(\d+)];
+    ok($utf8_ticket_id, 'Created ticket');
+
+    my $ticket = RT::Ticket->new($user);
+    $ticket->Load($utf8_ticket_id);
+    my $image_ocfv = $ticket->CustomFieldValues('Image CF')->First;
+    is($image_ocfv->Content, $utf8_image_name, 'Stored filename is the decoded non-ASCII filename');
     is($image_ocfv->LargeContent, $image_content);
 }
 

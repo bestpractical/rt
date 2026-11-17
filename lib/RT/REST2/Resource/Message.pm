@@ -180,7 +180,7 @@ sub _add_message {
     foreach my $attachment (@{$args{Attachments}}) {
         $MIME->attach(
             Type => $attachment->{FileType},
-            Filename => $attachment->{FileName},
+            Filename => Encode::encode( 'UTF-8', $attachment->{FileName} ),
             Data => MIME::Base64::decode_base64($attachment->{FileContent}),
         );
     }
