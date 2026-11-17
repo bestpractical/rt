@@ -2147,26 +2147,30 @@ sub _EncryptTOTPSecret {
     return 'gcm:' . unpack( 'H*', $iv ) . ':' . unpack( 'H*', $ct ) . ':' . unpack( 'H*', $tag );
 }
 
-=head2 _DecryptTOTPSecret RAW_VALUE
+=head2 _DecryptTOTPSecret RAW_VALUE [, SECRET_KEY]
 
-Decrypts a TOTP secret stored as C<gcm:IV_HEX:CIPHERTEXT_HEX:TAG_HEX>.
+Decrypts a TOTP secret stored as C<gcm:IV_HEX:CIPHERTEXT_HEX:TAG_HEX>,
+using C<SECRET_KEY> if given and C<$SecretKey> otherwise. Returns an
+empty string if decryption fails, logging an error only when using
+C<$SecretKey>; a caller passing its own key handles the failure itself.
 
 =cut
 
 sub _DecryptTOTPSecret {
-    my ( $self, $raw ) = @_;
+    my ( $self, $raw, $secret_key ) = @_;
     $raw =~ /^gcm:([0-9a-f]+):([0-9a-f]+):([0-9a-f]+)$/ or return $raw;
     my $iv  = pack( 'H*', $1 );
     my $ct  = pack( 'H*', $2 );
     my $tag = pack( 'H*', $3 );
     my $aad = 'totp-secret:' . $self->Id;
     require Crypt::AuthEnc::GCM;
-    my $key   = Digest::SHA::sha256( RT->Config->Get('SecretKey') );
+    my $key   = Digest::SHA::sha256( $secret_key // RT->Config->Get('SecretKey') );
     my $plain = Crypt::AuthEnc::GCM::gcm_decrypt_verify(
         'AES', $key, $iv, $aad, $ct, $tag,
     );
 
     unless ( defined $plain ) {
+        return '' if defined $secret_key;
         RT->Logger->error(
             "Failed to decrypt TOTP secret for user #" . $self->Id
             . ": SecretKey may have changed since enrollment"

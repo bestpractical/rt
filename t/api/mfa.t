@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use RT::Test tests => undef;
+use Test::Warn;
 
 eval { require RT::MFA::TOTP; 1; } or do {
     plan skip_all => 'Unable to test without RT::MFA::TOTP';
@@ -35,6 +36,31 @@ diag 'SetTOTPEnrolled and SetTOTPSecret work';
         'TOTPSecret is stored encrypted with AES-256-GCM'
     );
     is( $user->TOTPSecretDecrypted, 'JBSWY3DPEHPK3PXP', 'TOTPSecretDecrypted returns plaintext' );
+}
+
+diag '_DecryptTOTPSecret uses an explicit key and logs only for the configured key';
+{
+    my $user = RT::Test->load_or_create_user( Name => 'totp_key_test' );
+    my $configured = RT->Config->Get('SecretKey');
+
+    RT->Config->Set( SecretKey => 'explicit-key' );
+    my ( $ok, $msg ) = $user->SetTOTPSecret('JBSWY3DPEHPK3PXP');
+    RT->Config->Set( SecretKey => $configured );
+    ok( $ok, "Enrolled under a non-configured key: $msg" );
+
+    my $raw = $user->__Value('TOTPSecret');
+    is( $user->_DecryptTOTPSecret( $raw, 'explicit-key' ),
+        'JBSWY3DPEHPK3PXP', 'Decrypts with the key passed in' );
+
+    warnings_are { is( $user->_DecryptTOTPSecret( $raw, 'wrong-key' ), '', 'Wrong explicit key returns empty string' ) }
+        [], 'Wrong explicit key logs nothing';
+
+    warning_like { is( $user->_DecryptTOTPSecret($raw), '', 'Configured key returns empty string' ) }
+        qr/Failed to decrypt TOTP secret for user #@{[ $user->Id ]}: SecretKey may have changed/,
+        'Wrong configured key logs an error';
+
+    ( $ok, $msg ) = $user->ClearTOTPEnrollment;
+    ok( $ok, "Cleared enrollment: $msg" );
 }
 
 diag 'GenerateSecret returns a valid base32 string';
