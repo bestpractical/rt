@@ -219,21 +219,7 @@ diag "Ticket role group members";
     is( $tickets->Count,     2,           'Found 2 ticket' );
 
     $tickets->FromSQL("Subject = 'test ticket role group' AND AdminCc.Name NOT LIKE 'a'");
-    TODO: {
-        local $TODO = <<EOF;
-Searching NOT LIKE with multiple users is not the opposite of "LIKE", e.g.
-
-    "alice", "bob" are AdminCcs of ticket 1, abc is AdminCc of ticket 2:
-    "AdminCc.Name LIKE 'a'" returns tickets 1 and 2.
-    "AdminCc.Name NOT LIKE 'a'" returns ticket 1 because it has AdminCc "bob" which doesn't match "a".
-
-EOF
-        ok( !$tickets->Count, 'No tickets found' );
-    }
-    if ( $tickets->Count ) {
-        is( $tickets->Count,     1,           'Found 1 ticket' );
-        is( $tickets->First->id, $ticket->id, 'Found the ticket' );
-    }
+    ok( !$tickets->Count, 'No tickets found' );
 
     $tickets->FromSQL("Subject = 'test ticket role group' AND AdminCcGroup = 'delegates'");
     is( $tickets->Count,     1,           'Found 1 ticket' );

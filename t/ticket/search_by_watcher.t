@@ -266,5 +266,65 @@ my $nobody = RT::Nobody();
     is($tix->Count, 2, "found ticket(s)");
 }
 
+diag 'negative search on a multi-member role subfield';
+{
+    my $role_queue = RT::Test->load_or_create_queue( Name => 'RoleOrg' );
+    ok $role_queue && $role_queue->id, 'loaded or created queue';
+    my $qname = $role_queue->Name;
+
+    my $alice = RT::Test->load_or_create_user( EmailAddress => 'alice@example.com' );
+    my $amy   = RT::Test->load_or_create_user( EmailAddress => 'amy@example.com' );
+    my $bob   = RT::Test->load_or_create_user( EmailAddress => 'bob@example.com' );
+
+    # Engineering is shared by two users, which forces the multi-user path
+    for my $user ( $alice, $amy ) {
+        my ( $ret, $msg ) = $user->SetOrganization('Engineering');
+        ok $ret, $msg;
+    }
+    my ( $ret, $msg ) = $bob->SetOrganization('Sales');
+    ok $ret, $msg;
+
+    my $reviewer = RT::CustomRole->new( RT->SystemUser );
+    ( $ret, $msg ) = $reviewer->Create( Name => 'Reviewer', MaxValues => 0 );
+    ok $ret, $msg;
+    ( $ret, $msg ) = $reviewer->AddToObject( $role_queue->id );
+    ok $ret, $msg;
+    my $role  = $reviewer->GroupType;
+    my $rname = $reviewer->Name;
+
+    my $engineers = RT::Group->new( RT->SystemUser );
+    ( $ret, $msg ) = $engineers->CreateUserDefinedGroup( Name => 'Engineers' );
+    ok $ret, $msg;
+    ( $ret, $msg ) = $engineers->AddMember( $amy->PrincipalId );
+    ok $ret, $msg;
+
+    RT::Test->create_tickets(
+        { Queue   => $role_queue->id },
+        { Subject => 'eng',   $role => [ $alice->EmailAddress ] },
+        { Subject => 'sales', $role => [ $bob->EmailAddress ] },
+        { Subject => 'mixed', $role => [ $alice->EmailAddress, $bob->EmailAddress ] },
+        { Subject => 'group', $role => [ $engineers->PrincipalId ] },
+        { Subject => 'none' },
+    );
+
+    my $search_subjects = sub {
+        my $query   = shift;
+        my $tickets = RT::Tickets->new( RT->SystemUser );
+        $tickets->FromSQL("Queue = '$qname' AND $query");
+        return [ sort map { $_->Subject } @{ $tickets->ItemsArrayRef } ];
+    };
+
+    is_deeply( $search_subjects->("'CustomRole.{$rname}.Organization' != 'Engineering'"),
+        [ 'none', 'sales' ], '!= excludes tickets with any matching member, including via a group' );
+    is_deeply( $search_subjects->("'CustomRole.{$rname}.Organization' NOT LIKE 'Engineering'"),
+        [ 'none', 'sales' ], 'NOT LIKE excludes tickets with any matching member, including via a group' );
+    is_deeply( $search_subjects->("'CustomRole.{$rname}.Organization' SHALLOW != 'Engineering'"),
+        [ 'group', 'none', 'sales' ], 'SHALLOW != ignores users in a member group' );
+    is_deeply( $search_subjects->("'CustomRole.{$rname}.Organization' != 'Sales'"),
+        [ 'eng', 'group', 'none' ], '!= with a single matching user excludes tickets with that member' );
+    is_deeply( $search_subjects->("'CustomRole.{$rname}.Organization' = 'Engineering'"),
+        [ 'eng', 'group', 'mixed' ], '= matches tickets with any matching member, including via a group' );
+}
+
 @tickets = ();
 done_testing();
