@@ -515,6 +515,7 @@ AC_CONFIG_FILES([
                  sbin/rt-serializer
                  sbin/rt-importer
                  sbin/rt-passwd
+                 sbin/rt-rotate-secret-key
                  sbin/rt-munge-attachments
                  bin/rt-crontool
                  bin/rt-run-scheduled-processes

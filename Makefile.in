@@ -156,6 +156,7 @@ SYSTEM_BINARIES		=	rt-attributes-viewer \
 				rt-munge-attachments \
 				rt-passwd \
 				rt-preferences-viewer \
+				rt-rotate-secret-key \
 				rt-search-attributes \
 				rt-serializer \
 				rt-server \
