@@ -666,4 +666,96 @@ diag 'rt-importer drops TOTP enrollment from imported users';
     ok( !exists $data->{TOTPEnrolled}, 'New user data is not enrolled' );
 }
 
+diag 'rt-rotate-secret-key re-encrypts TOTP secrets under the configured key';
+{
+    my $new_key = RT->Config->Get('SecretKey');
+    my $old_key = 'old-secret-key';
+
+    my $enrolled = RT::Users->new( RT->SystemUser );
+    $enrolled->FindAllRows;
+    $enrolled->Limit( FIELD => 'TOTPSecret', OPERATOR => 'STARTSWITH', VALUE => 'gcm:' );
+    my $already = $enrolled->Count;
+
+    my %secret = ( mfa_rotate_enabled => 'JBSWY3DPEHPK3PXA', mfa_rotate_disabled => 'JBSWY3DPEHPK3PXB' );
+    my %user;
+    RT->Config->Set( SecretKey => $old_key );
+    for my $name ( sort keys %secret ) {
+        $user{$name} = RT::Test->load_or_create_user( Name => $name );
+        my ( $ok, $msg ) = $user{$name}->SetTOTPSecret( $secret{$name} );
+        ok( $ok, "Enrolled $name under the old key: $msg" );
+    }
+    RT->Config->Set( SecretKey => $new_key );
+    my ( $ok, $msg ) = $user{mfa_rotate_disabled}->SetDisabled(1);
+    ok( $ok, "Disabled mfa_rotate_disabled: $msg" );
+
+    my $corrupt = RT::Test->load_or_create_user( Name => 'mfa_rotate_corrupt' );
+    ( $ok, $msg ) = $corrupt->_Set( Field => 'TOTPSecret', Value => 'gcm:00:00:00', RecordTransaction => 0 );
+    ok( $ok, "Stored an undecryptable secret: $msg" );
+
+    my %raw = map { $_ => $user{$_}->__Value('TOTPSecret') } keys %user;
+    my %txns = map { $_ => $user{$_}->Transactions->Count } keys %user;
+
+    my ( $fh, $key_file ) = File::Temp::tempfile( DIR => RT::Test->temp_directory );
+    print $fh "$old_key\n";
+    close $fh;
+
+    my $script = $RT::SbinPath . '/rt-rotate-secret-key';
+
+    my ( $ret, $out ) = RT::Test->run_and_capture( command => $script );
+    is( $ret >> 8, 2, 'Exits 2 without --old-key-file' );
+    like( $out, qr/^--old-key-file is required$/m, 'Reports the missing option' );
+
+    my ( $same_fh, $same_file ) = File::Temp::tempfile( DIR => RT::Test->temp_directory );
+    print $same_fh $new_key;
+    close $same_fh;
+    ( $ret, $out ) = RT::Test->run_and_capture( command => $script, 'old-key-file' => $same_file );
+    is( $ret >> 8, 2, 'Exits 2 when the old key matches the configured key' );
+    like( $out, qr/^The old key matches the configured \$SecretKey\./m, 'Reports the unchanged key' );
+
+    ( $ret, $out ) = RT::Test->run_and_capture( command => $script, 'old-key-file' => $key_file );
+    is( $ret >> 8, 1, 'Dry run exits 1 when a secret cannot be decrypted' );
+    like(
+        $out,
+        qr/^Would re-encrypt 2 TOTP secret\(s\); $already already used the new key; 1 could not be decrypted\.\n  #@{[ $corrupt->Id ]} mfa_rotate_corrupt\nDry run; rerun with --no-dry-run to save changes\.$/m,
+        'Dry run reports counts and the undecryptable user'
+    );
+    for my $name ( sort keys %user ) {
+        my $reloaded = RT::User->new( RT->SystemUser );
+        $reloaded->Load( $user{$name}->Id );
+        is( $reloaded->__Value('TOTPSecret'), $raw{$name}, "Dry run leaves $name unchanged" );
+    }
+
+    ( $ret, $out ) = RT::Test->run_and_capture(
+        command        => $script,
+        'old-key-file' => $key_file,
+        args           => '--no-dry-run',
+    );
+    is( $ret >> 8, 1, '--no-dry-run exits 1 when a secret cannot be decrypted' );
+    like(
+        $out,
+        qr/^Re-encrypted 2 TOTP secret\(s\); $already already used the new key; 1 could not be decrypted\.$/m,
+        '--no-dry-run reports counts'
+    );
+    for my $name ( sort keys %user ) {
+        my $reloaded = RT::User->new( RT->SystemUser );
+        $reloaded->Load( $user{$name}->Id );
+        isnt( $reloaded->__Value('TOTPSecret'), $raw{$name}, "$name has a new ciphertext" );
+        is( $reloaded->TOTPSecretDecrypted, $secret{$name}, "$name decrypts to the same secret under the new key" );
+        is( $reloaded->Transactions->Count, $txns{$name}, "No transaction recorded for $name" );
+    }
+    $corrupt->Load( $corrupt->Id );
+    is( $corrupt->__Value('TOTPSecret'), 'gcm:00:00:00', 'Undecryptable secret is left untouched' );
+
+    ( $ok, $msg ) = $corrupt->ClearTOTPEnrollment;
+    ok( $ok, "Cleared the undecryptable enrollment: $msg" );
+
+    ( $ret, $out ) = RT::Test->run_and_capture( command => $script, 'old-key-file' => $key_file );
+    is( $ret >> 8, 0, 'Rerun exits 0' );
+    like(
+        $out,
+        qr/^Would re-encrypt 0 TOTP secret\(s\); @{[ $already + 2 ]} already used the new key; 0 could not be decrypted\.$/m,
+        'Rerun skips secrets already under the new key'
+    );
+}
+
 done_testing;
