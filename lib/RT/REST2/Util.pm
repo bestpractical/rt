@@ -505,7 +505,7 @@ sub process_uploads {
 
             push @ret,
                 {
-                FileName    => $attachment->filename,
+                FileName    => Encode::decode( 'UTF-8', $attachment->filename ),
                 FileType    => $attachment->headers->{'content-type'},
                 FileContent => join( "\n", @content ),
                 };
