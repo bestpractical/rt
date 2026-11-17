@@ -28,16 +28,102 @@ F<RT_SiteConfig.pm>:
 Using a dedicated secret avoids coupling application-level cryptography to
 the database credential. Set it before any user enrolls in MFA.
 
-Changing the secret key (or changing C<$DatabasePassword> while
-C<$SecretKey> is empty) invalidates outstanding password-reset and
-MFA-reset links, and makes every stored TOTP secret undecryptable.
+=head3 Changing the Secret Key
 
-For the same reason, MFA enrollment does not carry over when migrating data
+Any of these changes the key RT uses:
+
+=over
+
+=item * Setting C<$SecretKey> to a new value.
+
+=item * Setting C<$SecretKey> for the first time. The old key was
+C<$DatabasePassword>.
+
+=item * Changing C<$DatabasePassword> while C<$SecretKey> is empty.
+
+=back
+
+RT uses the key for two things: encrypting each MFA-enrolled user's TOTP
+secret in the database, and signing password-reset and MFA-reset links.
+
+=head4 What stops working
+
+=over
+
+=item MFA login for enrolled users
+
+RT can no longer decrypt stored TOTP secrets, so it rejects every code
+an enrolled user enters with "The code you entered is incorrect", and
+F<rt.log> records "Failed to decrypt TOTP secret for user #I<N>:
+SecretKey may have changed since enrollment". After five failed codes
+(by default) RT locks the user out of MFA for 15 minutes.
+
+To prevent this, run F<sbin/rt-rotate-secret-key>, which re-encrypts
+the stored secrets under the new key. Users it fixes notice nothing;
+their authenticator apps keep working.
+
+Otherwise each affected user must reset MFA, either by following "Lost
+access to your authenticator?" on the MFA login page to get a reset
+email (this needs their password and an email address on file) or by
+having an administrator use Reset MFA on the user's admin page. Under a
+C<Required> policy they then enroll again at their next login; under
+C<Optional> they log in without MFA.
+
+=item Outstanding reset links
+
+Password-reset and MFA-reset links sent before the change stop working,
+even if you run F<sbin/rt-rotate-secret-key>. These links expire after
+C<$ResetLinkExpirySeconds> (four hours by default) anyway, so only
+recent requests are affected, and users can request new links.
+
+=item Restored backups
+
+TOTP secrets in a database backup taken before the change are still
+encrypted under the old key. After restoring such a backup, run
+F<sbin/rt-rotate-secret-key> again with the old key.
+
+=item Servers with different keys
+
+Every web server sharing a database must use the same key. A server with
+a different key can't verify codes for users who enrolled through the
+others, and users who enroll through it can't log in through the others.
+
+=back
+
+=head4 What keeps working
+
+=over
+
+=item * Users who are logged in stay logged in. Sessions don't use the key.
+
+=item * Users not enrolled in MFA, and every user when MFA is disabled or
+the policy mode is C<Off>, notice no change except the reset links
+above.
+
+=item * Passwords, REST2 auth tokens, SSO and C<$WebRemoteUserAuth>
+logins (which skip MFA), the email gateway, and GnuPG and S/MIME email
+encryption don't use the key.
+
+=back
+
+=head4 Timing
+
+Stop RT before changing the key and run F<sbin/rt-rotate-secret-key>
+before starting it again. If RT runs with the new key first, enrolled
+users who log in meanwhile fail MFA as described above, and may be
+locked out for 15 minutes. Running the script afterward still repairs
+their secrets. Users who reset and enroll again in the meantime already
+use the new key, and the script skips them.
+
+=head3 Migrating Data
+
+MFA enrollment does not carry over when migrating data
 with F<rt-importer> or C<rt-serializer --format JSON>: TOTP secrets are
 dropped and enrolled users enroll again at their next login. A C<--clone>
 import keeps them, which only works if the new instance uses the same
 C<$SecretKey> (or the same C<$DatabasePassword> while C<$SecretKey> is
-empty).
+empty). If it doesn't, run F<sbin/rt-rotate-secret-key> on the new
+instance with the source instance's key.
 
 =head2 Password Policy
 

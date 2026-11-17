@@ -1220,8 +1220,11 @@ F<RT_SiteConfig.pm> before enabling MFA, so application-level crypto
 is not coupled to the database credential.
 
 Changing this value (or changing C<$DatabasePassword> while this is
-empty) invalidates outstanding password-reset and MFA-reset links, and
-makes every stored TOTP secret undecryptable.
+empty) makes every stored TOTP secret undecryptable and invalidates
+outstanding password-reset and MFA-reset links. Run
+F<sbin/rt-rotate-secret-key> after changing it to keep existing MFA
+enrollments. "Changing the Secret Key" in L<docs/authentication.pod>
+lists everything a change affects.
 
 =cut
 
