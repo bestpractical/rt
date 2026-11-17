@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use utf8;
 use lib 't/lib';
 use RT::Test::REST2 tests => undef;
 use Test::Deep;
@@ -308,6 +309,95 @@ my $json = JSON->new->utf8;
     is($attachments[2]->ContentEncoding, $expected_encoding);
     is($attachments[2]->Filename, $image_name);
     ok(!$attachments[2]->Subject);
+}
+
+my $utf8_image_name = "λογότυπο.png";
+
+# Comment ticket with non-ASCII attachment filename through JSON Base64
+{
+    my $payload = {
+        Content     => 'Image with a non-ASCII filename',
+        ContentType => 'text/plain',
+        Attachments => [
+            {   FileName    => $utf8_image_name,
+                FileType    => 'image/png',
+                FileContent => $image_content,
+            },
+        ],
+    };
+
+    my $res = $mech->post_json("$rest_base_path/ticket/$ticket_id/comment",
+        $payload,
+        'Authorization' => $auth,
+    );
+    is($res->code, 201);
+    cmp_deeply($mech->json_response, [re(qr/Comments added|Message recorded/)]);
+
+    my $transaction_id = $ticket->Transactions->Last->id;
+    my @attachments = grep { $_->TransactionId == $transaction_id } @{$ticket->Attachments->ItemsArrayRef};
+    is(scalar(@attachments), 3, 'Wrapper, content, and image attachments');
+    is($attachments[2]->ContentType, 'image/png');
+    is($attachments[2]->Filename, $utf8_image_name, 'Image attachment has the non-ASCII filename');
+}
+
+# Comment ticket with non-ASCII attachment filename through multipart/form-data
+{
+    my $payload = {
+        Content     => 'Image with a non-ASCII filename',
+        ContentType => 'text/plain',
+    };
+
+    my $res = $mech->post("$rest_base_path/ticket/$ticket_id/comment",
+        'Authorization' => $auth,
+        'Content_Type'  => 'form-data',
+        'Content'       => [
+            'JSON'        => $json->encode($payload),
+            'Attachments' => [
+                $image_path,
+                Encode::encode('UTF-8', $utf8_image_name),
+                'Content-Type' => 'image/png',
+            ],
+        ]
+    );
+
+    is($res->code, 201);
+    cmp_deeply($mech->json_response, [re(qr/Comments added|Message recorded/)]);
+
+    my $transaction_id = $ticket->Transactions->Last->id;
+    my @attachments = grep { $_->TransactionId == $transaction_id } @{$ticket->Attachments->ItemsArrayRef};
+    is(scalar(@attachments), 3, 'Wrapper, content, and image attachments');
+    is($attachments[2]->ContentType, 'image/png');
+    is($attachments[2]->Filename, $utf8_image_name, 'Image attachment has the non-ASCII filename');
+}
+
+# Create ticket with non-ASCII attachment filename through JSON Base64
+{
+    my $payload = {
+        Queue       => 'General',
+        Subject     => 'Ticket with a non-ASCII attachment filename',
+        Content     => 'Image with a non-ASCII filename',
+        ContentType => 'text/plain',
+        Attachments => [
+            {   FileName    => $utf8_image_name,
+                FileType    => 'image/png',
+                FileContent => $image_content,
+            },
+        ],
+    };
+
+    my $res = $mech->post_json("$rest_base_path/ticket",
+        $payload,
+        'Authorization' => $auth,
+    );
+    is($res->code, 201);
+    my ($new_ticket_id) = $res->header('location') =~ qr[/ticket/(\d+)];
+    ok($new_ticket_id, 'Created ticket');
+
+    my $new_ticket = RT::Ticket->new($user);
+    $new_ticket->Load($new_ticket_id);
+    my ($image) = grep { $_->ContentType eq 'image/png' } @{$new_ticket->Attachments->ItemsArrayRef};
+    ok($image, 'Ticket has an image attachment');
+    is($image->Filename, $utf8_image_name, 'Image attachment has the non-ASCII filename');
 }
 
 done_testing;
