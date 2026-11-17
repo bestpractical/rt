@@ -116,13 +116,13 @@ sub Prepare {
         ($next) = grep $lifecycle->$method($_), $lifecycle->Transitions($status);
         unless ( $next ) {
             $RT::Logger->info("No transition from '$status' to $argument set");
-            return 1;
+            return 0;
         }
     }
     elsif ( $lifecycle->IsValid( $argument ) ) {
         unless ( $lifecycle->IsTransition( $status => $argument ) ) {
             $RT::Logger->warning("Transition '$status -> $argument' is not valid");
-            return 1;
+            return 0;
         }
         $next = $argument;
     }
