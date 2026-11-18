@@ -1,7 +1,9 @@
 use strict;
 use warnings;
+use utf8;
 
 use RT::Test tests => undef;
+use MIME::Parser;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'General' );
 ok $queue->id, 'loaded queue';
@@ -103,6 +105,81 @@ END
     # (which would trigger SMTPUTF8 requirement)
     unlike $rt, qr/Content-Disposition:[^\n]*\xE2\x80\xAF/,
         'Raw UTF-8 bytes not present in Content-Disposition header';
+}
+
+diag "Non-ASCII filenames containing MIME parameter delimiters";
+{
+    my %filename = (
+        inline     => 'Τιμολόγιο; 50%41 (τελικό).png',
+        attachment => 'Αναφορά.png;filename=evil.exe',
+    );
+
+    my $mail = Encode::encode( 'UTF-8', <<"END" );
+From: root\@localhost
+Subject: Test RFC 2231 parameter delimiters
+Content-type: multipart/mixed; boundary="bar"
+
+--bar
+Content-type: multipart/related; boundary="foo"
+
+--foo
+Content-type: text/html; charset="UTF-8"
+
+Testing attachments with delimiters in filenames
+<img src="cid:test-png" />
+
+--foo
+Content-type: image/png; name="$filename{inline}"
+Content-disposition: inline; filename="$filename{inline}"
+Content-transfer-encoding: base64
+Content-ID: <test-png>
+
+iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==
+--foo--
+--bar
+Content-type: image/png; name="$filename{attachment}"
+Content-disposition: attachment; filename="$filename{attachment}"
+Content-transfer-encoding: base64
+
+iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==
+--bar--
+END
+
+    my $rt = send_and_receive($mail);
+
+    my $parser = MIME::Parser->new;
+    $parser->output_to_core(1);
+    my $entity = $parser->parse_data($rt);
+
+    my %part_for = map { $_->head->mime_attr('content-disposition') => $_ }
+        grep { defined $_->head->recommended_filename } $entity->parts_DFS;
+    is_deeply [ sort keys %part_for ], [qw(attachment inline)],
+        'Outgoing email has one inline and one regular attachment with a filename';
+
+    # RFC 2231 extended-value: charset'language' then attr-chars and
+    # %-escaped octets only
+    my $ext_value = qr/UTF-8''(?:[A-Za-z0-9!#\$&+\-.^_`|~]|%[0-9A-F]{2})+/;
+
+    for my $disp (qw(inline attachment)) {
+        my $head = $part_for{$disp}->head;
+
+        my $disposition = $head->get('Content-Disposition');
+        $disposition =~ s/\n\s*/ /g;
+        $disposition =~ s/\s+$//;
+        like $disposition, qr/^$disp; filename\*=$ext_value$/,
+            "$disp Content-Disposition has a single fully escaped filename* parameter";
+
+        my $type = $head->get('Content-Type');
+        $type =~ s/\n\s*/ /g;
+        $type =~ s/\s+$//;
+        like $type, qr/^image\/png; name\*=$ext_value$/,
+            "$disp Content-Type has a single fully escaped name* parameter";
+
+        is Encode::decode( 'MIME-Header', $head->recommended_filename ), $filename{$disp},
+            "$disp filename round-trips";
+        is Encode::decode( 'MIME-Header', $head->mime_attr('content-type.name') ), $filename{$disp},
+            "$disp Content-Type name round-trips";
+    }
 }
 
 sub send_and_receive {
