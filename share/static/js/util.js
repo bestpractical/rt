@@ -1759,9 +1759,19 @@ function inlineAddMessageIncludeArticle() {
 function articleAutoSubmit(elt) {
     if ( elt.closest('#dynamic-modal') ) {
         inlineAddMessageIncludeArticle();
+        return;
     }
-    else {
-        reloadElement(elt.closest('[hx-post]'));
+
+    // Pages built from a plain form rather than htmx widgets, such as
+    // RTIR's Incident Reply, have no element to reload. Submit the form
+    // instead; those pages only process the update when their submit
+    // button is the one pressed.
+    const widget = elt.closest('[hx-post]');
+    if ( widget ) {
+        reloadElement(widget);
+    }
+    else if ( elt.form ) {
+        elt.form.submit();
     }
 };
 
