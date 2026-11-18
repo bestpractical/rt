@@ -62,6 +62,7 @@ use Text::ParseWords qw/shellwords/;
 use RT::Util 'safe_run_child';
 use File::Spec;
 use MIME::Words ();
+use URI::Escape ();
 use Scope::Upper qw/unwind HERE/;
 use 5.26.3;
 
@@ -1380,7 +1381,9 @@ sub EncodeToRFC2231 {
     my $value = shift;
     # RFC 2231 extended parameter: charset'language'encoded-value
     # Use UTF-8 charset with empty language tag
-    my $encoded = URI->new(Encode::encode('UTF-8', $value));
+    # Not URI->new, which leaves characters like ";", "=" and "%"
+    # unescaped; they end the parameter early or decode as escapes.
+    my $encoded = URI::Escape::uri_escape_utf8($value);
     return qq{UTF-8''$encoded};
 }
 
