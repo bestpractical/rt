@@ -71,6 +71,6 @@ $MyArticles = RT::Articles->new($session{'CurrentUser'});
 $MyArticles->Limit(FIELD => 'Class', OPERATOR => 'IN', VALUE => \@classes)
     if @classes;
 $MyArticles->RowsPerPage($rows);
-$MyArticles->OrderBy(FIELD => 'LastUpdated', ORDER => 'DESC');
+$MyArticles->OrderBy(FIELD => 'Created', ORDER => 'DESC');
 
 </%INIT>
