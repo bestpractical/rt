@@ -269,7 +269,7 @@ sub next_warning_like {
     if (@{ $self->{stashed_server_warnings} || [] } == 0) {
         my @warnings = $self->get_warnings;
         if (@warnings == 0) {
-            Test::More::fail("no warnings emitted; expected 1");
+            Test::More::fail("no warnings emitted; expected at least 1");
             return 0;
         }
         $self->{stashed_server_warnings} = \@warnings;
