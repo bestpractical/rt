@@ -6,22 +6,14 @@ BEGIN {
     $ENV{RT_TEST_WEB_HANDLER} = 'inline';
 }
 
-use RT::Test tests => undef;
+use RT::Test::LDAP tests => undef;
 
-eval { require RT::Authen::ExternalAuth; require Net::LDAP::Server::Test; 1; } or do {
-    plan skip_all => 'Unable to test without Net::LDAP and Net::LDAP::Server::Test';
-};
+my $test = new RT::Test::LDAP;
+my $base = $test->{'base_dn'};
+my $ldap = $test->new_server();
 
-
-my $ldap_port = RT::Test->find_idle_port;
-ok( my $server = Net::LDAP::Server::Test->new( $ldap_port, auto_schema => 1 ),
-    "spawned test LDAP server on port $ldap_port" );
-
-my $ldap = Net::LDAP->new("localhost:$ldap_port");
-$ldap->bind();
-
-my $users_dn = "ou=users,dc=bestpractical,dc=com";
-my $group_dn = "cn=test group,ou=groups,dc=bestpractical,dc=com";
+my $users_dn = "ou=users,$base";
+my $group_dn = "cn=test group,ou=groups,$base";
 
 $ldap->add($users_dn);
 for (1 .. 3) {
@@ -55,31 +47,10 @@ $ldap->add(
     ],
 );
 
-RT->Config->Set( ExternalAuthPriority        => ['My_LDAP'] );
-RT->Config->Set( ExternalInfoPriority        => ['My_LDAP'] );
-RT->Config->Set( AutoCreateNonExternalUsers  => 0 );
-RT->Config->Set( AutoCreate  => undef );
-RT->Config->Set(
-    ExternalSettings => {
-        'My_LDAP' => {
-            'type'            => 'ldap',
-            'server'          => "127.0.0.1:$ldap_port",
-            'base'            => $users_dn,
-            'filter'          => '(objectClass=*)',
-            'd_filter'        => '()',
-            'group'           => $group_dn,
-            'group_attr'      => 'memberDN',
-            'tls'             => 0,
-            'net_ldap_args'   => [ version => 3 ],
-            'attr_match_list' => [ 'Name', 'EmailAddress' ],
-            'attr_map'        => {
-                'Name'         => 'uid',
-                'EmailAddress' => 'mail',
-            }
-        },
-    }
-);
-RT->Config->PostLoadCheck;
+$test->{externalauth}{My_LDAP}{group}      = $group_dn;
+$test->{externalauth}{My_LDAP}{group_attr} = 'memberDN';
+
+$test->config_set_externalauth();
 
 my ( $baseurl, $m ) = RT::Test->started_ok();
 
