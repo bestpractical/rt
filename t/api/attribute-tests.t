@@ -5,9 +5,7 @@ use RT::Test nodata => 1, tests => 34;
 
 
 
-my $runid = rand(200);
-
-my $attribute = "squelch-$runid";
+my $runid = 'runid';
 
 ok(require RT::Attributes);
 
